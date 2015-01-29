@@ -7,6 +7,7 @@ var $ = require('jquery');
 Backbone.$ = $;
 var ConversationCollection = require('./conversationCollection');
 var MessageCollection = require('./messageCollection');
+var Message = require('./message');
 var ChatView = require('./chatView');
 
 $(function() {
@@ -165,7 +166,15 @@ $(function() {
 
         this._fetchMessages()
             .then(function() {
-                console.log('>>> Got message collection:', self.messageCollection);
+                console.log('>>Saving message from:', self.appUserId, 'to conversation', self.messageCollection.conversationId);
+                var message = new Message({
+                    baseUrl: ROOT_URL,
+                    appToken: self.appToken,
+                    appUserId: self.appUserId
+                });
+                message.set('authorId', self.appUserId);
+                message.set('text', text);
+                self.messageCollection.create(message);
             });
     };
 }(window));

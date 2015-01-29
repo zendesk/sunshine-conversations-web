@@ -12,6 +12,7 @@ module.exports = {
         var self = this;
         options.beforeSend = function(xhr) {
             xhr.setRequestHeader('app-token', self.appToken);
+            xhr.setRequestHeader('Content-Type', 'application/json');
         };
         return sync(method, model, options);
     },
