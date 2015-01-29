@@ -35,7 +35,8 @@ require("./texthelper");
     }
 
     SupportKit.rest = function(method, path, body) {
-        return $.ajax({
+        var deferred = $.Deferred();
+        $.ajax({
             url: ROOT_URL + path,
             type: "POST",
             headers: {
@@ -44,12 +45,13 @@ require("./texthelper");
             data: JSON.stringify(body),
             contentType: 'application/json',
             success: function(res) {
-                console.log('Response:', res);
+                deferred.resolve(res);
             },
             error: function(err) {
-                console.error(err);
+                deferred.reject(err);
             }
         });
+        return deferred;
     };
 
     SupportKit.get = function(path, body) {
@@ -80,6 +82,9 @@ require("./texthelper");
 
         this.post('/api/appboot', {
             deviceId: this.deviceId
-        });
+        })
+            .then(function(res) {
+                console.log('Res!', res);
+            });
     };
 }(window));
