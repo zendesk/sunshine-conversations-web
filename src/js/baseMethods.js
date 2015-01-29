@@ -2,6 +2,14 @@ var Backbone = require('backbone');
 var sync = Backbone.sync;
 var endpoint = require('./endpoint');
 
+// $.ajaxSetup({
+//     url: new RegExp('^' + endpoint.rootUrl, 'g');
+//     headers: {
+//         'app-token': endpoint.appToken);
+//         'Content-Type': 'application/json');
+//     }
+// });
+
 module.exports = {
     sync: function(method, model, options) {
         var self = this;

@@ -10,8 +10,9 @@ module.exports._rest = function(method, path, body) {
     var deferred = $.Deferred();
     $.ajax({
         url: this.rootUrl + path,
-        type: "POST",
+        type: method,
         headers: {
+            'Content-Type': 'application/json',
             'app-token': this.appToken
         },
         data: JSON.stringify(body),
@@ -32,4 +33,8 @@ module.exports.get = function(path, body) {
 
 module.exports.post = function(path, body) {
     return this._rest('POST', path, body);
+};
+
+module.exports.getConversations = function() {
+    return this.get('/api/conversations?appUserId=' + this.appUserId);
 };
