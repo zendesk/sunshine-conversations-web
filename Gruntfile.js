@@ -14,25 +14,6 @@ module.exports = function(grunt) {
         banner: '/*! <%= pkg.name %> <%= pkg.version %> */\n',
         // Task configuration
         clean: ['dist/*'],
-        concat: {
-            options: {
-                stripBanners: true,
-                banner: '<%= banner %>'
-            },
-            dist: {
-                src: ['src/*.js'],
-                dest: 'dist/supportkit.js'
-            }
-        },
-        uglify: {
-            options: {
-                banner: '<%= banner %>'
-            },
-            dist: {
-                src: '<%= concat.dist.dest %>',
-                dest: 'dist/supportkit.min.js'
-            }
-        },
         karma: {
             unit: {
                 configFile: 'test/karma.conf.js',
@@ -42,8 +23,8 @@ module.exports = function(grunt) {
         },
         watch: {
             scripts: {
-                files: ['src/*.js'],
-                tasks: ['build'],
+                files: ['src/*.js', '*.html'],
+                tasks: ['browserify'],
                 options: {
                     spawn: false,
                 },
@@ -59,11 +40,17 @@ module.exports = function(grunt) {
                 ext: "html",
                 runInBackground: true
             }
+        },
+        browserify: {
+            dist: {
+                files: {
+                    'dist/supportkit.js': ['src/main.js'],
+                }
+            }
         }
     });
 
-    grunt.registerTask('build', ['clean', 'concat', 'uglify']);
     grunt.registerTask('run', ['runlog', 'http-server', 'watch']);
     grunt.registerTask('test', ['karma']);
-    grunt.registerTask('default', ['build']);
+    grunt.registerTask('default', ['browserify']);
 };

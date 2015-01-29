@@ -1,14 +1,9 @@
 var ROOT_URL = 'https://supportkit-staging.herokuapp.com';
 
-/**
- * The browser console
- *
- * @property console
- * @private
- * @type object
- */
-window.console = window.console || {};
-window.console.log = this.console.log || function() {};
+var Backbone = require("backbone");
+var $ = require('jquery');
+Backbone.$ = $;
+require("./texthelper");
 
 /**
  * expose our sdk
@@ -87,4 +82,4 @@ window.console.log = this.console.log || function() {};
             deviceId: this.deviceId
         });
     };
-}(this));
+}(window));
