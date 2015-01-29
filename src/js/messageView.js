@@ -7,7 +7,7 @@ var messageView = Backbone.View.extend({
     render: function() {
         var isKevin = !!(Math.floor(Math.random() * 2) === 0);
         this.$el.html(template({
-            message: "a message",
+            message: this.model.get("text"),
             from: isKevin ? "Kevin" : ""
         }));
 

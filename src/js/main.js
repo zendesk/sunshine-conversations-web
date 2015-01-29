@@ -10,14 +10,21 @@ var ChatView = require('./chatView');
 var endpoint = require('./endpoint');
 
 $(function() {
-    var el = $("<div/>").appendTo("body");
 
-    var b = new ChatView({
-        el: el
+    SupportKit.on('ready', function() {
+        var el = $("<div/>").appendTo("body");
+
+        var b = new ChatView({
+            el: el,
+            model: SupportKit.messageCollection
+        });
+
+        b.render();
     });
 
-    b.render();
 });
+
+
 
 /**
  * expose our sdk
