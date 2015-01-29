@@ -33,7 +33,7 @@ module.exports = function(grunt) {
         },
         watch: {
             scripts: {
-                files: ['src/*.js', '*.html'],
+                files: ['src/*.js', '*.html', "src/templates/*.tpl"],
                 tasks: ['browserify'],
                 options: {
                     spawn: false,
@@ -65,7 +65,9 @@ module.exports = function(grunt) {
                 files: {
                     'dist/supportkit.js': ['src/main.js'],
                 },
-
+                options: {
+                    transform: ['jstify']
+                }
             },
             options: {
                 browserifyOptions: {

@@ -5,6 +5,27 @@ var $ = require('jquery');
 Backbone.$ = $;
 require("./texthelper");
 
+var template = require('./templates/hello.tpl');
+
+var Bookmark = Backbone.View.extend({
+    render: function() {
+        this.$el.html(template({
+            me: "jp"
+        }));
+        return this;
+    }
+});
+
+$(function() {
+    var el = $("<div/>").appendTo("body");
+
+    var b = new Bookmark({
+        el: el
+    });
+
+    b.render();
+});
+
 /**
  * expose our sdk
  */
