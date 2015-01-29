@@ -8,7 +8,7 @@ Backbone.$ = $;
 var ConversationCollection = require('./conversationCollection');
 var MessageCollection = require('./messageCollection');
 
-var template = require('./templates/hello.tpl');
+var template = require('../templates/hello.tpl');
 
 var Bookmark = Backbone.View.extend({
     render: function() {
