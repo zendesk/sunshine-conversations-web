@@ -76,8 +76,20 @@ window.console.log = this.console.log || function() {};
         return this.rest('POST', path, body);
     };
 
-    SupportKit.boot = function(appToken) {
-        this.appToken = appToken;
+    SupportKit.boot = function(options) {
+        options = options || {};
+
+        if (typeof options === 'object') {
+            this.appToken = options.appToken;
+        } else if (typeof options === 'string') {
+            this.appToken = options;
+        } else {
+            throw new Error('boot method accepts an object or string');
+        }
+
+        if (!this.appToken) {
+            throw new Error('boot method requires an appToken');
+        }
 
         // TODO: Look in cookie or generate a new one
         this.deviceId = '55614f40eb66161de81a7643252825db';
