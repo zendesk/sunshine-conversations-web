@@ -4,7 +4,6 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 var $ = require('jquery');
 Backbone.$ = $;
-var ConversationCollection = require('./conversationCollection');
 var MessageCollection = require('./messageCollection');
 var Message = require('./message');
 var ChatView = require('./chatView');
@@ -57,13 +56,24 @@ $(function() {
         var self = this;
         var deferred = $.Deferred();
 
-        if (!self.messageCollection) {
-            return endpoint.post('/api/conversations', {
-                    appUserId: endpoint.appUserId
+        if (self.messageCollection) {
+            deferred.resolve(self.messageCollection);
+        } else {
+            endpoint.getConversations()
+                .then(function(conversations) {
+                    if (conversations.length > 0) {
+                        // A conversation already exists
+                        return conversations[0];
+                    }
+
+                    // No conversation created yet, make one
+                    return endpoint.post('/api/conversations', {
+                        appUserId: endpoint.appUserId
+                    });
                 })
-                .then(function(response) {
+                .then(function(conversation) {
                     self.messageCollection = new MessageCollection();
-                    self.messageCollection.conversationId = response._id;
+                    self.messageCollection.conversationId = conversation._id;
 
                     // TODO: begin refresh polling
                     // self.messageCollection.on('sync', function() {
@@ -74,8 +84,6 @@ $(function() {
                 .then(function() {
                     deferred.resolve(self.messageCollection);
                 });
-        } else {
-            deferred.resolve(self.messageCollection);
         }
 
         return deferred;
@@ -99,7 +107,7 @@ $(function() {
         }
 
         // TODO: Look in cookie or generate a new one
-        this.deviceId = '75614f40eb66161de81a7643252825db';
+        this.deviceId = '85614f40eb66161de81a7643252825db';
 
         endpoint.post('/api/appboot', {
             deviceId: this.deviceId
@@ -108,25 +116,19 @@ $(function() {
                 var deferred = $.Deferred();
                 endpoint.appUserId = res.appUserId;
 
-                // Create message collection
-                self.conversations = new ConversationCollection({
-                    appToken: self.appToken,
-                    appUserId: endpoint.appUserId
-                });
-
-                return self.conversations.fetchPromise();
+                // Perform initial fetch of messages
+                return self._fetchMessages();
             })
             .then(function(conversations) {
                 // Tell the world we're ready
                 self.booted = true;
                 self.trigger('ready');
-
-                //TOOD: If there is a conversation, start a polling loop
             });
     };
 
     SupportKit.message = function(text) {
         var self = this;
+
         if (!this.booted) {
             throw new Error('Can not send messages until boot has completed');
         }
@@ -137,6 +139,12 @@ $(function() {
                     authorId: endpoint.appUserId,
                     text: text
                 });
+                message.conversationId = self.messageCollection.conversationId;
+
+                self.messageCollection.on('error', function(err, b, c, d, e) {
+                    console.error('Message collection error:', err);
+                });
+
                 self.messageCollection.create(message);
             });
     };
