@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-
 var baseMethods = require('./baseMethods');
 var Conversation = require('./conversation');
 
