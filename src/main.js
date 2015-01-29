@@ -1,39 +1,4 @@
-// var ROOT_URL = 'https://api.supportkit.io';
-var ROOT_URL = 'http://localhost:8091';
-
-$(function() {
-    // $.ajax({
-    //     type: "GET",
-    //     url: "http://localhost:8091/api/conversations?appUserId=4a0d20ef6bc896349e181eeb",
-    //     headers: {
-    //         'app-token': '54o15qz2y3wo5k9tfjjohapih'
-    //     },
-    //     success: function(result) {
-    //         console.log('Success>>', result);
-    //     },
-    //     error: function() {
-    //         console.error('Http request failed');
-    //     }
-    // });
-
-    $.ajax({
-        url: ROOT_URL + "/api/appboot",
-        type: "POST",
-        headers: {
-            'app-token': '54o15qz2y3wo5k9tfjjohapih'
-        },
-        data: JSON.stringify({
-            deviceId: '55614f40eb66161de81a7643252825db'
-        }),
-        contentType: 'application/json',
-        success: function(res) {
-            console.log('Response:', res);
-        },
-        error: function(err) {
-            console.error(err);
-        }
-    });
-});
+var ROOT_URL = 'https://supportkit-staging.herokuapp.com';
 
 /**
  * The browser console
@@ -83,6 +48,43 @@ window.console.log = this.console.log || function() {};
      */
     SupportKit.Initialize = function(apiToken) {
         SupportKit._initialize(apiToken);
+    };
+
+    SupportKit.rest = function(method, path, body) {
+        return $.ajax({
+            url: ROOT_URL + path,
+            type: "POST",
+            headers: {
+                'app-token': this.appToken
+            },
+            data: JSON.stringify(body),
+            contentType: 'application/json',
+            success: function(res) {
+                console.log('Response:', res);
+            },
+            error: function(err) {
+                console.error(err);
+            }
+        });
+    };
+
+    SupportKit.get = function(path, body) {
+        return this.rest('GET', path, body);
+    };
+
+    SupportKit.post = function(path, body) {
+        return this.rest('POST', path, body);
+    };
+
+    SupportKit.boot = function(appToken) {
+        this.appToken = appToken;
+
+        // TODO: Look in cookie or generate a new one
+        this.deviceId = '55614f40eb66161de81a7643252825db';
+
+        this.post('/api/appboot', {
+            deviceId: this.deviceId
+        });
     };
 
     /**
