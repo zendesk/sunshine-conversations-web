@@ -1,4 +1,3 @@
-var ROOT_URL = 'https://supportkit-staging.herokuapp.com';
 var POLLING_INTERVAL_MS = 5000;
 
 var Backbone = require('backbone');
@@ -7,7 +6,9 @@ var $ = require('jquery');
 Backbone.$ = $;
 var ConversationCollection = require('./conversationCollection');
 var MessageCollection = require('./messageCollection');
+var Message = require('./message');
 var ChatView = require('./chatView');
+var endpoint = require('./endpoint');
 
 $(function() {
     var el = $("<div/>").appendTo("body");
@@ -51,49 +52,17 @@ $(function() {
         SupportKit.$ = root.$;
     }
 
-    SupportKit._rest = function(method, path, body) {
-        var deferred = $.Deferred();
-        $.ajax({
-            url: ROOT_URL + path,
-            type: "POST",
-            headers: {
-                'app-token': this.appToken
-            },
-            data: JSON.stringify(body),
-            contentType: 'application/json',
-            success: function(res) {
-                deferred.resolve(res);
-            },
-            error: function(err) {
-                deferred.reject(err);
-            }
-        });
-        return deferred;
-    };
-
-    SupportKit._get = function(path, body) {
-        return this._rest('GET', path, body);
-    };
-
-    SupportKit._post = function(path, body) {
-        return this._rest('POST', path, body);
-    };
-
     // Create a conversation if one does not already exist
     SupportKit._fetchMessages = function() {
         var self = this;
         var deferred = $.Deferred();
 
         if (!self.messageCollection) {
-            return this._post('/api/conversations', {
-                    appUserId: this.appUserId
+            return endpoint.post('/api/conversations', {
+                    appUserId: endpoint.appUserId
                 })
                 .then(function(response) {
-                    self.messageCollection = new MessageCollection({
-                        baseUrl: ROOT_URL,
-                        appToken: self.appToken,
-                        appUserId: self.appUserId
-                    });
+                    self.messageCollection = new MessageCollection();
                     self.messageCollection.conversationId = response._id;
 
                     // TODO: begin refresh polling
@@ -118,32 +87,31 @@ $(function() {
         options = options || {};
 
         if (typeof options === 'object') {
-            this.appToken = options.appToken;
+            endpoint.appToken = options.appToken;
         } else if (typeof options === 'string') {
-            this.appToken = options;
+            endpoint.appToken = options;
         } else {
             throw new Error('boot method accepts an object or string');
         }
 
-        if (!this.appToken) {
+        if (!endpoint.appToken) {
             throw new Error('boot method requires an appToken');
         }
 
         // TODO: Look in cookie or generate a new one
         this.deviceId = '75614f40eb66161de81a7643252825db';
 
-        this._post('/api/appboot', {
+        endpoint.post('/api/appboot', {
             deviceId: this.deviceId
         })
             .then(function(res) {
                 var deferred = $.Deferred();
-                self.appUserId = res.appUserId;
+                endpoint.appUserId = res.appUserId;
 
                 // Create message collection
                 self.conversations = new ConversationCollection({
-                    baseUrl: ROOT_URL,
                     appToken: self.appToken,
-                    appUserId: self.appUserId
+                    appUserId: endpoint.appUserId
                 });
 
                 return self.conversations.fetchPromise();
@@ -165,7 +133,11 @@ $(function() {
 
         this._fetchMessages()
             .then(function() {
-                console.log('>>> Got message collection:', self.messageCollection);
+                var message = new Message({
+                    authorId: endpoint.appUserId,
+                    text: text
+                });
+                self.messageCollection.create(message);
             });
     };
 }(window));
