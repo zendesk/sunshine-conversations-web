@@ -21,6 +21,16 @@ module.exports = function(grunt) {
                 browsers: ['PhantomJS']
             }
         },
+        concat: {
+            options: {
+                stripBanners: true,
+                banner: '<%= banner %>'
+            },
+            dist: {
+                src: ['dist/supportkit.js'],
+                dest: 'dist/supportkit.js'
+            }
+        },
         watch: {
             scripts: {
                 files: ['src/*.js', '*.html'],
@@ -29,6 +39,15 @@ module.exports = function(grunt) {
                     spawn: false,
                 },
             },
+        },
+        uglify: {
+            options: {
+                banner: '<%= banner %>'
+            },
+            dist: {
+                src: '<%= concat.dist.dest %>',
+                dest: 'dist/supportkit.min.js'
+            }
         },
         'http-server': {
             'dev': {
@@ -56,6 +75,7 @@ module.exports = function(grunt) {
         }
     });
 
+    grunt.registerTask('build', ['clean', 'browserify', 'concat', 'uglify']);
     grunt.registerTask('run', ['runlog', 'http-server', 'watch']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['browserify']);
