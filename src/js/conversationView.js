@@ -6,13 +6,9 @@ var MessageView = require('./messageView');
 var conversationView = Backbone.View.extend({
     render: function() {
         this.$el.html(template());
-        this.appendMessage({});
-        this.appendMessage({});
-        this.appendMessage({});
-        this.appendMessage({});
-        this.appendMessage({});
-        this.appendMessage({});
-        this.appendMessage({});
+        for (var i = 0; i < 1000; i++) {
+            this.appendMessage({});
+        };
 
         this.scrollToBottom();
 
