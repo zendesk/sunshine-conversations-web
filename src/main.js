@@ -1,5 +1,10 @@
 // var ROOT_URL = 'https://api.supportkit.io';
-var ROOT_URL = 'http://localhost:8091';
+var ROOT_URL = 'https://supportkit-staging.herokuapp.com/';
+
+var Backbone = require("backbone");
+var $ = require('jquery');
+Backbone.$ = $;
+require("./texthelper");
 
 $(function() {
     // $.ajax({
@@ -34,16 +39,6 @@ $(function() {
         }
     });
 });
-
-/**
- * The browser console
- *
- * @property console
- * @private
- * @type object
- */
-window.console = window.console || {};
-window.console.log = this.console.log || function() {};
 
 /**
  * expose our sdk
@@ -135,4 +130,4 @@ window.console.log = this.console.log || function() {};
             });
     };
 
-}(this));
+}(window));
