@@ -38,3 +38,8 @@ module.exports.post = function(path, body) {
 module.exports.getConversations = function() {
     return this.get('/api/conversations?appUserId=' + this.appUserId);
 };
+
+module.exports.postMessage = function(message, messageCollection) {
+    var path = '/api/conversations/' + messageCollection.conversationId + '/messages';
+    return this.post(path, message.attributes);
+};
