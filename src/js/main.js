@@ -8,6 +8,8 @@ var MessageCollection = require('./messageCollection');
 var Message = require('./message');
 var ChatView = require('./chatView');
 var endpoint = require('./endpoint');
+var cookie = require('cookie');
+var uuid = require('uuid');
 
 $(function() {
 
@@ -113,8 +115,13 @@ $(function() {
             throw new Error('boot method requires an appToken');
         }
 
-        // TODO: Look in cookie or generate a new one
-        this.deviceId = '85614f40eb66161de81a7643252825db';
+        // TODO: Allow options to override the deviceId
+        var deviceId = cookie.parse(document.cookie)['sk_deviceid'];
+        if (!deviceId) {
+            deviceId = uuid.v4().replace(/-/g, '');
+            document.cookie = 'sk_deviceid=' + deviceId;
+        }
+        this.deviceId = deviceId;
 
         endpoint.post('/api/appboot', {
             deviceId: this.deviceId
