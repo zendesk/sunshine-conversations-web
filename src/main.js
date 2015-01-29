@@ -5,7 +5,8 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 var $ = require('jquery');
 Backbone.$ = $;
-var MessageCollection = require("./conversationCollection");
+var ConversationCollection = require('./conversationCollection');
+var MessageCollection = require('./messageCollection');
 
 /**
  * expose our sdk
@@ -68,29 +69,33 @@ var MessageCollection = require("./conversationCollection");
     };
 
     // Create a conversation if one does not already exist
-    SupportKit._getConversation = function() {
+    SupportKit._fetchMessages = function() {
         var self = this;
         var deferred = $.Deferred();
 
-        if (this.conversations.length === 0) {
+        if (!self.messageCollection) {
             return this._post('/api/conversations', {
                     appUserId: this.appUserId
                 })
                 .then(function(response) {
-                    return self.conversations.fetchPromise();
+                    self.messageCollection = new MessageCollection({
+                        baseUrl: ROOT_URL,
+                        appToken: self.appToken,
+                        appUserId: self.appUserId
+                    });
+                    self.messageCollection.conversationId = response._id;
+
+                    // TODO: begin refresh polling
+                    // self.messageCollection.on('sync', function() {
+                    //     setTimeout(_.bind(self.messageCollection.fetch, self.messageCollection), POLLING_INTERVAL_MS);
+                    // });
+                    return self.messageCollection.fetchPromise();
                 })
                 .then(function() {
-
-                    // Begin polling loop here
-                    // self.trigger('ready');
-                    // self.conversations.on('sync', function() {
-                    //     setTimeout(_.bind(self.conversations.fetch, self.conversations), POLLING_INTERVAL_MS);
-                    // });
-
-                    deferred.resolve(this.conversations.at(0));
+                    deferred.resolve(self.messageCollection);
                 });
         } else {
-            deferred.resolve(this.conversations.at(0));
+            deferred.resolve(self.messageCollection);
         }
 
         return deferred;
@@ -114,7 +119,7 @@ var MessageCollection = require("./conversationCollection");
         }
 
         // TODO: Look in cookie or generate a new one
-        this.deviceId = '55614f40eb66161de81a7643252825db';
+        this.deviceId = '75614f40eb66161de81a7643252825db';
 
         this._post('/api/appboot', {
             deviceId: this.deviceId
@@ -124,7 +129,7 @@ var MessageCollection = require("./conversationCollection");
                 self.appUserId = res.appUserId;
 
                 // Create message collection
-                self.conversations = new MessageCollection({
+                self.conversations = new ConversationCollection({
                     baseUrl: ROOT_URL,
                     appToken: self.appToken,
                     appUserId: self.appUserId
@@ -142,13 +147,14 @@ var MessageCollection = require("./conversationCollection");
     };
 
     SupportKit.message = function(text) {
+        var self = this;
         if (!this.booted) {
             throw new Error('Can not send messages until boot has completed');
         }
 
-        this._getConversation()
-            .then(function(conversation) {
-                console.log('>>> Got conversation:', conversation);
+        this._fetchMessages()
+            .then(function() {
+                console.log('>>> Got message collection:', self.messageCollection);
             });
     };
 }(window));
