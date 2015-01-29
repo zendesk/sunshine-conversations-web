@@ -75,10 +75,10 @@ $(function() {
                     self.messageCollection = new MessageCollection();
                     self.messageCollection.conversationId = conversation._id;
 
-                    // TODO: begin refresh polling
-                    // self.messageCollection.on('sync', function() {
-                    //     setTimeout(_.bind(self.messageCollection.fetch, self.messageCollection), POLLING_INTERVAL_MS);
-                    // });
+                    // Begin message collcetion refresh polling
+                    self.messageCollection.on('sync', function() {
+                        setTimeout(_.bind(self.messageCollection.fetch, self.messageCollection), POLLING_INTERVAL_MS);
+                    });
                     return self.messageCollection.fetchPromise();
                 })
                 .then(function() {
@@ -128,6 +128,7 @@ $(function() {
 
     SupportKit.message = function(text) {
         var self = this;
+        var message;
 
         if (!this.booted) {
             throw new Error('Can not send messages until boot has completed');
@@ -135,17 +136,16 @@ $(function() {
 
         this._fetchMessages()
             .then(function() {
-                var message = new Message({
+                message = new Message({
                     authorId: endpoint.appUserId,
                     text: text
                 });
                 message.conversationId = self.messageCollection.conversationId;
-
-                self.messageCollection.on('error', function(err, b, c, d, e) {
-                    console.error('Message collection error:', err);
-                });
-
-                self.messageCollection.create(message);
+                return endpoint.postMessage(message, self.messageCollection);
+            })
+            .then(function() {
+                self.messageCollection.fetch();
+                return message;
             });
     };
 }(window));
