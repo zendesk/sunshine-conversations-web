@@ -3,9 +3,6 @@
   <div id="sk-wrapper">
     <div id="sk-header"></div>
     <div id="sk-conversation"></div>
-    <div id="sk-footer">
-      <input placeholder="Type a message..."></input>
-      <a href="">Send</a>
-    </div>
+    <div id="sk-footer"></div>
   </div>
 </div>

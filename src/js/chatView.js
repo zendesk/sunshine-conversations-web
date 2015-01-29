@@ -4,6 +4,7 @@ var template = require('../templates/chatView.tpl');
 
 var HeaderView = require('./headerView');
 var ConversationView = require('./conversationView');
+var ChatInputView = require('.chatInputView');
 
 var ChatView = Backbone.View.extend({
     initialize: function() {},
@@ -17,8 +18,14 @@ var ChatView = Backbone.View.extend({
             el: this.$el.find("#sk-conversation")
         });
 
+        this.chatInput = new ChatInputView({
+            el: this.$el.find("#sk-footer")
+        });
+
         this.header.render();
         this.conversation.render();
+        this.chatInput.render();
+
         return this;
     }
 });
