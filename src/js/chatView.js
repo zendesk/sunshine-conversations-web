@@ -4,7 +4,7 @@ var template = require('../templates/chatView.tpl');
 
 var HeaderView = require('./headerView');
 var ConversationView = require('./conversationView');
-var ChatInputView = require('.chatInputView');
+var ChatInputView = require('./chatInputView');
 
 var ChatView = Backbone.View.extend({
     initialize: function() {},

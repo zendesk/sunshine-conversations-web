@@ -14,6 +14,8 @@ var conversationView = Backbone.View.extend({
         this.appendMessage({});
         this.appendMessage({});
 
+        this.scrollToBottom();
+
         return this;
     },
     appendMessage: function(message) {
@@ -22,6 +24,11 @@ var conversationView = Backbone.View.extend({
         });
         view.render();
         this.$el.append(view.el);
+    },
+    scrollToBottom: function() {
+        this.$el.animate({
+            scrollTop: this.$el.get(0).scrollHeight
+        }, 1000);
     }
 });
 
