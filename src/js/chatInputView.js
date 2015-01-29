@@ -13,7 +13,10 @@ var chatInputView = Backbone.View.extend({
         return this;
     },
     submit: function() {
-        console.log(this.$el.find("input").val());
+        var text = this.$el.find("input").val().trim();
+        if (text.length > 0) {
+            window.SupportKit.message(text);
+        }
     }
 });
 

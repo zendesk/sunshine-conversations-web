@@ -1,1 +1,1 @@
-How can we help?<div id="sk-badge"><%= count%></div>
+How can we help?<div id="sk-badge"><%= count%></div><div id="sk-handle">&#10140</div>
