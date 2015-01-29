@@ -45,6 +45,12 @@ module.exports = function(grunt) {
             dist: {
                 files: {
                     'dist/supportkit.js': ['src/main.js'],
+                },
+
+            },
+            options: {
+                browserifyOptions: {
+                    debug: true
                 }
             }
         }
