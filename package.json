@@ -20,7 +20,7 @@
     },
     "devDependencies": {
         "backbone": "^1.1.2",
-        "underscore": "^1.7.0",
+        "cookie": "^0.1.2",
         "grunt": "^0.4.5",
         "grunt-browserify": "^3.3.0",
         "grunt-contrib-clean": "^0.6.0",
@@ -30,9 +30,11 @@
         "grunt-http-server": "^1.1.0",
         "grunt-karma": "~0.9.0",
         "jquery": "^2.1.3",
+        "jstify": "^0.7.0",
         "karma": "^0.12.16",
         "karma-jasmine": "^0.2.3",
         "matchdep": "^0.3.0",
-        "jstify": "^0.7.0"
+        "underscore": "^1.7.0",
+        "uuid": "^2.0.1"
     }
 }
