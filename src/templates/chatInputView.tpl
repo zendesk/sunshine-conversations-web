@@ -1,2 +1,4 @@
-<input placeholder="Type a message..."></input>
-<a href="">Send</a>
+<form action="/">
+    <input placeholder="Type a message..."></input>
+    <a href="#" class="send">Send</a>
+</form>
