@@ -11,6 +11,18 @@
 * ```grunt clean``` removes all files in the folder ```dist```.
 * ```grunt test``` runs karma tests
 
+
+SupportKit.init('abcdefghijxlmnop', {
+    id: 'abcd1234',
+    givenName: 'Andrew',
+    surname: 'Lavers'
+}, function(user) {
+    <-- user.id
+    user.sendMessage('Hello');
+});
+
+// Set an appUserId cookie?
+
 ## Web References
 
 ### Thanks

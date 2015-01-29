@@ -1,32 +1,33 @@
 {
-    "name": "supportkit-js",
-    "analyze": false,
-    "version": "0.1.0",
-    "keywords": [
-        "supportkit",
-        "javascript",
-        "sdk"
-    ],
-    "author": {
-        "name": "Andrew Lavers",
-        "org": "Radialpoint"
-    },
-    "homepage": "http://supportkit.io",
-    "license": "MIT",
-    "dependencies": {},
-    "engines": {
-        "node": ">=0.10",
-        "npm": "1.1.32"
-    },
-    "devDependencies": {
-        "karma": "^0.12.16",
-        "karma-jasmine": "^0.2.3",
-        "grunt-karma": "~0.9.0",
-        "grunt": "^0.4.5",
-        "grunt-contrib-clean": "^0.6.0",
-        "grunt-contrib-concat": "^0.5.0",
-        "grunt-contrib-uglify": "^0.7.0",
-        "grunt-contrib-watch": "^0.6.1",
-        "matchdep": "^0.3.0"
-    }
+  "name": "supportkit-js",
+  "analyze": false,
+  "version": "0.1.0",
+  "keywords": [
+    "supportkit",
+    "javascript",
+    "sdk"
+  ],
+  "author": {
+    "name": "Andrew Lavers",
+    "org": "Radialpoint"
+  },
+  "homepage": "http://supportkit.io",
+  "license": "MIT",
+  "dependencies": {},
+  "engines": {
+    "node": ">=0.10",
+    "npm": "1.1.32"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-concat": "^0.5.0",
+    "grunt-contrib-uglify": "^0.7.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-http-server": "^1.1.0",
+    "grunt-karma": "~0.9.0",
+    "karma": "^0.12.16",
+    "karma-jasmine": "^0.2.3",
+    "matchdep": "^0.3.0"
+  }
 }

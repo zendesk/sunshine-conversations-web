@@ -3,6 +3,10 @@
 module.exports = function(grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
+    grunt.registerTask('runlog', function() {
+        grunt.log.write('http://localhost:8282/example/example1.html');
+    });
+
     // Project configuration
     grunt.initConfig({
         // Metadata
@@ -35,10 +39,31 @@ module.exports = function(grunt) {
                 singleRun: true,
                 browsers: ['PhantomJS']
             }
+        },
+        watch: {
+            scripts: {
+                files: ['src/*.js'],
+                tasks: ['build'],
+                options: {
+                    spawn: false,
+                },
+            },
+        },
+        'http-server': {
+            'dev': {
+                root: '.',
+                port: 8282,
+                host: "127.0.0.1",
+                showDir: true,
+                autoIndex: true,
+                ext: "html",
+                runInBackground: true
+            }
         }
     });
 
     grunt.registerTask('build', ['clean', 'concat', 'uglify']);
+    grunt.registerTask('run', ['runlog', 'http-server', 'watch']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['build']);
 };

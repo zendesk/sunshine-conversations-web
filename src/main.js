@@ -1,3 +1,40 @@
+// var ROOT_URL = 'https://api.supportkit.io';
+var ROOT_URL = 'http://localhost:8091';
+
+$(function() {
+    // $.ajax({
+    //     type: "GET",
+    //     url: "http://localhost:8091/api/conversations?appUserId=4a0d20ef6bc896349e181eeb",
+    //     headers: {
+    //         'app-token': '54o15qz2y3wo5k9tfjjohapih'
+    //     },
+    //     success: function(result) {
+    //         console.log('Success>>', result);
+    //     },
+    //     error: function() {
+    //         console.error('Http request failed');
+    //     }
+    // });
+
+    $.ajax({
+        url: ROOT_URL + "/api/appboot",
+        type: "POST",
+        headers: {
+            'app-token': '54o15qz2y3wo5k9tfjjohapih'
+        },
+        data: JSON.stringify({
+            deviceId: '55614f40eb66161de81a7643252825db'
+        }),
+        contentType: 'application/json',
+        success: function(res) {
+            console.log('Response:', res);
+        },
+        error: function(err) {
+            console.error(err);
+        }
+    });
+});
+
 /**
  * The browser console
  *
