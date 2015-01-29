@@ -7,22 +7,12 @@ var $ = require('jquery');
 Backbone.$ = $;
 var ConversationCollection = require('./conversationCollection');
 var MessageCollection = require('./messageCollection');
-
-var template = require('../templates/hello.tpl');
-
-var Bookmark = Backbone.View.extend({
-    render: function() {
-        this.$el.html(template({
-            me: "jp"
-        }));
-        return this;
-    }
-});
+var ChatView = require('./chatView');
 
 $(function() {
     var el = $("<div/>").appendTo("body");
 
-    var b = new Bookmark({
+    var b = new ChatView({
         el: el
     });
 

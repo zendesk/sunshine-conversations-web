@@ -1,1 +1,1 @@
-<div>hello! from telated <%= me%> <%= me%> <%= me%> <%= me%></div>
+<div>hello! from chat view <%= me%> <%= me%> <%= me%> <%= me%></div>
