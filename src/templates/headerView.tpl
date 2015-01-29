@@ -1,0 +1,1 @@
+How can we help?<div id="sk-badge"><%= count%></div>
