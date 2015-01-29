@@ -1,19 +1,12 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <!-- This is a very basic example -->
+<!-- The following line is essential for the "position: fixed" property to work correctly in IE -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
-    <style>
-      html, body {
-        height: 100%;
-        margin: 0px;
-        padding: 30px
-      }
-    </style>
-    <title>Usage example for the javascript-sdk-boilerplate</title>
+    <title>Conversation Demo</title>
+    <link rel="stylesheet" href="../src/stylesheets/style.css" type="text/css" media="screen" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-    <!-- load file locally if possibleand override the external from github -->
     <script src="../dist/supportkit.js"></script>
     <script>
         SupportKit.boot({appToken: '305g6f28xat12xjp2zxm9vobl'});
@@ -22,11 +15,53 @@
           SupportKit.message('hi');
         });
     </script>
-  </head>
+</head>
   <body>
-    <h1>Hello World</h1>
-    <p>Have a look in the console, we should have received some data from wikipedia.</p>
-    <p>Find out more at <a href="https://github.com/monbro/javascript-sdk-boilerplate">github.com/monbro/javascript-sdk-boilerplate</a></p>
-    </form>
+    
+    <!--Chat box will be generated in this container-->
+    <div id="sk-container" class="sk-appear">
+      <div id="sk-wrapper">
+        <div id="sk-header">How can we help?<div id="sk-badge">2</div></div>
+        <div id="sk-conversation">
+          <div class="sk-intro">This the beginning of your conversation history with SupportKit. Ask us anything, we'll reply within a day or so.</div>
+          <div class="sk-left-row sk-row">
+            <div class="sk-from">Kevin</div>
+            <div class="sk-msg">
+              How's it going buddy?
+            </div>
+            <div class="sk-clear"></div>
+          </div>
+          <div class="sk-right-row sk-row">
+            <div class="sk-msg">
+              Not bad
+            </div>
+            <div class="sk-clear"></div>
+          </div>
+          <div class="sk-left-row sk-row">
+            <div class="sk-from">Kevin</div>
+            <div class="sk-msg">
+              sd mfklms kfmksdmf ksdm,.fmsdkl mfklsdm klfms
+            </div>
+            <div class="sk-clear"></div>
+          </div>
+          <div class="sk-right-row sk-row">
+            <div class="sk-msg">
+              dfm ksd jfklsdj fkljsdklfjklsdjf
+            </div>
+            <div class="sk-clear"></div>
+          </div>
+          <div class="sk-right-row sk-row">
+            <div class="sk-msg">
+              fnsdfjnsdkfnjksd nfjknsdjkl fklsdnm
+            </div>
+            <div class="sk-clear"></div>
+          </div>
+        </div>
+        <div id="sk-footer">
+          <input placeholder="Type a message..."></input>
+          <a href="">Send</a>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
