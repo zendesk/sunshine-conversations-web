@@ -9,7 +9,13 @@
 <!--     <script src="https://s3.amazonaws.com/io.supportkit.cdn/supportkit.js"></script> -->
     <script src="../dist/supportkit.min.js"></script>
     <script>
-        SupportKit.init({appToken: '3ea7dnnifzriurbnqkux3043o'});
+        SupportKit.init({appToken: '3ea7dnnifzriurbnqkux3043o',
+          givenName: 'Andrew',
+          surname: 'Lavers',
+          properties: {
+            'isAwesome': true
+          }
+        });
 
         SupportKit.on('ready', function() {
           $('#resetUnread').on('click', function() {

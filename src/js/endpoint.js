@@ -1,4 +1,4 @@
-var ROOT_URL = 'https://supportkit-staging.herokuapp.com';
+var ROOT_URL = 'https://app.supportkit.io';
 
 module.exports.rootUrl = ROOT_URL;
 
@@ -21,7 +21,11 @@ module.exports._rest = function(method, path, body) {
             deferred.resolve(res);
         },
         error: function(err) {
-            deferred.reject(err);
+            if (method === 'PUT' && err.status === 200) {
+                deferred.resolve(err);
+            } else {
+                deferred.reject(err);
+            }
         }
     });
     return deferred;
@@ -33,6 +37,10 @@ module.exports.get = function(path, body) {
 
 module.exports.post = function(path, body) {
     return this._rest('POST', path, body);
+};
+
+module.exports.put = function(path, body) {
+    return this._rest('PUT', path, body);
 };
 
 module.exports.getConversations = function() {

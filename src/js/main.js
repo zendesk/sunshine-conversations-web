@@ -84,10 +84,20 @@ var uuid = require('uuid');
         return deferred;
     };
 
+    SupportKit._updateUser = function() {
+        if (_.isEmpty(this.user)) {
+            return $.Deferred().resolve();
+        } else {
+            return endpoint.put('/api/appusers/' + endpoint.appUserId, this.user);
+        }
+    };
+
     SupportKit.init = function(options) {
         this.inited = false;
         var self = this;
         options = options || {};
+
+        this.user = _.pick(options, 'givenName', 'surname', 'email', 'properties');
 
         if (typeof options === 'object') {
             endpoint.appToken = options.appToken;
@@ -116,8 +126,8 @@ var uuid = require('uuid');
                 var deferred = $.Deferred();
                 endpoint.appUserId = res.appUserId;
 
-                // Perform initial fetch of messages
-                return self._fetchMessages();
+                // Perform initial fetch of messages and update user profile info
+                return $.when(self._fetchMessages(), self._updateUser());
             })
             .then(function(conversations) {
                 // Tell the world we're ready
