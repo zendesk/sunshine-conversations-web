@@ -14,6 +14,8 @@
 	border-radius:4px 4px 0 0;
 	text-rendering: optimizeLegibility;
 	color:#333;
+	-webkit-transform: translateY(90%);
+    transform: translateY(90%);
 }
 #sk-wrapper{
 	width:300px;
@@ -196,8 +198,8 @@
   animation: sk-appear-frames 0.7s cubic-bezier(.62,.28,.23,.99);
 	-webkit-animation-fill-mode: forwards;
 	animation-fill-mode:forwards;
-	-webkit-animation-delay: 1.0s;
-	animation-delay:1.0s;
+	-webkit-animation-delay: 0.0s;
+	animation-delay:0.0s;
 }
 .sk-appear #sk-handle{
   -webkit-transform: rotate(270deg);
@@ -206,8 +208,8 @@
   animation: sk-rotate-frames 0.7s cubic-bezier(.62,.28,.23,.99);
 	-webkit-animation-fill-mode: forwards;
 	animation-fill-mode:forwards;
-	-webkit-animation-delay: 1.0s;
-	animation-delay:1.0s;
+	-webkit-animation-delay: 0.7s;
+	animation-delay:0.7s;
 }
 
 @-webkit-keyframes sk-appear-frames {
@@ -225,4 +227,30 @@
 @keyframes sk-rotate-frames {
   0% { transform: rotate(270deg)}
 	100% { transform: rotate(90deg)}
+}
+
+.sk-close {
+  -webkit-transform: translateY(10%);
+    transform: translateY(10%);
+  -webkit-animation: sk-close-frames 0.7s cubic-bezier(.62,.28,.23,.99);
+  animation: sk-close-frames 0.7s cubic-bezier(.62,.28,.23,.99);
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode:forwards;
+    -webkit-animation-delay: 0.0s;
+    animation-delay:0.0s;
+}
+
+@-webkit-keyframes sk-close-frames {
+  0% { -webkit-transform: translateY(0%)}
+    100% { -webkit-transform: translateY(90%)}
+}
+@keyframes sk-close-frames {
+  0% { transform: translateY(0%)}
+    100% { transform: translateY(90%)}
+}
+
+.sk-noanimation
+{
+    -webkit-animation: none;
+    animation: none;
 }
