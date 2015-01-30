@@ -23,6 +23,24 @@ SupportKit.init('abcdefghijxlmnop', {
 
 // Set an appUserId cookie?
 
+### 3. Deployment
+
+Create the file `grunt-aws.json`:
+
+```
+{
+    "key": "...",
+    "secret": "...",
+    "bucket": "..."
+}
+```
+
+Then
+
+```
+grunt deploy
+```
+
 ## Web References
 
 ### Thanks

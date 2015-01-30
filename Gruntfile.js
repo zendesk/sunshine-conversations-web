@@ -2,6 +2,7 @@
 
 module.exports = function(grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
+    grunt.loadNpmTasks('grunt-s3');
 
     grunt.registerTask('runlog', function() {
         grunt.log.write('http://localhost:8282/example/example1.html');
@@ -93,10 +94,33 @@ module.exports = function(grunt) {
                     debug: true
                 }
             }
+        },
+
+        aws: grunt.file.readJSON('grunt-aws.json'),
+        s3: {
+            options: {
+                key: '<%= aws.key %>',
+                secret: '<%= aws.secret %>',
+                bucket: '<%= aws.bucket %>',
+                access: 'public-read',
+                headers: {
+                    // Two Year cache policy (1000 * 60 * 60 * 24 * 730) 
+                    "Cache-Control": "max-age=630720000, public",
+                    "Expires": new Date(Date.now() + 63072000000).toUTCString()
+                }
+            },
+            dev: {
+                // Files to be uploaded. 
+                upload: [{
+                    src: 'dist/supportkit.min.js',
+                    dest: 'supportkit.min.js'
+                }]
+            }
         }
     });
 
     grunt.registerTask('build', ['clean', 'browserify', 'replace', 'concat', 'uglify', 'cssmin']);
+    grunt.registerTask('deploy', ['build', 's3']);
     grunt.registerTask('run', ['runlog', 'http-server', 'watch']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['browserify']);
