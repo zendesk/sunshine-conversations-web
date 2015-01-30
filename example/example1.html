@@ -10,15 +10,18 @@
     <script src="../dist/supportkit.js"></script>
     <script>
         SupportKit.boot({appToken: '305g6f28xat12xjp2zxm9vobl'});
+
+        SupportKit.on('ready', function() {
+          $('#resetUnread').on('click', function() {
+            SupportKit.resetUnread();
+          })
+        });
     </script>
 </head>
   <body>
     <h1>Hello World</h1>
     <p>Have a look in the console, we should have received some data from wikipedia.</p>
     <p>Find out more at <a href="https://github.com/monbro/javascript-sdk-boilerplate">github.com/monbro/javascript-sdk-boilerplate</a></p>
-    <form >
-      <input id="text" type="text">
-      <input id="submit" type="submit">
-    </form>
+    <button id="resetUnread">Reset unread</button>
   </body>
 </html>
