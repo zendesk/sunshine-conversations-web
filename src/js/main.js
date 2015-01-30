@@ -6,27 +6,9 @@ var $ = require('jquery');
 Backbone.$ = $;
 var Conversation = require('./conversation');
 var Message = require('./message');
-var ChatView = require('./chatView');
 var endpoint = require('./endpoint');
 var cookie = require('cookie');
 var uuid = require('uuid');
-
-$(function() {
-
-    SupportKit.on('ready', function() {
-        var el = $("<div/>").appendTo("body");
-
-        var b = new ChatView({
-            el: el,
-            model: SupportKit.conversation
-        });
-
-        b.render();
-    });
-
-});
-
-
 
 /**
  * expose our sdk
@@ -34,7 +16,7 @@ $(function() {
 (function(root) {
     root.SupportKit = root.SupportKit || {};
     root.SupportKit.VERSION = "js1.0.0";
-}(this));
+}(window));
 
 /**
  * main sdk
@@ -166,3 +148,6 @@ $(function() {
             });
     };
 }(window));
+
+
+module.exports = window.SupportKit;

@@ -63,7 +63,7 @@ module.exports = function(grunt) {
         browserify: {
             dist: {
                 files: {
-                    'dist/supportkit.js': ['src/js/main.js'],
+                    'dist/supportkit.js': ['src/js/ui.js'],
                 },
                 options: {
                     transform: ['jstify']

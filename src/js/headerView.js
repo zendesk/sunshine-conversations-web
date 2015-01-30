@@ -13,7 +13,9 @@ var headerView = Backbone.View.extend({
         return this;
     },
     toggle: function() {
-        $("#sk-container").removeClass("sk-noanimation").toggleClass("sk-appear sk-close");
+        if (window.SupportKit && window.SupportKit.ui && window.SupportKit.ui.toggle) {
+            window.SupportKit.ui.toggle();
+        }
     }
 });
 

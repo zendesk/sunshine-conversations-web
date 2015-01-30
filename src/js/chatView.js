@@ -16,7 +16,7 @@ var ChatView = Backbone.View.extend({
         });
         this.conversation = new ConversationView({
             el: this.$el.find("#sk-conversation"),
-            model : this.model
+            model: this.model
         });
 
         this.chatInput = new ChatInputView({
@@ -28,6 +28,21 @@ var ChatView = Backbone.View.extend({
         this.chatInput.render();
 
         return this;
+    },
+    open: function() {
+        this.enableAnimation();
+        this.$el.find("#sk-container").removeClass("sk-close").addClass("sk-appear");
+    },
+    close: function() {
+        this.enableAnimation();
+        this.$el.find("#sk-container").removeClass("sk-appear").addClass("sk-close");
+    },
+    toggle: function() {
+        this.enableAnimation();
+        this.$el.find("#sk-container").toggleClass("sk-appear sk-close");
+    },
+    enableAnimation: function() {
+        this.$el.find("#sk-container").removeClass("sk-noanimation")
     }
 });
 
