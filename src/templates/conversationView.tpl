@@ -1,1 +1,1 @@
-<div class="sk-intro">This the beginning of your conversation. Ask us anything!</div>
+<div class="sk-intro">This the beginning of your conversation.<br/> Ask us anything!</div>
