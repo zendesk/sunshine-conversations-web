@@ -8,6 +8,9 @@ var ChatInputView = require('./chatInputView');
 var _ = require("underscore");
 
 var ChatView = Backbone.View.extend({
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.open);
+    },
     render: function() {
         this.$el.html(template());
 
