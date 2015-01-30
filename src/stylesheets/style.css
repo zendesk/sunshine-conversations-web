@@ -108,6 +108,7 @@
   transform: rotate(270deg);
 	color:#808080;
 	font-size:20px;
+	cursor: pointer;
 }
 .sk-intro{
 	color:#b0b0b0;

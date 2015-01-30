@@ -84,9 +84,12 @@ $(function() {
                     self.messageCollection = new MessageCollection();
                     self.messageCollection.conversationId = conversation._id;
 
-                    // Begin message collcetion refresh polling
+                    //Begin message collcetion refresh polling
                     self.messageCollection.on('sync', function() {
-                        setTimeout(_.bind(self.messageCollection.fetch, self.messageCollection), POLLING_INTERVAL_MS);
+                        setTimeout(function(){
+                            // fetch somehow calls add on existing message too. remove:false should help but doesn't
+                            self.messageCollection.fetch({remove: false});
+                        }, POLLING_INTERVAL_MS);
                     });
                     return self.messageCollection.fetchPromise();
                 })

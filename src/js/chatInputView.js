@@ -12,7 +12,10 @@ var chatInputView = Backbone.View.extend({
         this.$el.html(template());
         return this;
     },
-    submit: function() {
+    submit: function(e) {
+        if(e){
+            e.preventDefault();
+        }
         var input = this.$el.find("input");
         var text = input.val().trim();
         if (text.length > 0) {

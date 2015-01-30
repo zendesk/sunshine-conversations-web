@@ -19,7 +19,9 @@ var MessageCollection = Backbone.Collection.extend({
             },
             error: function(err) {
                 deferred.reject(err);
-            }
+            },
+            // fetch somehow calls add on existing message too. remove:false should help but doesn't
+            remove: false
         });
 
         return deferred;

@@ -8,9 +8,6 @@ var ChatInputView = require('./chatInputView');
 var _ = require("underscore");
 
 var ChatView = Backbone.View.extend({
-    initialize: function() {
-        this.model.on("add", _.bind(this.appendMessage, this));
-    },
     render: function() {
         this.$el.html(template());
 
@@ -18,7 +15,8 @@ var ChatView = Backbone.View.extend({
             el: this.$el.find("#sk-header")
         });
         this.conversation = new ConversationView({
-            el: this.$el.find("#sk-conversation")
+            el: this.$el.find("#sk-conversation"),
+            model : this.model
         });
 
         this.chatInput = new ChatInputView({
@@ -29,16 +27,7 @@ var ChatView = Backbone.View.extend({
         this.conversation.render();
         this.chatInput.render();
 
-        var conversation = this.conversation;
-
-        this.model.each(function(message) {
-            conversation.appendMessage(message);
-        });
-
         return this;
-    },
-    appendMessage: function(model, collection, options) {
-        this.conversation.appendMessage(model);
     }
 });
 
