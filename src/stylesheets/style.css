@@ -1,3 +1,7 @@
+#sk-container div, #sk-container a, #sk-container form, #sk-container input, #sk-container {
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
+}
 #sk-container{
     width:300px;
     height:400px;
@@ -17,6 +21,7 @@
     -webkit-transform: translateY(90%);
     transform: translateY(90%);
 }
+
 #sk-wrapper{
     width:300px;
     height:400px;

@@ -53,9 +53,7 @@ module.exports = function(grunt) {
         cssmin: {
             dist: {
                 files: {
-                    'dist/style.min.css': [
-                        'src/stylesheets/style.css'
-                    ]
+                    'dist/style.min.css': ['src/stylesheets/style.css']
                 }
             }
         },
@@ -107,12 +105,7 @@ module.exports = function(grunt) {
                 key: '<%= aws.key %>',
                 secret: '<%= aws.secret %>',
                 bucket: '<%= aws.bucket %>',
-                access: 'public-read',
-                headers: {
-                    // Two Year cache policy (1000 * 60 * 60 * 24 * 730) 
-                    "Cache-Control": "max-age=630720000, public",
-                    "Expires": new Date(Date.now() + 63072000000).toUTCString()
-                }
+                access: 'public-read'
             },
             dev: {
                 // Files to be uploaded. 
