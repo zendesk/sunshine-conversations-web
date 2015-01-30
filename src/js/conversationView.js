@@ -9,6 +9,7 @@ var conversationView = Backbone.View.extend({
     initialize: function() {
         this.model.on("add", _.bind(this.addOne, this));
         this.model.on("reset", _.bind(this.addAll, this));
+        this.listenTo(this.model, 'change', this.render);
     },
     render: function() {
         this.$el.html(template());
