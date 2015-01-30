@@ -1,5 +1,49 @@
 {
 <<<<<<< HEAD
+    "name": "supportkit-js",
+    "analyze": false,
+    "version": "0.1.0",
+    "keywords": [
+        "supportkit",
+        "javascript",
+        "sdk"
+    ],
+    "author": {
+        "name": "Andrew Lavers",
+        "org": "Radialpoint"
+    },
+    "homepage": "http://supportkit.io",
+    "license": "MIT",
+    "dependencies": {
+        "grunt-s3": "^0.2.0-alpha.3"
+    },
+    "engines": {
+        "node": ">=0.10",
+        "npm": "1.1.32"
+    },
+    "devDependencies": {
+        "backbone": "^1.1.2",
+        "cookie": "^0.1.2",
+        "grunt": "^0.4.5",
+        "grunt-browserify": "^3.3.0",
+        "grunt-contrib-clean": "^0.6.0",
+        "grunt-contrib-concat": "^0.5.0",
+        "grunt-contrib-cssmin": "^0.11.0",
+        "grunt-contrib-uglify": "^0.7.0",
+        "grunt-contrib-watch": "^0.6.1",
+        "grunt-http-server": "^1.1.0",
+        "grunt-karma": "~0.9.0",
+        "grunt-text-replace": "^0.4.0",
+        "jquery": "^2.1.3",
+        "jstify": "^0.7.0",
+        "karma": "^0.12.16",
+        "karma-jasmine": "^0.2.3",
+        "matchdep": "^0.3.0",
+        "underscore": "^1.7.0",
+        "uuid": "^2.0.1"
+    }
+}
+||||||| merged common ancestors
   "name": "supportkit-js",
   "analyze": false,
   "version": "0.1.0",
@@ -21,57 +65,67 @@
   },
   "devDependencies": {
     "backbone": "^1.1.2",
+    "cookie": "^0.1.2",
     "grunt": "^0.4.5",
     "grunt-browserify": "^3.3.0",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-concat": "^0.5.0",
+    "grunt-contrib-cssmin": "^0.11.0",
     "grunt-contrib-uglify": "^0.7.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-http-server": "^1.1.0",
     "grunt-karma": "~0.9.0",
+    "grunt-text-replace": "^0.4.0",
     "jquery": "^2.1.3",
     "jstify": "^0.7.0",
     "karma": "^0.12.16",
     "karma-jasmine": "^0.2.3",
     "matchdep": "^0.3.0",
-    "underscore": "^1.7.0"
+    "underscore": "^1.7.0",
+    "uuid": "^2.0.1"
   }
 }
 =======
-    "name": "supportkit-js",
-    "analyze": false,
-    "version": "0.1.0",
-    "keywords": [
-        "supportkit",
-        "javascript",
-        "sdk"
-    ],
-    "author": {
-        "name": "Andrew Lavers",
-        "org": "Radialpoint"
-    },
-    "homepage": "http://supportkit.io",
-    "license": "MIT",
-    "dependencies": {},
-    "engines": {
-        "node": ">=0.10",
-        "npm": "1.1.32"
-    },
-    "devDependencies": {
-        "backbone": "^1.1.2",
-        "underscore": "^1.7.0",
-        "grunt": "^0.4.5",
-        "grunt-browserify": "^3.3.0",
-        "grunt-contrib-clean": "^0.6.0",
-        "grunt-contrib-concat": "^0.5.0",
-        "grunt-contrib-uglify": "^0.7.0",
-        "grunt-contrib-watch": "^0.6.1",
-        "grunt-http-server": "^1.1.0",
-        "grunt-karma": "~0.9.0",
-        "jquery": "^2.1.3",
-        "karma": "^0.12.16",
-        "karma-jasmine": "^0.2.3",
-        "matchdep": "^0.3.0"
-    }
+  "name": "supportkit-js",
+  "analyze": false,
+  "version": "0.1.0",
+  "keywords": [
+    "supportkit",
+    "javascript",
+    "sdk"
+  ],
+  "author": {
+    "name": "Andrew Lavers",
+    "org": "Radialpoint"
+  },
+  "homepage": "http://supportkit.io",
+  "license": "MIT",
+  "dependencies": {},
+  "engines": {
+    "node": ">=0.10",
+    "npm": "1.1.32"
+  },
+  "devDependencies": {
+    "backbone": "^1.1.2",
+    "cookie": "^0.1.2",
+    "grunt": "^0.4.5",
+    "grunt-browserify": "^3.3.0",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-concat": "^0.5.0",
+    "grunt-contrib-cssmin": "^0.11.0",
+    "grunt-contrib-uglify": "^0.7.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-http-server": "^1.1.0",
+    "grunt-karma": "~0.9.0",
+    "grunt-string-to-js": "0.0.3",
+    "grunt-text-replace": "^0.4.0",
+    "jquery": "^2.1.3",
+    "jstify": "^0.7.0",
+    "karma": "^0.12.16",
+    "karma-jasmine": "^0.2.3",
+    "matchdep": "^0.3.0",
+    "underscore": "^1.7.0",
+    "uuid": "^2.0.1"
+  }
 }
->>>>>>> ceff8fc2cb44e1924aa72d853bc466699d29646c
+>>>>>>> 3c2748f8eb2b0bb94ae30e85cf803f25d61f8c42
