@@ -49,6 +49,15 @@ module.exports = function(grunt) {
                 dest: 'dist/supportkit.min.js'
             }
         },
+        cssmin: {
+            dist: {
+                files: {
+                    'dist/style.css': [
+                        'src/stylesheets/style.css'
+                    ]
+                }
+            }
+        },
         'http-server': {
             'dev': {
                 root: '.',
@@ -77,7 +86,7 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('build', ['clean', 'browserify', 'concat', 'uglify']);
+    grunt.registerTask('build', ['clean', 'browserify', 'concat', 'uglify', 'cssmin']);
     grunt.registerTask('run', ['runlog', 'http-server', 'watch']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['browserify']);
