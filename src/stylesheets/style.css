@@ -208,8 +208,8 @@
   animation: sk-rotate-frames 0.7s cubic-bezier(.62,.28,.23,.99);
 	-webkit-animation-fill-mode: forwards;
 	animation-fill-mode:forwards;
-	-webkit-animation-delay: 0.7s;
-	animation-delay:0.7s;
+	-webkit-animation-delay: 0.0s;
+	animation-delay:0.0s;
 }
 
 @-webkit-keyframes sk-appear-frames {
