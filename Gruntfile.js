@@ -52,10 +52,20 @@ module.exports = function(grunt) {
         cssmin: {
             dist: {
                 files: {
-                    'dist/style.css': [
+                    'dist/style.min.css': [
                         'src/stylesheets/style.css'
                     ]
                 }
+            }
+        },
+        replace: {
+            dist: {
+                src: 'dist/supportkit.js',
+                dest: 'dist/supportkit.js',
+                replacements: [{
+                    from: /var ROOT_URL = '.*';/,
+                    to: 'var ROOT_URL = "https://app.supportkit.io";'
+                }]
             }
         },
         'http-server': {
@@ -86,7 +96,7 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('build', ['clean', 'browserify', 'concat', 'uglify', 'cssmin']);
+    grunt.registerTask('build', ['clean', 'browserify', 'replace', 'concat', 'uglify', 'cssmin']);
     grunt.registerTask('run', ['runlog', 'http-server', 'watch']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['browserify']);
