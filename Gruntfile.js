@@ -27,7 +27,7 @@ module.exports = function(grunt) {
                 banner: '<%= banner %>'
             },
             dist: {
-                src: ['dist/supportkit.js'],
+                src: ['dist/supportkit.js', 'dist/style.min.css.js'],
                 dest: 'dist/supportkit.js'
             }
         },
@@ -79,6 +79,11 @@ module.exports = function(grunt) {
                 runInBackground: true
             }
         },
+        str2js: {
+            SupportKit: {
+                'dist/style.min.css.js': ['dist/style.min.css']
+            }
+        },
         browserify: {
             dist: {
                 files: {
@@ -96,7 +101,7 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('build', ['clean', 'browserify', 'replace', 'concat', 'uglify', 'cssmin']);
+    grunt.registerTask('build', ['clean', 'browserify', 'replace', 'cssmin', 'str2js', 'concat', 'uglify']);
     grunt.registerTask('run', ['runlog', 'http-server', 'watch']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['browserify']);
