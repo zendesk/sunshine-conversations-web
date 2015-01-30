@@ -1,1 +1,1 @@
-<div class="sk-intro">This the beginning of your conversation history with SupportKit. Ask us anything!</div>
+<div class="sk-intro">This the beginning of your conversation. Ask us anything!</div>
