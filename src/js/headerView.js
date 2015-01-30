@@ -4,7 +4,7 @@ var template = require('../templates/headerView.tpl');
 
 var headerView = Backbone.View.extend({
     events: {
-        "click #sk-handle": "toggle"
+        "click": "toggle"
     },
 
     initialize: function() {
