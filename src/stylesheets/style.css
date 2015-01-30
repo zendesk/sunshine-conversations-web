@@ -32,6 +32,7 @@
 	position:relative;
 	box-shadow: inset 0 -1px 1px rgba(0,0,0,0.05), inset 0 -1px 0 rgba(0,0,0,0.05);
 	background-color:#f8f8f8;
+	cursor: pointer;
 }
 #sk-conversation{
 	padding:18px 18px;
@@ -110,7 +111,6 @@
   transform: rotate(270deg);
 	color:#808080;
 	font-size:20px;
-	cursor: pointer;
 }
 .sk-intro{
 	color:#b0b0b0;
@@ -253,4 +253,13 @@
 {
     -webkit-animation: none;
     animation: none;
+}
+
+.sk-noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
