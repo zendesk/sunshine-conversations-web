@@ -17,6 +17,10 @@
             var text = $('#text').val();
             SupportKit.message(text);
           });
+
+          $('#resetUnread').on('click', function() {
+            SupportKit.resetUnread();
+          })
         });
     </script>
 </head>
@@ -28,5 +32,6 @@
       <input id="text" type="text">
       <input id="submit" type="submit">
     </form>
+    <button id="resetUnread">Reset unread</button>
   </body>
 </html>

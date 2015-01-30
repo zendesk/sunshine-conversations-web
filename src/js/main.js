@@ -144,6 +144,10 @@ $(function() {
             });
     };
 
+    SupportKit.resetUnread = function() {
+        this.conversation.resetUnread();
+    };
+
     SupportKit.message = function(text) {
         var self = this;
         var message;

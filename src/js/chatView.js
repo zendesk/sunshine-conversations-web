@@ -16,7 +16,7 @@ var ChatView = Backbone.View.extend({
         });
         this.conversation = new ConversationView({
             el: this.$el.find("#sk-conversation"),
-            model : this.model
+            model: this.model
         });
 
         this.chatInput = new ChatInputView({
