@@ -84,8 +84,8 @@ var uuid = require('uuid');
         return deferred;
     };
 
-    SupportKit.boot = function(options) {
-        this.booted = false;
+    SupportKit.init = function(options) {
+        this.inited = false;
         var self = this;
         options = options || {};
 
@@ -94,11 +94,11 @@ var uuid = require('uuid');
         } else if (typeof options === 'string') {
             endpoint.appToken = options;
         } else {
-            throw new Error('boot method accepts an object or string');
+            throw new Error('init method accepts an object or string');
         }
 
         if (!endpoint.appToken) {
-            throw new Error('boot method requires an appToken');
+            throw new Error('init method requires an appToken');
         }
 
         // TODO: Allow options to override the deviceId
@@ -121,7 +121,7 @@ var uuid = require('uuid');
             })
             .then(function(conversations) {
                 // Tell the world we're ready
-                self.booted = true;
+                self.inited = true;
                 self.trigger('ready');
             });
     };
@@ -134,8 +134,8 @@ var uuid = require('uuid');
         var self = this;
         var message;
 
-        if (!this.booted) {
-            throw new Error('Can not send messages until boot has completed');
+        if (!this.inited) {
+            throw new Error('Can not send messages until init has completed');
         }
 
         this._fetchMessages()
