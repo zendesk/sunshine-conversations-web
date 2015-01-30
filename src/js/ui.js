@@ -32,7 +32,7 @@ var ChatView = require('./chatView');
         if (!$("#" + styleId).length && SupportKit && SupportKit['dist/style.min.css']) {
             $("<style>").attr({
                 id: styleId
-            }).appendTo("head").text(SupportKit['dist/style.min.css']);
+            }).appendTo("body").text(SupportKit['dist/style.min.css']);
         }
     }
 
