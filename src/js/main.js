@@ -158,7 +158,7 @@ $(function() {
                     authorId: endpoint.appUserId,
                     text: text
                 });
-                return endpoint.postMessage(message, self.conversation);
+                return self.conversation.postMessage(message);
             })
             .then(function() {
                 self.conversation.fetch();

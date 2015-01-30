@@ -18,6 +18,7 @@ var conversationView = Backbone.View.extend({
     },
     addOne: function(message) {
         var view = new MessageView({
+            conversation: this.model,
             model: new Message(message)
         });
         view.render();

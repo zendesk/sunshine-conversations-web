@@ -7,6 +7,11 @@ var Conversation = Backbone.Model.extend({
     idAttribute: "_id",
     urlRoot: endpoint.rootUrl + '/api/conversations/',
 
+    postMessage: function(message) {
+        var path = '/api/conversations/' + this.id + '/messages';
+        return endpoint.post(path, message.attributes);
+    },
+
     fetchPromise: function() {
         var deferred = $.Deferred();
 

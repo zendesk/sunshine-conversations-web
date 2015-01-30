@@ -1,17 +1,24 @@
+var _ = require('underscore');
 var Backbone = require('backbone');
 
 var template = require('../templates/messageView.tpl');
 
 var messageView = Backbone.View.extend({
     className: "sk-row",
+
+    initialize: function(options) {
+        this.conversation = options.conversation;
+    },
+
     render: function() {
-        var isKevin = !!(Math.floor(Math.random() * 2) === 0);
+        var isAppMaker = _.contains(this.conversation.get('appMakers'), this.model.get('authorId'));
+
         this.$el.html(template({
             message: this.model.get("text"),
-            from: isKevin ? "Kevin" : ""
+            from: isAppMaker ? "Kevin" : ""
         }));
 
-        this.$el.addClass(isKevin ? "sk-left-row" : "sk-right-row");
+        this.$el.addClass(isAppMaker ? "sk-left-row" : "sk-right-row");
         return this;
     }
 });
