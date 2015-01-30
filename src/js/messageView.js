@@ -15,7 +15,7 @@ var messageView = Backbone.View.extend({
 
         this.$el.html(template({
             message: this.model.get("text"),
-            from: isAppMaker ? "Kevin" : ""
+            from: isAppMaker ? this.model.get("name") : ""
         }));
 
         this.$el.addClass(isAppMaker ? "sk-left-row" : "sk-right-row");

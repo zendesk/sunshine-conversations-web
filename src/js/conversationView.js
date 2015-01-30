@@ -27,13 +27,10 @@ var conversationView = Backbone.View.extend({
         this.scrollToBottom();
     },
     addAll: function() {
-        this.$el.html('');
         _.each(this.model.attributes.messages, _.bind(this.addOne, this));
     },
     scrollToBottom: function() {
-        this.$el.stop().animate({
-            scrollTop: this.$el.get(0).scrollHeight
-        }, 400);
+        this.$el.scrollTop(this.$el.get(0).scrollHeight);
     }
 });
 
