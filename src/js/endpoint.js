@@ -39,7 +39,7 @@ module.exports.getConversations = function() {
     return this.get('/api/conversations?appUserId=' + this.appUserId);
 };
 
-module.exports.postMessage = function(message, messageCollection) {
-    var path = '/api/conversations/' + messageCollection.conversationId + '/messages';
+module.exports.postMessage = function(message, conversation) {
+    var path = '/api/conversations/' + conversation._id + '/messages';
     return this.post(path, message.attributes);
 };

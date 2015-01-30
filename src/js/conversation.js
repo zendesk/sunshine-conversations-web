@@ -1,14 +1,11 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var baseMethods = require('./baseMethods');
-var Message = require('./message');
 var endpoint = require('./endpoint');
 
-var MessageCollection = Backbone.Collection.extend({
-    model: Message,
-    url: function() {
-        return endpoint.rootUrl + '/api/conversations/' + this.conversationId + '/messages';
-    },
+var Conversation = Backbone.Model.extend({
+    idAttribute: "_id",
+    urlRoot: endpoint.rootUrl + '/api/conversations/',
 
     fetchPromise: function() {
         var deferred = $.Deferred();
@@ -28,5 +25,5 @@ var MessageCollection = Backbone.Collection.extend({
     }
 });
 
-_.extend(MessageCollection.prototype, baseMethods);
-module.exports = MessageCollection;
+_.extend(Conversation.prototype, baseMethods);
+module.exports = Conversation;

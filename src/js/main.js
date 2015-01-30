@@ -4,7 +4,7 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 var $ = require('jquery');
 Backbone.$ = $;
-var MessageCollection = require('./messageCollection');
+var Conversation = require('./conversation');
 var Message = require('./message');
 var ChatView = require('./chatView');
 var endpoint = require('./endpoint');
@@ -18,7 +18,7 @@ $(function() {
 
         var b = new ChatView({
             el: el,
-            model: SupportKit.messageCollection
+            model: SupportKit.conversation
         });
 
         b.render();
@@ -65,8 +65,8 @@ $(function() {
         var self = this;
         var deferred = $.Deferred();
 
-        if (self.messageCollection) {
-            deferred.resolve(self.messageCollection);
+        if (self.conversation) {
+            deferred.resolve(self.conversation);
         } else {
             endpoint.getConversations()
                 .then(function(conversations) {
@@ -81,20 +81,21 @@ $(function() {
                     });
                 })
                 .then(function(conversation) {
-                    self.messageCollection = new MessageCollection();
-                    self.messageCollection.conversationId = conversation._id;
+                    self.conversation = new Conversation(conversation);
 
                     //Begin message collcetion refresh polling
-                    self.messageCollection.on('sync', function() {
-                        setTimeout(function(){
+                    self.conversation.on('sync', function() {
+                        setTimeout(function() {
                             // fetch somehow calls add on existing message too. remove:false should help but doesn't
-                            self.messageCollection.fetch({remove: false});
+                            self.conversation.fetch({
+                                remove: false
+                            });
                         }, POLLING_INTERVAL_MS);
                     });
-                    return self.messageCollection.fetchPromise();
+                    return self.conversation.fetchPromise();
                 })
                 .then(function() {
-                    deferred.resolve(self.messageCollection);
+                    deferred.resolve(self.conversation);
                 });
         }
 
@@ -157,11 +158,10 @@ $(function() {
                     authorId: endpoint.appUserId,
                     text: text
                 });
-                message.conversationId = self.messageCollection.conversationId;
-                return endpoint.postMessage(message, self.messageCollection);
+                return endpoint.postMessage(message, self.conversation);
             })
             .then(function() {
-                self.messageCollection.fetch();
+                self.conversation.fetch();
                 return message;
             });
     };

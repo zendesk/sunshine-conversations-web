@@ -2,6 +2,7 @@ var Backbone = require('backbone');
 
 var template = require('../templates/conversationView.tpl');
 var MessageView = require('./messageView');
+var Message = require('./message');
 var _ = require('underscore');
 
 var conversationView = Backbone.View.extend({
@@ -12,20 +13,20 @@ var conversationView = Backbone.View.extend({
     render: function() {
         this.$el.html(template());
         this.addAll();
-        
+
         return this;
     },
     addOne: function(message) {
         var view = new MessageView({
-            model: message
+            model: new Message(message)
         });
         view.render();
         this.$el.append(view.el);
         this.scrollToBottom();
     },
-    addAll : function(){
+    addAll: function() {
         this.$el.html('');
-        this.model.each(this.addOne, this);
+        _.each(this.model.attributes.messages, _.bind(this.addOne, this));
     },
     scrollToBottom: function() {
         this.$el.stop().animate({

@@ -1,7 +1,5 @@
 var Backbone = require('backbone');
-
 var template = require('../templates/chatInputView.tpl');
-var MessageView = require('./messageView');
 
 var chatInputView = Backbone.View.extend({
     events: {
@@ -13,7 +11,7 @@ var chatInputView = Backbone.View.extend({
         return this;
     },
     submit: function(e) {
-        if(e){
+        if (e) {
             e.preventDefault();
         }
         var input = this.$el.find("input");
