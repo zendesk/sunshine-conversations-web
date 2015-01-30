@@ -8,6 +8,9 @@ var ChatInputView = require('./chatInputView');
 var _ = require("underscore");
 
 var ChatView = Backbone.View.extend({
+    events: {
+        "focus #sk-wrapper": "focus"
+    },
     initialize: function() {
         this.listenTo(this.model, 'change', this.open);
     },
@@ -15,7 +18,8 @@ var ChatView = Backbone.View.extend({
         this.$el.html(template());
 
         this.header = new HeaderView({
-            el: this.$el.find("#sk-header")
+            el: this.$el.find("#sk-header"),
+            model: this.model
         });
         this.conversation = new ConversationView({
             el: this.$el.find("#sk-conversation"),
@@ -39,13 +43,17 @@ var ChatView = Backbone.View.extend({
     close: function() {
         this.enableAnimation();
         this.$el.find("#sk-container").removeClass("sk-appear").addClass("sk-close");
+        this.model.resetUnread();
     },
     toggle: function() {
         this.enableAnimation();
         this.$el.find("#sk-container").toggleClass("sk-appear sk-close");
     },
+    focus: function() {
+        this.model.resetUnread();
+    },
     enableAnimation: function() {
-        this.$el.find("#sk-container").removeClass("sk-noanimation")
+        this.$el.find("#sk-container").removeClass("sk-noanimation");
     }
 });
 

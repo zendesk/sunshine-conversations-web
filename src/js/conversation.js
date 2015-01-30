@@ -41,7 +41,7 @@ var Conversation = Backbone.Model.extend({
     // 
     getLatestReadTime: function() {
         if (!this.latestReadTs) {
-            this.latestReadTs = cookie.parse(document.cookie)['sk_latestts'] || 0;
+            this.latestReadTs = parseInt(cookie.parse(document.cookie)['sk_latestts'] || 0);
         }
         return this.latestReadTs;
     },
@@ -54,9 +54,15 @@ var Conversation = Backbone.Model.extend({
     updateUnread: function() {
         var self = this;
         var latestReadTs = this.getLatestReadTime();
-        var unreadMessages = _.filter(this.get('messages'), function(message) {
-            return message.received > latestReadTs;
-        });
+        var unreadMessages = _.chain(this.get('messages'))
+            .filter(function(message) {
+                // Filter out own messages
+                return !_.contains(self.get('appUsers'), message.authorId);
+            })
+            .filter(function(message) {
+                return Math.floor(message.received) > latestReadTs;
+            })
+            .value();
 
         if (this.unread !== unreadMessages.length) {
             this.unread = unreadMessages.length;
@@ -71,11 +77,10 @@ var Conversation = Backbone.Model.extend({
         });
 
         if (latestMessage !== -Infinity) {
-            latestReadTs = latestMessage.received;
+            latestReadTs = Math.floor(latestMessage.received);
         }
-
-        this.trigger('change:unread', this.unread);
         this.setLatestReadTime(latestReadTs);
+        this.updateUnread();
     }
 });
 
