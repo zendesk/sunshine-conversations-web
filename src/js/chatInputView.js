@@ -4,7 +4,8 @@ var template = require('../templates/chatInputView.tpl');
 var chatInputView = Backbone.View.extend({
     events: {
         'submit form': 'submit',
-        'click .send': 'submit'
+        'click .send': 'submit',
+        'keyup input': 'resetUnread'
     },
     render: function() {
         this.$el.html(template());
@@ -20,6 +21,10 @@ var chatInputView = Backbone.View.extend({
             window.SupportKit.message(text);
             input.val("");
         }
+    },
+    resetUnread: function() {
+        console.log('>>resetUnread');
+        this.model.resetUnread();
     }
 });
 

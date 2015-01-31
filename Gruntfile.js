@@ -3,6 +3,7 @@
 module.exports = function(grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
     grunt.loadNpmTasks('grunt-s3');
+    grunt.loadNpmTasks('grunt-contrib-less');
 
     grunt.registerTask('runlog', function() {
         grunt.log.write('http://localhost:8282/example/example1.html');
@@ -34,7 +35,7 @@ module.exports = function(grunt) {
         },
         watch: {
             scripts: {
-                files: ['src/*/*.js', '*.html', "src/templates/*.tpl"],
+                files: ['src/*/*.js', '*.html', "src/templates/*.tpl", "src/stylesheets/*.less"],
                 tasks: ['build'],
                 options: {
                     spawn: false,
@@ -50,10 +51,17 @@ module.exports = function(grunt) {
                 dest: 'dist/supportkit.min.js'
             }
         },
+        less: {
+            dist: {
+                files: {
+                    'dist/style.css': 'src/stylesheets/main.less'
+                }
+            }
+        },
         cssmin: {
             dist: {
                 files: {
-                    'dist/style.min.css': ['src/stylesheets/style.css']
+                    'dist/style.min.css': ['dist/style.css']
                 }
             }
         },
@@ -117,7 +125,7 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('build', ['clean', 'browserify', 'replace', 'cssmin', 'str2js', 'concat', 'uglify']);
+    grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
     grunt.registerTask('deploy', ['build', 's3']);
     grunt.registerTask('run', ['runlog', 'http-server', 'watch']);
     grunt.registerTask('test', ['karma']);

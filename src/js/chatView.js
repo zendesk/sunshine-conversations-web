@@ -9,7 +9,7 @@ var _ = require("underscore");
 
 var ChatView = Backbone.View.extend({
     events: {
-        "focus #sk-wrapper": "focus"
+        "focus #sk-wrapper": "resetUnread"
     },
     initialize: function() {
         this.listenTo(this.model, 'change', this.open);
@@ -27,7 +27,8 @@ var ChatView = Backbone.View.extend({
         });
 
         this.chatInput = new ChatInputView({
-            el: this.$el.find("#sk-footer")
+            el: this.$el.find("#sk-footer"),
+            model: this.model
         });
 
         this.header.render();
@@ -49,7 +50,7 @@ var ChatView = Backbone.View.extend({
         this.enableAnimation();
         this.$el.find("#sk-container").toggleClass("sk-appear sk-close");
     },
-    focus: function() {
+    resetUnread: function() {
         this.model.resetUnread();
     },
     enableAnimation: function() {
