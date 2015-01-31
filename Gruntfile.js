@@ -4,7 +4,7 @@ module.exports = function(grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
     grunt.loadNpmTasks('grunt-s3');
     grunt.loadNpmTasks('grunt-contrib-less');
-
+    grunt.loadNpmTasks('grunt-cloudfront');
     grunt.registerTask('runlog', function() {
         grunt.log.write('http://localhost:8282/example/example1.html');
     });
@@ -106,7 +106,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-
         aws: grunt.file.readJSON('grunt-aws.json'),
         s3: {
             options: {
@@ -122,11 +121,34 @@ module.exports = function(grunt) {
                     dest: 'supportkit.min.js'
                 }]
             }
+        },
+        cloudfront: {
+            options: {
+                region: 'us-east-1', // your AWS region 
+                distributionId: "E1RI234SLR5ORA", // DistributionID where files are stored 
+                credentials: {
+                    accessKeyId: "<%= aws.key %>",
+                    secretAccessKey: '<%= aws.secret %>'
+                },
+                listInvalidations: true, // if you want to see the status of invalidations 
+                listDistributions: false, // if you want to see your distributions list in the console 
+                version: "1.0" // if you want to invalidate a specific version (file-1.0.js) 
+            },
+            prod: {
+                options: {
+                    distributionId: 'E1RI234SLR5ORA'
+                },
+                CallerReference: Date.now().toString(),
+                Paths: {
+                    Quantity: 1,
+                    Items: ['/supportkit.min.js']
+                }
+            }
         }
     });
 
     grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
-    grunt.registerTask('deploy', ['build', 's3']);
+    grunt.registerTask('deploy', ['build', 's3', 'cloudfront:prod']);
     grunt.registerTask('run', ['runlog', 'http-server', 'watch']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['browserify']);
