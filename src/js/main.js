@@ -47,9 +47,7 @@ var uuid = require('uuid');
         var self = this;
         var deferred = $.Deferred();
 
-        if (self.conversation) {
-            deferred.resolve(self.conversation);
-        } else {
+        if (self.conversation.isNew()) {
             endpoint.getConversations()
                 .then(function(conversations) {
                     if (conversations.length > 0) {
@@ -63,6 +61,9 @@ var uuid = require('uuid');
                     });
                 })
                 .then(function(conversation) {
+                    // TODO: There's no sense recreating the model here.
+                    // We should implement endpoint.getConversations() in the model
+                    // and invoke it here by doing a regular conversation.fetch()
                     self.conversation = new Conversation(conversation);
 
                     //Begin message collcetion refresh polling
@@ -79,6 +80,8 @@ var uuid = require('uuid');
                 .then(function() {
                     deferred.resolve(self.conversation);
                 });
+        } else {
+            deferred.resolve(self.conversation);
         }
 
         return deferred;
@@ -88,6 +91,7 @@ var uuid = require('uuid');
         if (_.isEmpty(this.user)) {
             return $.Deferred().resolve();
         } else {
+            this.user.properties = this.user.properties || {};
             return endpoint.put('/api/appusers/' + endpoint.appUserId, this.user);
         }
     };
@@ -97,6 +101,7 @@ var uuid = require('uuid');
         var self = this;
         options = options || {};
 
+        this.conversation = new Conversation();
         this.user = _.pick(options, 'givenName', 'surname', 'email', 'properties');
 
         if (typeof options === 'object') {
@@ -127,9 +132,13 @@ var uuid = require('uuid');
                 endpoint.appUserId = res.appUserId;
 
                 // Perform initial fetch of messages and update user profile info
-                return $.when(self._fetchMessages(), self._updateUser());
+                if (res.conversationStarted) {
+                    return $.when(self._fetchMessages.call(self), self._updateUser.call(self));
+                } else {
+                    return $.when(self._updateUser.call(self));
+                }
             })
-            .then(function(conversations) {
+            .then(function() {
                 // Tell the world we're ready
                 self.inited = true;
                 self.trigger('ready');
