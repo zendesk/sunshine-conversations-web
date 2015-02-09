@@ -21,7 +21,7 @@ var Conversation = Backbone.Model.extend({
 
     fetchPromise: function() {
         var deferred = $.Deferred();
-
+        debugger;
         this.fetch({
             success: function(result) {
                 deferred.resolve(result);

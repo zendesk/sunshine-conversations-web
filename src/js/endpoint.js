@@ -1,4 +1,4 @@
-var ROOT_URL = 'https://app.supportkit.io';
+var ROOT_URL = 'http://localhost:8091';
 
 module.exports.rootUrl = ROOT_URL;
 
