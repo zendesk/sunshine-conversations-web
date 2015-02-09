@@ -6,7 +6,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-cloudfront');
     grunt.registerTask('runlog', function() {
-        grunt.log.write('http://localhost:8282/example/example1.html');
+        grunt.log.write('http://localhost:8282/example/dev.html');
     });
 
     grunt.registerTask('awsconfig', function() {
@@ -40,7 +40,7 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: ['src/*/*.js', '*.html', "src/templates/*.tpl", "src/stylesheets/*.less"],
-                tasks: ['build'],
+                tasks: ['devbuild'],
                 options: {
                     spawn: false,
                 },
@@ -153,6 +153,7 @@ module.exports = function(grunt) {
 
 
     grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
+    grunt.registerTask('devbuild', ['clean', 'browserify', 'less', 'cssmin', 'str2js', 'concat']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
     grunt.registerTask('run', ['runlog', 'http-server', 'watch']);
     grunt.registerTask('test', ['karma']);
