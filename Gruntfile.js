@@ -9,6 +9,10 @@ module.exports = function(grunt) {
         grunt.log.write('http://localhost:8282/example/example1.html');
     });
 
+    grunt.registerTask('awsconfig', function() {
+        grunt.config.set('aws', grunt.file.readJSON('grunt-aws.json'))
+    });
+
     // Project configuration
     grunt.initConfig({
         // Metadata
@@ -106,7 +110,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-        aws: grunt.file.readJSON('grunt-aws.json'),
         s3: {
             options: {
                 key: '<%= aws.key %>',
@@ -147,8 +150,10 @@ module.exports = function(grunt) {
         }
     });
 
+
+
     grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
-    grunt.registerTask('deploy', ['build', 's3', 'cloudfront:prod']);
+    grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
     grunt.registerTask('run', ['runlog', 'http-server', 'watch']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['browserify']);
