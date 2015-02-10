@@ -61,10 +61,7 @@ var uuid = require('uuid');
                     });
                 })
                 .then(function(conversation) {
-                    // TODO: There's no sense recreating the model here.
-                    // We should implement endpoint.getConversations() in the model
-                    // and invoke it here by doing a regular conversation.fetch()
-                    self.conversation = new Conversation(conversation);
+                    self.conversation.set('_id', conversation._id);
 
                     //Begin message collcetion refresh polling
                     self.conversation.on('sync', function() {
