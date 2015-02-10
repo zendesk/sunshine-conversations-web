@@ -50,7 +50,6 @@ var uuid = require('uuid');
         if (self.conversation.isNew()) {
             endpoint.getConversations()
                 .then(function(conversations) {
-                    debugger;
                     if (conversations.length > 0) {
                         // A conversation already exists
                         return conversations[0];
@@ -62,11 +61,7 @@ var uuid = require('uuid');
                     });
                 })
                 .then(function(conversation) {
-                    // TODO: There's no sense recreating the model here.
-                    // We should implement endpoint.getConversations() in the model
-                    // and invoke it here by doing a regular conversation.fetch()
-                    debugger;
-                    self.conversation.id = conversation._id;
+                    self.conversation.set('_id', conversation._id);
 
                     //Begin message collcetion refresh polling
                     self.conversation.on('sync', function() {
@@ -132,7 +127,7 @@ var uuid = require('uuid');
             .then(function(res) {
                 var deferred = $.Deferred();
                 endpoint.appUserId = res.appUserId;
-                debugger;
+
                 // Perform initial fetch of messages and update user profile info
                 if (res.conversationStarted) {
                     return $.when(self._fetchMessages.call(self), self._updateUser.call(self));
@@ -154,14 +149,13 @@ var uuid = require('uuid');
     SupportKit.message = function(text) {
         var self = this;
         var message;
-        debugger;
+
         if (!this.inited) {
             throw new Error('Can not send messages until init has completed');
         }
 
         this._fetchMessages()
             .then(function() {
-                debugger;
                 message = new Message({
                     authorId: endpoint.appUserId,
                     text: text
@@ -169,7 +163,6 @@ var uuid = require('uuid');
                 return self.conversation.postMessage(message);
             })
             .then(function() {
-                debugger;
                 self.conversation.fetch();
                 return message;
             });
