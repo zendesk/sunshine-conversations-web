@@ -23,7 +23,6 @@ var chatInputView = Backbone.View.extend({
         }
     },
     resetUnread: function() {
-        console.log('>>resetUnread');
         this.model.resetUnread();
     }
 });
