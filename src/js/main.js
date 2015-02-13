@@ -10,6 +10,8 @@ var endpoint = require('./endpoint');
 var cookie = require('cookie');
 var uuid = require('uuid');
 
+var socket = require('./socket');
+
 /**
  * expose our sdk
  */
@@ -64,17 +66,18 @@ var uuid = require('uuid');
                     self.conversation.set('_id', conversation._id);
 
                     //Begin message collcetion refresh polling
-                    self.conversation.on('sync', function() {
-                        setTimeout(function() {
-                            // fetch somehow calls add on existing message too. remove:false should help but doesn't
-                            self.conversation.fetch({
-                                remove: false
-                            });
-                        }, POLLING_INTERVAL_MS);
-                    });
+                    // self.conversation.on('sync', function() {
+                    //     setTimeout(function() {
+                    //         // fetch somehow calls add on existing message too. remove:false should help but doesn't
+                    //         self.conversation.fetch({
+                    //             remove: false
+                    //         });
+                    //     }, POLLING_INTERVAL_MS);
+                    // });
                     return self.conversation.fetchPromise();
                 })
                 .then(function() {
+                    socket.listen(endpoint.appUserId);
                     deferred.resolve(self.conversation);
                 });
         } else {
