@@ -1,5 +1,6 @@
 var io = require('socket.io-client');
 var endpoint = require('./endpoint');
+var vent = require('./vent');
 
 var host = endpoint.rootUrl.replace(/^http/, 'ws');
 
@@ -14,16 +15,12 @@ module.exports.listen = function(appUserId) {
             appUserId: endpoint.appUserId
         });
 
-        socket.on('authenticate', function() {
-            console.log('authenticated with appUserId', appUserId);
-        });
-
         socket.on('authenticate_failed', function() {
             console.error('supportkit authentication failed');
         });
 
         socket.on('message:' + endpoint.appUserId, function(message) {
-            console.log('Received message: ', message.text);
+            vent.trigger('message', message);
         });
     });
 };
