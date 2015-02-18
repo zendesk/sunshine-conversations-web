@@ -41,6 +41,12 @@ var Conversation = Backbone.Model.extend({
         var messageArray = _.clone(this.get('messages') || []);
         messageArray.push(message);
         this.set('messages', messageArray);
+
+        if (!_.contains(this.get('appMakers'), message.authorId)) {
+            var appMakersArray = _.clone(this.get('appMakers') || []);
+            appMakersArray.push(message.authorId);
+            this.set('appMakers', appMakersArray);
+        }
     },
 
     //
