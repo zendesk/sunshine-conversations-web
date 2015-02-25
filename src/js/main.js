@@ -38,7 +38,7 @@ var uuid = require('uuid');
     _.extend(SupportKit, Backbone.Events);
 
     // If jQuery has been included, grab a reference to it.
-    if (typeof(root.$) !== "undefined") {
+    if (typeof (root.$) !== "undefined") {
         SupportKit.$ = root.$;
     }
 
@@ -122,7 +122,11 @@ var uuid = require('uuid');
         this.deviceId = deviceId;
 
         endpoint.post('/api/appboot', {
-            deviceId: this.deviceId
+            deviceId: this.deviceId,
+            deviceInfo: {
+                URL: document.URL,
+                userAgent: navigator.userAgent
+            }
         })
             .then(function(res) {
                 var deferred = $.Deferred();
