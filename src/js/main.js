@@ -124,7 +124,7 @@ var uuid = require('uuid');
         endpoint.post('/api/appboot', {
             deviceId: this.deviceId,
             deviceInfo: {
-                URL: document.URL,
+                URL: document.location.host,
                 userAgent: navigator.userAgent
             }
         })
