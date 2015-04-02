@@ -9,6 +9,7 @@ var cookie = require('cookie');
 var uuid = require('uuid');
 
 var socket = require('./socket');
+var faye = require('./faye');
 
 /**
  * expose our sdk
