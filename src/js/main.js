@@ -8,7 +8,6 @@ var endpoint = require('./endpoint');
 var cookie = require('cookie');
 var uuid = require('uuid');
 
-var socket = require('./socket');
 var faye = require('./faye');
 
 /**
@@ -66,7 +65,7 @@ var faye = require('./faye');
                     return self.conversation.fetchPromise();
                 })
                 .then(function() {
-                    socket.listen(endpoint.appUserId);
+                    faye.init(self.conversation.id);
                     deferred.resolve(self.conversation);
                 });
         } else {
