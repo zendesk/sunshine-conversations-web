@@ -3,6 +3,7 @@ var Backbone = require('backbone');
 var baseMethods = require('./baseMethods');
 var endpoint = require('./endpoint');
 var cookie = require('cookie');
+var vent = require('./vent');
 
 var Conversation = Backbone.Model.extend({
     idAttribute: "_id",
@@ -12,6 +13,7 @@ var Conversation = Backbone.Model.extend({
         this.unread = 0;
         this.updateUnread();
         this.on('change', this.updateUnread);
+        vent.on('message', _.bind(this.receiveMessage, this));
     },
 
     postMessage: function(message) {
@@ -33,6 +35,18 @@ var Conversation = Backbone.Model.extend({
         });
 
         return deferred;
+    },
+
+    receiveMessage: function(message) {
+        var messageArray = _.clone(this.get('messages') || []);
+        messageArray.push(message);
+        this.set('messages', messageArray);
+
+        if (!_.contains(this.get('appMakers'), message.authorId)) {
+            var appMakersArray = _.clone(this.get('appMakers') || []);
+            appMakersArray.push(message.authorId);
+            this.set('appMakers', appMakersArray);
+        }
     },
 
     //

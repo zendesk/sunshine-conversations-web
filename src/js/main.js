@@ -1,5 +1,3 @@
-var POLLING_INTERVAL_MS = 5000;
-
 var Backbone = require('backbone');
 var _ = require('underscore');
 var $ = require('jquery');
@@ -9,6 +7,8 @@ var Message = require('./message');
 var endpoint = require('./endpoint');
 var cookie = require('cookie');
 var uuid = require('uuid');
+
+var faye = require('./faye');
 
 /**
  * expose our sdk
@@ -62,19 +62,10 @@ var uuid = require('uuid');
                 })
                 .then(function(conversation) {
                     self.conversation.set('_id', conversation._id);
-
-                    //Begin message collcetion refresh polling
-                    self.conversation.on('sync', function() {
-                        setTimeout(function() {
-                            // fetch somehow calls add on existing message too. remove:false should help but doesn't
-                            self.conversation.fetch({
-                                remove: false
-                            });
-                        }, POLLING_INTERVAL_MS);
-                    });
                     return self.conversation.fetchPromise();
                 })
                 .then(function() {
+                    faye.init(self.conversation.id);
                     deferred.resolve(self.conversation);
                 });
         } else {
