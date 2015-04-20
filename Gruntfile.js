@@ -75,7 +75,7 @@ module.exports = function(grunt) {
                 dest: 'dist/supportkit.js',
                 replacements: [{
                     from: /var ROOT_URL = '.*';/,
-                    to: 'var ROOT_URL = "https://app.supportkit.io";'
+                    to: 'var ROOT_URL = "https://sdk.supportkit.io";'
                 }]
             }
         },
