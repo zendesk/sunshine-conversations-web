@@ -75,7 +75,7 @@ module.exports = function(grunt) {
                 dest: 'dist/supportkit.js',
                 replacements: [{
                     from: /var ROOT_URL = '.*';/,
-                    to: 'var ROOT_URL = "https://app.supportkit.io";'
+                    to: 'var ROOT_URL = "https://sdk.supportkit.io";'
                 }]
             }
         },
@@ -87,7 +87,7 @@ module.exports = function(grunt) {
                 showDir: true,
                 autoIndex: true,
                 ext: "html",
-                runInBackground: true
+                runInBackground: false
             }
         },
         str2js: {
@@ -125,6 +125,12 @@ module.exports = function(grunt) {
                 }]
             }
         },
+        concurrent: {
+            all: ['http-server', 'watch'],
+            options: {
+                logConcurrentOutput: true
+            }
+        },
         cloudfront: {
             options: {
                 region: 'us-east-1', // your AWS region 
@@ -155,7 +161,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'less', 'cssmin', 'str2js', 'concat']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
-    grunt.registerTask('run', ['runlog', 'http-server', 'watch']);
+    grunt.registerTask('run', ['runlog', 'concurrent:all']);
     grunt.registerTask('test', ['karma']);
-    grunt.registerTask('default', ['browserify']);
+    grunt.registerTask('default', ['run']);
 };

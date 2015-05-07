@@ -1,14 +1,14 @@
-var POLLING_INTERVAL_MS = 5000;
-
 var Backbone = require('backbone');
 var _ = require('underscore');
-var $ = require('jquery');
-Backbone.$ = $;
+var jQuery = require('jquery');
+Backbone.$ = jQuery;
 var Conversation = require('./conversation');
 var Message = require('./message');
 var endpoint = require('./endpoint');
 var cookie = require('cookie');
 var uuid = require('uuid');
+
+var faye = require('./faye');
 
 /**
  * expose our sdk
@@ -38,14 +38,14 @@ var uuid = require('uuid');
     _.extend(SupportKit, Backbone.Events);
 
     // If jQuery has been included, grab a reference to it.
-    if (typeof (root.$) !== "undefined") {
-        SupportKit.$ = root.$;
+    if (typeof (root.jQuery) !== "undefined") {
+        SupportKit.jQuery = root.jQuery;
     }
 
     // Create a conversation if one does not already exist
     SupportKit._fetchMessages = function() {
         var self = this;
-        var deferred = $.Deferred();
+        var deferred = jQuery.Deferred();
 
         if (self.conversation.isNew()) {
             endpoint.getConversations()
@@ -62,19 +62,10 @@ var uuid = require('uuid');
                 })
                 .then(function(conversation) {
                     self.conversation.set('_id', conversation._id);
-
-                    //Begin message collcetion refresh polling
-                    self.conversation.on('sync', function() {
-                        setTimeout(function() {
-                            // fetch somehow calls add on existing message too. remove:false should help but doesn't
-                            self.conversation.fetch({
-                                remove: false
-                            });
-                        }, POLLING_INTERVAL_MS);
-                    });
                     return self.conversation.fetchPromise();
                 })
                 .then(function() {
+                    faye.init(self.conversation.id);
                     deferred.resolve(self.conversation);
                 });
         } else {
@@ -86,7 +77,7 @@ var uuid = require('uuid');
 
     SupportKit._updateUser = function() {
         if (_.isEmpty(this.user)) {
-            return $.Deferred().resolve();
+            return jQuery.Deferred().resolve();
         } else {
             this.user.properties = this.user.properties || {};
             return endpoint.put('/api/appusers/' + endpoint.appUserId, this.user);
@@ -129,14 +120,14 @@ var uuid = require('uuid');
             }
         })
             .then(function(res) {
-                var deferred = $.Deferred();
+                var deferred = jQuery.Deferred();
                 endpoint.appUserId = res.appUserId;
 
                 // Perform initial fetch of messages and update user profile info
                 if (res.conversationStarted) {
-                    return $.when(self._fetchMessages.call(self), self._updateUser.call(self));
+                    return jQuery.when(self._fetchMessages.call(self), self._updateUser.call(self));
                 } else {
-                    return $.when(self._updateUser.call(self));
+                    return jQuery.when(self._updateUser.call(self));
                 }
             })
             .then(function() {
