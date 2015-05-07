@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
-var $ = require('jquery');
-Backbone.$ = $;
+var jQuery = require('jquery');
+Backbone.$ = jQuery;
 var Conversation = require('./conversation');
 var Message = require('./message');
 var endpoint = require('./endpoint');
@@ -38,14 +38,14 @@ var faye = require('./faye');
     _.extend(SupportKit, Backbone.Events);
 
     // If jQuery has been included, grab a reference to it.
-    if (typeof (root.$) !== "undefined") {
-        SupportKit.$ = root.$;
+    if (typeof (root.jQuery) !== "undefined") {
+        SupportKit.jQuery = root.jQuery;
     }
 
     // Create a conversation if one does not already exist
     SupportKit._fetchMessages = function() {
         var self = this;
-        var deferred = $.Deferred();
+        var deferred = jQuery.Deferred();
 
         if (self.conversation.isNew()) {
             endpoint.getConversations()
@@ -77,7 +77,7 @@ var faye = require('./faye');
 
     SupportKit._updateUser = function() {
         if (_.isEmpty(this.user)) {
-            return $.Deferred().resolve();
+            return jQuery.Deferred().resolve();
         } else {
             this.user.properties = this.user.properties || {};
             return endpoint.put('/api/appusers/' + endpoint.appUserId, this.user);
@@ -120,14 +120,14 @@ var faye = require('./faye');
             }
         })
             .then(function(res) {
-                var deferred = $.Deferred();
+                var deferred = jQuery.Deferred();
                 endpoint.appUserId = res.appUserId;
 
                 // Perform initial fetch of messages and update user profile info
                 if (res.conversationStarted) {
-                    return $.when(self._fetchMessages.call(self), self._updateUser.call(self));
+                    return jQuery.when(self._fetchMessages.call(self), self._updateUser.call(self));
                 } else {
-                    return $.when(self._updateUser.call(self));
+                    return jQuery.when(self._updateUser.call(self));
                 }
             })
             .then(function() {

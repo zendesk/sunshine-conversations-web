@@ -12,9 +12,9 @@ var ChatView = require('./chatView');
 
 
     SupportKit.on('ready', function() {
-        $(function() {
+        jQuery(function() {
             injectCss();
-            var el = $("<div/>").appendTo("body");
+            var el = jQuery("<div/>").appendTo("body");
 
             ui.chatView = new ChatView({
                 el: el,
@@ -29,8 +29,8 @@ var ChatView = require('./chatView');
 
     function injectCss() {
         var styleId = "sk-style";
-        if (!$("#" + styleId).length && SupportKit && SupportKit['dist/style.min.css']) {
-            $("<style>").attr({
+        if (!jQuery("#" + styleId).length && SupportKit && SupportKit['dist/style.min.css']) {
+            jQuery("<style>").attr({
                 id: styleId
             }).appendTo("body").text(SupportKit['dist/style.min.css']);
         }
