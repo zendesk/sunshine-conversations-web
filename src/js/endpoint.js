@@ -7,8 +7,8 @@ module.exports.appToken = undefined;
 module.exports.appUserId = undefined;
 
 module.exports._rest = function(method, path, body) {
-    var deferred = $.Deferred();
-    $.ajax({
+    var deferred = jQuery.Deferred();
+    jQuery.ajax({
         url: this.rootUrl + path,
         type: method,
         headers: {
