@@ -1,13 +1,13 @@
 var Marionette = require('backbone.marionette'),
     _ = require("underscore");
 
-var template = require('../../templates/chatView.tpl');
+var template = require('../../templates/chat.tpl');
 
 var HeaderView = require('./header-view'),
     ConversationView = require('./conversation-view'),
     ChatInputView = require('./chat-input-view');
 
-var ChatView = Marionette.LayoutView.extend({
+module.exports = Marionette.LayoutView.extend({
     id: 'sk-container',
 
     template: template,
@@ -49,5 +49,3 @@ var ChatView = Marionette.LayoutView.extend({
         this.$el.removeClass("sk-noanimation");
     }
 });
-
-module.exports = ChatView;

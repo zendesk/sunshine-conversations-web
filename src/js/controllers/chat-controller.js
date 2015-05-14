@@ -6,10 +6,14 @@ var Backbone = require('backbone'),
 
 var ViewController = require('view-controller');
 
+var endpoint = require('../endpoint'),
+    faye = require('../faye');
+
 var ChatView = require('../views/chat-view'),
     HeaderView = require('../views/header-view'),
-    ConversationView = require('../views/conversation-view'),
-    ChatInputView = require('../views/chat-input-view');
+    ConversationView = require('../views/conversation-view');
+
+var ChatInputController = require('../controllers/chat-input-controller');
 
 module.exports = ViewController.extend({
     viewClass: ChatView,
@@ -36,22 +40,44 @@ module.exports = ViewController.extend({
     },
 
     onRender: function() {
-        this.header = new HeaderView({
-            el: this.view.ui.header,
-            model: this.model
-        });
-        this.conversation = new ConversationView({
-            el: this.view.ui.conversation,
-            model: this.model
-        });
+        this.collection.fetch()
+            .then(function() {
+                return this.collection
+                    ? this.collection.at(0)
+                    : this.collection.create({
+                        appUserId: endpoint.appUserId
+                    }, {
+                        wait: true
+                    });
+            }.bind(this))
+            .then(function(conversation) {
+                faye.init(conversation.id);
+                return conversation;
+            })
+            .then(function(conversation) {
+                this.model = conversation;
 
-        this.chatInput = new ChatInputView({
-            el: this.view.ui.footer,
-            model: this.model
-        });
+                this.headerView = new HeaderView({
+                    el: this.view.ui.header,
+                    model: conversation
+                });
 
-        this.header.render();
-        this.conversation.render();
-        this.chatInput.render();
+                this.conversationView = new ConversationView({
+                    el: this.view.ui.conversation,
+                    model: conversation,
+                    collection: conversation.get('messages')
+                });
+
+                this.chatInputController = new ChatInputController({
+                    viewOptions: {
+                        el: this.view.ui.footer
+                    },
+                    model: conversation
+                });
+
+                this.headerView.render();
+                this.conversationView.render();
+                this.chatInputController.getView().render();
+            }.bind(this));
     }
 });

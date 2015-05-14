@@ -1,30 +1,32 @@
-var Backbone = require('backbone');
-var template = require('../../templates/chatInputView.tpl');
+var Marionette = require('backbone.marionette');
+var template = require('../../templates/chat-input.tpl');
 
-var chatInputView = Backbone.View.extend({
+module.exports = Marionette.ItemView.extend({
+    template: template,
+
     events: {
         'submit form': 'submit',
         'click .send': 'submit',
         'keyup input': 'resetUnread'
     },
-    render: function() {
-        this.$el.html(template());
-        return this;
+
+    triggers: {
+        'submit @ui.form': 'message:send',
+        'click @ui.send': 'message:send',
+        'keyup @ui.input': 'message:read'
     },
-    submit: function(e) {
-        if (e) {
-            e.preventDefault();
-        }
-        var input = this.$el.find("input");
-        var text = input.val().trim();
-        if (text.length > 0) {
-            window.SupportKit.message(text);
-            input.val("");
-        }
+
+    ui: {
+        input: '[data-ui-input]',
+        form: '[data-ui-form]',
+        sendButton: '[data-ui-send]'
     },
-    resetUnread: function() {
-        this.model.resetUnread();
+
+    getValue: function() {
+        return this.ui.input.val();
+    },
+
+    resetValue: function() {
+        this.ui.input.val('');
     }
 });
-
-module.exports = chatInputView;

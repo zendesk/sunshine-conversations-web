@@ -1,48 +1,45 @@
-var _ = require('underscore');
-var Backbone = require('backbone');
-var baseMethods = require('../baseMethods');
-var endpoint = require('../endpoint');
-var cookie = require('cookie');
+'use strict';
+
+var _ = require('underscore'),
+    Backbone = require('backbone'),
+    cookie = require('cookie'),
+    url = require('url');
+
+var BaseModel = require('./base-model'),
+    Message = require('./message');
+
 var vent = require('../vent');
 
-var Conversation = Backbone.Model.extend({
-    idAttribute: "_id",
-    urlRoot: endpoint.rootUrl + '/api/conversations/',
+module.exports = BaseModel.extend({
+    idAttribute: '_id',
+
+    relations: [
+        {
+            type: Backbone.HasMany,
+            key: 'messages',
+            relatedModel: Message,
+            reverseRelation: {
+                key: 'conversation'
+            },
+            collectionOptions: function(model) {
+                return {
+                    url: url.resolve(model.url(), '/messages/')
+                };
+            }
+        }
+    ],
 
     initialize: function() {
         this.unread = 0;
         this.updateUnread();
-        this.on('change', this.updateUnread);
-        vent.on('message', _.bind(this.receiveMessage, this));
-    },
-
-    postMessage: function(message) {
-        var path = '/api/conversations/' + this.id + '/messages';
-        return endpoint.post(path, message.attributes);
-    },
-
-    fetchPromise: function() {
-        var deferred = jQuery.Deferred();
-        this.fetch({
-            success: function(result) {
-                deferred.resolve(result);
-            },
-            error: function(err) {
-                deferred.reject(err);
-            },
-            // fetch somehow calls add on existing message too. remove:false should help but doesn't
-            remove: false
-        });
-
-        return deferred;
+        this.on('change', this.updateUnread, this);
+        vent.on('message', this.receiveMessage, this);
     },
 
     receiveMessage: function(message) {
-        var messageArray = _.clone(this.get('messages') || []);
-        messageArray.push(message);
-        this.set('messages', messageArray);
+        this.get('messages').add(message);
 
-        if (!_.contains(this.get('appMakers'), message.authorId)) {
+        if (!_.contains(this.get('appMakers'), message.get('authorId'))) {
             var appMakersArray = _.clone(this.get('appMakers') || []);
             appMakersArray.push(message.authorId);
             this.set('appMakers', appMakersArray);
@@ -66,13 +63,13 @@ var Conversation = Backbone.Model.extend({
 
     updateUnread: function() {
         var latestReadTs = this.getLatestReadTime();
-        var unreadMessages = _.chain(this.get('messages'))
+        var unreadMessages = this.get('messages').chain()
             .filter(function(message) {
                 // Filter out own messages
-                return !_.contains(this.get('appUsers'), message.authorId);
+                return !_.contains(this.get('appUsers'), message.get('authorId'));
             }.bind(this))
             .filter(function(message) {
-                return Math.floor(message.received) > latestReadTs;
+                return Math.floor(message.get('received')) > latestReadTs;
             })
             .value();
 
@@ -95,6 +92,3 @@ var Conversation = Backbone.Model.extend({
         this.updateUnread();
     }
 });
-
-_.extend(Conversation.prototype, baseMethods);
-module.exports = Conversation;

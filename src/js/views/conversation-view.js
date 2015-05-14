@@ -1,38 +1,19 @@
 var Backbone = require('backbone'),
+    Marionette = require('backbone.marionette'),
     _ = require('underscore');
 
-var template = require('../../templates/conversationView.tpl');
+var template = require('../../templates/conversation.tpl');
 
 var MessageView = require('./message-view'),
     Message = require('../models/message');
 
-var conversationView = Backbone.View.extend({
-    initialize: function() {
-        this.model.on("add", _.bind(this.addOne, this));
-        this.model.on("reset", _.bind(this.addAll, this));
-        this.listenTo(this.model, 'change', this.render);
-    },
-    render: function() {
-        this.$el.html(template());
-        this.addAll();
+module.exports = Marionette.CompositeView.extend({
+    childView: MessageView,
+    template: template,
 
-        return this;
-    },
-    addOne: function(message) {
-        var view = new MessageView({
-            conversation: this.model,
-            model: new Message(message)
-        });
-        view.render();
-        this.$el.append(view.el);
-        this.scrollToBottom();
-    },
-    addAll: function() {
-        _.each(this.model.attributes.messages, _.bind(this.addOne, this));
-    },
+    childViewContainer: '[data-ui-messages]',
+
     scrollToBottom: function() {
         this.$el.scrollTop(this.$el.get(0).scrollHeight);
     }
 });
-
-module.exports = conversationView;

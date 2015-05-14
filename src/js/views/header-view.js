@@ -1,8 +1,8 @@
 var Backbone = require('backbone');
 
-var template = require('../../templates/headerView.tpl');
+var template = require('../../templates/header.tpl');
 
-var headerView = Backbone.View.extend({
+module.exports = Backbone.View.extend({
     events: {
         "click": "toggle"
     },
@@ -26,5 +26,3 @@ var headerView = Backbone.View.extend({
         e.stopPropagation();
     }
 });
-
-module.exports = headerView;

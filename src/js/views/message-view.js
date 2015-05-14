@@ -1,26 +1,23 @@
 var _ = require('underscore'),
-    Backbone = require('backbone');
+    Marionette = require('backbone.marionette');
 
-var template = require('../../templates/messageView.tpl');
+var template = require('../../templates/message.tpl');
 
-var messageView = Backbone.View.extend({
-    className: "sk-row",
-
-    initialize: function(options) {
-        this.conversation = options.conversation;
+module.exports = Marionette.ItemView.extend({
+    template: template,
+    className: function() {
+        return 'sk-row ' + (this._isAppMaker() ? 'sk-left-row' : 'sk-right-row');
     },
 
-    render: function() {
-        var isAppMaker = _.contains(this.conversation.get('appMakers'), this.model.get('authorId'));
+    serializeData: function() {
+        var data = Marionette.ItemView.prototype.serializeData.call(this);
+        return _(data).extend({
+            name: this._isAppMaker() ? data.name : ''
+        });
+    },
 
-        this.$el.html(template({
-            message: this.model.get("text"),
-            from: isAppMaker ? this.model.get("name") : ""
-        }));
-
-        this.$el.addClass(isAppMaker ? "sk-left-row" : "sk-right-row");
-        return this;
+    _isAppMaker: function() {
+        var appMakers = this.model.get('conversation').get('appMakers');
+        return _.contains(appMakers, this.model.get('authorId'));
     }
 });
-
-module.exports = messageView;

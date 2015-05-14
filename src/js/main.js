@@ -5,16 +5,18 @@ require('./bootstrap');
 var Backbone = require('backbone'),
     Marionette = require('backbone.marionette'),
     _ = require('underscore'),
-    $ = require('jquery');
+    $ = require('jquery'),
+    cookie = require('cookie'),
+    uuid = require('uuid');
+
 
 var endpoint = require('./endpoint'),
-    cookie = require('cookie'),
-    uuid = require('uuid'),
+    vent = require('./vent'),
     faye = require('./faye');
 
 var ChatController = require('./controllers/chat-controller'),
     Message = require('./models/message'),
-    Conversation = require('./models/conversation');
+    Conversations = require('./collections/conversations');
 
 // appends the compile stylesheet to the HEAD
 require('../stylesheets/main.less');
@@ -31,48 +33,19 @@ var SupportKit = Marionette.Object.extend({
             toggle: this.open.bind(this)
         };
 
-        this.conversation = new Conversation();
+        this.conversations = new Conversations();
 
         this.chatController = new ChatController({
-            model: this.conversation
+            collection: this.conversations
         });
+
+        vent.on('message', this.message, this);
     },
 
     _checkReady: function(message) {
         if (!this.ready) {
             throw new Error(message || "Can't use this function until the SDK is ready.");
         }
-    },
-
-    _fetchMessages: function() {
-        var deferred = $.Deferred();
-
-        if (this.conversation.isNew()) {
-            endpoint.getConversations()
-                .then(function(conversations) {
-                    if (conversations.length > 0) {
-                        // A conversation already exists
-                        return conversations[0];
-                    }
-
-                    // No conversation created yet, make one
-                    return endpoint.post('/api/conversations', {
-                        appUserId: endpoint.appUserId
-                    });
-                }.bind(this))
-                .then(function(conversation) {
-                    this.conversation.set('_id', conversation._id);
-                    return this.conversation.fetchPromise();
-                }.bind(this))
-                .then(function() {
-                    faye.init(this.conversation.id);
-                    deferred.resolve(this.conversation);
-                }.bind(this));
-        } else {
-            deferred.resolve(this.conversation);
-        }
-
-        return deferred;
     },
 
     _updateUser: function() {
@@ -118,15 +91,8 @@ var SupportKit = Marionette.Object.extend({
             }
         })
             .then(function(res) {
-                var deferred = $.Deferred();
                 endpoint.appUserId = res.appUserId;
-
-                // Perform initial fetch of messages and update user profile info
-                if (res.conversationStarted) {
-                    return $.when(this._fetchMessages, this._updateUser.bind(this));
-                } else {
-                    return $.when(this._updateUser.bind(this));
-                }
+                return this._updateUser.bind(this);
             }.bind(this))
             .then(function() {
                 // Tell the world we're ready
@@ -141,20 +107,10 @@ var SupportKit = Marionette.Object.extend({
     message: function(text) {
         this._checkReady('Can not send messages until init has completed');
 
-        var message;
-
-        this._fetchMessages()
-            .then(function() {
-                message = new Message({
-                    authorId: endpoint.appUserId,
-                    text: text
-                });
-                return this.conversation.postMessage(message);
-            }.bind(this))
-            .then(function() {
-                this.conversation.fetch();
-                return message;
-            }.bind(this));
+        return this.conversation.get('messages').create({
+            authorId: endpoint.appUserId,
+            text: text
+        });
     },
 
     open: function() {

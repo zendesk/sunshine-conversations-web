@@ -1,13 +1,11 @@
-var _ = require('underscore');
-var Backbone = require('backbone');
-var baseMethods = require('../baseMethods');
-var endpoint = require('../endpoint');
+var _ = require('underscore'),
+    url = require('url');
 
-var Message = Backbone.Model.extend({
+var BaseModel = require('./base-model'),
+    endpoint = require('../endpoint');
+
+module.exports = BaseModel.extend({
     url: function() {
-        return endpoint.rootUrl + '/api/conversations/' + this.conversationId + '/messages';
+        return url.resolve(endpoint.rootUrl, '/api/conversations/', this.conversationId, '/messages');
     }
 });
-
-_.extend(Message.prototype, baseMethods);
-module.exports = Message;
