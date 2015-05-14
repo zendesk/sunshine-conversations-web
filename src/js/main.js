@@ -80,12 +80,6 @@ var faye = require('./faye');
             return jQuery.Deferred().resolve();
         } else {
             this.user.properties = this.user.properties || {};
-            _.extend(this.user.properties, {
-                referrer: document.referrer,
-                browserLanguage: navigator.language,
-                currentUrl: document.location.href,
-                currentTitle: document.title
-            });
             return endpoint.put('/api/appusers/' + endpoint.appUserId, this.user);
         }
     };
@@ -122,7 +116,11 @@ var faye = require('./faye');
             deviceId: this.deviceId,
             deviceInfo: {
                 URL: document.location.host,
-                userAgent: navigator.userAgent
+                userAgent: navigator.userAgent,
+                referrer: document.referrer,
+                browserLanguage: navigator.language,
+                currentUrl: document.location.href,
+                currentTitle: document.title
             }
         })
             .then(function(res) {
