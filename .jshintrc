@@ -130,7 +130,8 @@
         "sinon",
         "eventFire",
         "alert",
-        "module"
+        "module",
+        "jQuery"
     ],
     "maxparams"     : 30,
     "maxdepth"      : 5,

@@ -15,7 +15,7 @@ var faye = require('./faye');
  */
 (function(root) {
     root.SupportKit = root.SupportKit || {};
-    root.SupportKit.VERSION = "js1.0.0";
+    root.SupportKit.VERSION = 'js1.0.0';
 }(window));
 
 /**
@@ -38,7 +38,7 @@ var faye = require('./faye');
     _.extend(SupportKit, Backbone.Events);
 
     // If jQuery has been included, grab a reference to it.
-    if (typeof (root.jQuery) !== "undefined") {
+    if (typeof (root.jQuery) !== 'undefined') {
         SupportKit.jQuery = root.jQuery;
     }
 
@@ -80,6 +80,12 @@ var faye = require('./faye');
             return jQuery.Deferred().resolve();
         } else {
             this.user.properties = this.user.properties || {};
+            _.extend(this.user.properties, {
+                referrer: document.referrer,
+                browserLanguage: navigator.language,
+                currentUrl: document.location.href,
+                currentTitle: document.title
+            });
             return endpoint.put('/api/appusers/' + endpoint.appUserId, this.user);
         }
     };
