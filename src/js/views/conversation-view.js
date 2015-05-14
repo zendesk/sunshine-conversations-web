@@ -1,9 +1,10 @@
-var Backbone = require('backbone');
+var Backbone = require('backbone'),
+    _ = require('underscore');
 
-var template = require('../templates/conversationView.tpl');
-var MessageView = require('./messageView');
-var Message = require('./message');
-var _ = require('underscore');
+var template = require('../../templates/conversationView.tpl');
+
+var MessageView = require('./message-view'),
+    Message = require('../models/message');
 
 var conversationView = Backbone.View.extend({
     initialize: function() {

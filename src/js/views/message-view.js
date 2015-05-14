@@ -1,7 +1,7 @@
-var _ = require('underscore');
-var Backbone = require('backbone');
+var _ = require('underscore'),
+    Backbone = require('backbone');
 
-var template = require('../templates/messageView.tpl');
+var template = require('../../templates/messageView.tpl');
 
 var messageView = Backbone.View.extend({
     className: "sk-row",

@@ -1,6 +1,6 @@
 var Backbone = require('backbone');
 
-var template = require('../templates/headerView.tpl');
+var template = require('../../templates/headerView.tpl');
 
 var headerView = Backbone.View.extend({
     events: {
@@ -18,10 +18,12 @@ var headerView = Backbone.View.extend({
         return this;
     },
 
-    toggle: function() {
+    toggle: function(e) {
         if (window.SupportKit && window.SupportKit.ui && window.SupportKit.ui.toggle) {
             window.SupportKit.ui.toggle();
         }
+
+        e.stopPropagation();
     }
 });
 

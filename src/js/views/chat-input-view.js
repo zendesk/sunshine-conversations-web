@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var template = require('../templates/chatInputView.tpl');
+var template = require('../../templates/chatInputView.tpl');
 
 var chatInputView = Backbone.View.extend({
     events: {

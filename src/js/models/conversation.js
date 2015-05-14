@@ -1,9 +1,9 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var baseMethods = require('./baseMethods');
-var endpoint = require('./endpoint');
+var baseMethods = require('../baseMethods');
+var endpoint = require('../endpoint');
 var cookie = require('cookie');
-var vent = require('./vent');
+var vent = require('../vent');
 
 var Conversation = Backbone.Model.extend({
     idAttribute: "_id",
@@ -51,7 +51,7 @@ var Conversation = Backbone.Model.extend({
 
     //
     // Unread count
-    // 
+    //
     getLatestReadTime: function() {
         if (!this.latestReadTs) {
             this.latestReadTs = parseInt(cookie.parse(document.cookie)['sk_latestts'] || 0);
@@ -65,13 +65,12 @@ var Conversation = Backbone.Model.extend({
     },
 
     updateUnread: function() {
-        var self = this;
         var latestReadTs = this.getLatestReadTime();
         var unreadMessages = _.chain(this.get('messages'))
             .filter(function(message) {
                 // Filter out own messages
-                return !_.contains(self.get('appUsers'), message.authorId);
-            })
+                return !_.contains(this.get('appUsers'), message.authorId);
+            }.bind(this))
             .filter(function(message) {
                 return Math.floor(message.received) > latestReadTs;
             })

@@ -1,53 +1,53 @@
-var Backbone = require('backbone');
-var _ = require('underscore');
-var jQuery = require('jquery');
-Backbone.$ = jQuery;
-var Conversation = require('./conversation');
-var Message = require('./message');
-var endpoint = require('./endpoint');
-var cookie = require('cookie');
-var uuid = require('uuid');
+'use strict';
 
-var faye = require('./faye');
+require('./bootstrap');
 
-/**
- * expose our sdk
- */
-(function(root) {
-    root.SupportKit = root.SupportKit || {};
-    root.SupportKit.VERSION = "js1.0.0";
-}(window));
+var Backbone = require('backbone'),
+    Marionette = require('backbone.marionette'),
+    _ = require('underscore'),
+    $ = require('jquery');
 
-/**
- * main sdk
- */
-(function(root) {
+var endpoint = require('./endpoint'),
+    cookie = require('cookie'),
+    uuid = require('uuid'),
+    faye = require('./faye');
 
-    root.SupportKit = root.SupportKit || {};
+var ChatController = require('./controllers/chat-controller'),
+    Message = require('./models/message'),
+    Conversation = require('./models/conversation');
 
-    /**
-     * Contains all SupportKit API classes and functions.
-     * @name SupportKit
-     * @namespace
-     *
-     * Contains all SupportKit API classes and functions.
-     */
-    var SupportKit = root.SupportKit;
+// appends the compile stylesheet to the HEAD
+require('../stylesheets/main.less');
 
-    // Imbue SupportKit with trigger and on powers
-    _.extend(SupportKit, Backbone.Events);
+var SupportKit = Marionette.Object.extend({
+    VERSION: 'js1.1.0',
 
-    // If jQuery has been included, grab a reference to it.
-    if (typeof (root.jQuery) !== "undefined") {
-        SupportKit.jQuery = root.jQuery;
-    }
+    initialize: function() {
 
-    // Create a conversation if one does not already exist
-    SupportKit._fetchMessages = function() {
-        var self = this;
-        var deferred = jQuery.Deferred();
+        // for backward compatibility
+        this.ui = {
+            open: this.open.bind(this),
+            close: this.open.bind(this),
+            toggle: this.open.bind(this)
+        };
 
-        if (self.conversation.isNew()) {
+        this.conversation = new Conversation();
+
+        this.chatController = new ChatController({
+            model: this.conversation
+        });
+    },
+
+    _checkReady: function(message) {
+        if (!this.ready) {
+            throw new Error(message || "Can't use this function until the SDK is ready.");
+        }
+    },
+
+    _fetchMessages: function() {
+        var deferred = $.Deferred();
+
+        if (this.conversation.isNew()) {
             endpoint.getConversations()
                 .then(function(conversations) {
                     if (conversations.length > 0) {
@@ -59,37 +59,35 @@ var faye = require('./faye');
                     return endpoint.post('/api/conversations', {
                         appUserId: endpoint.appUserId
                     });
-                })
+                }.bind(this))
                 .then(function(conversation) {
-                    self.conversation.set('_id', conversation._id);
-                    return self.conversation.fetchPromise();
-                })
+                    this.conversation.set('_id', conversation._id);
+                    return this.conversation.fetchPromise();
+                }.bind(this))
                 .then(function() {
-                    faye.init(self.conversation.id);
-                    deferred.resolve(self.conversation);
-                });
+                    faye.init(this.conversation.id);
+                    deferred.resolve(this.conversation);
+                }.bind(this));
         } else {
-            deferred.resolve(self.conversation);
+            deferred.resolve(this.conversation);
         }
 
         return deferred;
-    };
+    },
 
-    SupportKit._updateUser = function() {
+    _updateUser: function() {
         if (_.isEmpty(this.user)) {
-            return jQuery.Deferred().resolve();
+            return $.Deferred().resolve();
         } else {
             this.user.properties = this.user.properties || {};
             return endpoint.put('/api/appusers/' + endpoint.appUserId, this.user);
         }
-    };
+    },
 
-    SupportKit.init = function(options) {
-        this.inited = false;
-        var self = this;
+    init: function(options) {
+        this.ready = false;
         options = options || {};
 
-        this.conversation = new Conversation();
         this.user = _.pick(options, 'givenName', 'surname', 'email', 'properties');
 
         if (typeof options === 'object') {
@@ -120,34 +118,30 @@ var faye = require('./faye');
             }
         })
             .then(function(res) {
-                var deferred = jQuery.Deferred();
+                var deferred = $.Deferred();
                 endpoint.appUserId = res.appUserId;
 
                 // Perform initial fetch of messages and update user profile info
                 if (res.conversationStarted) {
-                    return jQuery.when(self._fetchMessages.call(self), self._updateUser.call(self));
+                    return $.when(this._fetchMessages, this._updateUser.bind(this));
                 } else {
-                    return jQuery.when(self._updateUser.call(self));
+                    return $.when(this._updateUser.bind(this));
                 }
-            })
+            }.bind(this))
             .then(function() {
                 // Tell the world we're ready
-                self.inited = true;
-                self.trigger('ready');
-            });
-    };
+                this.ready = true;
+                this.triggerMethod('ready');
+            }.bind(this));
+    },
 
-    SupportKit.resetUnread = function() {
+    resetUnread: function() {
         this.conversation.resetUnread();
-    };
+    },
+    message: function(text) {
+        this._checkReady('Can not send messages until init has completed');
 
-    SupportKit.message = function(text) {
-        var self = this;
         var message;
-
-        if (!this.inited) {
-            throw new Error('Can not send messages until init has completed');
-        }
 
         this._fetchMessages()
             .then(function() {
@@ -155,14 +149,35 @@ var faye = require('./faye');
                     authorId: endpoint.appUserId,
                     text: text
                 });
-                return self.conversation.postMessage(message);
-            })
+                return this.conversation.postMessage(message);
+            }.bind(this))
             .then(function() {
-                self.conversation.fetch();
+                this.conversation.fetch();
                 return message;
-            });
-    };
-}(window));
+            }.bind(this));
+    },
 
+    open: function() {
+        this._checkReady();
 
-module.exports = window.SupportKit;
+        this.chatController.open();
+    },
+
+    close: function() {
+        this._checkReady();
+        this.chatController.close();
+    },
+
+    toggle: function() {
+        this._checkReady();
+        this.chatController.toggle();
+    },
+
+    onReady: function() {
+        var view = this.chatController.getView();
+
+        $('body').append(view.render().el);
+    }
+});
+
+module.exports = global.SupportKit = new SupportKit();
