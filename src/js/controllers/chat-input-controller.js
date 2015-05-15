@@ -19,9 +19,10 @@ module.exports = ViewController.extend({
 
     onMessageSend: function() {
         var message = this.view.getValue();
-        this.view.resetValue();
-
-        this.trigger('message:send', message);
+        if (!_.isEmpty(message.trim())) {
+            this.view.resetValue();
+            this.trigger('message:send', message);
+        }
     },
 
     onMessageRead: function() {

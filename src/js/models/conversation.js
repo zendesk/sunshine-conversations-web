@@ -17,6 +17,7 @@ module.exports = BaseModel.extend({
 
     defaults: function() {
         return {
+            unread: 0,
             messages: [],
             appMakers: []
         };
@@ -38,10 +39,9 @@ module.exports = BaseModel.extend({
     ],
 
     initialize: function() {
-        this.unread = 0;
         this.updateUnread();
-        this.on('change', this.updateUnread, this);
-        vent.on('receive:message', this.receiveMessage, this);
+        this.listenTo(this.get('messages'), 'add', this.updateUnread);
+        this.listenTo(vent, 'receive:message', this.receiveMessage);
     },
 
     receiveMessage: function(message) {
@@ -82,8 +82,7 @@ module.exports = BaseModel.extend({
             .value();
 
         if (this.unread !== unreadMessages.length) {
-            this.unread = unreadMessages.length;
-            this.trigger('change:unread', this.unread);
+            this.set('unread', unreadMessages.length);
         }
     },
 
@@ -94,7 +93,7 @@ module.exports = BaseModel.extend({
         });
 
         if (latestMessage !== -Infinity) {
-            latestReadTs = Math.floor(latestMessage.received);
+            latestReadTs = Math.floor(latestMessage.get('received'));
         }
         this.setLatestReadTime(latestReadTs);
         this.updateUnread();

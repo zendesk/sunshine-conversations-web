@@ -1,28 +1,29 @@
-var Backbone = require('backbone');
+var Marionette = require('backbone.marionette');
 
 var template = require('../../templates/header.tpl');
 
-module.exports = Backbone.View.extend({
-    events: {
-        "click": "toggle"
+module.exports = Marionette.ItemView.extend({
+    triggers: {
+        'click': 'toggle'
     },
 
-    initialize: function() {
-        this.listenTo(this.model, 'change:unread', this.render);
+    template: template,
+
+    ui: {
+        badge: '[data-ui-badge]'
     },
 
-    render: function() {
-        this.$el.html(template({
-            count: this.model.unread
-        }));
-        return this;
-    },
-
-    toggle: function(e) {
-        if (window.SupportKit && window.SupportKit.ui && window.SupportKit.ui.toggle) {
-            window.SupportKit.ui.toggle();
+    behaviors: {
+        stickit: {
+            '@ui.badge': {
+                observe: 'unread',
+                visible: 'isBadgeVisible',
+                updateView: true
+            }
         }
+    },
 
-        e.stopPropagation();
+    isBadgeVisible: function(val) {
+        return val > 0;
     }
 });

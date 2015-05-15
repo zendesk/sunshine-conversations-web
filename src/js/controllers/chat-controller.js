@@ -73,6 +73,8 @@ module.exports = ViewController.extend({
                     model: conversation
                 });
 
+                this.listenTo(this.headerView, 'toggle', this.toggle);
+
                 this.conversationView = new ConversationView({
                     el: this.view.ui.conversation,
                     model: conversation,
