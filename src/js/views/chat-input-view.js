@@ -12,7 +12,7 @@ module.exports = Marionette.ItemView.extend({
 
     triggers: {
         'submit @ui.form': 'message:send',
-        'click @ui.send': 'message:send',
+        'click @ui.sendButton': 'message:send',
         'keyup @ui.input': 'message:read'
     },
 

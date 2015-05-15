@@ -41,14 +41,10 @@ module.exports = ViewController.extend({
 
     sendMessage: function(text) {
         if (!!this.conversation) {
-            var message = this.conversation.get('messages').create({
+            return this.conversation.get('messages').create({
                 authorId: endpoint.appUserId,
                 text: text
             });
-
-            this.conversationView.scrollToBottom();
-
-            return message;
         }
     },
 

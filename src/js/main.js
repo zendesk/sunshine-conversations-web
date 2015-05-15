@@ -38,8 +38,6 @@ var SupportKit = Marionette.Object.extend({
         this.chatController = new ChatController({
             collection: this.conversations
         });
-
-        vent.on('message', this.message, this);
     },
 
     _checkReady: function(message) {

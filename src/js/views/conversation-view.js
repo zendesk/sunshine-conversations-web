@@ -13,7 +13,18 @@ module.exports = Marionette.CompositeView.extend({
 
     childViewContainer: '[data-ui-messages]',
 
+    collectionEvents: {
+        'add': 'scrollToBottom'
+    },
+
     scrollToBottom: function() {
         this.$el.scrollTop(this.$el.get(0).scrollHeight);
+    },
+
+    onRenderCollection: function() {
+        this.scrollToBottom();
+
+        // subsequents add will scroll
+        this.listenTo(this, 'add:child', this.scrollToBottom);
     }
 });

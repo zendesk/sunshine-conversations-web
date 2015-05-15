@@ -41,11 +41,11 @@ module.exports = BaseModel.extend({
         this.unread = 0;
         this.updateUnread();
         this.on('change', this.updateUnread, this);
-        vent.on('message', this.receiveMessage, this);
+        vent.on('receive:message', this.receiveMessage, this);
     },
 
     receiveMessage: function(message) {
-        this.get('messages').add(message);
+        message = this.get('messages').add(message);
 
         if (!_.contains(this.get('appMakers'), message.get('authorId'))) {
             var appMakersArray = _.clone(this.get('appMakers') || []);
