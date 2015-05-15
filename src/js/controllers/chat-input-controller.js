@@ -6,7 +6,8 @@ var Backbone = require('backbone'),
 
 var ViewController = require('view-controller');
 
-var ChatInputView = require('../views/chat-input-view');
+var ChatInputView = require('../views/chat-input-view'),
+    vent = require('../vent');
 
 module.exports = ViewController.extend({
     viewClass: ChatInputView,
@@ -17,8 +18,10 @@ module.exports = ViewController.extend({
     },
 
     onMessageSend: function() {
-        this.view.getValue();
+        var message = this.view.getValue();
         this.view.resetValue();
+
+        this.trigger('message:send', message);
     },
 
     onMessageRead: function() {

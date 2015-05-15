@@ -13,11 +13,23 @@ module.exports = {
             xhr.setRequestHeader('Content-Type', 'application/json');
         };
 
-        _.extend(options, {
-            data: $.param({
+        // on a GET call, it goes in the request params,
+        // on other call type (maybe not DELETE if ever supported),
+        // it goes in the body
+        if(method === 'read') {
+            options.data || (options.data = {});
+
+            _.extend(options.data, {
                 appUserId: endpoint.appUserId
-            })
-        });
+            });
+        } else {
+            options.attrs || (options.attrs = {});
+
+            _.extend(options.attrs, model.toJSON(), {
+                appUserId: endpoint.appUserId
+            });
+
+        }
 
         return Backbone.sync.call(this, method, model, options);
     }

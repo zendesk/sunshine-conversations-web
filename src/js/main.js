@@ -104,18 +104,14 @@ var SupportKit = Marionette.Object.extend({
     resetUnread: function() {
         this.conversation.resetUnread();
     },
+
     message: function(text) {
         this._checkReady('Can not send messages until init has completed');
-
-        return this.conversation.get('messages').create({
-            authorId: endpoint.appUserId,
-            text: text
-        });
+        this.chatController.sendMessage(text);
     },
 
     open: function() {
         this._checkReady();
-
         this.chatController.open();
     },
 
@@ -131,7 +127,6 @@ var SupportKit = Marionette.Object.extend({
 
     onReady: function() {
         var view = this.chatController.getView();
-
         $('body').append(view.render().el);
     }
 });

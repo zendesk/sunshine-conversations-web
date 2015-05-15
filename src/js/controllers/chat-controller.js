@@ -39,18 +39,33 @@ module.exports = ViewController.extend({
         this.model.resetUnread();
     },
 
+    sendMessage: function(text) {
+        if (!!this.conversation) {
+            var message = this.conversation.get('messages').create({
+                authorId: endpoint.appUserId,
+                text: text
+            });
+
+            this.conversationView.scrollToBottom();
+
+            return message;
+        }
+    },
+
     onRender: function() {
         this.collection.fetch()
-            .then(function() {
-                return this.collection
+            .then(function getConversation() {
+                this.conversation = this.collection
                     ? this.collection.at(0)
                     : this.collection.create({
                         appUserId: endpoint.appUserId
                     }, {
-                        wait: true
-                    });
+                            wait: true
+                        });
+
+                return this.conversation;
             }.bind(this))
-            .then(function(conversation) {
+            .then(function initFaye(conversation) {
                 faye.init(conversation.id);
                 return conversation;
             })
@@ -65,15 +80,21 @@ module.exports = ViewController.extend({
                 this.conversationView = new ConversationView({
                     el: this.view.ui.conversation,
                     model: conversation,
-                    collection: conversation.get('messages')
+                    collection: conversation.get('messages'),
+                    childViewOptions: {
+                        conversation: conversation
+                    }
                 });
 
                 this.chatInputController = new ChatInputController({
                     viewOptions: {
                         el: this.view.ui.footer
                     },
-                    model: conversation
+                    model: conversation,
+                    collection: conversation.get('messages')
                 });
+
+                this.listenTo(this.chatInputController, 'message:send', this.sendMessage);
 
                 this.headerView.render();
                 this.conversationView.render();

@@ -4,4 +4,4 @@ var Backbone = require('backbone'),
     $ = require('jquery');
 Backbone.$ = $;
 
-require('backbone-relational');
+require('backbone-associations');

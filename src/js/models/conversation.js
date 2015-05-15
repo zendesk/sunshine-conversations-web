@@ -3,28 +3,36 @@
 var _ = require('underscore'),
     Backbone = require('backbone'),
     cookie = require('cookie'),
-    url = require('url');
+    urljoin = require('url-join');
 
 var BaseModel = require('./base-model'),
-    Message = require('./message');
+    Messages = require('../collections/messages');
 
-var vent = require('../vent');
+var vent = require('../vent'),
+    endpoint = require('../endpoint');
 
 module.exports = BaseModel.extend({
     idAttribute: '_id',
+    urlRoot: urljoin(endpoint.rootUrl, 'api/conversations/'),
+
+    defaults: function() {
+        return {
+            messages: [],
+            appMakers: []
+        };
+    },
 
     relations: [
         {
-            type: Backbone.HasMany,
+            type: Backbone.Many,
             key: 'messages',
-            relatedModel: Message,
-            reverseRelation: {
-                key: 'conversation'
-            },
-            collectionOptions: function(model) {
-                return {
-                    url: url.resolve(model.url(), '/messages/')
-                };
+            collectionType: function() {
+                var model = this;
+                return Messages.extend({
+                    url: function() {
+                        return urljoin(model.url(), '/messages/')
+                    }
+                })
             }
         }
     ],
@@ -81,8 +89,8 @@ module.exports = BaseModel.extend({
 
     resetUnread: function() {
         var latestReadTs = 0;
-        var latestMessage = _.max(this.get('messages'), function(message) {
-            return message.received;
+        var latestMessage = this.get('messages').max(function(message) {
+            return message.get('received');
         });
 
         if (latestMessage !== -Infinity) {
