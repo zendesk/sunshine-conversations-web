@@ -11,7 +11,6 @@
 * ```grunt clean``` removes all files in the folder ```dist```.
 * ```grunt test``` runs karma tests
 
-
 SupportKit.init('abcdefghijxlmnop', {
     id: 'abcd1234',
     givenName: 'Andrew',

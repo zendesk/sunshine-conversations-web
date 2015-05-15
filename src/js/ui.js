@@ -1,4 +1,4 @@
-var SupportKit = require('./main.js');
+    var SupportKit = require('./main.js');
 var ChatView = require('./chatView');
 
 
@@ -40,19 +40,19 @@ var ChatView = require('./chatView');
         if (ui.chatView) {
             ui.chatView.open();
         }
-    }
+    };
 
     ui.close = function() {
         if (ui.chatView) {
             ui.chatView.close();
         }
-    }
+    };
 
     ui.toggle = function() {
         if (ui.chatView) {
             ui.chatView.toggle();
         }
-    }
+    };
 
 }(window));
 

@@ -1,8 +1,9 @@
 {
     "name": "supportkit-js",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "authors": [
-        "Andrew Lavers <andrew.lavers@radialpoint.com>"
+        "Andrew Lavers <andrew.lavers@radialpoint.com>",
+        "Julian Garritano <julian@supportkit.io>"
     ],
     "description": "SupportKit Javascript SDK",
     "main": "src/main.js",
@@ -16,7 +17,7 @@
     ],
     "license": "MIT",
     "homepage": "http://supportkit.io",
-    "private": true,
+    "private": false,
     "ignore": [
         "**/.*",
         "node_modules",

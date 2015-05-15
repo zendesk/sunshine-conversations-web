@@ -10,7 +10,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('awsconfig', function() {
-        grunt.config.set('aws', grunt.file.readJSON('grunt-aws.json'))
+        grunt.config.set('aws', grunt.file.readJSON('grunt-aws.json'));
     });
 
     // Project configuration
@@ -106,7 +106,8 @@ module.exports = function(grunt) {
             },
             options: {
                 browserifyOptions: {
-                    debug: true
+                    debug: true,
+                    standalone: 'SupportKit'
                 }
             }
         },
@@ -152,6 +153,26 @@ module.exports = function(grunt) {
                     Quantity: 1,
                     Items: ['/supportkit.min.js']
                 }
+            }
+        },
+        push: {
+            options: {
+                files: ['package.json', 'bower.json', 'src/js/main.js'],
+                updateConfigs: [],
+                releaseBranch: 'master',
+                add: true,
+                addFiles: ['.'], // '.' for all files except ingored files in .gitignore
+                commit: true,
+                commitMessage: 'Release v%VERSION%',
+                commitFiles: ['-a'], // '-a' for all files
+                createTag: true,
+                tagName: 'v%VERSION%',
+                tagMessage: 'Version %VERSION%',
+                push: true,
+                pushTo: 'https://github.com/juliangarritano/supportkit-js.git',
+                npm: false,
+                npmTag: 'Release v%VERSION%',
+                gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d' // options to use with '$ git describe'
             }
         }
     });
