@@ -37,7 +37,7 @@
     "grunt-exec": "^0.4.6",
     "grunt-http-server": "^1.1.0",
     "grunt-karma": "~0.9.0",
-    "grunt-release": "^0.12.0",
+    "grunt-push-release": "^0.1.1",
     "grunt-string-to-js": "0.0.3",
     "grunt-text-replace": "^0.4.0",
     "jquery": "^2.1.3",
