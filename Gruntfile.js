@@ -174,6 +174,19 @@ module.exports = function(grunt) {
                 npmTag: 'Release v%VERSION%',
                 gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d' // options to use with '$ git describe'
             }
+        },
+
+        exec: {
+            createOrphan: {
+                cmd: function() {
+                    return [
+                        'git checkout --orphan <some-branch-name>',
+                        'git rm -r --cached .',
+                        'cp public.gitignore .gitignore',
+                        'grunt build',
+                    ].join(' && ');
+                }
+            }
         }
     });
 
@@ -182,7 +195,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'less', 'cssmin', 'str2js', 'concat']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
-    grunt.registerTask('publish', ['push-only', 'build' /*, 'push-commit'*/ ]);
+    grunt.registerTask('publish', ['exec:createOrphan', 'push-only', 'build', 'push-commit']);
     grunt.registerTask('run', ['runlog', 'concurrent:all']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['run']);
