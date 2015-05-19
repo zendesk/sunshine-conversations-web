@@ -155,6 +155,7 @@ module.exports = function(grunt) {
                 }
             }
         },
+
         push: {
             options: {
                 files: ['package.json', 'bower.json', 'src/js/main.js'],
@@ -167,7 +168,7 @@ module.exports = function(grunt) {
                 createTag: true,
                 tagName: 'v%VERSION%',
                 tagMessage: 'Version %VERSION%',
-                push: true,
+                push: false,
                 // pushTo: 'origin release-orphan',
                 npm: false,
                 npmTag: 'Release v%VERSION%',
@@ -184,6 +185,15 @@ module.exports = function(grunt) {
                         'cp public.gitignore .gitignore'
                     ].join(' && ');
                 }
+            },
+            cleanOrphan: {
+                cmd: function() {
+                    return [
+                        'git checkout f/versioning+bower+npm',
+                        'git tag -d v1.0.1',
+                        'git branch -D release-orphan'
+                    ].join(' && ');
+                }
             }
         }
     });
@@ -193,7 +203,9 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'less', 'cssmin', 'str2js', 'concat']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
-    grunt.registerTask('publish', ['exec:createOrphan', 'push-only', 'build', 'push-commit']);
+    grunt.registerTask('publish', ['publish:prepare', 'push-only', 'build', 'push-commit', 'publish:cleanup']);
+    grunt.registerTask('publish:prepare', ['exec:createOrphan']);
+    grunt.registerTask('publish:cleanup', ['exec:cleanOrphan']);
     grunt.registerTask('run', ['runlog', 'concurrent:all']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['run']);
