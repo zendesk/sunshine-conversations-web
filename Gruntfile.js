@@ -199,23 +199,32 @@ module.exports = function(grunt) {
 
         gitinfo: {
             commands: {
-                'status': ['status']
+                'status.porcelain': ['status', '--porcelain']
             }
         },
     });
 
     grunt.registerTask('branchCheck', 'A task that ensures the correct branch is checked out and there are no working changes.', function() {
+        var gitInfo = grunt.config.get('gitinfo');
 
-        grunt.log.writeln('git info :: ', grunt.config.get('gitinfo'));
+        if (gitInfo.status.porcelain /*|| gitInfo.local.branch.current.name !== 'master'*/ ) {
+            grunt.log.error('Error. Please make sure you have master checked out and there are no working changes.');
+            grunt.log.error('Git Status:', '\n' + gitInfo.status.porcelain);
+            grunt.log.error('Git Branch: ', '\n ' + gitInfo.local.branch.current.name);
+            return false;
+        }
     });
 
     grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'less', 'cssmin', 'str2js', 'concat']);
+
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
-    grunt.registerTask('publish', ['gitinfo', 'branchCheck', 'publish:prepare', 'push-only', 'build', 'push-commit', 'publish:cleanup']);
-    grunt.registerTask('publish:prepare', ['exec:createOrphan']);
-    grunt.registerTask('publish:cleanup', ['exec:cleanOrphan']);
+
     grunt.registerTask('run', ['runlog', 'concurrent:all']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['run']);
+
+    grunt.registerTask('publish', ['gitinfo', 'branchCheck', 'publish:prepare', 'push-only', 'build', 'push-commit', 'publish:cleanup']);
+    grunt.registerTask('publish:prepare', ['exec:createOrphan']);
+    grunt.registerTask('publish:cleanup', ['exec:cleanOrphan']);
 };
