@@ -164,11 +164,11 @@ module.exports = function(grunt) {
                 addFiles: ['.'], // '.' for all files except ingored files in .gitignore
                 commit: true,
                 commitMessage: 'Release v%VERSION%',
-                commitFiles: ['-a'], // '-a' for all files
+                commitFiles: ['package.json', 'bower.json', 'src/js/main.js'], // '-a' for all files
                 createTag: true,
                 tagName: 'v%VERSION%',
                 tagMessage: 'Version %VERSION%',
-                push: false,
+                push: true,
                 pushTo: 'origin',
                 npm: false,
                 npmTag: 'Release v%VERSION%',
@@ -182,6 +182,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'less', 'cssmin', 'str2js', 'concat']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
+    grunt.registerTask('publish', ['push-only', 'build' /*, 'push-commit'*/ ]);
     grunt.registerTask('run', ['runlog', 'concurrent:all']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['run']);
