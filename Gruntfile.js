@@ -168,8 +168,8 @@ module.exports = function(grunt) {
                 createTag: true,
                 tagName: 'v%VERSION%',
                 tagMessage: 'Version %VERSION%',
-                push: true,
-                pushTo: 'https://github.com/juliangarritano/supportkit-js.git',
+                push: false,
+                pushTo: 'origin',
                 npm: false,
                 npmTag: 'Release v%VERSION%',
                 gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d' // options to use with '$ git describe'

@@ -11,7 +11,7 @@ var uuid = require('uuid');
 var faye = require('./faye');
 
 var SupportKit = {
-    'version': '1.0.0'
+    'version': '1.0.1'
 };
 
 /**
