@@ -155,24 +155,18 @@ module.exports = function(grunt) {
                 }
             }
         },
-        push: {
+
+        release: {
             options: {
-                files: ['package.json', 'bower.json', 'src/js/main.js'],
-                updateConfigs: [],
-                releaseBranch: 'master',
-                add: true,
-                addFiles: ['.'], // '.' for all files except ingored files in .gitignore
-                commit: true,
-                commitMessage: 'Release v%VERSION%',
-                commitFiles: ['-a'], // '-a' for all files
-                createTag: true,
-                tagName: 'v%VERSION%',
-                tagMessage: 'Version %VERSION%',
-                push: true,
-                pushTo: 'origin',
+                additionalFiles: ['bower.json', 'src/js/main.js'],
                 npm: false,
-                npmTag: 'Release v%VERSION%',
-                gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d' // options to use with '$ git describe'
+                beforeBump: ['exec:createOrphan'], // optional grunt tasks to run before file versions are bumped
+                afterBump: ['build'], // optional grunt tasks to run after file versions are bumped
+                // github: {
+                //   repo: 'geddski/grunt-release', //put your user/repo here
+                //   usernameVar: 'GITHUB_USERNAME', //ENVIRONMENT VARIABLE that contains Github username
+                //   passwordVar: 'GITHUB_PASSWORD' //ENVIRONMENT VARIABLE that contains Github password
+                // }
             }
         },
 
@@ -182,8 +176,7 @@ module.exports = function(grunt) {
                     return [
                         'git checkout --orphan release-orphan',
                         'git rm -r --cached .',
-                        'cp public.gitignore .gitignore',
-                        'grunt build',
+                        'cp public.gitignore .gitignore'
                     ].join(' && ');
                 }
             }
@@ -195,7 +188,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'less', 'cssmin', 'str2js', 'concat']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
-    grunt.registerTask('publish', ['exec:createOrphan', 'bump-only', 'build', 'push-commit']);
+    grunt.registerTask('publish', ['release']);
     grunt.registerTask('run', ['runlog', 'concurrent:all']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['run']);
