@@ -158,8 +158,9 @@ module.exports = function(grunt) {
 
         release: {
             options: {
-                additionalFiles: ['bower.json', 'src/js/main.js'],
+                additionalFiles: ['bower.json'],
                 npm: false,
+                push: false,
                 beforeBump: ['exec:createOrphan'], // optional grunt tasks to run before file versions are bumped
                 afterBump: ['build'], // optional grunt tasks to run after file versions are bumped
                 // github: {

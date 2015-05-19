@@ -10,16 +10,14 @@ var uuid = require('uuid');
 
 var faye = require('./faye');
 
-var SupportKit = {
-    'version': '1.0.0'
-};
+var packageJson = require('../../package.json');
 
 /**
  * expose our sdk
  */
 (function(root) {
     root.SupportKit = root.SupportKit || {};
-    root.SupportKit.VERSION = "js" + SupportKit.version;
+    root.SupportKit.VERSION = "js" + packageJson.version;
 }(window));
 
 /**
