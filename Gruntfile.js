@@ -195,15 +195,24 @@ module.exports = function(grunt) {
                     ].join(' && ');
                 }
             }
-        }
+        },
+
+        gitinfo: {
+            commands: {
+                'status': ['status']
+            }
+        },
     });
 
+    grunt.registerTask('branchCheck', 'A task that ensures the correct branch is checked out and there are no working changes.', function() {
 
+        grunt.log.writeln('git info :: ', grunt.config.get('gitinfo'));
+    });
 
     grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'less', 'cssmin', 'str2js', 'concat']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
-    grunt.registerTask('publish', ['publish:prepare', 'push-only', 'build', 'push-commit', 'publish:cleanup']);
+    grunt.registerTask('publish', ['gitinfo', 'branchCheck', 'publish:prepare', 'push-only', 'build', 'push-commit', 'publish:cleanup']);
     grunt.registerTask('publish:prepare', ['exec:createOrphan']);
     grunt.registerTask('publish:cleanup', ['exec:cleanOrphan']);
     grunt.registerTask('run', ['runlog', 'concurrent:all']);
