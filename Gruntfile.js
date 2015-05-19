@@ -160,9 +160,8 @@ module.exports = function(grunt) {
             options: {
                 additionalFiles: ['bower.json'],
                 npm: false,
-                push: false,
-                beforeBump: ['exec:createOrphan'], // optional grunt tasks to run before file versions are bumped
-                afterBump: ['build'], // optional grunt tasks to run after file versions are bumped
+                push: true,
+                beforeRelease: ['build']
                 // github: {
                 //   repo: 'geddski/grunt-release', //put your user/repo here
                 //   usernameVar: 'GITHUB_USERNAME', //ENVIRONMENT VARIABLE that contains Github username
@@ -189,7 +188,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'less', 'cssmin', 'str2js', 'concat']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
-    grunt.registerTask('publish', ['release']);
+    grunt.registerTask('publish', ['exec:createOrphan', 'release']);
     grunt.registerTask('run', ['runlog', 'concurrent:all']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['run']);
