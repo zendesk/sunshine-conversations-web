@@ -1,28 +1,28 @@
 {
-    "name": "supportkit-js",
-    "version": "1.0.0",
-    "authors": [
-        "Andrew Lavers <andrew.lavers@radialpoint.com>",
-        "Julian Garritano <julian@supportkit.io>"
-    ],
-    "description": "SupportKit Javascript SDK",
-    "main": "src/main.js",
-    "moduleType": [
-        "globals"
-    ],
-    "keywords": [
-        "supportkit",
-        "javascript",
-        "sdk"
-    ],
-    "license": "MIT",
-    "homepage": "http://supportkit.io",
-    "private": false,
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components",
-        "test",
-        "tests"
-    ]
+  "name": "supportkit-js",
+  "version": "1.0.1",
+  "authors": [
+    "Andrew Lavers <andrew.lavers@radialpoint.com>",
+    "Julian Garritano <julian@supportkit.io>"
+  ],
+  "description": "SupportKit Javascript SDK",
+  "main": "src/main.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "supportkit",
+    "javascript",
+    "sdk"
+  ],
+  "license": "MIT",
+  "homepage": "http://supportkit.io",
+  "private": false,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
 }
