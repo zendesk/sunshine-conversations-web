@@ -15,7 +15,7 @@ var faye = require('./faye');
  */
 (function(root) {
     root.SupportKit = root.SupportKit || {};
-    root.SupportKit.VERSION = "js1.0.0";
+    root.SupportKit.VERSION = 'js1.0.0';
 }(window));
 
 /**
@@ -38,7 +38,7 @@ var faye = require('./faye');
     _.extend(SupportKit, Backbone.Events);
 
     // If jQuery has been included, grab a reference to it.
-    if (typeof (root.jQuery) !== "undefined") {
+    if (typeof (root.jQuery) !== 'undefined') {
         SupportKit.jQuery = root.jQuery;
     }
 
@@ -116,7 +116,11 @@ var faye = require('./faye');
             deviceId: this.deviceId,
             deviceInfo: {
                 URL: document.location.host,
-                userAgent: navigator.userAgent
+                userAgent: navigator.userAgent,
+                referrer: document.referrer,
+                browserLanguage: navigator.language,
+                currentUrl: document.location.href,
+                currentTitle: document.title
             }
         })
             .then(function(res) {
