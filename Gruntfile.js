@@ -195,6 +195,12 @@ module.exports = function(grunt) {
                         'git branch -D release-orphan'
                     ].join(' && ');
                 }
+            },
+            commitFiles: {
+                cmd: 'git commit -am "Version bump"'
+            },
+            push: {
+                cmd: 'git push'
             }
         },
 
@@ -205,7 +211,7 @@ module.exports = function(grunt) {
         },
     });
 
-    grunt.registerTask('branchCheck', 'A task that ensures the correct branch is checked out and there are no working changes.', function() {
+    grunt.registerTask('checkBranchStatus', 'A task that ensures the correct branch is checked out and there are no working changes.', function() {
         var gitInfo = grunt.config.get('gitinfo');
 
         if (gitInfo.status.porcelain /*|| gitInfo.local.branch.current.name !== 'master'*/ ) {
@@ -225,7 +231,11 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['run']);
 
-    grunt.registerTask('publish', ['gitinfo', 'branchCheck', 'publish:prepare', 'push-only', 'build', 'push-commit', 'publish:cleanup']);
-    grunt.registerTask('publish:prepare', ['exec:createOrphan']);
-    grunt.registerTask('publish:cleanup', ['exec:cleanOrphan']);
+    // Publishes a build to github, NPM and bower
+    grunt.registerTask('publish', ['branchCheck', 'publish:prepare', 'publish:pushPublish', 'publish:cleanup']);
+    grunt.registerTask('publish:prepare', ['push-only', 'exec:commitFiles', 'exec:createOrphan']);
+    grunt.registerTask('publish:pushPublish', ['build', 'push-commit']);
+    grunt.registerTask('publish:cleanup', ['exec:cleanOrphan' /*, 'exec:push'*/ ]);
+
+    grunt.registerTask('branchCheck', 'Checks that you are publishing from Master branch with no working changes', ['gitinfo', 'checkBranchStatus']);
 };
