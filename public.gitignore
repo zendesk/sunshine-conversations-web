@@ -4,4 +4,4 @@
 !LICENSE
 !README.md
 !dist/
-!dist/*.min.*
+!dist/*.min*.js

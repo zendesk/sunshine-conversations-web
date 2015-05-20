@@ -182,7 +182,8 @@ module.exports = function(grunt) {
                     return [
                         'git checkout --orphan release-orphan',
                         'git rm -r --cached .',
-                        'cp public.gitignore .gitignore'
+                        'cp public.gitignore .gitignore',
+                        'cp public.README.md README.md'
                     ].join(' && ');
                 }
             },
