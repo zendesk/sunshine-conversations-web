@@ -252,7 +252,7 @@ module.exports = function(grunt) {
         grunt.task.run('push-only:' + grunt.option('versionType') || 'patch', 'exec:commitFiles', 'exec:createOrphan');
     });
 
-    grunt.registerTask('publish:pushPublish', ['build', 'push-commit', 'github-release']);
+    grunt.registerTask('publish:pushPublish', ['build', 'push-commit' /*, 'github-release'*/ ]);
     grunt.registerTask('publish:cleanup', ['exec:cleanOrphan' /*, 'exec:push'*/ ]);
 
     grunt.registerTask('branchCheck', 'Checks that you are publishing from Master branch with no working changes', ['gitinfo', 'checkBranchStatus']);
