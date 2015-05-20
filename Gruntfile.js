@@ -207,6 +207,19 @@ module.exports = function(grunt) {
                 'status.porcelain': ['status', '--porcelain']
             }
         },
+
+        "github-release": {
+            options: {
+                repository: 'radialpoint/SupportKitPrivate',
+                auth: {
+                    user: process.env.GITHUB_USERNAME,
+                    password: process.env.GITHUB_PASSWORD
+                }
+            },
+            files: {
+                './': ['test.md']
+            }
+        }
     });
 
     grunt.registerTask('checkBranchStatus', 'A task that ensures the correct branch is checked out and there are no working changes.', function() {
@@ -239,7 +252,7 @@ module.exports = function(grunt) {
         grunt.task.run('push-only:' + grunt.option('versionType') || 'patch', 'exec:commitFiles', 'exec:createOrphan');
     });
 
-    grunt.registerTask('publish:pushPublish', ['build', 'push-commit']);
+    grunt.registerTask('publish:pushPublish', ['build', 'push-commit', 'github-release']);
     grunt.registerTask('publish:cleanup', ['exec:cleanOrphan' /*, 'exec:push'*/ ]);
 
     grunt.registerTask('branchCheck', 'Checks that you are publishing from Master branch with no working changes', ['gitinfo', 'checkBranchStatus']);
