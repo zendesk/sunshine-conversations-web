@@ -168,8 +168,8 @@ module.exports = function(grunt) {
                 createTag: true,
                 tagName: 'v%VERSION%',
                 tagMessage: 'Version %VERSION%',
-                push: false,
-                // pushTo: 'origin release-orphan',
+                push: true,
+                pushTo: 'https://github.com/radialpoint/SupportKitPrivate.git master',
                 npm: false,
                 npmTag: 'Release v%VERSION%',
                 gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d' // options to use with '$ git describe'
@@ -190,7 +190,7 @@ module.exports = function(grunt) {
                 cmd: function() {
                     return [
                         'git checkout f/versioning+bower+npm',
-                        'git tag -d v1.0.1',
+                        // 'git tag -d v1.0.1',
                         'git branch -D release-orphan'
                     ].join(' && ');
                 }
