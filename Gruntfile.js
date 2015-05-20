@@ -171,8 +171,7 @@ module.exports = function(grunt) {
                 push: true,
                 pushTo: 'https://github.com/radialpoint/SupportKitPrivate.git release-orphan:master --force',
                 npm: false,
-                npmTag: 'Release v%VERSION%',
-                gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d' // options to use with '$ git describe'
+                npmTag: 'Release v%VERSION%'
             }
         },
 
@@ -191,7 +190,6 @@ module.exports = function(grunt) {
                 cmd: function() {
                     return [
                         'git checkout f/versioning+bower+npm',
-                        // 'git tag -d v1.0.1',
                         'git branch -D release-orphan'
                     ].join(' && ');
                 }
@@ -231,9 +229,16 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['run']);
 
-    // Publishes a build to github, NPM and bower
-    grunt.registerTask('publish', ['branchCheck', 'publish:prepare', 'publish:pushPublish', 'publish:cleanup']);
-    grunt.registerTask('publish:prepare', ['push-only', 'exec:commitFiles', 'exec:createOrphan']);
+    grunt.registerTask('publish', 'Publishes a build to github and NPM, accepting a version type as argument (major/minor/patch)', function(version) {
+        grunt.option('versionType', version || 'patch');
+
+        grunt.task.run('branchCheck', 'publish:prepare', 'publish:pushPublish', 'publish:cleanup');
+    });
+
+    grunt.registerTask('publish:prepare', function() {
+        grunt.task.run('push-only:' + grunt.option('versionType') || 'patch', 'exec:commitFiles', 'exec:createOrphan');
+    });
+
     grunt.registerTask('publish:pushPublish', ['build', 'push-commit']);
     grunt.registerTask('publish:cleanup', ['exec:cleanOrphan' /*, 'exec:push'*/ ]);
 
