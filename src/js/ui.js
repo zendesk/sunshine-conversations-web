@@ -1,15 +1,12 @@
-    var SupportKit = require('./main.js');
+var SupportKit = require('./main.js');
 var ChatView = require('./chatView');
 
-
 (function(root) {
-
     // expose the ui
     root.SupportKit = root.SupportKit || {};
     root.SupportKit.ui = root.SupportKit.ui || {};
 
     var ui = root.SupportKit.ui;
-
 
     SupportKit.on('ready', function() {
         jQuery(function() {
@@ -24,8 +21,6 @@ var ChatView = require('./chatView');
             ui.chatView.render();
         });
     });
-
-
 
     function injectCss() {
         var styleId = "sk-style";
@@ -56,5 +51,5 @@ var ChatView = require('./chatView');
 
 }(window));
 
-
-module.exports = window.SupportKit.ui;
+// Since this is the entry point to SK, should expose full SK object (not just ui)
+module.exports = window.SupportKit;
