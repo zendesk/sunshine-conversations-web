@@ -156,6 +156,20 @@ module.exports = function(grunt) {
             }
         },
 
+        release: {
+            options: {
+                npm: false,
+                bump: false,
+                remote: 'https://github.com/radialpoint/SupportKitPrivate.git release-orphan:master --force',
+                github: {
+                    repo: 'radialpoint/SupportKitPrivate', //put your user/repo here
+                    usernameVar: 'GITHUB_USERNAME', //ENVIRONMENT VARIABLE that contains Github username
+                    passwordVar: 'GITHUB_PASSWORD', //ENVIRONMENT VARIABLE that contains Github password
+                    releaseNotes: 'test.md'
+                }
+            }
+        },
+
         push: {
             options: {
                 files: ['package.json', 'bower.json', 'src/js/main.js'],
@@ -182,7 +196,8 @@ module.exports = function(grunt) {
                         'git checkout --orphan release-orphan',
                         'git rm -r --cached .',
                         'cp public.gitignore .gitignore',
-                        'cp public.README.md README.md'
+                        'cp public.README.md README.md',
+                        'git add .'
                     ].join(' && ');
                 }
             },
@@ -195,7 +210,12 @@ module.exports = function(grunt) {
                 }
             },
             commitFiles: {
-                cmd: 'git commit -am "Version bump"'
+                cmd: function() {
+                    return [
+                        'git add .',
+                        'git commit -am "Release"'
+                    ].join(' && ');
+                }
             },
             push: {
                 cmd: 'git push'
@@ -205,19 +225,6 @@ module.exports = function(grunt) {
         gitinfo: {
             commands: {
                 'status.porcelain': ['status', '--porcelain']
-            }
-        },
-
-        "github-release": {
-            options: {
-                repository: 'radialpoint/SupportKitPrivate',
-                auth: {
-                    user: process.env.GITHUB_USERNAME,
-                    password: process.env.GITHUB_PASSWORD
-                }
-            },
-            files: {
-                './': ['test.md']
             }
         }
     });
@@ -233,6 +240,27 @@ module.exports = function(grunt) {
         }
     });
 
+    grunt.registerTask('versionBump', function() {
+        var semver = require('semver');
+        var VERSION_REGEXP = /(\bversion[\'\"]?\s*[:=]\s*[\'\"])([\da-z\.-]+)([\'\"])/i;
+
+        var files = ['package.json', 'bower.json', 'src/js/main.js'];
+
+        var fullVersion = grunt.option('version');
+        var versionType = grunt.option('versionType');
+
+        files.forEach(function(file, idx) {
+            var version = null;
+            var content = grunt.file.read(file).replace(VERSION_REGEXP, function(match, prefix, parsedVersion, suffix) {
+                version = fullVersion || semver.inc(parsedVersion, versionType);
+                return prefix + version + suffix;
+            });
+
+            grunt.file.write(file, content);
+            grunt.log.ok('Version bumped to ' + version + (files.length > 1 ? ' (in ' + file + ')' : ''));
+        });
+    });
+
     grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'less', 'cssmin', 'str2js', 'concat']);
 
@@ -242,17 +270,21 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['run']);
 
-    grunt.registerTask('publish', 'Publishes a build to github and NPM, accepting a version type as argument (major/minor/patch)', function(version) {
-        grunt.option('versionType', version || 'patch');
+    grunt.registerTask('publish', 'Publishes a build to github and NPM, accepting a version as argument', function(version) {
+        if (!version || ['major', 'minor', 'patch'].indexOf(version) > -1) {
+            grunt.option('versionType', version || 'patch');
+        } else {
+            grunt.option('version', version);
+        }
 
         grunt.task.run('branchCheck', 'publish:prepare', 'publish:pushPublish', 'publish:cleanup');
     });
 
     grunt.registerTask('publish:prepare', function() {
-        grunt.task.run('push-only:' + grunt.option('versionType') || 'patch', 'exec:commitFiles', 'exec:createOrphan');
+        grunt.task.run('versionBump', 'build', 'exec:commitFiles', 'exec:createOrphan');
     });
 
-    grunt.registerTask('publish:pushPublish', ['build', 'push-commit' /*, 'github-release'*/ ]);
+    grunt.registerTask('publish:pushPublish', ['release']);
     grunt.registerTask('publish:cleanup', ['exec:cleanOrphan' /*, 'exec:push'*/ ]);
 
     grunt.registerTask('branchCheck', 'Checks that you are publishing from Master branch with no working changes', ['gitinfo', 'checkBranchStatus']);
