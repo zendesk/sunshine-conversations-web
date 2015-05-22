@@ -1,5 +1,7 @@
 var ROOT_URL = 'http://localhost:8091';
 
+var $ = require('jquery');
+
 module.exports.rootUrl = ROOT_URL;
 
 // State params set by main
@@ -7,8 +9,8 @@ module.exports.appToken = undefined;
 module.exports.appUserId = undefined;
 
 module.exports._rest = function(method, path, body) {
-    var deferred = jQuery.Deferred();
-    jQuery.ajax({
+    var deferred = $.Deferred();
+    $.ajax({
         url: this.rootUrl + path,
         type: method,
         headers: {

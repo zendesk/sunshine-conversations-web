@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var $ = require('jquery');
 var Backbone = require('backbone');
 var baseMethods = require('./baseMethods');
 var endpoint = require('./endpoint');
@@ -22,7 +23,7 @@ var Conversation = Backbone.Model.extend({
     },
 
     fetchPromise: function() {
-        var deferred = jQuery.Deferred();
+        var deferred = $.Deferred();
         this.fetch({
             success: function(result) {
                 deferred.resolve(result);

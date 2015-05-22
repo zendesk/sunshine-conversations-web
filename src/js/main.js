@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
-var jQuery = require('jquery');
-Backbone.$ = jQuery;
+var $ = require('jquery');
+Backbone.$ = $;
 var Conversation = require('./conversation');
 var Message = require('./message');
 var endpoint = require('./endpoint');
@@ -42,14 +42,14 @@ var SupportKit = {
     _.extend(SupportKit, Backbone.Events);
 
     // If jQuery has been included, grab a reference to it.
-    if (typeof (root.jQuery) !== "undefined") {
-        SupportKit.jQuery = root.jQuery;
+    if (typeof (root.$) !== "undefined") {
+        SupportKit.$ = root.$;
     }
 
     // Create a conversation if one does not already exist
     SupportKit._fetchMessages = function() {
         var self = this;
-        var deferred = jQuery.Deferred();
+        var deferred = $.Deferred();
 
         if (self.conversation.isNew()) {
             endpoint.getConversations()
@@ -81,7 +81,7 @@ var SupportKit = {
 
     SupportKit._updateUser = function() {
         if (_.isEmpty(this.user)) {
-            return jQuery.Deferred().resolve();
+            return $.Deferred().resolve();
         } else {
             this.user.properties = this.user.properties || {};
             return endpoint.put('/api/appusers/' + endpoint.appUserId, this.user);
@@ -124,14 +124,14 @@ var SupportKit = {
             }
         })
             .then(function(res) {
-                var deferred = jQuery.Deferred();
+                var deferred = $.Deferred();
                 endpoint.appUserId = res.appUserId;
 
                 // Perform initial fetch of messages and update user profile info
                 if (res.conversationStarted) {
-                    return jQuery.when(self._fetchMessages.call(self), self._updateUser.call(self));
+                    return $.when(self._fetchMessages.call(self), self._updateUser.call(self));
                 } else {
-                    return jQuery.when(self._updateUser.call(self));
+                    return $.when(self._updateUser.call(self));
                 }
             })
             .then(function() {
