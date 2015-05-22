@@ -2,6 +2,8 @@ var $ = require('jquery');
 var SupportKit = require('./main.js');
 var ChatView = require('./chatView');
 
+var style = require('../../dist/style.min.css');
+
 (function(root) {
     // expose the ui
     root.SupportKit = root.SupportKit || {};
@@ -25,10 +27,10 @@ var ChatView = require('./chatView');
 
     function injectCss() {
         var styleId = "sk-style";
-        if (!$("#" + styleId).length && SupportKit && SupportKit['dist/style.min.css']) {
+        if (!$("#" + styleId).length && style) {
             $("<style>").attr({
                 id: styleId
-            }).appendTo("body").text(SupportKit['dist/style.min.css']);
+            }).appendTo("body").text(style);
         }
     }
 

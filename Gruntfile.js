@@ -2,9 +2,6 @@
 
 module.exports = function(grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
-    grunt.loadNpmTasks('grunt-s3');
-    grunt.loadNpmTasks('grunt-contrib-less');
-    grunt.loadNpmTasks('grunt-cloudfront');
     grunt.registerTask('runlog', function() {
         grunt.log.write('http://localhost:8282/example/dev.html');
     });
@@ -27,16 +24,6 @@ module.exports = function(grunt) {
                 browsers: ['PhantomJS']
             }
         },
-        concat: {
-            options: {
-                stripBanners: true,
-                banner: '<%= banner %>'
-            },
-            dist: {
-                src: ['dist/supportkit.js', 'dist/style.min.css.js'],
-                dest: 'dist/supportkit.js'
-            }
-        },
         watch: {
             scripts: {
                 files: ['src/*/*.js', '*.html', "src/templates/*.tpl", "src/stylesheets/*.less"],
@@ -51,7 +38,7 @@ module.exports = function(grunt) {
                 banner: '<%= banner %>'
             },
             dist: {
-                src: '<%= concat.dist.dest %>',
+                src: 'dist/supportkit.js',
                 dest: 'dist/supportkit.min.js'
             }
         },
@@ -90,18 +77,13 @@ module.exports = function(grunt) {
                 runInBackground: false
             }
         },
-        str2js: {
-            SupportKit: {
-                'dist/style.min.css.js': ['dist/style.min.css']
-            }
-        },
         browserify: {
             dist: {
                 files: {
                     'dist/supportkit.js': ['src/js/ui.js'],
                 },
                 options: {
-                    transform: ['jstify']
+                    transform: ['jstify', 'cssify']
                 }
             },
             options: {
@@ -250,8 +232,8 @@ module.exports = function(grunt) {
         grunt.option('globalVersion', globalVersion);
     });
 
-    grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
-    grunt.registerTask('devbuild', ['clean', 'browserify', 'less', 'cssmin', 'str2js', 'concat']);
+    grunt.registerTask('build', ['clean', 'less', 'cssmin', 'browserify', 'replace', 'uglify']);
+    grunt.registerTask('devbuild', ['clean', 'less', 'cssmin', 'browserify']);
 
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
 

@@ -27,6 +27,7 @@
   },
   "main": "dist/supportkit.min.js",
   "devDependencies": {
+    "cssify": "^0.7.0",
     "grunt": "^0.4.5",
     "grunt-browserify": "^3.3.0",
     "grunt-cloudfront": "^0.2.1",
@@ -43,7 +44,6 @@
     "grunt-karma": "~0.9.0",
     "grunt-release": "git://github.com/juliangarritano/grunt-release.git#master",
     "grunt-s3": "^0.2.0-alpha.3",
-    "grunt-string-to-js": "0.0.3",
     "grunt-text-replace": "^0.4.0",
     "jstify": "^0.7.0",
     "karma": "^0.12.16",
