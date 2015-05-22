@@ -14,10 +14,12 @@
   "homepage": "http://supportkit.io",
   "license": "MIT",
   "dependencies": {
+    "backbone": "^1.2.0",
+    "cookie": "^0.1.3",
     "faye": "^1.1.1",
-    "grunt-cloudfront": "^0.2.1",
-    "grunt-contrib-less": "^1.0.0",
-    "grunt-s3": "^0.2.0-alpha.3"
+    "jquery": "^2.1.4",
+    "underscore": "^1.8.3",
+    "uuid": "^2.0.1"
   },
   "engines": {
     "node": ">=0.10",
@@ -25,14 +27,14 @@
   },
   "main": "dist/supportkit.min.js",
   "devDependencies": {
-    "backbone": "^1.1.2",
-    "cookie": "^0.1.2",
     "grunt": "^0.4.5",
     "grunt-browserify": "^3.3.0",
+    "grunt-cloudfront": "^0.2.1",
     "grunt-concurrent": "^1.0.0",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-concat": "^0.5.0",
     "grunt-contrib-cssmin": "^0.11.0",
+    "grunt-contrib-less": "^1.0.0",
     "grunt-contrib-uglify": "^0.7.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-exec": "^0.4.6",
@@ -40,15 +42,13 @@
     "grunt-http-server": "^1.1.0",
     "grunt-karma": "~0.9.0",
     "grunt-release": "git://github.com/juliangarritano/grunt-release.git#master",
+    "grunt-s3": "^0.2.0-alpha.3",
     "grunt-string-to-js": "0.0.3",
     "grunt-text-replace": "^0.4.0",
-    "jquery": "^2.1.3",
     "jstify": "^0.7.0",
     "karma": "^0.12.16",
     "karma-jasmine": "^0.2.3",
     "matchdep": "^0.3.0",
-    "semver": "^4.3.4",
-    "underscore": "^1.7.0",
-    "uuid": "^2.0.1"
+    "semver": "^4.3.4"
   }
 }
