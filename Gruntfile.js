@@ -1,5 +1,7 @@
 'use strict';
 
+/* global process:false */
+
 module.exports = function(grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
     grunt.registerTask('runlog', function() {
@@ -202,6 +204,11 @@ module.exports = function(grunt) {
             grunt.log.error('Git Branch: ', '\n ' + gitInfo.local.branch.current.name);
             return false;
         }
+
+        if (!process.env.GITHUB_USERNAME || !process.env.GITHUB_PASSWORD) {
+            grunt.log.error('Please set your github username and password as env variables (GITHUB_USERNAME, GITHUB_PASSWORD)');
+            return false;
+        }
     });
 
     grunt.registerTask('versionBump', function() {
@@ -232,15 +239,6 @@ module.exports = function(grunt) {
         grunt.option('globalVersion', globalVersion);
     });
 
-    grunt.registerTask('build', ['clean', 'less', 'cssmin', 'browserify', 'replace', 'uglify']);
-    grunt.registerTask('devbuild', ['clean', 'less', 'cssmin', 'browserify']);
-
-    grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
-
-    grunt.registerTask('run', ['runlog', 'concurrent:all']);
-    grunt.registerTask('test', ['karma']);
-    grunt.registerTask('default', ['run']);
-
     grunt.registerTask('publish', 'Publishes a build to github and NPM, accepting a version as argument', function(version) {
         if (!version || ['major', 'minor', 'patch'].indexOf(version) > -1) {
             grunt.option('versionType', version || 'patch');
@@ -251,10 +249,16 @@ module.exports = function(grunt) {
         grunt.task.run('branchCheck', 'publish:prepare', 'publish:release', 'publish:cleanup');
     });
 
-    grunt.registerTask('publish:prepare', function() {
-        grunt.task.run('versionBump', 'build', 'exec:commitFiles', 'exec:createOrphan');
-    });
+    grunt.registerTask('build', ['clean', 'less', 'cssmin', 'browserify', 'replace', 'uglify']);
+    grunt.registerTask('devbuild', ['clean', 'less', 'cssmin', 'browserify']);
 
+    grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
+
+    grunt.registerTask('run', ['runlog', 'concurrent:all']);
+    grunt.registerTask('test', ['karma']);
+    grunt.registerTask('default', ['run']);
+
+    grunt.registerTask('publish:prepare', ['versionBump', 'build', 'exec:commitFiles', 'exec:createOrphan']);
     grunt.registerTask('publish:release', ['release']);
     grunt.registerTask('publish:cleanup', ['exec:cleanOrphan' /*, 'exec:push'*/ ]);
 
