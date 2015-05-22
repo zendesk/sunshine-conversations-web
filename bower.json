@@ -6,7 +6,7 @@
         "Julian Garritano <julian@supportkit.io>"
     ],
     "description": "SupportKit Javascript SDK",
-    "main": "src/main.js",
+    "main": "dist/supportkit.min.js",
     "moduleType": [
         "globals"
     ],
