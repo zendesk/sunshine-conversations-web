@@ -48,13 +48,13 @@
     "jstify": "^0.7.0",
     "karma": "^0.12.16",
     "karma-jasmine": "^0.2.3",
-    "marionette-components": "0.0.16",
     "marionette.behaviors": "0.0.12",
     "matchdep": "^0.3.0",
     "node-lessify": "0.0.10",
     "underscore": "^1.7.0",
     "url-join": "0.0.1",
-    "uuid": "^2.0.1"
+    "uuid": "^2.0.1",
+    "view-controller": "^1.0.1"
   },
   "browserify": {
     "transform": [
@@ -62,9 +62,6 @@
       "node-lessify",
       "jstify"
     ]
-  },
-  "browser": {
-    "view-controller": "marionette-components/js/utils/view-controller.js"
   },
   "browserify-shim": {
     "jquery": "global:$"
