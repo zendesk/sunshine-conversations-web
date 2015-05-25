@@ -14,7 +14,7 @@ var endpoint = require('./endpoint'),
     vent = require('./vent'),
     faye = require('./faye');
 
-var ChatController = require('./controllers/chat-controller'),
+var ChatController = require('./controllers/chatController'),
     Message = require('./models/message'),
     Conversations = require('./collections/conversations');
 

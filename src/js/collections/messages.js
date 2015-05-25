@@ -1,4 +1,4 @@
-var BaseCollection = require('./base-collection');
+var BaseCollection = require('./baseCollection');
 var Message = require('../models/message');
 var endpoint = require('../endpoint');
 

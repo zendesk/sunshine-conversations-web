@@ -1,3 +1,3 @@
-var BaseModel = require('./base-model');
+var BaseModel = require('./baseModel');
 
 module.exports = BaseModel.extend({});

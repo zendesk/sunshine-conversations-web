@@ -5,7 +5,7 @@ var _ = require('underscore'),
     cookie = require('cookie'),
     urljoin = require('url-join');
 
-var BaseModel = require('./base-model'),
+var BaseModel = require('./baseModel'),
     Messages = require('../collections/messages');
 
 var vent = require('../vent'),

@@ -9,11 +9,11 @@ var ViewController = require('view-controller');
 var endpoint = require('../endpoint'),
     faye = require('../faye');
 
-var ChatView = require('../views/chat-view'),
-    HeaderView = require('../views/header-view'),
-    ConversationView = require('../views/conversation-view');
+var ChatView = require('../views/chatView'),
+    HeaderView = require('../views/headerView'),
+    ConversationView = require('../views/conversationView');
 
-var ChatInputController = require('../controllers/chat-input-controller');
+var ChatInputController = require('../controllers/chatInputController');
 
 module.exports = ViewController.extend({
     viewClass: ChatView,

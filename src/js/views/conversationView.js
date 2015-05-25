@@ -4,7 +4,7 @@ var Backbone = require('backbone'),
 
 var template = require('../../templates/conversation.tpl');
 
-var MessageView = require('./message-view'),
+var MessageView = require('./messageView'),
     Message = require('../models/message');
 
 module.exports = Marionette.CompositeView.extend({
