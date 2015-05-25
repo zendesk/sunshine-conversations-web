@@ -120,7 +120,11 @@ var SupportKit = {
             deviceId: this.deviceId,
             deviceInfo: {
                 URL: document.location.host,
-                userAgent: navigator.userAgent
+                userAgent: navigator.userAgent,
+                referrer: document.referrer,
+                browserLanguage: navigator.language,
+                currentUrl: document.location.href,
+                currentTitle: document.title
             }
         })
             .then(function(res) {
