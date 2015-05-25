@@ -40,6 +40,15 @@ Then
 grunt deploy
 ```
 
+### 4. Publishing
+
+* Create environment variables GITHUB_USERNAME and GITHUB_PASSWORD with credentials that have access to the github repo
+* Ensure you have the branch master checked out and up to date with NO WORKING DIRECTORY CHANGES (don't worry, I won't let you publish even if you mess up)
+* Ensure you have release notes created in the folder release_notes (IMPORTANT: Missing this step will leave your branches in a shitty state. I will likely add a check for this)
+* Run the following task
+
+```grunt build (major | minor | patch | 'x.y.z')```
+
 ## Web References
 
 ### Thanks

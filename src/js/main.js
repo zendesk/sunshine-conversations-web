@@ -10,6 +10,7 @@ var uuid = require('uuid');
 
 var faye = require('./faye');
 
+// version is stored in the variable for the grunt publis task to automatically bump
 var SupportKit = {
     'version': '1.0.0'
 };
@@ -19,7 +20,7 @@ var SupportKit = {
  */
 (function(root) {
     root.SupportKit = root.SupportKit || {};
-    root.SupportKit.VERSION = "js" + SupportKit.version;
+    root.SupportKit.VERSION = 'js' + SupportKit.version;
 }(window));
 
 /**
@@ -42,7 +43,7 @@ var SupportKit = {
     _.extend(SupportKit, Backbone.Events);
 
     // If jQuery has been included, grab a reference to it.
-    if (typeof (root.$) !== "undefined") {
+    if (typeof (root.$) !== 'undefined') {
         SupportKit.$ = root.$;
     }
 
