@@ -237,6 +237,15 @@ module.exports = function(grunt) {
         });
 
         grunt.option('globalVersion', globalVersion);
+
+        try {
+            grunt.file.read('release_notes/v' + globalVersion + '.md');
+        }
+        catch (err) {
+            grunt.log.error('Release notes not found.');
+            grunt.log.error('Please ensure release notes exist in the release_notes folder. (v' + globalVersion + '.md)');
+            return false;
+        }
     });
 
     grunt.registerTask('publish', 'Publishes a build to github and NPM, accepting a version as argument', function(version) {
