@@ -1,21 +1,13 @@
-# SupportKit Javascript SDK
+# [SupportKit Javascript SDK](supportkit.io)
 
-### 1. Install it
-With Node.js and Browserify
-* ```npm install --save supportkit```
-With bower
-* ```bower install supportkit```
+### tl;dr
+Sign up and get an app token: https://app.supportkit.io/signup
 
-### 2. Require it
+Add the following code in between the <head>...</head> tags on your page.
 
-var SupportKit = require('supportkit');
+    <script src="https://cdn.supportkit.io/supportkit.min.js"></script>
+    <script>
+        SupportKit.init({appToken: 'YOURAPPTOKEN'});
+    </script>
 
-### 3. Use it
-
-SupportKit.init({appToken: 'your_app_token_here',
-  givenName: 'Cool',
-  surname: 'Dude',
-  properties: {
-    'whateverYouWant': true
-  }
-});
+For instructions on how to install using node.js + browserify or Bower, refer to our [docs and full install guide](http://docs.supportkit.io).
