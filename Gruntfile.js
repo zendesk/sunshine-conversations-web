@@ -28,7 +28,7 @@ module.exports = function(grunt) {
         },
         watch: {
             scripts: {
-                files: ['src/*/*.js', '*.html', "src/templates/*.tpl", "src/stylesheets/*.less"],
+                files: ['src/*/*.js', '*.html', 'src/templates/*.tpl', 'src/stylesheets/*.less'],
                 tasks: ['devbuild'],
                 options: {
                     spawn: false,
@@ -72,10 +72,10 @@ module.exports = function(grunt) {
             'dev': {
                 root: '.',
                 port: 8282,
-                host: "127.0.0.1",
+                host: '127.0.0.1',
                 showDir: true,
                 autoIndex: true,
-                ext: "html",
+                ext: 'html',
                 runInBackground: false
             }
         },
@@ -119,14 +119,14 @@ module.exports = function(grunt) {
         cloudfront: {
             options: {
                 region: 'us-east-1', // your AWS region 
-                distributionId: "E1RI234SLR5ORA", // DistributionID where files are stored 
+                distributionId: 'E1RI234SLR5ORA', // DistributionID where files are stored 
                 credentials: {
-                    accessKeyId: "<%= aws.key %>",
+                    accessKeyId: '<%= aws.key %>',
                     secretAccessKey: '<%= aws.secret %>'
                 },
                 listInvalidations: true, // if you want to see the status of invalidations 
                 listDistributions: false, // if you want to see your distributions list in the console 
-                version: "1.0" // if you want to invalidate a specific version (file-1.0.js) 
+                version: '1.0' // if you want to invalidate a specific version (file-1.0.js) 
             },
             prod: {
                 options: {

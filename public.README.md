@@ -3,7 +3,7 @@
 ### tl;dr
 Sign up and get an app token: https://app.supportkit.io/signup
 
-Add the following code in between the <head>...</head> tags on your page.
+Add the following code in between the &lt;head&gt;...&lt;/head&gt; tags on your page.
 
     <script src="https://cdn.supportkit.io/supportkit.min.js"></script>
     <script>
