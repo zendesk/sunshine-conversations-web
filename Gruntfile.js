@@ -144,7 +144,8 @@ module.exports = function(grunt) {
             options: {
                 npm: false,
                 bump: false,
-                remote: 'https://github.com/radialpoint/SupportKitPrivate.git release-orphan:master --force',
+                commit: false,
+                remote: 'https://github.com/radialpoint/SupportKitPrivate.git head:master --force',
                 github: {
                     repo: 'radialpoint/SupportKitPrivate', //put your user/repo here
                     usernameVar: 'GITHUB_USERNAME', //ENVIRONMENT VARIABLE that contains Github username
@@ -155,23 +156,19 @@ module.exports = function(grunt) {
         },
 
         exec: {
-            createOrphan: {
+            createRelease: {
                 cmd: function() {
                     return [
-                        'git checkout --orphan release-orphan',
-                        'git rm -r --cached --quiet .',
-                        'cp public.gitignore .gitignore',
-                        'cp public.README.md README.md',
-                        'git add .'
+                        'git checkout -b r/' + this.option('globalVersion')
                     ].join(' && ');
                 }
             },
-            cleanOrphan: {
+            cleanRelease: {
                 cmd: function() {
                     return [
                         'git checkout f/versioning+bower+npm',
-                        'git branch -D release-orphan',
-                        'git push https://github.com/radialpoint/SupportKitPrivate.git --delete release-orphan',
+                        'git branch -D r/' + this.option('globalVersion'),
+                        // 'git push https://github.com/radialpoint/SupportKitPrivate.git --delete release-orphan',
                         'git tag -d ' + this.option('globalVersion')
                     ].join(' && ');
                 }
@@ -267,9 +264,9 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['run']);
 
-    grunt.registerTask('publish:prepare', ['versionBump', 'build', 'exec:commitFiles', 'exec:createOrphan']);
+    grunt.registerTask('publish:prepare', ['versionBump', 'build', 'exec:commitFiles', 'exec:createRelease']);
     grunt.registerTask('publish:release', ['release']);
-    grunt.registerTask('publish:cleanup', ['exec:cleanOrphan' /*, 'exec:push'*/ ]);
+    grunt.registerTask('publish:cleanup', ['exec:cleanRelease' /*, 'exec:push'*/ ]);
 
     grunt.registerTask('branchCheck', 'Checks that you are publishing from Master branch with no working changes', ['gitinfo', 'checkBranchStatus']);
 };
