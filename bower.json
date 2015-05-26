@@ -2,7 +2,7 @@
   "name": "supportkit-js",
   "version": "1.0.0",
   "authors": [
-    "Andrew Lavers <andrew.lavers@radialpoint.com>",
+    "Andrew Lavers <andrew@supportkit.io>",
     "Julian Garritano <julian@supportkit.io>"
   ],
   "description": "SupportKit Javascript SDK",

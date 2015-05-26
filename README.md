@@ -50,6 +50,8 @@ SupportKit.init({appToken: 'your_app_token'});
 
 ## API
 
+### Individual functions
+
 #### init(options)
 Initializes the SupportKit widget in the web page using the specified options
 
@@ -63,6 +65,43 @@ SupportKit.init({
     properties: {
         'anything': 'whatever_you_want'    
     } 
+});
+```
+
+#### open()
+Opens the conversation widget
+
+```javascript
+SupportKit.open();
+```
+
+#### close()
+Closes the conversation widget
+
+```javascript
+SupportKit.close();
+```
+
+#### toggle()
+Toggles the conversation widget
+
+```javascript
+SupportKit.toggle();
+```
+
+#### message(text)
+Sends a message on the user's behalf
+
+```javascript
+SupportKit.message('hello');
+```
+
+### Events
+
+```
+// This event triggers when init completes successfully... Be sure to bind before calling init!
+SupportKit.on('ready', function(){
+    console.log('the init has completed!');
 });
 ```
 
