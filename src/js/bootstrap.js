@@ -5,12 +5,6 @@ var Backbone = require('backbone'),
 Backbone.$ = $;
 var Marionette = require('backbone.marionette');
 
-
-// for Marionette Inspector
-if (window.__agent) {
-  window.__agent.start(Backbone, Marionette);
-}
-
 require('backbone-associations');
 
 var StickitBehavior = require('marionette.behaviors/lib/behaviors/stickit-behavior');

@@ -8,6 +8,19 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
     <script src="../dist/supportkit.js"></script>
     <script>
+
+        // Uncomment this to test the public interface
+        /*
+            SupportKit.on('ready', function(){
+                console.log('ready!');
+                setTimeout(SupportKit.open, 2000);
+                setTimeout(SupportKit.close, 4000);
+                setTimeout(SupportKit.toggle, 6000);
+                setTimeout(SupportKit.message.bind(null, 'Test'), 8000);
+            });
+        */
+
+
         SupportKit.init({appToken: '98rarvgwlgalevccdkhxxplir',
           givenName: 'Andrew',
           surname: 'Lavers',

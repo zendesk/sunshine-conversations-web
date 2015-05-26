@@ -40,7 +40,6 @@ module.exports = Marionette.LayoutView.extend({
     close: function() {
         this.enableAnimation();
         this.$el.removeClass('sk-appear').addClass('sk-close');
-        this.model.resetUnread();
     },
 
     toggle: function() {

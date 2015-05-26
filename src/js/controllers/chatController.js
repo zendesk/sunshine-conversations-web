@@ -41,6 +41,7 @@ module.exports = ViewController.extend({
 
     close: function() {
         this.view.close();
+        this._resetUnread();
     },
 
     toggle: function() {

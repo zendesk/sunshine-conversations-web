@@ -22,9 +22,9 @@ var ChatController = require('./controllers/chatController'),
 require('../stylesheets/main.less');
 
 var SupportKit = Marionette.Object.extend({
-    VERSION: 'js1.1.0',
+    VERSION: '1.0.0',
 
-    initialize: function(options, initCallback) {
+    initialize: function() {
 
         // for backward compatibility
         this.ui = {
@@ -39,8 +39,14 @@ var SupportKit = Marionette.Object.extend({
             collection: this.conversations
         });
 
-
-        !!initCallback && this.listenToOnce(this, 'ready', initCallback);
+        _.bindAll(this,
+            'init',
+            'open',
+            'close',
+            'toggle',
+            'resetUnread',
+            'message'
+        );
     },
 
     _checkReady: function(message) {
