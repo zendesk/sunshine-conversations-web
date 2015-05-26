@@ -2,6 +2,7 @@ node_modules
 *.log
 build
 tmp
-dist
+dist/*
+!dist/supportkit.min.js
 grunt-aws.json
 *.sublime-workspace

@@ -168,7 +168,6 @@ module.exports = function(grunt) {
                     return [
                         'git checkout f/versioning+bower+npm',
                         'git branch -D r/' + this.option('globalVersion'),
-                        // 'git push https://github.com/radialpoint/SupportKitPrivate.git --delete release-orphan',
                         'git tag -d ' + this.option('globalVersion')
                     ].join(' && ');
                 }
