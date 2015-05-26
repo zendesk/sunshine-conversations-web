@@ -8,23 +8,22 @@ var MessageView = require('./messageView'),
     Message = require('../models/message');
 
 module.exports = Marionette.CompositeView.extend({
+    id: 'sk-conversation',
+
     childView: MessageView,
     template: template,
 
     childViewContainer: '[data-ui-messages]',
 
-    collectionEvents: {
-        'add': 'scrollToBottom'
-    },
-
     scrollToBottom: function() {
         this.$el.scrollTop(this.$el.get(0).scrollHeight);
     },
 
-    onRenderCollection: function() {
+    onAddChild: function() {
         this.scrollToBottom();
+    },
 
-        // subsequents add will scroll
-        this.listenTo(this, 'add:child', this.scrollToBottom);
+    onShow: function() {
+        this.scrollToBottom();
     }
 });

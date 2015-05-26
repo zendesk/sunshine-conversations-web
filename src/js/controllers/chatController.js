@@ -21,8 +21,18 @@ module.exports = ViewController.extend({
     viewClass: ChatView,
 
     viewEvents: {
-        render: 'onViewRender',
-        focus: 'resetUnread'
+        render: '_onViewRender',
+        focus: '_resetUnread'
+    },
+
+    initialize: function() {
+        _.bindAll(this,
+            '_getConversation',
+            '_initFaye',
+            '_initMessagingBus',
+            '_manageUnread',
+            '_renderWidget'
+        );
     },
 
     open: function() {
@@ -37,18 +47,6 @@ module.exports = ViewController.extend({
         this.view.toggle();
     },
 
-    _receiveMessage: function(message) {
-        if (!!this.conversation) {
-            message = this.conversation.get('messages').add(message);
-
-            if (!this.conversation.get('appMakers').get(message.get('authorId'))) {
-                this.conversation.add({
-                    id: message.get('authorId')
-                });
-            }
-        }
-    },
-
     sendMessage: function(text) {
         if (!!this.conversation) {
             return this.conversation.get('messages').create({
@@ -58,91 +56,115 @@ module.exports = ViewController.extend({
         }
     },
 
-    onViewRender: function() {
+    _receiveMessage: function(message) {
+        if (!!this.conversation) {
+
+            // we actually need to extract the appMakers first
+            // since the message rendering is done on message add event
+            // and some UI stuff is relying on the appMakers collection
+            if (!this.conversation.get('appMakers').get(message.authorId)) {
+                this.conversation.get('appMakers').add({
+                    id: message.authorId
+                });
+            }
+
+            this.conversation.get('messages').add(message);
+        }
+    },
+
+    _getConversation: function() {
+        var deferred = $.Deferred();
+
+        if (!!this.conversation) {
+            deferred.resolve(this.conversation)
+        } else if (this.collection.length > 0) {
+            this.conversation = this.collection.at(0);
+            deferred.resolve(this.conversation)
+        } else {
+            this.conversation = this.collection.create(
+                {
+                    appUserId: endpoint.appUserId
+                },
+                {
+                    success: deferred.resolve,
+                    error: deferred.reject
+                }
+            );
+        }
+
+        return deferred;
+    },
+
+    _initFaye: function(conversation) {
+        faye.init(conversation.id);
+        return conversation;
+    },
+
+    _initMessagingBus: function(conversation) {
+        this.listenTo(vent, 'receive:message', this._receiveMessage);
+        return conversation;
+    },
+
+    _manageUnread: function(conversation) {
+        this._updateUnread();
+        this.listenTo(conversation.get('messages'), 'add', this._updateUnread);
+        return conversation;
+    },
+
+    _renderWidget: function(conversation) {
+        this.model = conversation;
+
+        this.headerView = new HeaderView({
+            model: conversation
+        });
+
+        this.listenTo(this.headerView, 'toggle', this.toggle);
+
+        this.conversationView = new ConversationView({
+            model: conversation,
+            collection: conversation.get('messages'),
+            childViewOptions: {
+                conversation: conversation
+            }
+        });
+
+        this.chatInputController = new ChatInputController({
+            model: conversation,
+            collection: conversation.get('messages')
+        });
+
+        this.listenTo(this.chatInputController, 'message:send', this.sendMessage);
+        this.listenTo(this.chatInputController, 'message:read', this._resetUnread);
+
+        this.view.header.show(this.headerView);
+        this.view.main.show(this.conversationView);
+        this.view.footer.show(this.chatInputController.getView());
+    },
+
+    _onViewRender: function() {
         this.collection.fetch()
-            .then(function getConversation() {
-                this.conversation = this.collection
-                    ? this.collection.at(0)
-                    : this.collection.create({
-                        appUserId: endpoint.appUserId
-                    }, {
-                            wait: true
-                        });
-
-                return this.conversation;
-            }.bind(this))
-            .then(function initFaye(conversation) {
-                faye.init(conversation.id);
-                return conversation;
-            }.bind(this))
-            .then(function initMessagingBus(conversation) {
-                // do it here instead of in `initialize` to make sure the conversation
-                // is fetched and real.
-                this.listenTo(vent, 'receive:message', this._receiveMessage);
-                return conversation;
-            }.bind(this))
-            .then(function manageUnread(conversation) {
-                this.updateUnread();
-                this.listenTo(conversation.get('messages'), 'add', this.updateUnread);
-                return conversation;
-            }.bind(this))
-            .then(function(conversation) {
-                this.model = conversation;
-
-                this.headerView = new HeaderView({
-                    el: this.view.ui.header,
-                    model: conversation
-                });
-
-                this.listenTo(this.headerView, 'toggle', this.toggle);
-
-                this.conversationView = new ConversationView({
-                    el: this.view.ui.conversation,
-                    model: conversation,
-                    collection: conversation.get('messages'),
-                    childViewOptions: {
-                        conversation: conversation
-                    }
-                });
-
-                this.chatInputController = new ChatInputController({
-                    viewOptions: {
-                        el: this.view.ui.footer
-                    },
-                    model: conversation,
-                    collection: conversation.get('messages')
-                });
-
-                this.listenTo(this.chatInputController, 'message:send', this.sendMessage);
-                this.listenTo(this.chatInputController, 'message:read', this.onMessageRead);
-
-                this.headerView.render();
-                this.conversationView.render();
-                this.chatInputController.getView().render();
-            }.bind(this));
+            .then(this._getConversation)
+            .then(this._initFaye)
+            .then(this._initMessagingBus)
+            .then(this._manageUnread)
+            .then(this._renderWidget);
     },
 
-    onMessageRead: function() {
-        this.resetUnread();
-    },
 
-    //
-    // Unread count
-    //
-    getLatestReadTime: function() {
+    _getLatestReadTime: function() {
         if (!this.latestReadTs) {
             this.latestReadTs = parseInt(cookie.parse(document.cookie)['sk_latestts'] || 0);
         }
         return this.latestReadTs;
     },
 
-    setLatestReadTime: function(ts) {
+    _setLatestReadTime: function(ts) {
         this.latestReadTs = ts;
         document.cookie = 'sk_latestts=' + ts;
     },
 
-    updateUnread: function() {
-        var latestReadTs = this.getLatestReadTime();
+    _updateUnread: function() {
+        var latestReadTs = this._getLatestReadTime();
         var unreadMessages = this.conversation.get('messages').chain()
             .filter(function(message) {
                 // Filter out own messages
@@ -158,7 +180,7 @@ module.exports = ViewController.extend({
         }
     },
 
-    resetUnread: function() {
+    _resetUnread: function() {
         var latestReadTs = 0;
         var latestMessage = this.conversation.get('messages').max(function(message) {
             return message.get('received');
@@ -167,7 +189,7 @@ module.exports = ViewController.extend({
         if (latestMessage !== -Infinity) {
             latestReadTs = Math.floor(latestMessage.get('received'));
         }
-        this.setLatestReadTime(latestReadTs);
-        this.updateUnread();
+        this._setLatestReadTime(latestReadTs);
+        this._updateUnread();
     }
 });

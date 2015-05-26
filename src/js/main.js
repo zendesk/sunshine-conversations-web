@@ -24,7 +24,7 @@ require('../stylesheets/main.less');
 var SupportKit = Marionette.Object.extend({
     VERSION: 'js1.1.0',
 
-    initialize: function() {
+    initialize: function(options, initCallback) {
 
         // for backward compatibility
         this.ui = {
@@ -38,6 +38,9 @@ var SupportKit = Marionette.Object.extend({
         this.chatController = new ChatController({
             collection: this.conversations
         });
+
+
+        !!initCallback && this.listenToOnce(this, 'ready', initCallback);
     },
 
     _checkReady: function(message) {

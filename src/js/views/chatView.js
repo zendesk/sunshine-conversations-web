@@ -23,10 +23,13 @@ module.exports = Marionette.LayoutView.extend({
     },
 
     ui: {
-        header: '#sk-header',
-        conversation: '#sk-conversation',
-        footer: '#sk-footer',
         wrapper: '#sk-wrapper'
+    },
+
+    regions: {
+        header: '[data-region-header]',
+        main: '[data-region-main]',
+        footer: '[data-region-footer]'
     },
 
     open: function() {

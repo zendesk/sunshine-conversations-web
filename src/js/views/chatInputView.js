@@ -2,6 +2,8 @@ var Marionette = require('backbone.marionette');
 var template = require('../../templates/chatInput.tpl');
 
 module.exports = Marionette.ItemView.extend({
+    id: 'sk-footer',
+
     template: template,
 
     events: {
