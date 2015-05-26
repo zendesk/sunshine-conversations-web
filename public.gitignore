@@ -1,7 +1,0 @@
-*
-!bower.json
-!package.json
-!LICENSE
-!README.md
-!dist/
-!dist/*.min*.js
