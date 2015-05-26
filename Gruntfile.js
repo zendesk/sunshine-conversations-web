@@ -54,7 +54,7 @@ module.exports = function(grunt) {
         cssmin: {
             dist: {
                 files: {
-                    'dist/style.min.css': ['dist/style.css']
+                    'dist/style.min.css': 'dist/style.css'
                 }
             }
         },

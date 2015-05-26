@@ -2,6 +2,8 @@ var $ = require('jquery');
 var SupportKit = require('./main.js');
 var ChatView = require('./chatView');
 
+require('../../dist/style.min.css');
+
 (function(root) {
     // expose the ui
     root.SupportKit = root.SupportKit || {};
