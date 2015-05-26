@@ -18,6 +18,6 @@ module.exports = Marionette.ItemView.extend({
 
     _isAppMaker: function() {
         var appMakers = this.getOption('conversation').get('appMakers');
-        return _.contains(appMakers, this.model.get('authorId'));
+        return !!appMakers.get(this.model.get('authorId'));
     }
 });

@@ -14,7 +14,10 @@ module.exports = ViewController.extend({
 
     viewEvents: {
         'message:send': 'onMessageSend',
-        'message:read': 'onMessageRead'
+    },
+
+    viewTriggers: {
+        'message:read': 'message:read'
     },
 
     onMessageSend: function() {
@@ -23,9 +26,5 @@ module.exports = ViewController.extend({
             this.view.resetValue();
             this.trigger('message:send', message);
         }
-    },
-
-    onMessageRead: function() {
-        this.model.resetUnread();
     }
 });

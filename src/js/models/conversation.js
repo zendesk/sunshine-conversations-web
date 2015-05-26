@@ -5,6 +5,8 @@ var _ = require('underscore'),
     urljoin = require('url-join');
 
 var BaseModel = require('./baseModel'),
+    AppMaker = require('./appMaker'),
+    AppUser = require('./appUser'),
     Messages = require('../collections/messages');
 
 var vent = require('../vent'),
@@ -18,6 +20,7 @@ module.exports = BaseModel.extend({
         return {
             unread: 0,
             messages: [],
+            appUsers: [],
             appMakers: []
         };
     },
@@ -38,7 +41,12 @@ module.exports = BaseModel.extend({
         {
             type: Backbone.Many,
             key: 'appMakers',
-            relatedModel: Backbone.AssociatedModel
+            relatedModel: AppMaker
+        },
+        {
+            type: Backbone.Many,
+            key: 'appUsers',
+            relatedModel: AppUser
         }
     ]
 

@@ -39,12 +39,12 @@ module.exports = ViewController.extend({
 
     _receiveMessage: function(message) {
         if (!!this.conversation) {
-            message = this.get('messages').add(message);
+            message = this.conversation.get('messages').add(message);
 
-            if (!_.contains(this.get('appMakers'), message.get('authorId'))) {
-                var appMakersArray = _.clone(this.get('appMakers') || []);
-                appMakersArray.push(message.authorId);
-                this.set('appMakers', appMakersArray);
+            if (!this.conversation.get('appMakers').get(message.get('authorId'))) {
+                this.conversation.add({
+                    id: message.get('authorId')
+                });
             }
         }
     },
@@ -114,11 +114,16 @@ module.exports = ViewController.extend({
                 });
 
                 this.listenTo(this.chatInputController, 'message:send', this.sendMessage);
+                this.listenTo(this.chatInputController, 'message:read', this.onMessageRead);
 
                 this.headerView.render();
                 this.conversationView.render();
                 this.chatInputController.getView().render();
             }.bind(this));
+    },
+
+    onMessageRead: function() {
+        this.resetUnread();
     },
 
     //
@@ -141,7 +146,7 @@ module.exports = ViewController.extend({
         var unreadMessages = this.conversation.get('messages').chain()
             .filter(function(message) {
                 // Filter out own messages
-                return !_.contains(this.conversation.get('appUsers'), message.get('authorId'));
+                return !this.conversation.get('appUsers').get(message.get('authorId'));
             }.bind(this))
             .filter(function(message) {
                 return Math.floor(message.get('received')) > latestReadTs;

@@ -1,3 +1,5 @@
 var BaseModel = require('./baseModel');
 
-module.exports = BaseModel.extend({});
+module.exports = BaseModel.extend({
+    idAttribute: '_id'
+});
