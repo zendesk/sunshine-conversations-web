@@ -48,6 +48,7 @@
     "jstify": "^0.7.0",
     "karma": "^0.12.16",
     "karma-jasmine": "^0.2.3",
+    "lodash.bindall": "^3.1.0",
     "marionette.behaviors": "0.0.12",
     "matchdep": "^0.3.0",
     "node-lessify": "0.0.10",

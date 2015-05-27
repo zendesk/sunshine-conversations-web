@@ -3,7 +3,8 @@
 var Backbone = require('backbone'),
     Marionette = require('backbone.marionette'),
     _ = require('underscore'),
-    cookie = require('cookie');
+    cookie = require('cookie'),
+    bindAll = require('lodash.bindall');
 
 var ViewController = require('view-controller');
 
@@ -26,13 +27,7 @@ module.exports = ViewController.extend({
     },
 
     initialize: function() {
-        _.bindAll(this,
-            '_getConversation',
-            '_initFaye',
-            '_initMessagingBus',
-            '_manageUnread',
-            '_renderWidget'
-        );
+        bindAll(this);
     },
 
     open: function() {

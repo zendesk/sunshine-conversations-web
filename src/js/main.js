@@ -7,7 +7,8 @@ var Backbone = require('backbone'),
     _ = require('underscore'),
     $ = require('jquery'),
     cookie = require('cookie'),
-    uuid = require('uuid');
+    uuid = require('uuid'),
+    bindAll = require('lodash.bindall');
 
 
 var endpoint = require('./endpoint'),
@@ -32,6 +33,7 @@ var SupportKit = Marionette.Object.extend({
     VERSION: '1.0.0',
 
     initialize: function() {
+        bindAll(this);
 
         // for backward compatibility
         this.ui = {
@@ -40,20 +42,12 @@ var SupportKit = Marionette.Object.extend({
             toggle: this.open.bind(this)
         };
 
-        this.conversations = new Conversations();
+        this._conversations = new Conversations();
 
-        this.chatController = new ChatController({
-            collection: this.conversations
+        this._chatController = new ChatController({
+            collection: this._conversations
         });
 
-        _.bindAll(this,
-            'init',
-            'open',
-            'close',
-            'toggle',
-            'resetUnread',
-            'message'
-        );
     },
 
     _checkReady: function(message) {
@@ -120,31 +114,32 @@ var SupportKit = Marionette.Object.extend({
     },
 
     resetUnread: function() {
-        this.conversation.resetUnread();
+        this._checkReady();
+        this._chatController._resetUnread();
     },
 
     message: function(text) {
         this._checkReady('Can not send messages until init has completed');
-        this.chatController.sendMessage(text);
+        this._chatController.sendMessage(text);
     },
 
     open: function() {
         this._checkReady();
-        this.chatController.open();
+        this._chatController.open();
     },
 
     close: function() {
         this._checkReady();
-        this.chatController.close();
+        this._chatController.close();
     },
 
     toggle: function() {
         this._checkReady();
-        this.chatController.toggle();
+        this._chatController.toggle();
     },
 
     onReady: function() {
-        var view = this.chatController.getView();
+        var view = this._chatController.getView();
         $('body').append(view.render().el);
     }
 });
