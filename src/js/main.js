@@ -35,13 +35,6 @@ var SupportKit = Marionette.Object.extend({
     initialize: function() {
         bindAll(this);
 
-        // for backward compatibility
-        this.ui = {
-            open: this.open.bind(this),
-            close: this.open.bind(this),
-            toggle: this.open.bind(this)
-        };
-
         this._conversations = new Conversations();
 
         this._chatController = new ChatController({
@@ -118,7 +111,7 @@ var SupportKit = Marionette.Object.extend({
         this._chatController._resetUnread();
     },
 
-    message: function(text) {
+    sendMessage: function(text) {
         this._checkReady('Can not send messages until init has completed');
         this._chatController.sendMessage(text);
     },
@@ -131,11 +124,6 @@ var SupportKit = Marionette.Object.extend({
     close: function() {
         this._checkReady();
         this._chatController.close();
-    },
-
-    toggle: function() {
-        this._checkReady();
-        this._chatController.toggle();
     },
 
     onReady: function() {
