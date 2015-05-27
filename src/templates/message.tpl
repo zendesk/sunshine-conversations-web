@@ -1,5 +1,5 @@
-<div class="sk-from"><%= from%></div>
+<div class="sk-from"><%= name%></div>
 <div class="sk-msg">
-  <%- message%>
+  <%- text%>
 </div>
 <div class="sk-clear"></div>

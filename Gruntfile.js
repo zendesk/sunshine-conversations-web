@@ -28,7 +28,7 @@ module.exports = function(grunt) {
         },
         watch: {
             scripts: {
-                files: ['src/*/*.js', '*.html', 'src/templates/*.tpl', 'src/stylesheets/*.less'],
+                files: ['src/js/**/*.js', '*.html', "src/templates/*.tpl", "src/stylesheets/*.less"],
                 tasks: ['devbuild'],
                 options: {
                     spawn: false,
@@ -42,20 +42,6 @@ module.exports = function(grunt) {
             dist: {
                 src: 'dist/supportkit.js',
                 dest: 'dist/supportkit.min.js'
-            }
-        },
-        less: {
-            dist: {
-                files: {
-                    'dist/style.css': 'src/stylesheets/main.less'
-                }
-            }
-        },
-        cssmin: {
-            dist: {
-                files: {
-                    'dist/style.min.css': 'dist/style.css'
-                }
             }
         },
         replace: {
@@ -82,10 +68,7 @@ module.exports = function(grunt) {
         browserify: {
             dist: {
                 files: {
-                    'dist/supportkit.js': ['src/js/ui.js'],
-                },
-                options: {
-                    transform: ['jstify', 'cssify']
+                    'dist/supportkit.js': ['src/js/main.js'],
                 }
             },
             options: {
@@ -103,7 +86,7 @@ module.exports = function(grunt) {
                 access: 'public-read'
             },
             dev: {
-                // Files to be uploaded. 
+                // Files to be uploaded.
                 upload: [{
                     src: 'dist/supportkit.min.js',
                     dest: 'supportkit.min.js'
@@ -262,6 +245,10 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['clean', 'less', 'cssmin', 'browserify', 'replace', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'less', 'cssmin', 'browserify']);
 
+
+
+    grunt.registerTask('build', ['clean', 'browserify', 'replace', 'uglify']);
+    grunt.registerTask('devbuild', ['clean', 'browserify']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
 
     grunt.registerTask('run', ['runlog', 'concurrent:all']);
