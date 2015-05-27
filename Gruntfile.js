@@ -180,7 +180,12 @@ module.exports = function(grunt) {
                 }
             },
             push: {
-                cmd: 'git push'
+                cmd: function() {
+                    return [
+                        // 'git push',
+                        'git push origin not-integration'
+                    ].join(' && ');
+                }
             }
         },
 
