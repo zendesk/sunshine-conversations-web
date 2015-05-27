@@ -2,8 +2,8 @@
 
 var Backbone = require('backbone');
 
-var utils = require('../utils');
+var mixins = require('../mixins');
 
 module.exports = Backbone.AssociatedModel.extend({
-    sync: utils.sync
+    sync: mixins.sync
 });
