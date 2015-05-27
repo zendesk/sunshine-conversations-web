@@ -3,7 +3,6 @@ bower_components
 *.log
 build
 tmp
-dist/*
-!dist/supportkit.min.js
+dist/
 grunt-aws.json
 *.sublime-workspace

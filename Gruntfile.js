@@ -127,7 +127,7 @@ module.exports = function(grunt) {
             options: {
                 npm: false,
                 bump: false,
-                commit: false,
+                commit: true,
                 remote: 'https://github.com/radialpoint/SupportKitPrivate.git head:master --force',
                 github: {
                     repo: 'radialpoint/SupportKitPrivate', //put your user/repo here
@@ -167,6 +167,14 @@ module.exports = function(grunt) {
                     return [
                         // 'git push',
                         'git push origin not-integration'
+                    ].join(' && ');
+                }
+            },
+            addDist: {
+                cmd: function() {
+                    return [
+                        'git add --force dist/supportkit.js',
+                        'git add --force dist/supportkit.min.js'
                     ].join(' && ');
                 }
             }
@@ -255,7 +263,7 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['run']);
 
-    grunt.registerTask('publish:prepare', ['versionBump', 'build', 'exec:commitFiles', 'exec:createRelease']);
+    grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist']);
     grunt.registerTask('publish:release', ['release']);
     grunt.registerTask('publish:cleanup', ['exec:cleanRelease' /*, 'exec:push'*/ ]);
 
