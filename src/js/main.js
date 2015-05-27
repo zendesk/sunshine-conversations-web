@@ -21,6 +21,13 @@ var ChatController = require('./controllers/chatController'),
 // appends the compile stylesheet to the HEAD
 require('../stylesheets/main.less');
 
+/**
+ * Contains all SupportKit API classes and functions.
+ * @name SupportKit
+ * @namespace
+ *
+ * Contains all SupportKit API classes and functions.
+ */
 var SupportKit = Marionette.Object.extend({
     VERSION: '1.0.0',
 
@@ -94,7 +101,11 @@ var SupportKit = Marionette.Object.extend({
             deviceId: this.deviceId,
             deviceInfo: {
                 URL: document.location.host,
-                userAgent: navigator.userAgent
+                userAgent: navigator.userAgent,
+                referrer: document.referrer,
+                browserLanguage: navigator.language,
+                currentUrl: document.location.href,
+                currentTitle: document.title
             }
         })
             .then(function(res) {
