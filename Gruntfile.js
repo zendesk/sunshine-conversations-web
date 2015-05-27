@@ -39,7 +39,7 @@ module.exports = function(grunt) {
         },
         watch: {
             scripts: {
-                files: ['src/*/*.js', '*.html', "src/templates/*.tpl", "src/stylesheets/*.less"],
+                files: ['src/js/**/*.js', '*.html', "src/templates/*.tpl", "src/stylesheets/*.less"],
                 tasks: ['devbuild'],
                 options: {
                     spawn: false,
@@ -98,10 +98,7 @@ module.exports = function(grunt) {
         browserify: {
             dist: {
                 files: {
-                    'dist/supportkit.js': ['src/js/ui.js'],
-                },
-                options: {
-                    transform: ['jstify']
+                    'dist/supportkit.js': ['src/js/main.js'],
                 }
             },
             options: {
@@ -118,7 +115,7 @@ module.exports = function(grunt) {
                 access: 'public-read'
             },
             dev: {
-                // Files to be uploaded. 
+                // Files to be uploaded.
                 upload: [{
                     src: 'dist/supportkit.min.js',
                     dest: 'supportkit.min.js'
@@ -133,15 +130,15 @@ module.exports = function(grunt) {
         },
         cloudfront: {
             options: {
-                region: 'us-east-1', // your AWS region 
-                distributionId: "E1RI234SLR5ORA", // DistributionID where files are stored 
+                region: 'us-east-1', // your AWS region
+                distributionId: "E1RI234SLR5ORA", // DistributionID where files are stored
                 credentials: {
                     accessKeyId: "<%= aws.key %>",
                     secretAccessKey: '<%= aws.secret %>'
                 },
-                listInvalidations: true, // if you want to see the status of invalidations 
-                listDistributions: false, // if you want to see your distributions list in the console 
-                version: "1.0" // if you want to invalidate a specific version (file-1.0.js) 
+                listInvalidations: true, // if you want to see the status of invalidations
+                listDistributions: false, // if you want to see your distributions list in the console
+                version: "1.0" // if you want to invalidate a specific version (file-1.0.js)
             },
             prod: {
                 options: {
@@ -158,8 +155,8 @@ module.exports = function(grunt) {
 
 
 
-    grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
-    grunt.registerTask('devbuild', ['clean', 'browserify', 'less', 'cssmin', 'str2js', 'concat']);
+    grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'concat', 'uglify']);
+    grunt.registerTask('devbuild', ['clean', 'browserify', 'less', 'cssmin', 'concat']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
     grunt.registerTask('run', ['runlog', 'concurrent:all']);
     grunt.registerTask('test', ['karma']);

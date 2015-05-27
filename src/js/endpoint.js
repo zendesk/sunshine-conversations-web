@@ -42,7 +42,3 @@ module.exports.post = function(path, body) {
 module.exports.put = function(path, body) {
     return this._rest('PUT', path, body);
 };
-
-module.exports.getConversations = function() {
-    return this.get('/api/conversations?appUserId=' + this.appUserId);
-};

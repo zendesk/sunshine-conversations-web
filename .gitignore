@@ -4,4 +4,4 @@ build
 tmp
 dist
 grunt-aws.json
-supportkit-js.sublime-workspace
+*.sublime-workspace
