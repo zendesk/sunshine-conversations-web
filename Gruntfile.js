@@ -50,7 +50,7 @@ module.exports = function(grunt) {
                 dest: 'dist/supportkit.js',
                 replacements: [{
                     from: /var ROOT_URL = '.*';/,
-                    to: 'var ROOT_URL = "http://localhost:3001";'
+                    to: 'var ROOT_URL = "http://localhost:8091";'
                 }]
             }
         },
