@@ -50,7 +50,7 @@ module.exports = function(grunt) {
                 dest: 'dist/supportkit.js',
                 replacements: [{
                     from: /var ROOT_URL = '.*';/,
-                    to: 'var ROOT_URL = "https://sdk.supportkit.io";'
+                    to: 'var ROOT_URL = "http://localhost:3001";'
                 }]
             }
         },
@@ -250,16 +250,11 @@ module.exports = function(grunt) {
         grunt.task.run('branchCheck', 'publish:prepare', 'publish:release', 'publish:cleanup');
     });
 
-    grunt.registerTask('build', ['clean', 'less', 'cssmin', 'browserify', 'replace', 'uglify']);
-    grunt.registerTask('devbuild', ['clean', 'less', 'cssmin', 'browserify']);
-
-
-
-    grunt.registerTask('build', ['clean', 'browserify', 'replace', 'uglify']);
-    grunt.registerTask('devbuild', ['clean', 'browserify']);
+    grunt.registerTask('build', ['clean', 'browserify', 'uglify']);
+    grunt.registerTask('devbuild', ['clean', 'browserify', 'replace']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
 
-    grunt.registerTask('run', ['runlog', 'concurrent:all']);
+    grunt.registerTask('run', ['runlog', 'devbuild', 'concurrent:all']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['run']);
 

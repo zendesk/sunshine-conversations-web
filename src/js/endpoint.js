@@ -1,4 +1,4 @@
-var ROOT_URL = 'http://localhost:8091';
+var ROOT_URL = 'https://sdk.supportkit.io';
 
 var $ = require('jquery');
 
