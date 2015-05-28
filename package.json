@@ -23,7 +23,7 @@
     "cookie": "^0.1.3",
     "faye": "^1.1.1",
     "jstify": "^0.7.0",
-    "jquery": "^2.1.4",
+    "jquery": "^1.11.3",
     "lodash.bindall": "^3.1.0",
     "marionette.behaviors": "0.0.12",
     "node-lessify": "0.0.10",
