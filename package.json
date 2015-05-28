@@ -25,6 +25,11 @@
     "npm": "1.1.32"
   },
   "devDependencies": {
+    "faye": "^1.1.1",
+    "grunt-cloudfront": "^0.2.1",
+    "grunt-contrib-less": "^1.0.0",
+    "grunt-s3": "^0.2.0-alpha.3",
+    "jquery": "^2.1.4",
     "backbone": "^1.1.2",
     "backbone-associations": "^0.6.2",
     "backbone-computedfields": "0.0.10",
