@@ -1,8 +1,7 @@
 dependencies:
     override:
         - npm install:
-            timeout: 600e_modules/nightwatch-commands/selenium/drivers/chromedriver:
-            timeout: 10
+            timeout: 600
 
 test:
     override:
