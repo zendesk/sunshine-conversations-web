@@ -1,7 +1,7 @@
 'use strict';
 
 var BaseMock = require('./baseMock');
-var faye = require('Faye');
+var faye = require('faye');
 
 module.exports = new BaseMock({
     target: faye.Client.prototype,
