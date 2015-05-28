@@ -79,13 +79,13 @@ module.exports = ViewController.extend({
             deferred.resolve(this.conversation);
         } else {
             this.conversation = this.collection.create(
-                {
-                    appUserId: endpoint.appUserId
-                },
-                {
-                    success: deferred.resolve,
-                    error: deferred.reject
-                }
+            {
+                appUserId: endpoint.appUserId
+            },
+            {
+                success: deferred.resolve,
+                error: deferred.reject
+            }
             );
         }
 
