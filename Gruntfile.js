@@ -2,9 +2,6 @@
 
 module.exports = function(grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
-    grunt.loadNpmTasks('grunt-s3');
-    grunt.loadNpmTasks('grunt-contrib-less');
-    grunt.loadNpmTasks('grunt-cloudfront');
     grunt.registerTask('runlog', function() {
         grunt.log.write('http://localhost:8282/example/dev.html');
     });
