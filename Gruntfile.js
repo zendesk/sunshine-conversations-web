@@ -2,10 +2,12 @@
 
 /* global process:false */
 
+var _ = require('underscore');
+
 module.exports = function(grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
     grunt.registerTask('runlog', function() {
-        grunt.log.write('http://localhost:8282/example/dev.html');
+        grunt.log.write('http://localhost:8282/example/demo.html');
     });
 
     grunt.registerTask('awsconfig', function() {
@@ -50,7 +52,24 @@ module.exports = function(grunt) {
                 dest: 'dist/supportkit.js',
                 replacements: [{
                     from: /var ROOT_URL = '.*';/,
-                    to: 'var ROOT_URL = "http://localhost:8091";'
+                    to: 'var ROOT_URL = "<%= config.ROOT_URL %>";'
+                }]
+            },
+            demo: {
+                src: 'example/template/demo.html',
+                dest: 'example/demo.html',
+                replacements: [{
+                    from: /APP_TOKEN/,
+                    to: '<%= config.APP_TOKEN %>'
+                }, {
+                    from: /GIVEN_NAME/,
+                    to: '<%= config.GIVEN_NAME %>'
+                }, {
+                    from: /SURNAME/,
+                    to: '<%= config.SURNAME %>'
+                }, {
+                    from: /EMAIL/,
+                    to: '<%= config.EMAIL %>'
                 }]
             }
         },
@@ -250,8 +269,23 @@ module.exports = function(grunt) {
         grunt.task.run('branchCheck', 'publish:prepare', 'publish:release', 'publish:cleanup');
     });
 
+    grunt.registerTask('loadConfig', 'Loads config from config folder (uses default if none present', function() {
+        var defaultConfig = grunt.file.readJSON('config/default/config.json');
+        var config = {};
+
+        try {
+            config = grunt.file.readJSON('config/config.json');
+        }
+        catch (err) {
+            grunt.log.warn('You might want to create a config with your app token at config/config.json');
+        }
+
+        var merged = _.extend(defaultConfig, config);
+        grunt.config.set('config', merged);
+    });
+
     grunt.registerTask('build', ['clean', 'browserify', 'uglify']);
-    grunt.registerTask('devbuild', ['clean', 'browserify', 'replace']);
+    grunt.registerTask('devbuild', ['clean', 'browserify', 'loadConfig', 'replace']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
 
     grunt.registerTask('run', ['runlog', 'devbuild', 'concurrent:all']);
