@@ -35,7 +35,7 @@ module.exports = function(grunt) {
                 banner: '<%= banner %>'
             },
             dist: {
-                src: ['dist/supportkit.js', 'dist/style.min.css.js'],
+                src: ['dist/supportkit.js'],
                 dest: 'dist/supportkit.js'
             }
         },
@@ -55,20 +55,6 @@ module.exports = function(grunt) {
             dist: {
                 src: '<%= concat.dist.dest %>',
                 dest: 'dist/supportkit.min.js'
-            }
-        },
-        less: {
-            dist: {
-                files: {
-                    'dist/style.css': 'src/stylesheets/main.less'
-                }
-            }
-        },
-        cssmin: {
-            dist: {
-                files: {
-                    'dist/style.min.css': ['dist/style.css']
-                }
             }
         },
         replace: {
@@ -157,7 +143,7 @@ module.exports = function(grunt) {
 
 
 
-    grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'concat', 'uglify']);
+    grunt.registerTask('build', ['clean', 'browserify', 'replace', 'concat', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'less', 'cssmin', 'concat']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
     grunt.registerTask('run', ['runlog', 'concurrent:all']);

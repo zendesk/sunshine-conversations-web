@@ -25,10 +25,10 @@
     "backbone.stickit": "^0.9.2",
     "cookie": "^0.1.2",
     "faye": "^1.1.1",
-    "jquery": "^1.10.0",
+    "jquery": "~1.11.0",
     "lodash.bindall": "^3.1.0",
-    "marionette.behaviors": "0.0.12",
-    "underscore": "^1.7.0",
+    "marionette.behaviors": "^0.0.12",
+    "underscore": "~1.5.2",
     "url-join": "0.0.1",
     "uuid": "^2.0.1",
     "view-controller": "^1.0.1"
@@ -81,5 +81,10 @@
       "node-lessify",
       "jstify"
     ]
+  },
+
+  "browser": {
+    "underscore": "./node_modules/underscore/underscore.js",
+    "backbone": "./node_modules/backbone/backbone.js"
   }
 }
