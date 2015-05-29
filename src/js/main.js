@@ -131,7 +131,9 @@ var SupportKit = Marionette.Object.extend({
             throw new Error('updateUser accepts an object as parameter');
         }
 
-        this._updateUser(userInfo);
+        this.throttledUpdate = this.throttledUpdate || _.throttle(this._updateUser, 60000);
+
+        this.throttledUpdate(userInfo);
     },
 
     onReady: function() {
