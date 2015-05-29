@@ -19,7 +19,14 @@ module.exports = function(grunt) {
         clean: ['dist/*'],
         karma: {
             unit: {
-                configFile: 'karma.conf.js'
+                configFile: 'karma.conf.js',
+                singleRun: false,
+                browsers: ['PhantomJS', 'Chrome']
+            },
+            ci: {
+                configFile: 'karma.conf.js',
+                singleRun: true,
+                browsers: ['PhantomJS']
             }
         },
         concat: {
