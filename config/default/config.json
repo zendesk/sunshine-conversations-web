@@ -1,6 +1,6 @@
-{
-    "ROOT_URL": "http://localhost:8091",
-    "APP_TOKEN": "dl6btfjt1i09ncpac2x0il2fl",
+{   
+    "ROOT_URL": "https://sdk.supportkit.io",
+    "APP_TOKEN": "3ea7dnnifzriurbnqkux3043o",
     "GIVEN_NAME": "DEFAULT_NAME",
     "SURNAME": "DEFAULT_SURNAME",
     "EMAIL": "DEFAULT@EMAIL.COM"
