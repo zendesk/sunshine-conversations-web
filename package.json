@@ -9,8 +9,12 @@
   ],
   "author": {
     "name": "Andrew Lavers",
-    "org": "Radialpoint"
+    "org": "SupportKit"
   },
+  "scripts": {
+    "test": "karma test"
+  },
+  "main": "src/js/main.js",
   "homepage": "http://supportkit.io",
   "license": "MIT",
   "dependencies": {

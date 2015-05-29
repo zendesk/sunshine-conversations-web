@@ -1,3 +1,10 @@
 test:
     override:
-        - grunt test
+        - karma start
+deployment:
+  build:
+    commands:
+      - grunt build
+general:
+  artifacts:
+    - "dist/"
