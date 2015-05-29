@@ -1,3 +1,5 @@
+/* global global:false */
+
 'use strict';
 
 require('./bootstrap');
@@ -45,7 +47,7 @@ var SupportKit = Marionette.Object.extend({
 
     _checkReady: function(message) {
         if (!this.ready) {
-            throw new Error(message || "Can't use this function until the SDK is ready.");
+            throw new Error(message || 'Can\'t use this function until the SDK is ready.');
         }
     },
 

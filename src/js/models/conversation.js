@@ -33,9 +33,9 @@ module.exports = BaseModel.extend({
                 var model = this;
                 return Messages.extend({
                     url: function() {
-                        return urljoin(model.url(), '/messages/')
+                        return urljoin(model.url(), '/messages/');
                     }
-                })
+                });
             }
         },
         {
@@ -49,6 +49,4 @@ module.exports = BaseModel.extend({
             relatedModel: AppUser
         }
     ]
-
-
 });

@@ -1,6 +1,7 @@
 'use strict';
 
-var Backbone = require('backbone'),
+var $ = require('jquery'),
+    Backbone = require('backbone'),
     Marionette = require('backbone.marionette'),
     _ = require('underscore'),
     cookie = require('cookie'),
@@ -72,19 +73,19 @@ module.exports = ViewController.extend({
         var deferred = $.Deferred();
 
         if (!!this.conversation) {
-            deferred.resolve(this.conversation)
+            deferred.resolve(this.conversation);
         } else if (this.collection.length > 0) {
             this.conversation = this.collection.at(0);
-            deferred.resolve(this.conversation)
+            deferred.resolve(this.conversation);
         } else {
             this.conversation = this.collection.create(
-                {
-                    appUserId: endpoint.appUserId
-                },
-                {
-                    success: deferred.resolve,
-                    error: deferred.reject
-                }
+            {
+                appUserId: endpoint.appUserId
+            },
+            {
+                success: deferred.resolve,
+                error: deferred.reject
+            }
             );
         }
 
