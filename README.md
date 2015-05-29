@@ -82,14 +82,7 @@ Closes the conversation widget
 SupportKit.close();
 ```
 
-#### toggle()
-Toggles the conversation widget
-
-```javascript
-SupportKit.toggle();
-```
-
-#### message(text)
+#### sendMessage(text)
 Sends a message on the user's behalf
 
 ```javascript
