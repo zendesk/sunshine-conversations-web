@@ -6,3 +6,9 @@ tmp
 dist/
 grunt-aws.json
 *.sublime-workspace
+config/*
+!config/default
+!config/default/*.json
+example/*
+!example/template
+!example/template/*.html
