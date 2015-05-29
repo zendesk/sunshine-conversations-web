@@ -12,7 +12,7 @@
     "org": "SupportKit"
   },
   "scripts": {
-    "test": "karma test"
+    "test": "karma start"
   },
   "main": "src/js/main.js",
   "homepage": "http://supportkit.io",
