@@ -12,7 +12,7 @@ module.exports = function(config) {
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['mocha', 'browserify', 'sinon-chai', 'phantomjs-shim'],
+        frameworks: ['mocha', 'browserify', 'sinon-chai', 'phantomjs-shim', 'source-map-support'],
 
         // list of files / patterns to load in the browser
         files: ['test/bootstrap.js', 'test/specs/**/*.spec.js'],
@@ -66,6 +66,10 @@ module.exports = function(config) {
 
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
-        singleRun: true
+        singleRun: true,
+
+        browserify: {
+            debug: true // include inline source maps
+        }
     });
 };

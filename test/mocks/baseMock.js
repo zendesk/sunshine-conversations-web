@@ -11,7 +11,9 @@ var BaseMock = module.exports = function(options) {
     this.options = options;
 
     _.isFunction(this.initialize) && this.initialize.apply(this, arguments);
-    this._sandbox = sinon.sandbox.create();
+    this._sandbox = sinon.sandbox.create({
+        useFakeServer: true
+    });
 };
 
 _.extend(BaseMock.prototype, {

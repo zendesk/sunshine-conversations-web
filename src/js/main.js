@@ -45,7 +45,7 @@ var SupportKit = Marionette.Object.extend({
 
     _checkReady: function(message) {
         if (!this.ready) {
-            throw new Error(message || "Can't use this function until the SDK is ready.");
+            throw new Error(message || 'Can\'t use this function until the SDK is ready.');
         }
     },
 
@@ -95,15 +95,16 @@ var SupportKit = Marionette.Object.extend({
                 currentTitle: document.title
             }
         })
-            .then(function(res) {
+            .then(_(function(res) {
                 endpoint.appUserId = res.appUserId;
-                return this._updateUser.bind(this);
-            }.bind(this))
-            .then(function() {
+                return this._updateUser();
+            }).bind(this))
+            .then(_(function() {
                 // Tell the world we're ready
                 this.ready = true;
                 this.triggerMethod('ready');
-            }.bind(this));
+            }).bind(this))
+            .done();
     },
 
     resetUnread: function() {

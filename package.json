@@ -69,6 +69,7 @@
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-phantomjs-shim": "^1.0.0",
     "karma-sinon-chai": "^0.3.0",
+    "karma-source-map-support": "^1.0.0",
     "matchdep": "^0.3.0",
     "mocha": "^2.2.5",
     "node-lessify": "0.0.10",
@@ -82,7 +83,6 @@
       "jstify"
     ]
   },
-
   "browser": {
     "underscore": "./node_modules/underscore/underscore.js",
     "backbone": "./node_modules/backbone/backbone.js"
