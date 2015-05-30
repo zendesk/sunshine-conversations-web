@@ -68,8 +68,6 @@ describe('Main', function() {
                     'isAwesome': true
                 }
             });
-
-
         });
     });
 
