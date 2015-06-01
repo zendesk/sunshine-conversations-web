@@ -53,14 +53,7 @@ var SupportKit = Marionette.Object.extend({
     },
 
     _updateUser: function(userInfo) {
-        console.log('uopdating');
-        this.user.set('properties', this.user.get('properties') || {});
-
-        this.user.save({
-            success: function() {
-                return $.Deferred().resolve();
-            }
-        });
+        return this.user.save();
     },
 
     init: function(options) {
