@@ -19,7 +19,8 @@ var endpoint = require('./endpoint'),
 
 var ChatController = require('./controllers/chatController'),
     Message = require('./models/message'),
-    Conversations = require('./collections/conversations');
+    Conversations = require('./collections/conversations'),
+    AppUser = require('./models/appUser');
 
 // appends the compile stylesheet to the HEAD
 require('../stylesheets/main.less');
@@ -51,13 +52,15 @@ var SupportKit = Marionette.Object.extend({
         }
     },
 
-    _updateUser: function(user) {
-        if (_.isEmpty(user)) {
-            return $.Deferred().resolve();
-        } else {
-            user.properties = user.properties || {};
-            return endpoint.put('/api/appusers/' + endpoint.appUserId, user);
-        }
+    _updateUser: function(userInfo) {
+        this.user.set('properties', this.user.get('properties') || {});
+        console.log('user.attributes :: ', this.user.attributes);
+
+        this.user.save({
+            success: function() {
+                return $.Deferred().resolve();
+            }
+        });
     },
 
     init: function(options) {
@@ -96,8 +99,13 @@ var SupportKit = Marionette.Object.extend({
             }
         })
             .then(function(res) {
+                this.user = new AppUser({
+                    id: res.appUserId
+                });
+
                 endpoint.appUserId = res.appUserId;
-                return this._updateUser(_.pick(options, 'givenName', 'surname', 'email', 'properties'));
+
+                return this.updateUser(_.pick(options, 'givenName', 'surname', 'email', 'properties'));
             }.bind(this))
             .then(function() {
                 // Tell the world we're ready
@@ -127,13 +135,15 @@ var SupportKit = Marionette.Object.extend({
     },
 
     updateUser: function(userInfo) {
-        if(typeof userInfo !== 'object') {
+        if (typeof userInfo !== 'object') {
             throw new Error('updateUser accepts an object as parameter');
         }
 
-        this.throttledUpdate = this.throttledUpdate || _.throttle(this._updateUser, 60000);
+        userInfo.id = this.user.id;
+        this.user = new AppUser(userInfo);
 
-        this.throttledUpdate(userInfo);
+        this.throttledUpdate = this.throttledUpdate || _.throttle(this._updateUser.bind(this), 5000);
+        return this.throttledUpdate();
     },
 
     onReady: function() {

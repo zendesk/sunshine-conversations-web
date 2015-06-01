@@ -14,7 +14,7 @@ var vent = require('../vent'),
 
 module.exports = BaseModel.extend({
     idAttribute: '_id',
-    urlRoot: urljoin(endpoint.rootUrl, 'api/conversations/'),
+    urlRoot: 'conversations/',
 
     defaults: function() {
         return {
