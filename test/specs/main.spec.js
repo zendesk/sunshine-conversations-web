@@ -43,21 +43,21 @@ describe('Main', function() {
 
         beforeEach(function() {
             readySpy = sandbox.spy();
-            SupportKit.on('ready', readySpy);
+            SupportKit.once('ready', function(){
+                readySpy();
+            });
         });
 
         afterEach(function() {
-            SupportKit.off('ready', readySpy);
             sandbox.restore();
         });
 
         it('should trigger ready', function(done) {
-            // this one should run after the spy one since
-            // it was registered after it.
-            SupportKit.on('ready', function() {
+
+            SupportKit.once('ready', function(){
                 readySpy.should.have.been.calledOnce;
                 done();
-            })
+            });
 
             SupportKit.init({
                 appToken: 'thisisanapptoken',
@@ -67,6 +67,7 @@ describe('Main', function() {
                     'isAwesome': true
                 }
             });
+
         });
     });
 

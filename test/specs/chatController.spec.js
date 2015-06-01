@@ -1,11 +1,13 @@
 var sinon = require('sinon'),
     _ = require('underscore'),
+    $ = require('jquery'),
     ChatController = require('../../src/js/controllers/chatController'),
     Conversations = require('../../src/js/collections/conversations'),
     vent = require('../../src/js/vent');
 
 var ClientScenario = require('../scenarios/clientScenario');
-describe('Main', function() {
+
+describe('ChatController', function() {
     var scenario,
         SupportKit,
         sandbox,
@@ -50,18 +52,27 @@ describe('Main', function() {
             renderWidgetSpy = sandbox.spy(chatController._renderWidget);
         });
 
-        afterEach(function(){
+        afterEach(function() {
             sandbox.restore();
         });
 
 
-        it('should trigger the init chain', function() {
+        it('should trigger the init chain', function(done) {
             var view = chatController.getView();
-            view.render();
 
+            view.once('render', function() {
+                done();
+            });
 
-            getConversationSpy.should.be.calledOnce;
+            view._firstRender = false;
 
+            $('body').append(view.render().el);
+
+            getConversationSpy.should.have.been.calledOnce;
+            initFayeSpy.should.have.been.calledOnce;
+            initMessagingBusSpy.should.have.been.calledOnce;
+            manageUnreadSpy.should.have.been.calledOnce;
+            renderWidgetSpy.should.have.been.calledOnce;
         });
     });
 
