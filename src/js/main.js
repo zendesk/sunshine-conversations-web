@@ -140,7 +140,7 @@ var SupportKit = Marionette.Object.extend({
         userChanged = userChanged || (userInfo.surname && this.user.get('surname') !== userInfo.surname);
         userChanged = userChanged || (userInfo.email && this.user.get('email') !== userInfo.email);
 
-        if (userInfo.properties) {
+        if (!userChanged && userInfo.properties) {
             var props = this.user.get('properties');
             _.each(userInfo.properties, function(value, key) {
                 userChanged = userChanged || value !== props[key];
