@@ -89,6 +89,20 @@ Sends a message on the user's behalf
 SupportKit.message('hello');
 ```
 
+#### updateUser(user)
+Updates user information
+
+```javascript
+SupportKit.updateUser({
+    givenName: 'Updated',
+    surname: 'Name',
+    email: 'updated@email.com',
+    properties: {
+      'justGotUpdated': true
+    }
+});
+```
+
 ### Events
 
 ```

@@ -51,20 +51,18 @@ var SupportKit = Marionette.Object.extend({
         }
     },
 
-    _updateUser: function() {
-        if (_.isEmpty(this.user)) {
+    _updateUser: function(user) {
+        if (_.isEmpty(user)) {
             return $.Deferred().resolve();
         } else {
-            this.user.properties = this.user.properties || {};
-            return endpoint.put('/api/appusers/' + endpoint.appUserId, this.user);
+            user.properties = user.properties || {};
+            return endpoint.put('/api/appusers/' + endpoint.appUserId, user);
         }
     },
 
     init: function(options) {
         this.ready = false;
         options = options || {};
-
-        this.user = _.pick(options, 'givenName', 'surname', 'email', 'properties');
 
         if (typeof options === 'object') {
             endpoint.appToken = options.appToken;
@@ -99,7 +97,7 @@ var SupportKit = Marionette.Object.extend({
         })
             .then(function(res) {
                 endpoint.appUserId = res.appUserId;
-                return this._updateUser.bind(this);
+                return this._updateUser(_.pick(options, 'givenName', 'surname', 'email', 'properties'));
             }.bind(this))
             .then(function() {
                 // Tell the world we're ready
@@ -126,6 +124,16 @@ var SupportKit = Marionette.Object.extend({
     close: function() {
         this._checkReady();
         this._chatController.close();
+    },
+
+    updateUser: function(userInfo) {
+        if(typeof userInfo !== 'object') {
+            throw new Error('updateUser accepts an object as parameter');
+        }
+
+        this.throttledUpdate = this.throttledUpdate || _.throttle(this._updateUser, 60000);
+
+        this.throttledUpdate(userInfo);
     },
 
     onReady: function() {
