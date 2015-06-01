@@ -53,8 +53,8 @@ var SupportKit = Marionette.Object.extend({
     },
 
     _updateUser: function(userInfo) {
+        console.log('uopdating');
         this.user.set('properties', this.user.get('properties') || {});
-        console.log('user.attributes :: ', this.user.attributes);
 
         this.user.save({
             success: function() {
@@ -135,14 +135,32 @@ var SupportKit = Marionette.Object.extend({
     },
 
     updateUser: function(userInfo) {
+        var userChanged = false;
+
         if (typeof userInfo !== 'object') {
             throw new Error('updateUser accepts an object as parameter');
         }
 
         userInfo.id = this.user.id;
+
+        userChanged = userChanged || (userInfo.givenName && this.user.get('givenName') !== userInfo.givenName);
+        userChanged = userChanged || (userInfo.surname && this.user.get('surname') !== userInfo.surname);
+        userChanged = userChanged || (userInfo.email && this.user.get('email') !== userInfo.email);
+
+        if (userInfo.properties) {
+            var props = this.user.get('properties');
+            _.each(userInfo.properties, function(value, key) {
+                userChanged = userChanged || value !== props[key];
+            });
+        }
+
+        if (!userChanged) {
+            return;
+        }
+
         this.user = new AppUser(userInfo);
 
-        this.throttledUpdate = this.throttledUpdate || _.throttle(this._updateUser.bind(this), 5000);
+        this.throttledUpdate = this.throttledUpdate || _.throttle(this._updateUser.bind(this), 60000);
         return this.throttledUpdate();
     },
 
