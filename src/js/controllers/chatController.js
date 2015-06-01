@@ -143,7 +143,8 @@ module.exports = ViewController.extend({
             .then(this._initFaye)
             .then(this._initMessagingBus)
             .then(this._manageUnread)
-            .then(this._renderWidget);
+            .then(this._renderWidget)
+            .done();
     },
 
 

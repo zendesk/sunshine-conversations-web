@@ -34,7 +34,6 @@ describe('Main', function() {
 
         it('should not publish dependencies in global context', function() {
             expect(global.Backbone).to.be.undefined;
-            expect(global.jQuery).to.be.undefined;
             expect(global._).to.be.undefined;
         })
     });

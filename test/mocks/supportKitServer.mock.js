@@ -4,7 +4,7 @@ var BaseServerMock = require('./baseServerMock');
 
 var userStore = require('../data/users');
 
-var SupportKitServerMock = BaseServerMock.extend({
+module.exports = BaseServerMock.extend({
     routes: function() {
         var faye = require('faye');
         var endpoint = require('../../src/js/endpoint');
@@ -30,6 +30,3 @@ var SupportKitServerMock = BaseServerMock.extend({
         return routes;
     }
 });
-
-
-module.exports = new SupportKitServerMock();

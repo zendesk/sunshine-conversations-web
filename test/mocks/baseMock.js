@@ -4,16 +4,19 @@ var _ = require('underscore'),
     Backbone = require('backbone'),
     sinon = require('sinon');
 
+var helpers = require('../helpers');
+
 
 
 var BaseMock = module.exports = function(options) {
     options || (options = {});
     this.options = options;
 
-    _.isFunction(this.initialize) && this.initialize.apply(this, arguments);
     this._sandbox = sinon.sandbox.create({
         useFakeServer: true
     });
+
+    _.isFunction(this.initialize) && this.initialize.apply(this, arguments);
 };
 
 _.extend(BaseMock.prototype, {
@@ -22,8 +25,8 @@ _.extend(BaseMock.prototype, {
     },
 
     mock: function() {
-        var target = this.options.target,
-            methods = this.options.methods;
+        var target = helpers.getOption(this, 'target'),
+            methods = helpers.getOption(this, 'methods');
 
         if (!target || !methods) {
             throw new Error('Must provide a target and methods to mock');
@@ -38,4 +41,4 @@ _.extend(BaseMock.prototype, {
     }
 });
 
-BaseMock.extend = Backbone.Model.extend;
+BaseMock.extend = helpers.extend;

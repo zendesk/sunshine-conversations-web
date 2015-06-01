@@ -3,7 +3,7 @@
 var BaseMock = require('./baseMock');
 var faye = require('faye');
 
-module.exports = new BaseMock({
+module.exports = BaseMock.extend({
     target: faye.Client.prototype,
     methods: {
         addExtension: function(extension){},

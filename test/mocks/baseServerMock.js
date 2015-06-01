@@ -22,7 +22,7 @@ module.exports = BaseMock.extend({
     setUpRoutes: function() {
         var routes = _.result(this, 'routes', []);
 
-        _.each(routes, _(function(route) {
+        _(routes).each(_(function(route) {
             this.server.respondWith.apply(this.server, route);
         }).bind(this));
     }

@@ -15,7 +15,7 @@ module.exports = function(config) {
         frameworks: ['mocha', 'browserify', 'sinon-chai', 'phantomjs-shim', 'source-map-support'],
 
         // list of files / patterns to load in the browser
-        files: ['test/bootstrap.js', 'test/specs/**/*.spec.js'],
+        files: ['node_modules/jquery/dist/jquery.min.js', 'test/bootstrap.js', 'test/specs/**/*.spec.js'],
 
 
         // list of files to exclude

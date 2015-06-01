@@ -1,13 +1,15 @@
 'use strict';
 
 
-var _ = require('underscore');
+var _ = require('underscore'),
+    helpers = require('../helpers');
 
 var ScenarioBuilder = function() {};
 
 var ScenarioBuilder = module.exports = function(options) {
     options || (options = {});
     this.options = options;
+    this._mocks = {};
     _.isFunction(this.initialize) && this.initialize.apply(this, arguments);
 };
 
@@ -15,28 +17,21 @@ _.extend(ScenarioBuilder.prototype, {
     mocks: [],
 
     build: function() {
-        _(this.mocks).each(function(mock) {
-           mock.mock();
-        });
+        _(this.mocks).each(function(Mock, name) {
+            var mock = this._mocks[name] = new Mock();
+            mock.mock();
+        }.bind(this));
     },
 
     clean: function() {
-        _(this.mocks).each(function(mock) {
+        _(this._mocks).chain().values().each(function(mock) {
             mock.restore();
         });
+
+        this._mocks = {};
     }
 
 });
 
 
-ScenarioBuilder.extend = function(childOpts) {
-    var Parent = this;
-
-    var Child = function() {};
-    _.extend(Child.prototype, Parent.prototype, childOpts || {});
-
-    Child.extend = ScenarioBuilder.extend;
-
-    Child.prototype.__super__ = Parent.prototype;
-    return Child;
-};
+ScenarioBuilder.extend = helpers.extend;
