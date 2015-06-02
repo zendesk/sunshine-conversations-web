@@ -11,9 +11,9 @@ var StickitBehavior = require('marionette.behaviors/lib/behaviors/stickit-behavi
 var jQueryBehavior = require('marionette.behaviors/lib/behaviors/jquery-behavior');
 
 
-Marionette.Behaviors.behaviorsLookup = function () {
-  return {
-    stickit: StickitBehavior,
-    jQuery: jQueryBehavior
-  };
+Marionette.Behaviors.behaviorsLookup = function() {
+    return {
+        stickit: StickitBehavior,
+        jQuery: jQueryBehavior
+    };
 };

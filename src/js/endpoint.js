@@ -1,6 +1,6 @@
 var $ = require('jquery');
 
-var ROOT_URL = 'http://localhost:8091';
+var ROOT_URL = 'https://sdk.supportkit.io';
 module.exports.rootUrl = ROOT_URL;
 
 // State params set by main

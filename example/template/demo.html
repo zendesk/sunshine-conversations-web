@@ -5,19 +5,20 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <title>Conversation Demo</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-    <script src="https://cdn.supportkit.io/supportkit.min.js"></script>
+    <script src="../dist/supportkit.js"></script>
     <script>
-        SupportKit.init({appToken: '3ea7dnnifzriurbnqkux3043o',
-          givenName: 'Andrew',
-          surname: 'Lavers',
-          properties: {
-            'isAwesome': true
-          }
+        /* global SupportKit: false */
+        SupportKit.init({
+            appToken: 'APP_TOKEN',
+            givenName: 'GIVEN_NAME',
+            surname: 'SURNAME',
+            properties: {
+              'TEST': true
+            }
         });
     </script>
 </head>
   <body>
-    <h1>Prod</h1>
+    <h1>Test</h1>
   </body>
 </html>
