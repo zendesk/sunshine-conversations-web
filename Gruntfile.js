@@ -147,9 +147,10 @@ module.exports = function(grunt) {
                 npm: false,
                 bump: false,
                 commit: true,
-                remote: 'https://github.com/radialpoint/SupportKitPrivate.git head:master --force',
+                push: false,
+                remote: 'https://github.com/supportkit/supportkit-js.git',
                 github: {
-                    repo: 'radialpoint/SupportKitPrivate', //put your user/repo here
+                    repo: 'supportkit/supportkit-js', //put your user/repo here
                     usernameVar: 'GITHUB_USERNAME', //ENVIRONMENT VARIABLE that contains Github username
                     passwordVar: 'GITHUB_PASSWORD', //ENVIRONMENT VARIABLE that contains Github password
                     releaseNotes: 'release_notes'
@@ -168,7 +169,7 @@ module.exports = function(grunt) {
             cleanRelease: {
                 cmd: function() {
                     return [
-                        'git checkout f/versioning+bower+npm',
+                        'git checkout master',
                         'git branch -D r/' + this.option('globalVersion'),
                         'git tag -d ' + this.option('globalVersion')
                     ].join(' && ');
@@ -184,8 +185,8 @@ module.exports = function(grunt) {
             push: {
                 cmd: function() {
                     return [
-                        // 'git push',
-                        'git push origin not-integration'
+                        'git push origin master',
+                        'git push origin integration'
                     ].join(' && ');
                 }
             },
@@ -209,7 +210,7 @@ module.exports = function(grunt) {
     grunt.registerTask('checkBranchStatus', 'A task that ensures the correct branch is checked out and there are no working changes.', function() {
         var gitInfo = grunt.config.get('gitinfo');
 
-        if (gitInfo.status.porcelain /*|| gitInfo.local.branch.current.name !== 'master'*/ ) {
+        if (gitInfo.status.porcelain || gitInfo.local.branch.current.name !== 'master') {
             grunt.log.error('Error. Please make sure you have master checked out and there are no working changes.');
             grunt.log.error('Git Status:', '\n' + gitInfo.status.porcelain);
             grunt.log.error('Git Branch: ', '\n ' + gitInfo.local.branch.current.name);
@@ -294,7 +295,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist']);
     grunt.registerTask('publish:release', ['release']);
-    grunt.registerTask('publish:cleanup', ['exec:cleanRelease' /*, 'exec:push'*/ ]);
+    grunt.registerTask('publish:cleanup', ['exec:cleanRelease', 'exec:push']);
 
     grunt.registerTask('branchCheck', 'Checks that you are publishing from Master branch with no working changes', ['gitinfo', 'checkBranchStatus']);
 };
