@@ -6,5 +6,5 @@ var Conversation = require('../models/conversation');
 
 module.exports = BaseCollection.extend({
     model: Conversation,
-    url: urljoin(endpoint.rootUrl, 'api/conversations/')
+    url: 'conversations/'
 });

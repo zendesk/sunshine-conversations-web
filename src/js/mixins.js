@@ -11,8 +11,9 @@ module.exports = {
         options.beforeSend = function(xhr) {
             xhr.setRequestHeader('app-token', endpoint.appToken);
             xhr.setRequestHeader('Content-Type', 'application/json');
-        };
 
+            this.url = endpoint.rootUrl + '/api/' + this.url;
+        };
         // on a GET call, it goes in the request params,
         // on other call type (maybe not DELETE if ever supported),
         // it goes in the body
@@ -28,7 +29,6 @@ module.exports = {
             _.extend(options.attrs, model.toJSON(), {
                 appUserId: endpoint.appUserId
             });
-
         }
 
         return Backbone.sync.call(this, method, model, options);

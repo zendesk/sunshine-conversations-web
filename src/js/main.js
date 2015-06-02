@@ -19,7 +19,8 @@ var endpoint = require('./endpoint'),
 
 var ChatController = require('./controllers/chatController'),
     Message = require('./models/message'),
-    Conversations = require('./collections/conversations');
+    Conversations = require('./collections/conversations'),
+    AppUser = require('./models/appUser');
 
 // appends the compile stylesheet to the HEAD
 require('../stylesheets/main.less');
@@ -51,13 +52,8 @@ var SupportKit = Marionette.Object.extend({
         }
     },
 
-    _updateUser: function(user) {
-        if (_.isEmpty(user)) {
-            return $.Deferred().resolve();
-        } else {
-            user.properties = user.properties || {};
-            return endpoint.put('/api/appusers/' + endpoint.appUserId, user);
-        }
+    _updateUser: function(userInfo) {
+        return this.user.save();
     },
 
     init: function(options) {
@@ -96,8 +92,13 @@ var SupportKit = Marionette.Object.extend({
             }
         })
             .then(function(res) {
+                this.user = new AppUser({
+                    id: res.appUserId
+                });
+
                 endpoint.appUserId = res.appUserId;
-                return this._updateUser(_.pick(options, 'givenName', 'surname', 'email', 'properties'));
+
+                return this.updateUser(_.pick(options, 'givenName', 'surname', 'email', 'properties'));
             }.bind(this))
             .then(function() {
                 // Tell the world we're ready
@@ -127,13 +128,33 @@ var SupportKit = Marionette.Object.extend({
     },
 
     updateUser: function(userInfo) {
-        if(typeof userInfo !== 'object') {
+        var userChanged = false;
+
+        if (typeof userInfo !== 'object') {
             throw new Error('updateUser accepts an object as parameter');
         }
 
-        this.throttledUpdate = this.throttledUpdate || _.throttle(this._updateUser, 60000);
+        userInfo.id = this.user.id;
 
-        this.throttledUpdate(userInfo);
+        userChanged = userChanged || (userInfo.givenName && this.user.get('givenName') !== userInfo.givenName);
+        userChanged = userChanged || (userInfo.surname && this.user.get('surname') !== userInfo.surname);
+        userChanged = userChanged || (userInfo.email && this.user.get('email') !== userInfo.email);
+
+        if (!userChanged && userInfo.properties) {
+            var props = this.user.get('properties');
+            _.each(userInfo.properties, function(value, key) {
+                userChanged = userChanged || value !== props[key];
+            });
+        }
+
+        if (!userChanged) {
+            return;
+        }
+
+        this.user = new AppUser(userInfo);
+
+        this.throttledUpdate = this.throttledUpdate || _.throttle(this._updateUser.bind(this), 60000);
+        return this.throttledUpdate();
     },
 
     onReady: function() {
