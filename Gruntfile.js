@@ -101,7 +101,7 @@ module.exports = function(grunt) {
                     debug: true,
                     'transform': [
                         'browserify-shim'
-                    ]
+                    ],
                     standalone: 'SupportKit'
                 }
             }
