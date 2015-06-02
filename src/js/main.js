@@ -101,9 +101,7 @@ var SupportKit = Marionette.Object.extend({
                 return this.updateUser(_.pick(options, 'givenName', 'surname', 'email', 'properties'));
             }).bind(this))
             .then(_(function() {
-                // Tell the world we're ready
-                this.ready = true;
-                this.triggerMethod('ready');
+                this._renderWidget();
             }).bind(this))
             .done();
     },
@@ -129,6 +127,7 @@ var SupportKit = Marionette.Object.extend({
     },
 
     updateUser: function(userInfo) {
+        var deferred = $.Deferred();
         var userChanged = false;
 
         if (typeof userInfo !== 'object') {
@@ -149,7 +148,8 @@ var SupportKit = Marionette.Object.extend({
         }
 
         if (!userChanged) {
-            return;
+            deferred.resolve();
+            return deferred;
         }
 
         this.user = new AppUser(userInfo);
@@ -158,9 +158,17 @@ var SupportKit = Marionette.Object.extend({
         return this.throttledUpdate();
     },
 
-    onReady: function() {
+    _renderWidget: function() {
         var view = this._chatController.getView();
-        $('body').append(view.render().el);
+        this.listenToOnce(view, 'rendered', function() {
+            $('body').append(view.render().el);
+
+            // Tell the world we're ready
+            this.triggerMethod('ready');
+        });
+    },
+    onReady: function() {
+        this.ready = true;
     }
 });
 

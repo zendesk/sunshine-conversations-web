@@ -32,10 +32,12 @@ module.exports = BaseServerMock.extend({
                 })]
             ],
             [
-                'PUT', /\/api\/appusers\/(\d+)/, [201, {}, '']
+                'PUT', /\/api\/appusers\/(\d+)/, function(xhr, id) {
+                    xhr.respond(200, {}, JSON.stringify(userStore[id]))
+                }
             ],
             [
-                'GET', /api\/conversations/, [200, {
+                'GET', /\/api\/conversations/, [200, {
                     'Content-Type': 'application/json'
                 }, JSON.stringify(_(conversationStore).values())]
             ],

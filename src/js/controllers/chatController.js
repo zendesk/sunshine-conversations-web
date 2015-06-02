@@ -133,9 +133,14 @@ module.exports = ViewController.extend({
         this.listenTo(this.chatInputController, 'message:send', this.sendMessage);
         this.listenTo(this.chatInputController, 'message:read', this._resetUnread);
 
-        this.view.header.show(this.headerView);
-        this.view.main.show(this.conversationView);
-        this.view.footer.show(this.chatInputController.getView());
+        if (this.view.isRendered) {
+
+            this.view.header.show(this.headerView);
+            this.view.main.show(this.conversationView);
+            this.view.footer.show(this.chatInputController.getView());
+            this.trigger('rendered');
+        }
+
     },
 
     _onViewRender: function() {

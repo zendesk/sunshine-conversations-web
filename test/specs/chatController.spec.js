@@ -41,7 +41,8 @@ describe('ChatController', function() {
             initFayeSpy,
             initMessagingBusSpy,
             manageUnreadSpy,
-            renderWidgetSpy;
+            renderWidgetSpy,
+            renderedSpy;
 
 
         beforeEach(function() {
@@ -50,6 +51,7 @@ describe('ChatController', function() {
             initMessagingBusSpy = sandbox.spy(chatController._initMessagingBus);
             manageUnreadSpy = sandbox.spy(chatController._manageUnread);
             renderWidgetSpy = sandbox.spy(chatController._renderWidget);
+            chatController.once('rendered', renderedSpy);
         });
 
         afterEach(function() {
@@ -60,11 +62,10 @@ describe('ChatController', function() {
         it('should trigger the init chain', function(done) {
             var view = chatController.getView();
 
-            view.once('render', function() {
+            chatController.once('rendered', function() {
                 done();
             });
 
-            view._firstRender = false;
 
             $('body').append(view.render().el);
 
@@ -73,6 +74,7 @@ describe('ChatController', function() {
             initMessagingBusSpy.should.have.been.calledOnce;
             manageUnreadSpy.should.have.been.calledOnce;
             renderWidgetSpy.should.have.been.calledOnce;
+            renderedSpy.should.have.been.calledOnce;
         });
     });
 
