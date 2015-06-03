@@ -1,5 +1,5 @@
 # [SupportKit Javascript SDK](supportkit.io)
-
+Build status (integration) : [![Circle CI](https://circleci.com/gh/lemieux/supportkit-js/tree/integration.svg?style=svg&circle-token=b5a952df982b294aa59902d33231424181d714a7)](https://circleci.com/gh/lemieux/supportkit-js/tree/integration)
 ## Usage
 
 ### Script Tag
