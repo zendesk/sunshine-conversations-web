@@ -1,96 +1,64 @@
-var Backbone = require('backbone');
-var _ = require('underscore');
-var jQuery = require('jquery');
-Backbone.$ = jQuery;
-var Conversation = require('./conversation');
-var Message = require('./message');
-var endpoint = require('./endpoint');
-var cookie = require('cookie');
-var uuid = require('uuid');
+/* global global:false */
 
-var faye = require('./faye');
+'use strict';
+
+require('./bootstrap');
+
+var Backbone = require('backbone'),
+    Marionette = require('backbone.marionette'),
+    _ = require('underscore'),
+    $ = require('jquery'),
+    cookie = require('cookie'),
+    uuid = require('uuid'),
+    bindAll = require('lodash.bindall');
+
+
+var endpoint = require('./endpoint'),
+    vent = require('./vent'),
+    faye = require('./faye');
+
+var ChatController = require('./controllers/chatController'),
+    Message = require('./models/message'),
+    Conversations = require('./collections/conversations'),
+    AppUser = require('./models/appUser');
+
+// appends the compile stylesheet to the HEAD
+require('../stylesheets/main.less');
 
 /**
- * expose our sdk
+ * Contains all SupportKit API classes and functions.
+ * @name SupportKit
+ * @namespace
+ *
+ * Contains all SupportKit API classes and functions.
  */
-(function(root) {
-    root.SupportKit = root.SupportKit || {};
-    root.SupportKit.VERSION = "js1.0.0";
-}(window));
+var SupportKit = Marionette.Object.extend({
+    VERSION: '1.0.0',
 
-/**
- * main sdk
- */
-(function(root) {
+    initialize: function() {
+        bindAll(this);
 
-    root.SupportKit = root.SupportKit || {};
+        this._conversations = new Conversations();
 
-    /**
-     * Contains all SupportKit API classes and functions.
-     * @name SupportKit
-     * @namespace
-     *
-     * Contains all SupportKit API classes and functions.
-     */
-    var SupportKit = root.SupportKit;
+        this._chatController = new ChatController({
+            collection: this._conversations
+        });
 
-    // Imbue SupportKit with trigger and on powers
-    _.extend(SupportKit, Backbone.Events);
+    },
 
-    // If jQuery has been included, grab a reference to it.
-    if (typeof (root.jQuery) !== "undefined") {
-        SupportKit.jQuery = root.jQuery;
-    }
-
-    // Create a conversation if one does not already exist
-    SupportKit._fetchMessages = function() {
-        var self = this;
-        var deferred = jQuery.Deferred();
-
-        if (self.conversation.isNew()) {
-            endpoint.getConversations()
-                .then(function(conversations) {
-                    if (conversations.length > 0) {
-                        // A conversation already exists
-                        return conversations[0];
-                    }
-
-                    // No conversation created yet, make one
-                    return endpoint.post('/api/conversations', {
-                        appUserId: endpoint.appUserId
-                    });
-                })
-                .then(function(conversation) {
-                    self.conversation.set('_id', conversation._id);
-                    return self.conversation.fetchPromise();
-                })
-                .then(function() {
-                    faye.init(self.conversation.id);
-                    deferred.resolve(self.conversation);
-                });
-        } else {
-            deferred.resolve(self.conversation);
+    _checkReady: function(message) {
+        if (!this.ready) {
+            throw new Error(message || 'Can\'t use this function until the SDK is ready.');
         }
+    },
 
-        return deferred;
-    };
+    _updateUser: function(userInfo) {
+        return this.user.save();
+    },
 
-    SupportKit._updateUser = function() {
-        if (_.isEmpty(this.user)) {
-            return jQuery.Deferred().resolve();
-        } else {
-            this.user.properties = this.user.properties || {};
-            return endpoint.put('/api/appusers/' + endpoint.appUserId, this.user);
-        }
-    };
-
-    SupportKit.init = function(options) {
-        this.inited = false;
-        var self = this;
+    init: function(options) {
+        this.ready = false;
         options = options || {};
-
-        this.conversation = new Conversation();
-        this.user = _.pick(options, 'givenName', 'surname', 'email', 'properties');
 
         if (typeof options === 'object') {
             endpoint.appToken = options.appToken;
@@ -116,53 +84,83 @@ var faye = require('./faye');
             deviceId: this.deviceId,
             deviceInfo: {
                 URL: document.location.host,
-                userAgent: navigator.userAgent
+                userAgent: navigator.userAgent,
+                referrer: document.referrer,
+                browserLanguage: navigator.language,
+                currentUrl: document.location.href,
+                currentTitle: document.title
             }
         })
             .then(function(res) {
-                var deferred = jQuery.Deferred();
+                this.user = new AppUser({
+                    id: res.appUserId
+                });
+
                 endpoint.appUserId = res.appUserId;
 
-                // Perform initial fetch of messages and update user profile info
-                if (res.conversationStarted) {
-                    return jQuery.when(self._fetchMessages.call(self), self._updateUser.call(self));
-                } else {
-                    return jQuery.when(self._updateUser.call(self));
-                }
-            })
+                return this.updateUser(_.pick(options, 'givenName', 'surname', 'email', 'properties'));
+            }.bind(this))
             .then(function() {
                 // Tell the world we're ready
-                self.inited = true;
-                self.trigger('ready');
-            });
-    };
+                this.ready = true;
+                this.triggerMethod('ready');
+            }.bind(this));
+    },
 
-    SupportKit.resetUnread = function() {
-        this.conversation.resetUnread();
-    };
+    resetUnread: function() {
+        this._checkReady();
+        this._chatController._resetUnread();
+    },
 
-    SupportKit.message = function(text) {
-        var self = this;
-        var message;
+    sendMessage: function(text) {
+        this._checkReady('Can not send messages until init has completed');
+        this._chatController.sendMessage(text);
+    },
 
-        if (!this.inited) {
-            throw new Error('Can not send messages until init has completed');
+    open: function() {
+        this._checkReady();
+        this._chatController.open();
+    },
+
+    close: function() {
+        this._checkReady();
+        this._chatController.close();
+    },
+
+    updateUser: function(userInfo) {
+        var userChanged = false;
+
+        if (typeof userInfo !== 'object') {
+            throw new Error('updateUser accepts an object as parameter');
         }
 
-        this._fetchMessages()
-            .then(function() {
-                message = new Message({
-                    authorId: endpoint.appUserId,
-                    text: text
-                });
-                return self.conversation.postMessage(message);
-            })
-            .then(function() {
-                self.conversation.fetch();
-                return message;
+        userInfo.id = this.user.id;
+
+        userChanged = userChanged || (userInfo.givenName && this.user.get('givenName') !== userInfo.givenName);
+        userChanged = userChanged || (userInfo.surname && this.user.get('surname') !== userInfo.surname);
+        userChanged = userChanged || (userInfo.email && this.user.get('email') !== userInfo.email);
+
+        if (!userChanged && userInfo.properties) {
+            var props = this.user.get('properties');
+            _.each(userInfo.properties, function(value, key) {
+                userChanged = userChanged || value !== props[key];
             });
-    };
-}(window));
+        }
 
+        if (!userChanged) {
+            return;
+        }
 
-module.exports = window.SupportKit;
+        this.user = new AppUser(userInfo);
+
+        this.throttledUpdate = this.throttledUpdate || _.throttle(this._updateUser.bind(this), 60000);
+        return this.throttledUpdate();
+    },
+
+    onReady: function() {
+        var view = this._chatController.getView();
+        $('body').append(view.render().el);
+    }
+});
+
+module.exports = global.SupportKit = new SupportKit();

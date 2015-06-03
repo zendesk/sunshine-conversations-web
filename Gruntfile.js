@@ -1,16 +1,17 @@
 'use strict';
 
+/* global process:false */
+
+var _ = require('underscore');
+
 module.exports = function(grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
-    grunt.loadNpmTasks('grunt-s3');
-    grunt.loadNpmTasks('grunt-contrib-less');
-    grunt.loadNpmTasks('grunt-cloudfront');
     grunt.registerTask('runlog', function() {
-        grunt.log.write('http://localhost:8282/example/dev.html');
+        grunt.log.write('http://localhost:8282/example/demo.html');
     });
 
     grunt.registerTask('awsconfig', function() {
-        grunt.config.set('aws', grunt.file.readJSON('grunt-aws.json'))
+        grunt.config.set('aws', grunt.file.readJSON('grunt-aws.json'));
     });
 
     // Project configuration
@@ -27,19 +28,9 @@ module.exports = function(grunt) {
                 browsers: ['PhantomJS']
             }
         },
-        concat: {
-            options: {
-                stripBanners: true,
-                banner: '<%= banner %>'
-            },
-            dist: {
-                src: ['dist/supportkit.js', 'dist/style.min.css.js'],
-                dest: 'dist/supportkit.js'
-            }
-        },
         watch: {
             scripts: {
-                files: ['src/*/*.js', '*.html', "src/templates/*.tpl", "src/stylesheets/*.less"],
+                files: ['src/js/**/*.js', '*.html', 'src/templates/*.tpl', 'src/stylesheets/*.less', 'config/config.json'],
                 tasks: ['devbuild'],
                 options: {
                     spawn: false,
@@ -51,22 +42,8 @@ module.exports = function(grunt) {
                 banner: '<%= banner %>'
             },
             dist: {
-                src: '<%= concat.dist.dest %>',
+                src: 'dist/supportkit.js',
                 dest: 'dist/supportkit.min.js'
-            }
-        },
-        less: {
-            dist: {
-                files: {
-                    'dist/style.css': 'src/stylesheets/main.less'
-                }
-            }
-        },
-        cssmin: {
-            dist: {
-                files: {
-                    'dist/style.min.css': ['dist/style.css']
-                }
             }
         },
         replace: {
@@ -75,7 +52,24 @@ module.exports = function(grunt) {
                 dest: 'dist/supportkit.js',
                 replacements: [{
                     from: /var ROOT_URL = '.*';/,
-                    to: 'var ROOT_URL = "https://sdk.supportkit.io";'
+                    to: 'var ROOT_URL = "<%= config.ROOT_URL %>";'
+                }]
+            },
+            demo: {
+                src: 'example/template/demo.html',
+                dest: 'example/demo.html',
+                replacements: [{
+                    from: /APP_TOKEN/,
+                    to: '<%= config.APP_TOKEN %>'
+                }, {
+                    from: /GIVEN_NAME/,
+                    to: '<%= config.GIVEN_NAME %>'
+                }, {
+                    from: /SURNAME/,
+                    to: '<%= config.SURNAME %>'
+                }, {
+                    from: /EMAIL/,
+                    to: '<%= config.EMAIL %>'
                 }]
             }
         },
@@ -83,30 +77,23 @@ module.exports = function(grunt) {
             'dev': {
                 root: '.',
                 port: 8282,
-                host: "127.0.0.1",
+                host: '127.0.0.1',
                 showDir: true,
                 autoIndex: true,
-                ext: "html",
+                ext: 'html',
                 runInBackground: false
-            }
-        },
-        str2js: {
-            SupportKit: {
-                'dist/style.min.css.js': ['dist/style.min.css']
             }
         },
         browserify: {
             dist: {
                 files: {
-                    'dist/supportkit.js': ['src/js/ui.js'],
-                },
-                options: {
-                    transform: ['jstify']
+                    'dist/supportkit.js': ['src/js/main.js'],
                 }
             },
             options: {
                 browserifyOptions: {
-                    debug: true
+                    debug: true,
+                    standalone: 'SupportKit'
                 }
             }
         },
@@ -118,7 +105,7 @@ module.exports = function(grunt) {
                 access: 'public-read'
             },
             dev: {
-                // Files to be uploaded. 
+                // Files to be uploaded.
                 upload: [{
                     src: 'dist/supportkit.min.js',
                     dest: 'supportkit.min.js'
@@ -134,14 +121,14 @@ module.exports = function(grunt) {
         cloudfront: {
             options: {
                 region: 'us-east-1', // your AWS region 
-                distributionId: "E1RI234SLR5ORA", // DistributionID where files are stored 
+                distributionId: 'E1RI234SLR5ORA', // DistributionID where files are stored 
                 credentials: {
-                    accessKeyId: "<%= aws.key %>",
+                    accessKeyId: '<%= aws.key %>',
                     secretAccessKey: '<%= aws.secret %>'
                 },
                 listInvalidations: true, // if you want to see the status of invalidations 
                 listDistributions: false, // if you want to see your distributions list in the console 
-                version: "1.0" // if you want to invalidate a specific version (file-1.0.js) 
+                version: '1.0' // if you want to invalidate a specific version (file-1.0.js) 
             },
             prod: {
                 options: {
@@ -153,15 +140,162 @@ module.exports = function(grunt) {
                     Items: ['/supportkit.min.js']
                 }
             }
+        },
+
+        release: {
+            options: {
+                npm: false,
+                bump: false,
+                commit: true,
+                push: false,
+                remote: 'https://github.com/supportkit/supportkit-js.git',
+                github: {
+                    repo: 'supportkit/supportkit-js', //put your user/repo here
+                    usernameVar: 'GITHUB_USERNAME', //ENVIRONMENT VARIABLE that contains Github username
+                    passwordVar: 'GITHUB_PASSWORD', //ENVIRONMENT VARIABLE that contains Github password
+                    releaseNotes: 'release_notes'
+                }
+            }
+        },
+
+        exec: {
+            createRelease: {
+                cmd: function() {
+                    return [
+                        'git checkout -b r/' + this.option('globalVersion')
+                    ].join(' && ');
+                }
+            },
+            cleanRelease: {
+                cmd: function() {
+                    return [
+                        'git checkout master',
+                        'git branch -D r/' + this.option('globalVersion'),
+                        'git tag -d ' + this.option('globalVersion')
+                    ].join(' && ');
+                }
+            },
+            commitFiles: {
+                cmd: function() {
+                    return [
+                        'git commit -am "Release v' + this.option('globalVersion') + '"'
+                    ].join(' && ');
+                }
+            },
+            push: {
+                cmd: function() {
+                    return [
+                        'git push origin master',
+                        'git push origin integration'
+                    ].join(' && ');
+                }
+            },
+            addDist: {
+                cmd: function() {
+                    return [
+                        'git add --force dist/supportkit.js',
+                        'git add --force dist/supportkit.min.js'
+                    ].join(' && ');
+                }
+            }
+        },
+
+        gitinfo: {
+            commands: {
+                'status.porcelain': ['status', '--porcelain']
+            }
         }
     });
 
+    grunt.registerTask('checkBranchStatus', 'A task that ensures the correct branch is checked out and there are no working changes.', function() {
+        var gitInfo = grunt.config.get('gitinfo');
 
+        if (gitInfo.status.porcelain || gitInfo.local.branch.current.name !== 'master') {
+            grunt.log.error('Error. Please make sure you have master checked out and there are no working changes.');
+            grunt.log.error('Git Status:', '\n' + gitInfo.status.porcelain);
+            grunt.log.error('Git Branch: ', '\n ' + gitInfo.local.branch.current.name);
+            return false;
+        }
 
-    grunt.registerTask('build', ['clean', 'browserify', 'replace', 'less', 'cssmin', 'str2js', 'concat', 'uglify']);
-    grunt.registerTask('devbuild', ['clean', 'browserify', 'less', 'cssmin', 'str2js', 'concat']);
+        if (!process.env.GITHUB_USERNAME || !process.env.GITHUB_PASSWORD) {
+            grunt.log.error('Please set your github username and password as env variables (GITHUB_USERNAME, GITHUB_PASSWORD)');
+            return false;
+        }
+    });
+
+    grunt.registerTask('versionBump', function() {
+        var semver = require('semver'),
+            VERSION_REGEXP = /(\bversion[\'\"]?\s*[:=]\s*[\'\"])([\da-z\.-]+)([\'\"])/i,
+            files = ['package.json', 'bower.json', 'src/js/main.js'],
+            fullVersion = grunt.option('version'),
+            versionType = grunt.option('versionType'),
+            globalVersion;
+
+        files.forEach(function(file, idx) {
+            var version = null;
+            var content = grunt.file.read(file).replace(VERSION_REGEXP, function(match, prefix, parsedVersion, suffix) {
+                version = fullVersion || semver.inc(parsedVersion, versionType);
+                return prefix + version + suffix;
+            });
+
+            if (!globalVersion) {
+                globalVersion = version;
+            } else if (globalVersion !== version) {
+                grunt.warn('Bumping multiple files with different versions!');
+            }
+
+            grunt.file.write(file, content);
+            grunt.log.ok('Version bumped to ' + version + (files.length > 1 ? ' (in ' + file + ')' : ''));
+        });
+
+        grunt.option('globalVersion', globalVersion);
+
+        try {
+            grunt.file.read('release_notes/v' + globalVersion + '.md');
+        }
+        catch (err) {
+            grunt.log.error('Release notes not found.');
+            grunt.log.error('Please ensure release notes exist in the release_notes folder. (v' + globalVersion + '.md)');
+            return false;
+        }
+    });
+
+    grunt.registerTask('publish', 'Publishes a build to github and NPM, accepting a version as argument', function(version) {
+        if (!version || ['major', 'minor', 'patch'].indexOf(version) > -1) {
+            grunt.option('versionType', version || 'patch');
+        } else {
+            grunt.option('version', version);
+        }
+
+        grunt.task.run('branchCheck', 'publish:prepare', 'publish:release', 'publish:cleanup');
+    });
+
+    grunt.registerTask('loadConfig', 'Loads config from config folder (uses default if none present', function() {
+        var defaultConfig = grunt.file.readJSON('config/default/config.json');
+        var config = {};
+
+        try {
+            config = grunt.file.readJSON('config/config.json');
+        }
+        catch (err) {
+            grunt.log.warn('You might want to create a config with your app token at config/config.json');
+        }
+
+        var merged = _.extend(defaultConfig, config);
+        grunt.config.set('config', merged);
+    });
+
+    grunt.registerTask('build', ['clean', 'browserify', 'uglify']);
+    grunt.registerTask('devbuild', ['clean', 'browserify', 'loadConfig', 'replace']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
-    grunt.registerTask('run', ['runlog', 'concurrent:all']);
+
+    grunt.registerTask('run', ['runlog', 'devbuild', 'concurrent:all']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('default', ['run']);
+
+    grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist']);
+    grunt.registerTask('publish:release', ['release']);
+    grunt.registerTask('publish:cleanup', ['exec:cleanRelease', 'exec:push']);
+
+    grunt.registerTask('branchCheck', 'Checks that you are publishing from Master branch with no working changes', ['gitinfo', 'checkBranchStatus']);
 };

@@ -1,4 +1,6 @@
-var ROOT_URL = 'http://localhost:8091';
+var ROOT_URL = 'https://sdk.supportkit.io';
+
+var $ = require('jquery');
 
 module.exports.rootUrl = ROOT_URL;
 
@@ -7,8 +9,8 @@ module.exports.appToken = undefined;
 module.exports.appUserId = undefined;
 
 module.exports._rest = function(method, path, body) {
-    var deferred = jQuery.Deferred();
-    jQuery.ajax({
+    var deferred = $.Deferred();
+    $.ajax({
         url: this.rootUrl + path,
         type: method,
         headers: {
@@ -41,8 +43,4 @@ module.exports.post = function(path, body) {
 
 module.exports.put = function(path, body) {
     return this._rest('PUT', path, body);
-};
-
-module.exports.getConversations = function() {
-    return this.get('/api/conversations?appUserId=' + this.appUserId);
 };

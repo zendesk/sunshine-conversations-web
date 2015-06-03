@@ -18,7 +18,7 @@ module.exports.init = function(conversationId) {
     });
 
     faye.subscribe('/conversations/' + conversationId, function(message) {
-        vent.trigger('message', message);
+        vent.trigger('receive:message', message);
     }).then(null, function(err) {
         console.error('Faye subscription error:', err && err.message);
     });
