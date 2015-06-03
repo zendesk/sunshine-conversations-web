@@ -44,6 +44,8 @@ var SupportKit = Marionette.Object.extend({
             collection: this._conversations
         });
 
+        this.listenToOnce(this._chatController, 'rendered', this._renderWidget);
+
     },
 
     _checkReady: function(message) {
@@ -159,13 +161,12 @@ var SupportKit = Marionette.Object.extend({
     },
 
     _renderWidget: function() {
-        var view = this._chatController.getView();
-        this.listenToOnce(view, 'rendered', function() {
-            $('body').append(view.render().el);
-
+        this._chatController.getWidget().then(_.bind(function(widget) {
+            $('body').append(widget.el);
             // Tell the world we're ready
             this.triggerMethod('ready');
-        });
+        }, this));
+
     },
     onReady: function() {
         this.ready = true;

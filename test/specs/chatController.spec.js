@@ -36,22 +36,20 @@ describe('ChatController', function() {
     });
 
 
-    describe('onRender', function() {
+    describe('getWidget', function() {
         var getConversationSpy,
             initFayeSpy,
             initMessagingBusSpy,
             manageUnreadSpy,
-            renderWidgetSpy,
-            renderedSpy;
+            renderWidgetSpy;
 
 
         beforeEach(function() {
-            getConversationSpy = sandbox.spy(chatController._getConversation);
-            initFayeSpy = sandbox.spy(chatController._initFaye);
-            initMessagingBusSpy = sandbox.spy(chatController._initMessagingBus);
-            manageUnreadSpy = sandbox.spy(chatController._manageUnread);
-            renderWidgetSpy = sandbox.spy(chatController._renderWidget);
-            chatController.once('rendered', renderedSpy);
+            getConversationSpy = sandbox.spy(chatController, '_getConversation');
+            initFayeSpy = sandbox.spy(chatController, '_initFaye');
+            initMessagingBusSpy = sandbox.spy(chatController, '_initMessagingBus');
+            manageUnreadSpy = sandbox.spy(chatController, '_manageUnread');
+            renderWidgetSpy = sandbox.spy(chatController, '_renderWidget');
         });
 
         afterEach(function() {
@@ -60,21 +58,16 @@ describe('ChatController', function() {
 
 
         it('should trigger the init chain', function(done) {
-            var view = chatController.getView();
+            chatController.getWidget().then(function(/*widget*/) {
+                getConversationSpy.should.have.been.calledOnce;
+                initFayeSpy.should.have.been.calledOnce;
+                initMessagingBusSpy.should.have.been.calledOnce;
+                manageUnreadSpy.should.have.been.calledOnce;
+                renderWidgetSpy.should.have.been.calledOnce;
 
-            chatController.once('rendered', function() {
                 done();
             });
 
-
-            $('body').append(view.render().el);
-
-            getConversationSpy.should.have.been.calledOnce;
-            initFayeSpy.should.have.been.calledOnce;
-            initMessagingBusSpy.should.have.been.calledOnce;
-            manageUnreadSpy.should.have.been.calledOnce;
-            renderWidgetSpy.should.have.been.calledOnce;
-            renderedSpy.should.have.been.calledOnce;
         });
     });
 
