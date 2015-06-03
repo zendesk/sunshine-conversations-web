@@ -294,8 +294,8 @@ module.exports = function(grunt) {
         grunt.config.set('config', merged);
     });
 
-    grunt.registerTask('build', ['clean', 'browserify', 'replace', 'concat', 'uglify']);
-    grunt.registerTask('devbuild', ['clean', 'browserify', 'concat']);
+    grunt.registerTask('build', ['clean', 'browserify', 'uglify']);
+    grunt.registerTask('devbuild', ['clean', 'browserify', 'loadConfig', 'replace']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
     grunt.registerTask('run', ['runlog', 'devbuild', 'concurrent:all']);
     grunt.registerTask('test:unit', ['karma:unit']);
