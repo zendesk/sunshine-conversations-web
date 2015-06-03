@@ -29,7 +29,7 @@ module.exports = BaseServerMock.extend({
         ],
         [
             'PUT', /\/api\/appusers\/([a-z0-9]+)/, function(xhr, id) {
-                xhr.respond(200, {}, JSON.stringify(userStore[id]))
+                xhr.respond(200, {}, JSON.stringify(userStore[id]));
             }
         ],
         [
@@ -39,7 +39,7 @@ module.exports = BaseServerMock.extend({
         ],
         [
             'POST', /\/api\/conversations\/([a-z0-9]+)\/messages/, function(xhr, id) {
-                xhr.respond(200, {}, JSON.stringify(xhr.requestBody))
+                xhr.respond(200, {}, JSON.stringify(xhr.requestBody));
             }
         ],
     ]
