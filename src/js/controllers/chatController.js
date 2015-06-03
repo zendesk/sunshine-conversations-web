@@ -141,6 +141,7 @@ module.exports = ViewController.extend({
         var view = this.getView();
 
         // this a workaround for rendering layout views and fixing regions
+        // seems to be a lot of issues around layout views rendering...
         // https://github.com/marionettejs/backbone.marionette/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+layout+render
         view.render()._reInitializeRegions();
 

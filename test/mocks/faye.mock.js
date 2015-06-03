@@ -2,21 +2,16 @@
 
 var BaseMock = require('./baseMock');
 var faye = require('faye'),
-    $ = require('jquery');
+    $ = require('jquery'),
+    sinon = require('sinon');
+
+require('sinon-as-promised');
 
 module.exports = BaseMock.extend({
     target: faye.Client.prototype,
     methods: {
-        addExtension: function(extension){},
-
-        subscribe: function(channelName, callback) {
-            var deferred = $.Deferred();
-            this.__channels  || (this.__channels = {});
-            this.__channels[channelName] = callback;
-
-            deferred.resolve();
-
-            return deferred;
-        }
+        addExtension: sinon.stub(),
+        connect: sinon.stub(),
+        subscribe: sinon.stub().resolves()
     }
 });
