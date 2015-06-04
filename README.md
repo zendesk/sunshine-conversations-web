@@ -1,5 +1,5 @@
 # [SupportKit Javascript SDK](supportkit.io)
-
+Build status: [![Circle CI](https://circleci.com/gh/supportkit/supportkit-js.svg?style=svg)](https://circleci.com/gh/supportkit/supportkit-js)
 ## Usage
 
 ### Script Tag
@@ -126,4 +126,4 @@ SupportKit.on('ready', function(){
 
 * ```grunt build``` dumps a plain and a minified file from all files in the folder ```src``` to dist/supportkit.min.js
 * ```grunt clean``` removes all files in the folder ```dist```
-* ```grunt test``` runs karma tests
+* ```grunt test:unit``` runs karma tests

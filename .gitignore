@@ -6,6 +6,7 @@ tmp
 dist/
 grunt-aws.json
 *.sublime-workspace
+junit
 config/*
 !config/default
 !config/default/*.json

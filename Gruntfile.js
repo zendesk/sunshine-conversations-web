@@ -23,7 +23,13 @@ module.exports = function(grunt) {
         clean: ['dist/*'],
         karma: {
             unit: {
-                configFile: 'test/karma.conf.js',
+                configFile: 'karma.conf.js',
+                singleRun: false,
+                browsers: ['PhantomJS', 'Chrome'],
+                reporters: ['progress']
+            },
+            ci: {
+                configFile: 'karma.conf.js',
                 singleRun: true,
                 browsers: ['PhantomJS']
             }
@@ -93,6 +99,9 @@ module.exports = function(grunt) {
             options: {
                 browserifyOptions: {
                     debug: true,
+                    'transform': [
+                        'browserify-shim'
+                    ],
                     standalone: 'SupportKit'
                 }
             }
@@ -120,15 +129,15 @@ module.exports = function(grunt) {
         },
         cloudfront: {
             options: {
-                region: 'us-east-1', // your AWS region 
-                distributionId: 'E1RI234SLR5ORA', // DistributionID where files are stored 
+                region: 'us-east-1', // your AWS region
+                distributionId: 'E1RI234SLR5ORA', // DistributionID where files are stored
                 credentials: {
                     accessKeyId: '<%= aws.key %>',
                     secretAccessKey: '<%= aws.secret %>'
                 },
-                listInvalidations: true, // if you want to see the status of invalidations 
-                listDistributions: false, // if you want to see your distributions list in the console 
-                version: '1.0' // if you want to invalidate a specific version (file-1.0.js) 
+                listInvalidations: true, // if you want to see the status of invalidations
+                listDistributions: false, // if you want to see your distributions list in the console
+                version: '1.0' // if you want to invalidate a specific version (file-1.0.js)
             },
             prod: {
                 options: {
@@ -288,9 +297,9 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['clean', 'browserify', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'loadConfig', 'replace']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
-
     grunt.registerTask('run', ['runlog', 'devbuild', 'concurrent:all']);
-    grunt.registerTask('test', ['karma']);
+    grunt.registerTask('test:unit', ['karma:unit']);
+    grunt.registerTask('test:ci', ['karma:ci']);
     grunt.registerTask('default', ['run']);
 
     grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist']);
@@ -298,4 +307,5 @@ module.exports = function(grunt) {
     grunt.registerTask('publish:cleanup', ['exec:cleanRelease', 'exec:push']);
 
     grunt.registerTask('branchCheck', 'Checks that you are publishing from Master branch with no working changes', ['gitinfo', 'checkBranchStatus']);
+
 };

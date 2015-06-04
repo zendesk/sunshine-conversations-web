@@ -1,7 +1,6 @@
-var ROOT_URL = 'https://sdk.supportkit.io';
-
 var $ = require('jquery');
 
+var ROOT_URL = 'https://sdk.supportkit.io';
 module.exports.rootUrl = ROOT_URL;
 
 // State params set by main
@@ -14,7 +13,6 @@ module.exports._rest = function(method, path, body) {
         url: this.rootUrl + path,
         type: method,
         headers: {
-            'Content-Type': 'application/json',
             'app-token': this.appToken
         },
         data: JSON.stringify(body),

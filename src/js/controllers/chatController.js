@@ -23,7 +23,6 @@ module.exports = ViewController.extend({
     viewClass: ChatView,
 
     viewEvents: {
-        render: '_onViewRender',
         focus: '_resetUnread'
     },
 
@@ -138,13 +137,23 @@ module.exports = ViewController.extend({
         this.view.footer.show(this.chatInputController.getView());
     },
 
-    _onViewRender: function() {
-        this.collection.fetch()
+    getWidget: function() {
+        var view = this.getView();
+
+        // this a workaround for rendering layout views and fixing regions
+        // seems to be a lot of issues around layout views rendering...
+        // https://github.com/marionettejs/backbone.marionette/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+layout+render
+        view.render()._reInitializeRegions();
+
+        return this.collection.fetch()
             .then(this._getConversation)
             .then(this._initFaye)
             .then(this._initMessagingBus)
             .then(this._manageUnread)
-            .then(this._renderWidget);
+            .then(this._renderWidget)
+            .then(function() {
+                return view;
+            });
     },
 
 

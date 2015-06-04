@@ -44,6 +44,8 @@ var SupportKit = Marionette.Object.extend({
             collection: this._conversations
         });
 
+        this.listenToOnce(this._chatController, 'rendered', this._renderWidget);
+
     },
 
     _checkReady: function(message) {
@@ -91,7 +93,7 @@ var SupportKit = Marionette.Object.extend({
                 currentTitle: document.title
             }
         })
-            .then(function(res) {
+            .then(_(function(res) {
                 this.user = new AppUser({
                     id: res.appUserId
                 });
@@ -99,12 +101,11 @@ var SupportKit = Marionette.Object.extend({
                 endpoint.appUserId = res.appUserId;
 
                 return this.updateUser(_.pick(options, 'givenName', 'surname', 'email', 'properties'));
-            }.bind(this))
-            .then(function() {
-                // Tell the world we're ready
-                this.ready = true;
-                this.triggerMethod('ready');
-            }.bind(this));
+            }).bind(this))
+            .then(_(function() {
+                this._renderWidget();
+            }).bind(this))
+            .done();
     },
 
     resetUnread: function() {
@@ -148,7 +149,7 @@ var SupportKit = Marionette.Object.extend({
         }
 
         if (!userChanged) {
-            return;
+            return $.Deferred().resolve();
         }
 
         this.user = new AppUser(userInfo);
@@ -157,9 +158,16 @@ var SupportKit = Marionette.Object.extend({
         return this.throttledUpdate();
     },
 
+    _renderWidget: function() {
+        this._chatController.getWidget().then(_.bind(function(widget) {
+            $('body').append(widget.el);
+            // Tell the world we're ready
+            this.triggerMethod('ready');
+        }, this));
+
+    },
     onReady: function() {
-        var view = this._chatController.getView();
-        $('body').append(view.render().el);
+        this.ready = true;
     }
 });
 

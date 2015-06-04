@@ -1,0 +1,9 @@
+test:
+    override:
+        - grunt test:ci
+    post:
+      - grunt build
+
+general:
+  artifacts:
+    - "dist/"
