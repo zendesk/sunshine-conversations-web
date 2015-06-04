@@ -27,7 +27,7 @@
     "faye": "^1.1.1",
     "jquery": "~1.11.0",
     "lodash.bindall": "^3.1.0",
-    "marionette.behaviors": "^0.0.12",
+    "marionette.behaviors": "0.0.12",
     "node-lessify": "0.0.10",
     "underscore": "~1.5.2",
     "url-join": "0.0.1",

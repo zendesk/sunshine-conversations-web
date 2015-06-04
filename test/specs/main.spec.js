@@ -1,12 +1,12 @@
 var sinon = require('sinon'),
     _ = require('underscore');
 
-var SupportKit = require('../../src/js/main.js');
 var ClientScenario = require('../scenarios/clientScenario');
 
 describe('Main', function() {
     var scenario,
-        sandbox;
+        sandbox,
+        SupportKit;
 
     before(function() {
         scenario = new ClientScenario();
@@ -19,9 +19,11 @@ describe('Main', function() {
 
     beforeEach(function() {
         sandbox = sinon.sandbox.create();
+        SupportKit = require('../../src/js/main.js');
     });
 
     afterEach(function() {
+        delete global.SupportKit;
         sandbox.restore();
     });
 
@@ -29,38 +31,24 @@ describe('Main', function() {
         // those tests are using the expect form since undefined
         // cannot be tested with the should syntax
         it('should publish a global', function() {
-            expect(global.SupportKit).to.not.be.undefined;
+            expect(global.SupportKit).to.exist;
         });
 
         it('should not publish dependencies in global context', function() {
-            expect(global.Backbone).to.be.undefined;
-            expect(global._).to.be.undefined;
+            expect(global.Backbone).to.not.exist;
+            expect(global._).to.not.exist;
         });
     });
 
     describe('#init', function() {
-        var readySpy;
-
-        beforeEach(function(done) {
-            readySpy = sandbox.spy();
-
+        it('should trigger ready', function(done) {
             SupportKit.once('ready', function() {
-                readySpy();
                 done();
             });
 
             SupportKit.init({
-                appToken: 'thisisanapptoken',
-                givenName: 'Testing',
-                surname: 'Guy',
-                properties: {
-                    'isAwesome': true
-                }
+                appToken: 'thisisanapptoken'
             });
-        });
-
-        it('should trigger ready', function() {
-            readySpy.should.have.been.calledOnce;
         });
     });
 

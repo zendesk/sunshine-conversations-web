@@ -4,8 +4,6 @@
 var _ = require('underscore'),
     helpers = require('../helpers');
 
-var ScenarioBuilder = function() {};
-
 var ScenarioBuilder = module.exports = function(options) {
     options || (options = {});
     this.options = options;

@@ -129,7 +129,6 @@ var SupportKit = Marionette.Object.extend({
     },
 
     updateUser: function(userInfo) {
-        var deferred = $.Deferred();
         var userChanged = false;
 
         if (typeof userInfo !== 'object') {
@@ -150,8 +149,7 @@ var SupportKit = Marionette.Object.extend({
         }
 
         if (!userChanged) {
-            deferred.resolve();
-            return deferred;
+            return $.Deferred().resolve();
         }
 
         this.user = new AppUser(userInfo);
