@@ -126,4 +126,4 @@ SupportKit.on('ready', function(){
 
 * ```grunt build``` dumps a plain and a minified file from all files in the folder ```src``` to dist/supportkit.min.js
 * ```grunt clean``` removes all files in the folder ```dist```
-* ```grunt test``` runs karma tests
+* ```grunt test:unit``` runs karma tests

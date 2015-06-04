@@ -16,7 +16,7 @@
   },
   "main": "src/js/main.js",
   "homepage": "http://supportkit.io",
-  "license": "MIT",
+  "license": "http://supportkit.io/terms.html",
   "dependencies": {
     "backbone": "1.1.2",
     "backbone-associations": "^0.6.2",

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "authors": [
     "Andrew Lavers <andrew@supportkit.io>",
+    "Marc-Antoine Lemieux <marc@supportkit.io>",
     "Julian Garritano <julian@supportkit.io>"
   ],
   "description": "SupportKit Javascript SDK",
@@ -12,7 +13,7 @@
     "javascript",
     "sdk"
   ],
-  "license": "MIT",
+  "license": "http://supportkit.io/terms.html",
   "homepage": "http://supportkit.io",
   "private": false
 }
