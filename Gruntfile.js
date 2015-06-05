@@ -18,7 +18,8 @@ module.exports = function(grunt) {
     grunt.initConfig({
         // Metadata
         pkg: grunt.file.readJSON('package.json'),
-        banner: '/*! <%= pkg.name %> <%= pkg.version %> */\n',
+        license: grunt.file.read('LICENSE'),
+        banner: '/*! \n\t<%= pkg.name %> <%= pkg.version %> \n\t<%= license %> \n*/\n',
         // Task configuration
         clean: ['dist/*'],
         karma: {
