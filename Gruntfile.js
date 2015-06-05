@@ -196,6 +196,8 @@ module.exports = function(grunt) {
                 cmd: function() {
                     return [
                         'git push origin master',
+                        'git checkout integration',
+                        'git merge master --no-ff',
                         'git push origin integration'
                     ].join(' && ');
                 }
