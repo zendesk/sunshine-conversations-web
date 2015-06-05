@@ -15,5 +15,8 @@
   ],
   "license": "http://supportkit.io/terms.html",
   "homepage": "http://supportkit.io",
-  "private": false
+  "private": false,
+  "dependencies": {
+    "jquery": "~1.11.0"
+  }
 }
