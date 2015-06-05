@@ -18,9 +18,8 @@ module.exports = function(grunt) {
     grunt.initConfig({
         // Metadata
         pkg: grunt.file.readJSON('package.json'),
-        banner: '/*! <%= pkg.name %> <%= pkg.version %> */\n',
-        licenseFile: grunt.file.read('LICENSE'),
-        license: '/*! <%= licenseFile %> */\n',
+        license: grunt.file.read('LICENSE'),
+        banner: '/*! \n\t<%= pkg.name %> <%= pkg.version %> \n\t<%= license %> \n*/\n',
         // Task configuration
         clean: ['dist/*'],
         karma: {
@@ -47,7 +46,7 @@ module.exports = function(grunt) {
         },
         uglify: {
             options: {
-                banner: '<%= banner %>' + '<%= license %>'
+                banner: '<%= banner %>'
             },
             dist: {
                 src: 'dist/supportkit.js',
