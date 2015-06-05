@@ -1,4 +1,5 @@
-var $ = require('jquery');
+var $ = require('jquery'),
+    urljoin = require('urljoin')
 
 var ROOT_URL = 'https://sdk.supportkit.io';
 module.exports.rootUrl = ROOT_URL;
@@ -10,7 +11,7 @@ module.exports.appUserId = undefined;
 module.exports._rest = function(method, path, body) {
     var deferred = $.Deferred();
     $.ajax({
-        url: this.rootUrl + path,
+        url: urljoin(this.rootUrl, path),
         type: method,
         headers: {
             'app-token': this.appToken
