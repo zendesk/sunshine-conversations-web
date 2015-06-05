@@ -158,9 +158,9 @@ module.exports = function(grunt) {
                 bump: false,
                 commit: true,
                 push: false,
-                remote: 'https://github.com/supportkit/supportkit-js.git',
+                remote: 'https://github.com/lemieux/supportkit-js.git',
                 github: {
-                    repo: 'supportkit/supportkit-js', //put your user/repo here
+                    repo: 'lemieux/supportkit-js', //put your user/repo here
                     usernameVar: 'GITHUB_USERNAME', //ENVIRONMENT VARIABLE that contains Github username
                     passwordVar: 'GITHUB_PASSWORD', //ENVIRONMENT VARIABLE that contains Github password
                     releaseNotes: 'release_notes'
