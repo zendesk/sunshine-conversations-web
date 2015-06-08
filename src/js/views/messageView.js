@@ -29,9 +29,10 @@ module.exports = Marionette.ItemView.extend({
             '@ui.avatar': {
                 observe: ['avatarUrl', 'authorId'],
                 update: function($el, values, model) {
-                    var url = values[0], id = values[1];
-                    if(this._isAppMaker()) {
-                        url = url || urljoin(endpoint.ROOT_URL, '/api/users/', id, '/avatar');
+                    var url = values[0],
+                        id = values[1];
+                    if (this._isAppMaker()) {
+                        url = url || urljoin(endpoint.rootUrl, '/api/users/', id, '/avatar');
                         $el.attr('src', url);
                     }
                 },
