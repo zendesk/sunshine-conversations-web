@@ -24,9 +24,6 @@ module.exports = Marionette.ItemView.extend({
         sendButton: '[data-ui-send]'
     },
 
-    inputPlaceholder: 'Type a message...',
-    sendButtonText: 'Send',
-
     getValue: function() {
         return this.ui.input.val();
     },

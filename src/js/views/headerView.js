@@ -25,8 +25,6 @@ module.exports = Marionette.ItemView.extend({
         }
     },
 
-    headerText: 'How can we help?',
-
     isBadgeVisible: function(val) {
         return val > 0;
     },
