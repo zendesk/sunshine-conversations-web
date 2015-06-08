@@ -26,5 +26,9 @@ module.exports = ViewController.extend({
             this.view.resetValue();
             this.trigger('message:send', message);
         }
+    },
+
+    focus: function() {
+        this.view.focus();
     }
 });
