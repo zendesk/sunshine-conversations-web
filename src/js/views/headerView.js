@@ -31,7 +31,7 @@ module.exports = Marionette.ItemView.extend({
         return val > 0;
     },
 
-    serializeData: function(){
+    serializeData: function() {
         return {
             headerText: this.getOption('headerText')
         };

@@ -35,11 +35,11 @@ module.exports = Marionette.ItemView.extend({
         this.ui.input.val('');
     },
 
-    focus: function(){
+    focus: function() {
         this.ui.input.focus();
     },
 
-    serializeData: function(){
+    serializeData: function() {
         return {
             inputPlaceholder: this.getOption('inputPlaceholder'),
             sendButtonText: this.getOption('sendButtonText')

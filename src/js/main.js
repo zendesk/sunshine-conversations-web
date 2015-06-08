@@ -170,7 +170,7 @@ var SupportKit = Marionette.Object.extend({
             $('body').append(widget.el);
 
 
-            _(function(){
+            _(function() {
                 this._chatController.scrollToBottom();
             }).chain().bind(this).delay();
 
