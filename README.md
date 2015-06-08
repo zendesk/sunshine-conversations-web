@@ -64,13 +64,6 @@ SupportKit.init({
     // Additional properties
     properties: {
         'anything': 'whatever_you_want'    
-    },
-    // use this to customize the text in the widget.
-    customText: {
-        headerText: 'How can we help?',
-        introText: 'This is the beginning of your conversation.<br/> Ask us anything!',
-        sendButtonText: 'Send',
-        inputPlaceholder: 'Type a message...'
     }
 });
 ```
