@@ -30,5 +30,9 @@ module.exports = Marionette.ItemView.extend({
 
     resetValue: function() {
         this.ui.input.val('');
+    },
+
+    focus: function(){
+        this.ui.input.focus();
     }
 });
