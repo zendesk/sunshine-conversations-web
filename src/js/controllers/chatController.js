@@ -28,19 +28,31 @@ module.exports = ViewController.extend({
 
     initialize: function() {
         bindAll(this);
+        this.isOpened = false;
     },
 
     open: function() {
-        this.view.open();
+        if (!!this.view && !!this.chatInputController && !this.isOpened) {
+            this.isOpened = true;
+            this.view.open();
+            this.chatInputController.focus();
+        }
     },
 
     close: function() {
-        this.view.close();
-        this._resetUnread();
+        if (!!this.view && this.isOpened) {
+            this.isOpened = false;
+            this.view.close();
+            this._resetUnread();
+        }
     },
 
     toggle: function() {
-        this.view.toggle();
+        if (this.isOpened) {
+            this.close();
+        } else {
+            this.open();
+        }
     },
 
     sendMessage: function(text) {
@@ -49,6 +61,11 @@ module.exports = ViewController.extend({
                 authorId: endpoint.appUserId,
                 text: text
             });
+        }
+    },
+    scrollToBottom: function() {
+        if (!!this.conversationView) {
+            this.conversationView.scrollToBottom();
         }
     },
 
@@ -139,6 +156,10 @@ module.exports = ViewController.extend({
 
     getWidget: function() {
         var view = this.getView();
+
+        if (view.isRendered) {
+            return $.Deferred().resolve(view);
+        }
 
         // this a workaround for rendering layout views and fixing regions
         // seems to be a lot of issues around layout views rendering...

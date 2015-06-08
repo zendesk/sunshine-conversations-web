@@ -161,6 +161,12 @@ var SupportKit = Marionette.Object.extend({
     _renderWidget: function() {
         this._chatController.getWidget().then(_.bind(function(widget) {
             $('body').append(widget.el);
+
+
+            _(function(){
+                this._chatController.scrollToBottom();
+            }).chain().bind(this).delay();
+
             // Tell the world we're ready
             this.triggerMethod('ready');
         }, this));
