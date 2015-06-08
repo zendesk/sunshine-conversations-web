@@ -26,6 +26,8 @@ module.exports = ViewController.extend({
         focus: '_resetUnread'
     },
 
+    uiText: {},
+
     initialize: function() {
         bindAll(this);
         this.isOpened = false;
