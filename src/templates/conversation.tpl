@@ -1,2 +1,2 @@
-<div class="sk-intro">This is the beginning of your conversation.<br/> Ask us anything!</div>
+<div class="sk-intro"><%= introText %></div>
 <div data-ui-messages></div>

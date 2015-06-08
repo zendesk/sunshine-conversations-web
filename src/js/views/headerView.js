@@ -27,5 +27,11 @@ module.exports = Marionette.ItemView.extend({
 
     isBadgeVisible: function(val) {
         return val > 0;
+    },
+
+    serializeData: function() {
+        return {
+            headerText: this.getOption('headerText')
+        };
     }
 });

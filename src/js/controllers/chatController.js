@@ -29,6 +29,8 @@ module.exports = ViewController.extend({
     initialize: function() {
         bindAll(this);
         this.isOpened = false;
+
+        this.uiText = this.getOption('uiText');
     },
 
     open: function() {
@@ -128,7 +130,8 @@ module.exports = ViewController.extend({
         this.model = conversation;
 
         this.headerView = new HeaderView({
-            model: conversation
+            model: conversation,
+            headerText: this.uiText.headerText
         });
 
         this.listenTo(this.headerView, 'toggle', this.toggle);
@@ -138,12 +141,17 @@ module.exports = ViewController.extend({
             collection: conversation.get('messages'),
             childViewOptions: {
                 conversation: conversation
-            }
+            },
+            introText: this.uiText.introText
         });
 
         this.chatInputController = new ChatInputController({
             model: conversation,
-            collection: conversation.get('messages')
+            collection: conversation.get('messages'),
+            viewOptions: {
+                inputPlaceholder: this.uiText.inputPlaceholder,
+                sendButtonText: this.uiText.sendButtonText
+            }
         });
 
         this.listenTo(this.chatInputController, 'message:send', this.sendMessage);
