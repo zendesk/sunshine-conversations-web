@@ -64,7 +64,7 @@ SupportKit.init({
     // Additional properties
     properties: {
         'anything': 'whatever_you_want'    
-    } 
+    }
 });
 ```
 

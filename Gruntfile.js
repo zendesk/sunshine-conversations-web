@@ -154,7 +154,7 @@ module.exports = function(grunt) {
 
         release: {
             options: {
-                npm: false,
+                npm: true,
                 bump: false,
                 commit: true,
                 push: false,

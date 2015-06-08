@@ -33,19 +33,19 @@ require('../stylesheets/main.less');
  * Contains all SupportKit API classes and functions.
  */
 var SupportKit = Marionette.Object.extend({
-    VERSION: '1.0.0',
+    VERSION: '0.2.0',
+
+    defaultText: {
+        headerText: 'How can we help?',
+        inputPlaceholder: 'Type a message...',
+        sendButtonText: 'Send',
+        introText: 'This is the beginning of your conversation.<br/> Ask us anything!'
+    },
 
     initialize: function() {
         bindAll(this);
 
         this._conversations = new Conversations();
-
-        this._chatController = new ChatController({
-            collection: this._conversations
-        });
-
-        this.listenToOnce(this._chatController, 'rendered', this._renderWidget);
-
     },
 
     _checkReady: function(message) {
@@ -73,6 +73,13 @@ var SupportKit = Marionette.Object.extend({
         if (!endpoint.appToken) {
             throw new Error('init method requires an appToken');
         }
+
+        var uiText = _.extend({}, this.defaultText, options.customText);
+
+        this._chatController = new ChatController({
+            collection: this._conversations,
+            uiText: uiText
+        });
 
         // TODO: Allow options to override the deviceId
         var deviceId = cookie.parse(document.cookie)['sk_deviceid'];
@@ -163,7 +170,7 @@ var SupportKit = Marionette.Object.extend({
             $('body').append(widget.el);
 
 
-            _(function(){
+            _(function() {
                 this._chatController.scrollToBottom();
             }).chain().bind(this).delay();
 

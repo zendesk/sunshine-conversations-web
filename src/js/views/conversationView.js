@@ -25,5 +25,11 @@ module.exports = Marionette.CompositeView.extend({
 
     onShow: function() {
         this.scrollToBottom();
+    },
+
+    serializeData: function() {
+        return {
+            introText: this.getOption('introText')
+        };
     }
 });
