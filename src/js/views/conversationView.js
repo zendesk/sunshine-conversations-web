@@ -15,6 +15,8 @@ module.exports = Marionette.CompositeView.extend({
 
     childViewContainer: '[data-ui-messages]',
 
+    introText: 'This is the beginning of your conversation.<br/> Ask us anything!',
+
     scrollToBottom: function() {
         this.$el.scrollTop(this.$el.get(0).scrollHeight);
     },
@@ -25,5 +27,11 @@ module.exports = Marionette.CompositeView.extend({
 
     onShow: function() {
         this.scrollToBottom();
+    },
+
+    serializeData: function(){
+        return {
+            introText: this.getOption('introText')
+        };
     }
 });

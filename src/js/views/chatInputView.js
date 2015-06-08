@@ -24,6 +24,9 @@ module.exports = Marionette.ItemView.extend({
         sendButton: '[data-ui-send]'
     },
 
+    inputPlaceholder: 'Type a message...',
+    sendButtonText: 'Send',
+
     getValue: function() {
         return this.ui.input.val();
     },
@@ -34,5 +37,12 @@ module.exports = Marionette.ItemView.extend({
 
     focus: function(){
         this.ui.input.focus();
+    },
+
+    serializeData: function(){
+        return {
+            inputPlaceholder: this.getOption('inputPlaceholder'),
+            sendButtonText: this.getOption('sendButtonText')
+        };
     }
 });

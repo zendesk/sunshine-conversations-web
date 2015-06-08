@@ -25,7 +25,15 @@ module.exports = Marionette.ItemView.extend({
         }
     },
 
+    headerText: 'How can we help?',
+
     isBadgeVisible: function(val) {
         return val > 0;
+    },
+
+    serializeData: function(){
+        return {
+            headerText: this.getOption('headerText')
+        };
     }
 });
