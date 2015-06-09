@@ -97,6 +97,7 @@ var SupportKit = Marionette.Object.extend({
                 referrer: document.referrer,
                 browserLanguage: navigator.language,
                 currentUrl: document.location.href,
+                sdkVersion: this.VERSION,
                 currentTitle: document.title
             }
         })
