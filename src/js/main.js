@@ -2,12 +2,14 @@
 
 'use strict';
 
+require('./compat');
+require('es5-shim');
 require('./bootstrap');
 
-var Backbone = require('backbone'),
+var $ = require('jquery'),
+    Backbone = require('backbone'),
     Marionette = require('backbone.marionette'),
     _ = require('underscore'),
-    $ = require('jquery'),
     cookie = require('cookie'),
     uuid = require('uuid'),
     bindAll = require('lodash.bindall');
@@ -112,6 +114,9 @@ var SupportKit = Marionette.Object.extend({
             .then(_(function() {
                 this._renderWidget();
             }).bind(this))
+            .fail(function(err) {
+                console.error('SupportKit init error');
+            })
             .done();
     },
 
