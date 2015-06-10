@@ -1,7 +1,7 @@
 var $ = require('jquery'),
     urljoin = require('urljoin');
 
-var ROOT_URL = 'http://10.0.2.2:8091';
+var ROOT_URL = 'https://sdk.supportkit.io';
 module.exports.rootUrl = ROOT_URL;
 
 // State params set by main
@@ -9,7 +9,6 @@ module.exports.appToken = undefined;
 module.exports.appUserId = undefined;
 
 module.exports._rest = function(method, path, body) {
-    $.support.cors = true;
     var deferred = $.Deferred();
     $.ajax({
         url: urljoin(this.rootUrl, path),
@@ -23,10 +22,6 @@ module.exports._rest = function(method, path, body) {
             deferred.resolve(res);
         },
         error: function(xhr, textStatus, errorThrown) {
-            console.log('xhr:', xhr);
-            console.log('textStatus:', textStatus);
-            console.log('errorThrown:', errorThrown.toString());
-            console.log('xhr.status:', xhr.status);
             if (method === 'PUT' && xhr.status === 200) {
                 deferred.resolve(xhr);
             } else {
