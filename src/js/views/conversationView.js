@@ -22,17 +22,13 @@ module.exports = Marionette.CompositeView.extend({
         messages: '[data-ui-messages]'
     },
 
-    events: {
-        'scroll': 'fadeLogo'
-    },
-
     scrollToBottom: function() {
-        this.$el.scrollTop(this.$el.get(0).scrollHeight);
+        this.$el.scrollTop(this.$el.get(0).scrollHeight - this.$el.outerHeight() - this.ui.logo.outerHeight());
     },
 
     onAddChild: function() {
         this.scrollToBottom();
-        this.fadeLogo();
+        this.positionLogo();
     },
 
     onShow: function() {
@@ -45,28 +41,17 @@ module.exports = Marionette.CompositeView.extend({
         };
     },
 
-    fadeLogo: function() {
+    positionLogo: function() {
         var conversationHeight = this.$el.outerHeight(),
             logoHeight = this.ui.logo.outerHeight(),
-            heightRemaining = conversationHeight - (this.ui.intro.outerHeight() + this.ui.messages.outerHeight() + this.ui.logo.outerHeight()),
-            scrollFromBottom = this.el.scrollHeight - conversationHeight - this.el.scrollTop,
-            opacity,
-            blur;
+            introHeight = this.ui.intro.outerHeight(),
+            messagesHeight = this.ui.messages.outerHeight(),
+            heightRemaining = conversationHeight - (introHeight + messagesHeight + logoHeight);
 
-        heightRemaining = heightRemaining < 0 ? scrollFromBottom : heightRemaining;
-
-        opacity = heightRemaining / conversationHeight,
-        blur = ((1 - opacity) < 0 ? 0 : (1 - opacity)) * 5;
-
-        console.log('blur :: ', blur);
-
-        this.ui.logo.css({
-            'opacity': opacity,
-            'filter': 'blur(' + blur + 'px)',
-            '-webkit-filter': 'blur(' + blur + 'px)',
-            '-moz-filter': 'blur(' + blur + 'px)',
-            '-o-filter': 'blur(' + blur + 'px)',
-            '-ms-filter': 'blur(' + blur + 'px)'
-        });
+        if (heightRemaining > logoHeight) {
+            this.ui.logo.addClass('anchor-bottom');
+        } else {
+            this.ui.logo.removeClass('anchor-bottom');
+        }
     }
 });

@@ -40,7 +40,7 @@ module.exports = ViewController.extend({
             this.isOpened = true;
             this.view.open();
             this.chatInputController.focus();
-            this.conversationView.fadeLogo();
+            this.conversationView.positionLogo();
         }
     },
 
