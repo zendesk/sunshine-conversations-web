@@ -35,6 +35,7 @@ module.exports = function(grunt) {
                 browsers: ['PhantomJS']
             }
         },
+
         watch: {
             scripts: {
                 files: ['src/js/**/*.js', '*.html', 'src/templates/*.tpl', 'src/stylesheets/*.less', 'config/config.json'],
@@ -44,6 +45,7 @@ module.exports = function(grunt) {
                 },
             },
         },
+
         uglify: {
             options: {
                 banner: '<%= banner %>'
@@ -53,6 +55,7 @@ module.exports = function(grunt) {
                 dest: 'dist/supportkit.min.js'
             }
         },
+
         replace: {
             dist: {
                 src: 'dist/supportkit.js',
@@ -83,6 +86,7 @@ module.exports = function(grunt) {
                 }]
             }
         },
+
         'http-server': {
             'dev': {
                 root: '.',
@@ -94,6 +98,7 @@ module.exports = function(grunt) {
                 runInBackground: false
             }
         },
+
         browserify: {
             dist: {
                 files: {
@@ -110,6 +115,7 @@ module.exports = function(grunt) {
                 }
             }
         },
+
         s3: {
             options: {
                 key: '<%= aws.key %>',
@@ -117,20 +123,33 @@ module.exports = function(grunt) {
                 bucket: '<%= aws.bucket %>',
                 access: 'public-read'
             },
-            dev: {
+            js: {
                 // Files to be uploaded.
                 upload: [{
                     src: 'dist/supportkit.min.js',
                     dest: 'supportkit.min.js'
                 }]
+            },
+            images: {
+                upload: [
+                    {
+                        src: 'src/images/**',
+                        dest: 'images/',
+                        options: {
+                            gzip: true
+                        }
+                    }
+                ]
             }
         },
+
         concurrent: {
             all: ['http-server', 'watch'],
             options: {
                 logConcurrentOutput: true
             }
         },
+
         cloudfront: {
             options: {
                 region: 'us-east-1', // your AWS region
@@ -302,7 +321,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('build', ['clean', 'browserify', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'loadConfig', 'replace']);
-    grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
+    grunt.registerTask('deploy', ['build', 'awsconfig', 's3:js', 'cloudfront:prod']);
     grunt.registerTask('run', ['runlog', 'devbuild', 'concurrent:all']);
     grunt.registerTask('test:unit', ['karma:unit']);
     grunt.registerTask('test:ci', ['karma:ci']);
@@ -314,4 +333,5 @@ module.exports = function(grunt) {
 
     grunt.registerTask('branchCheck', 'Checks that you are publishing from Master branch with no working changes', ['gitinfo', 'checkBranchStatus']);
 
+    grunt.registerTask('cdnify', ['awsconfig', 's3:images']);
 };

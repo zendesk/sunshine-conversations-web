@@ -1,5 +1,5 @@
 <div class="sk-intro"><%= introText %></div>
 <div data-ui-messages></div>
 <% if (!hideLogo) { %>
-    <div class="sk-logo">In-App Messaging by <span>SupportKit</span> </div>
+    <div class="sk-logo">In-App Messaging by <img class="sk-image" src="https://cdn.supportkit.io/images/logo_webwidget.png" alt="SupportKit"></div>
 <% } %>
