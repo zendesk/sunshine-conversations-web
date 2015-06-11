@@ -1,16 +1,12 @@
 'use strict';
 
-var _ = require('underscore'),
-    Backbone = require('backbone'),
+var Backbone = require('backbone'),
     urljoin = require('url-join');
 
 var BaseModel = require('./baseModel'),
     AppMaker = require('./appMaker'),
     AppUser = require('./appUser'),
     Messages = require('../collections/messages');
-
-var vent = require('../vent'),
-    endpoint = require('../endpoint');
 
 module.exports = BaseModel.extend({
     idAttribute: '_id',

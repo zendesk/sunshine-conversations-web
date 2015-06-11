@@ -1,15 +1,15 @@
-var Backbone = require('backbone'),
-    Marionette = require('backbone.marionette'),
-    _ = require('underscore'),
-    $ = require('jquery');
+var Marionette = require('backbone.marionette');
 
 var template = require('../../templates/conversation.tpl');
 
-var MessageView = require('./messageView'),
-    Message = require('../models/message');
+var MessageView = require('./messageView');
 
 module.exports = Marionette.CompositeView.extend({
     id: 'sk-conversation',
+
+    className: function() {
+        return this.getOption('hideLogo') ? 'logo-hidden' : '';
+    },
 
     childView: MessageView,
     template: template,
@@ -37,7 +37,8 @@ module.exports = Marionette.CompositeView.extend({
 
     serializeData: function() {
         return {
-            introText: this.getOption('introText')
+            introText: this.getOption('introText'),
+            hideLogo: this.getOption('hideLogo')
         };
     },
 

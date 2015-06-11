@@ -1,6 +1,5 @@
 'use strict';
-var sinon = require('sinon'),
-    _ = require('underscore');
+var _ = require('underscore');
 
 var BaseMock = require('./baseMock');
 

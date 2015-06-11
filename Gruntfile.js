@@ -77,6 +77,9 @@ module.exports = function(grunt) {
                 }, {
                     from: /EMAIL/,
                     to: '<%= config.EMAIL %>'
+                }, {
+                    from: /HIDE_LOGO/,
+                    to: '<%= config.HIDE_LOGO %>'
                 }]
             }
         },
@@ -243,7 +246,7 @@ module.exports = function(grunt) {
             versionType = grunt.option('versionType'),
             globalVersion;
 
-        files.forEach(function(file, idx) {
+        files.forEach(function(file) {
             var version = null;
             var content = grunt.file.read(file).replace(VERSION_REGEXP, function(match, prefix, parsedVersion, suffix) {
                 version = fullVersion || semver.inc(parsedVersion, versionType);

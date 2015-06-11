@@ -9,13 +9,15 @@
     <script src="/dist/supportkit.js"></script>
     <script>
         /* global SupportKit: false */
+
         SupportKit.init({
             appToken: 'APP_TOKEN',
             givenName: 'GIVEN_NAME',
             surname: 'SURNAME',
             properties: {
               'TEST': true
-            }
+            },
+            hideLogo: HIDE_LOGO
         });
     </script>
 </head>

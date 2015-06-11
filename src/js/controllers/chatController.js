@@ -1,9 +1,6 @@
 'use strict';
 
 var $ = require('jquery'),
-    Backbone = require('backbone'),
-    Marionette = require('backbone.marionette'),
-    _ = require('underscore'),
     cookie = require('cookie'),
     bindAll = require('lodash.bindall');
 
@@ -145,6 +142,7 @@ module.exports = ViewController.extend({
             childViewOptions: {
                 conversation: conversation
             },
+            hideLogo: this.getOption('hideLogo'),
             introText: this.uiText.introText
         });
 

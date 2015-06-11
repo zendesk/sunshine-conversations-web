@@ -1,6 +1,4 @@
 var sinon = require('sinon'),
-    _ = require('underscore'),
-    $ = require('jquery'),
     ChatController = require('../../src/js/controllers/chatController'),
     Conversations = require('../../src/js/collections/conversations'),
     vent = require('../../src/js/vent');
@@ -9,7 +7,6 @@ var ClientScenario = require('../scenarios/clientScenario');
 
 describe('ChatController', function() {
     var scenario,
-        SupportKit,
         sandbox,
         chatController,
         conversations,

@@ -1,5 +1,4 @@
-var _ = require('underscore'),
-    Marionette = require('backbone.marionette'),
+var Marionette = require('backbone.marionette'),
     urljoin = require('urljoin');
 
 var template = require('../../templates/message.tpl'),
@@ -28,7 +27,7 @@ module.exports = Marionette.ItemView.extend({
             '@ui.message': 'text',
             '@ui.avatar': {
                 observe: ['avatarUrl', 'authorId'],
-                update: function($el, values, model) {
+                update: function($el, values) {
                     var url = values[0],
                         id = values[1];
                     if (this._isAppMaker()) {

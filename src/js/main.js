@@ -4,8 +4,7 @@
 
 require('./bootstrap');
 
-var Backbone = require('backbone'),
-    Marionette = require('backbone.marionette'),
+var Marionette = require('backbone.marionette'),
     _ = require('underscore'),
     $ = require('jquery'),
     cookie = require('cookie'),
@@ -13,12 +12,9 @@ var Backbone = require('backbone'),
     bindAll = require('lodash.bindall');
 
 
-var endpoint = require('./endpoint'),
-    vent = require('./vent'),
-    faye = require('./faye');
+var endpoint = require('./endpoint');
 
 var ChatController = require('./controllers/chatController'),
-    Message = require('./models/message'),
     Conversations = require('./collections/conversations'),
     AppUser = require('./models/appUser');
 
@@ -54,7 +50,7 @@ var SupportKit = Marionette.Object.extend({
         }
     },
 
-    _updateUser: function(userInfo) {
+    _updateUser: function() {
         return this.user.save();
     },
 
@@ -78,7 +74,8 @@ var SupportKit = Marionette.Object.extend({
 
         this._chatController = new ChatController({
             collection: this._conversations,
-            uiText: uiText
+            uiText: uiText,
+            hideLogo: options.hideLogo
         });
 
         // TODO: Allow options to override the deviceId
