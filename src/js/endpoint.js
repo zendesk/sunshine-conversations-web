@@ -21,11 +21,11 @@ module.exports._rest = function(method, path, body) {
         success: function(res) {
             deferred.resolve(res);
         },
-        error: function(err) {
-            if (method === 'PUT' && err.status === 200) {
-                deferred.resolve(err);
+        error: function(xhr, textStatus, errorThrown) {
+            if (method === 'PUT' && xhr.status === 200) {
+                deferred.resolve(xhr);
             } else {
-                deferred.reject(err);
+                deferred.reject(xhr);
             }
         }
     });

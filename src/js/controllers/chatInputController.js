@@ -13,7 +13,7 @@ module.exports = ViewController.extend({
     viewClass: ChatInputView,
 
     viewEvents: {
-        'message:send': 'onMessageSend',
+        'message:send': 'onMessageSend'
     },
 
     viewTriggers: {

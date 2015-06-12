@@ -3,5 +3,6 @@
     "APP_TOKEN": "3ea7dnnifzriurbnqkux3043o",
     "GIVEN_NAME": "DEFAULT_NAME",
     "SURNAME": "DEFAULT_SURNAME",
-    "EMAIL": "DEFAULT@EMAIL.COM"
+    "EMAIL": "DEFAULT@EMAIL.COM",
+    "WIDGET_CODE": "supportkit.js"
 }

@@ -36,13 +36,20 @@ module.exports = function(grunt) {
             }
         },
         watch: {
-            scripts: {
-                files: ['src/js/**/*.js', '*.html', 'src/templates/*.tpl', 'src/stylesheets/*.less', 'config/config.json'],
+            dev: {
+                files: ['src/js/**/*.js', '*.html', 'src/templates/*.tpl', 'src/stylesheets/*.less', 'config/config.json', 'example/template/*'],
                 tasks: ['devbuild'],
                 options: {
                     spawn: false,
-                },
+                }
             },
+            min: {
+                files: ['src/js/**/*.js', '*.html', 'src/templates/*.tpl', 'src/stylesheets/*.less', 'config/config.json', 'example/template/*'],
+                tasks: ['devbuild:min'],
+                options: {
+                    spawn: false,
+                },
+            }
         },
         uglify: {
             options: {
@@ -77,6 +84,9 @@ module.exports = function(grunt) {
                 }, {
                     from: /EMAIL/,
                     to: '<%= config.EMAIL %>'
+                }, {
+                    from: /WIDGET_CODE/,
+                    to: '<%= config.WIDGET_CODE %>'
                 }]
             }
         },
@@ -123,7 +133,8 @@ module.exports = function(grunt) {
             }
         },
         concurrent: {
-            all: ['http-server', 'watch'],
+            dev: ['http-server', 'watch:dev'],
+            min: ['http-server', 'watch:min'],
             options: {
                 logConcurrentOutput: true
             }
@@ -297,10 +308,16 @@ module.exports = function(grunt) {
         grunt.config.set('config', merged);
     });
 
+    grunt.registerTask('setMinMode', function() {
+        grunt.config.set('config.WIDGET_CODE', 'supportkit.min.js');
+    })
+
     grunt.registerTask('build', ['clean', 'browserify', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'loadConfig', 'replace']);
+    grunt.registerTask('devbuild:min', ['clean', 'browserify', 'loadConfig', 'setMinMode', 'replace', 'uglify']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3', 'cloudfront:prod']);
-    grunt.registerTask('run', ['runlog', 'devbuild', 'concurrent:all']);
+    grunt.registerTask('run', ['runlog', 'devbuild', 'concurrent:dev']);
+    grunt.registerTask('run:min', ['runlog', 'devbuild:min', 'concurrent:min']);
     grunt.registerTask('test:unit', ['karma:unit']);
     grunt.registerTask('test:ci', ['karma:ci']);
     grunt.registerTask('default', ['run']);
