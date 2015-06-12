@@ -1,7 +1,6 @@
 'use strict';
 
-var Backbone = require('backbone'),
-    _ = require('underscore'),
+var _ = require('underscore'),
     BaseModel = require('./baseModel');
 
 module.exports = BaseModel.extend({

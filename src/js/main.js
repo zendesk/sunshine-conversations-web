@@ -3,21 +3,17 @@
 'use strict';
 require('./bootstrap');
 
-var $ = require('jquery'),
-    Backbone = require('backbone'),
-    Marionette = require('backbone.marionette'),
+var Marionette = require('backbone.marionette'),
     Modernizr = require('browsernizr'),
     _ = require('underscore'),
+    $ = require('jquery'),
     cookie = require('cookie'),
     uuid = require('uuid'),
     bindAll = require('lodash.bindall');
 
-var endpoint = require('./endpoint'),
-    vent = require('./vent'),
-    faye = require('./faye');
+var endpoint = require('./endpoint');
 
 var ChatController = require('./controllers/chatController'),
-    Message = require('./models/message'),
     Conversations = require('./collections/conversations'),
     AppUser = require('./models/appUser');
 
@@ -53,7 +49,7 @@ var SupportKit = Marionette.Object.extend({
         }
     },
 
-    _updateUser: function(userInfo) {
+    _updateUser: function() {
         return this.user.save();
     },
 
