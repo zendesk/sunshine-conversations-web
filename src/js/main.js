@@ -1,19 +1,16 @@
 /* global global:false */
 
 'use strict';
-
-require('./compat');
-require('es5-shim');
 require('./bootstrap');
 
 var $ = require('jquery'),
     Backbone = require('backbone'),
     Marionette = require('backbone.marionette'),
+    Modernizr = require('browsernizr'),
     _ = require('underscore'),
     cookie = require('cookie'),
     uuid = require('uuid'),
     bindAll = require('lodash.bindall');
-
 
 var endpoint = require('./endpoint'),
     vent = require('./vent'),
@@ -61,6 +58,14 @@ var SupportKit = Marionette.Object.extend({
     },
 
     init: function(options) {
+        // TODO: alternatively load fallback CSS that doesn't use
+        // unsupported things like transforms
+        if (!Modernizr.csstransforms) {
+            console.error('SupportKit is not supported on this browser. ' +
+                'Missing capability: csstransforms');
+            return;
+        }
+
         this.ready = false;
         options = options || {};
 
@@ -115,7 +120,8 @@ var SupportKit = Marionette.Object.extend({
                 this._renderWidget();
             }).bind(this))
             .fail(function(err) {
-                console.error('SupportKit init error');
+                var message = err && (err.message || err.statusText);
+                console.error('SupportKit init error: ', message);
             })
             .done();
     },
