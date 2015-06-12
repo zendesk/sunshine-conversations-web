@@ -7,10 +7,6 @@ var MessageView = require('./messageView');
 module.exports = Marionette.CompositeView.extend({
     id: 'sk-conversation',
 
-    className: function() {
-        return this.getOption('hideLogo') ? 'logo-hidden' : '';
-    },
-
     childView: MessageView,
     template: template,
 
@@ -37,8 +33,7 @@ module.exports = Marionette.CompositeView.extend({
 
     serializeData: function() {
         return {
-            introText: this.getOption('introText'),
-            hideLogo: this.getOption('hideLogo')
+            introText: this.getOption('introText')
         };
     },
 

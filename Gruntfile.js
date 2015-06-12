@@ -80,9 +80,6 @@ module.exports = function(grunt) {
                 }, {
                     from: /EMAIL/,
                     to: '<%= config.EMAIL %>'
-                }, {
-                    from: /HIDE_LOGO/,
-                    to: '<%= config.HIDE_LOGO %>'
                 }]
             }
         },

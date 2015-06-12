@@ -64,9 +64,7 @@ SupportKit.init({
     // Additional properties
     properties: {
         'anything': 'whatever_you_want'    
-    },
-    // set this to true to hide the SupportKit logo in the conversation
-    hideLogo: false
+    }
 });
 ```
 

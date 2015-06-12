@@ -74,8 +74,7 @@ var SupportKit = Marionette.Object.extend({
 
         this._chatController = new ChatController({
             collection: this._conversations,
-            uiText: uiText,
-            hideLogo: options.hideLogo
+            uiText: uiText
         });
 
         // TODO: Allow options to override the deviceId
