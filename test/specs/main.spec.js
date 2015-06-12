@@ -1,5 +1,4 @@
-var sinon = require('sinon'),
-    _ = require('underscore');
+var sinon = require('sinon');
 
 var ClientScenario = require('../scenarios/clientScenario');
 

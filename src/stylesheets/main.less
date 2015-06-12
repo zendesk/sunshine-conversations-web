@@ -46,8 +46,8 @@
         cursor: pointer;
     }
     #sk-conversation {
-        padding: 18px 18px 18px 13px;
-        height: 284px;
+        padding: 18px 18px 0 13px;
+        height: 302px;
         overflow-y: scroll;
         overflow-x: hidden;
     }
@@ -230,6 +230,26 @@
         border-radius: 10px;
         box-shadow: inset 0 -3px 0 #fff, inset 0 3px 0 #fff;
         background-color: #ddd;
+    }
+    .sk-logo {
+        margin-top: 15px;
+        padding-bottom: 10px;
+        padding-top: 5px;
+        margin-left: 30px;
+        color: #e6e6e6;
+        font-size: 12px;
+
+        .sk-image {
+            position: relative;
+            left: 2px;
+            top: 3px;
+        }
+
+        &.anchor-bottom {
+            position: absolute;
+            width: 285px;
+            bottom: 45px;
+        }
     }
 }
 .sk-appear {

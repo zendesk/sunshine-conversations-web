@@ -1,13 +1,10 @@
 'use strict';
 
-var Backbone = require('backbone'),
-    Marionette = require('backbone.marionette'),
-    _ = require('underscore');
+var _ = require('underscore');
 
 var ViewController = require('view-controller');
 
-var ChatInputView = require('../views/chatInputView'),
-    vent = require('../vent');
+var ChatInputView = require('../views/chatInputView');
 
 module.exports = ViewController.extend({
     viewClass: ChatInputView,

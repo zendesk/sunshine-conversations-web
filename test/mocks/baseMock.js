@@ -1,7 +1,6 @@
 'use strict';
 
 var _ = require('underscore'),
-    Backbone = require('backbone'),
     sinon = require('sinon');
 
 var helpers = require('../helpers');

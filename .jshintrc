@@ -43,6 +43,7 @@
     "strict"        : false,     // Require `use strict` pragma in every file.
     "trailing"      : false,     // Prohibit trailing whitespaces.
     "camelcase"     : false,     //This option allows you to force all variable names to use either camelCase style or UPPER_CASE with underscores.
+    "unused"        : true,      // This option warns when you define and never use your variables. It is very useful for general code cleanup, especially when used in addition to undef.
 
     // == Relaxing Options ================================================
     //

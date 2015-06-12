@@ -1,8 +1,7 @@
 'use strict';
 
 var Backbone = require('backbone'),
-    _ = require('underscore'),
-    $ = require('jquery');
+    _ = require('underscore');
 
 var endpoint = require('./endpoint');
 
