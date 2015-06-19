@@ -16,18 +16,14 @@ module.exports = function(grunt) {
             awsConfig = grunt.file.readJSON('grunt-aws.json');
         }
         catch (e) {
-            awsConfig = {
-                aws: {}
-            };
+            awsConfig = {};
         }
 
-        awsConfig.aws.key = (process.env.AWS_ACCESS_KEY_ID || awsConfig.aws.key);
-        awsConfig.aws.secret = (process.env.AWS_SECRET_ACCESS_KEY || awsConfig.aws.secret);
-        awsConfig.aws.bucket = (process.env.SK_JS_S3_BUCKET || awsConfig.aws.bucket);
+        awsConfig.key = (process.env.AWS_ACCESS_KEY_ID || awsConfig.key);
+        awsConfig.secret = (process.env.AWS_SECRET_ACCESS_KEY || awsConfig.secret);
+        awsConfig.bucket = (process.env.SK_JS_S3_BUCKET || awsConfig.bucket);
 
         grunt.config.set('aws', awsConfig);
-
-
     });
 
     // Project configuration
