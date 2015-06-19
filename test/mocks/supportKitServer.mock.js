@@ -38,7 +38,7 @@ module.exports = BaseServerMock.extend({
             }, JSON.stringify(_(conversationStore).values())]
         ],
         [
-            'POST', /\/api\/conversations\/([a-z0-9]+)\/messages/, function(xhr, id) {
+            'POST', /\/api\/conversations\/([a-z0-9]+)\/messages/, function(xhr) {
                 xhr.respond(200, {}, JSON.stringify(xhr.requestBody));
             }
         ],

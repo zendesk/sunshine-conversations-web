@@ -1,11 +1,8 @@
-var Backbone = require('backbone'),
-    Marionette = require('backbone.marionette'),
-    _ = require('underscore');
+var Marionette = require('backbone.marionette');
 
 var template = require('../../templates/conversation.tpl');
 
-var MessageView = require('./messageView'),
-    Message = require('../models/message');
+var MessageView = require('./messageView');
 
 module.exports = Marionette.CompositeView.extend({
     id: 'sk-conversation',
@@ -15,12 +12,19 @@ module.exports = Marionette.CompositeView.extend({
 
     childViewContainer: '[data-ui-messages]',
 
+    ui: {
+        logo: '.sk-logo',
+        intro: '.sk-intro',
+        messages: '[data-ui-messages]'
+    },
+
     scrollToBottom: function() {
-        this.$el.scrollTop(this.$el.get(0).scrollHeight);
+        this.$el.scrollTop(this.$el.get(0).scrollHeight - this.$el.outerHeight() - this.ui.logo.outerHeight());
     },
 
     onAddChild: function() {
         this.scrollToBottom();
+        this.positionLogo();
     },
 
     onShow: function() {
@@ -31,5 +35,19 @@ module.exports = Marionette.CompositeView.extend({
         return {
             introText: this.getOption('introText')
         };
+    },
+
+    positionLogo: function() {
+        var conversationHeight = this.$el.outerHeight(),
+            logoHeight = this.ui.logo.outerHeight(),
+            introHeight = this.ui.intro.outerHeight(),
+            messagesHeight = this.ui.messages.outerHeight(),
+            heightRemaining = conversationHeight - (introHeight + messagesHeight + logoHeight);
+
+        if (heightRemaining > logoHeight) {
+            this.ui.logo.addClass('anchor-bottom');
+        } else {
+            this.ui.logo.removeClass('anchor-bottom');
+        }
     }
 });

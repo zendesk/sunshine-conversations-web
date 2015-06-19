@@ -1,11 +1,6 @@
-var Marionette = require('backbone.marionette'),
-    _ = require('underscore');
+var Marionette = require('backbone.marionette');
 
 var template = require('../../templates/chat.tpl');
-
-var HeaderView = require('./headerView'),
-    ConversationView = require('./conversationView'),
-    ChatInputView = require('./chatInputView');
 
 module.exports = Marionette.LayoutView.extend({
     id: 'sk-container',

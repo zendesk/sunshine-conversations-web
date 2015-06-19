@@ -2,7 +2,6 @@
 
 var BaseMock = require('./baseMock');
 var faye = require('faye'),
-    $ = require('jquery'),
     sinon = require('sinon');
 
 require('sinon-as-promised');

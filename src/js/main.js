@@ -1,24 +1,19 @@
 /* global global:false */
 
 'use strict';
-
 require('./bootstrap');
 
-var Backbone = require('backbone'),
-    Marionette = require('backbone.marionette'),
+var Marionette = require('backbone.marionette'),
+    Modernizr = require('browsernizr'),
     _ = require('underscore'),
     $ = require('jquery'),
     cookie = require('cookie'),
     uuid = require('uuid'),
     bindAll = require('lodash.bindall');
 
-
-var endpoint = require('./endpoint'),
-    vent = require('./vent'),
-    faye = require('./faye');
+var endpoint = require('./endpoint');
 
 var ChatController = require('./controllers/chatController'),
-    Message = require('./models/message'),
     Conversations = require('./collections/conversations'),
     AppUser = require('./models/appUser');
 
@@ -54,11 +49,19 @@ var SupportKit = Marionette.Object.extend({
         }
     },
 
-    _updateUser: function(userInfo) {
+    _updateUser: function() {
         return this.user.save();
     },
 
     init: function(options) {
+        // TODO: alternatively load fallback CSS that doesn't use
+        // unsupported things like transforms
+        if (!Modernizr.csstransforms) {
+            console.error('SupportKit is not supported on this browser. ' +
+                'Missing capability: csstransforms');
+            return;
+        }
+
         this.ready = false;
         options = options || {};
 
@@ -97,6 +100,7 @@ var SupportKit = Marionette.Object.extend({
                 referrer: document.referrer,
                 browserLanguage: navigator.language,
                 currentUrl: document.location.href,
+                sdkVersion: this.VERSION,
                 currentTitle: document.title
             }
         })
@@ -112,6 +116,10 @@ var SupportKit = Marionette.Object.extend({
             .then(_(function() {
                 this._renderWidget();
             }).bind(this))
+            .fail(function(err) {
+                var message = err && (err.message || err.statusText);
+                console.error('SupportKit init error: ', message);
+            })
             .done();
     },
 

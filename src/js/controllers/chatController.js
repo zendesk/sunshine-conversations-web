@@ -1,9 +1,6 @@
 'use strict';
 
 var $ = require('jquery'),
-    Backbone = require('backbone'),
-    Marionette = require('backbone.marionette'),
-    _ = require('underscore'),
     cookie = require('cookie'),
     bindAll = require('lodash.bindall');
 
@@ -40,6 +37,7 @@ module.exports = ViewController.extend({
             this.isOpened = true;
             this.view.open();
             this.chatInputController.focus();
+            this.conversationView.positionLogo();
         }
     },
 
