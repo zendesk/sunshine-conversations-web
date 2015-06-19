@@ -18,3 +18,10 @@ deployment:
       - git config --global user.name "SupportKit"
       - grunt publish
       - grunt deploy
+
+
+experimental:
+  notify:
+    branches:
+      only:
+        - master
