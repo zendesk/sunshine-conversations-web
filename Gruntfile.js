@@ -11,7 +11,15 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('awsconfig', function() {
-        var awsConfig = grunt.file.readJSON('grunt-aws.json');
+        var awsConfig;
+        try {
+            awsConfig = grunt.file.readJSON('grunt-aws.json');
+        }
+        catch (e) {
+            awsConfig = {
+                aws: {}
+            };
+        }
 
         awsConfig.aws.key = (process.env.AWS_ACCESS_KEY_ID || awsConfig.aws.key);
         awsConfig.aws.secret = (process.env.AWS_SECRET_ACCESS_KEY || awsConfig.aws.secret);
