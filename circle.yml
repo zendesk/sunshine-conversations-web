@@ -7,3 +7,12 @@ test:
 general:
   artifacts:
     - "dist/"
+
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - echo "_auth=$NPM_AUTH\nemail=$NPM_EMAIL" > ~/.npmrc
+      - grunt publish
+      - grunt deploy
