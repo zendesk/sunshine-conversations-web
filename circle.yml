@@ -14,5 +14,7 @@ deployment:
     branch: master
     commands:
       - echo "_auth=$NPM_AUTH\nemail=$NPM_EMAIL" > ~/.npmrc
+      - git config --global user.email "hello@supportkit.io"
+      - git config --global user.name "SupportKit"
       - grunt publish
       - grunt deploy
