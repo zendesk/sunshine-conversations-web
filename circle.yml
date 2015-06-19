@@ -13,7 +13,7 @@ deployment:
   production:
     branch: master
     commands:
-      - echo "_auth=$NPM_AUTH\nemail=$NPM_EMAIL" > ~/.npmrc
+      - echo "//registry.npmjs.org/:_authToken=$NPM_AUTH" > ~/.npmrc
       - git config --global user.email "hello@supportkit.io"
       - git config --global user.name "SupportKit"
       - grunt publish
