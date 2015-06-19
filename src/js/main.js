@@ -173,6 +173,11 @@ var SupportKit = Marionette.Object.extend({
         return this.throttledUpdate();
     },
 
+    track: function(data) {
+        this._checkReady();
+        this._chatController.track(data);
+    },
+
     _renderWidget: function() {
         this._chatController.getWidget().then(_.bind(function(widget) {
             $('body').append(widget.el);
@@ -187,6 +192,7 @@ var SupportKit = Marionette.Object.extend({
         }, this));
 
     },
+
     onReady: function() {
         this.ready = true;
     }
