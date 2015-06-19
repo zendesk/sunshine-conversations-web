@@ -191,7 +191,7 @@ module.exports = function(grunt) {
                 remote: 'https://github.com/supportkit/supportkit-js.git',
                 github: {
                     repo: 'supportkit/supportkit-js', //put your user/repo here
-                    accessTokenVar: 'GITHUB_ACCESS_TOKEN'
+                    accessTokenVar: 'GITHUB_ACCESS_TOKEN',
                     releaseNotes: 'release_notes'
                 }
             }
