@@ -11,7 +11,15 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('awsconfig', function() {
-        grunt.config.set('aws', grunt.file.readJSON('grunt-aws.json'));
+        var awsConfig = grunt.file.readJSON('grunt-aws.json');
+
+        awsConfig.aws.key = (process.env.AWS_ACCESS_KEY_ID || awsConfig.aws.key);
+        awsConfig.aws.secret = (process.env.AWS_SECRET_ACCESS_KEY || awsConfig.aws.secret);
+        awsConfig.aws.bucket = (process.env.SK_JS_S3_BUCKET || awsConfig.aws.bucket);
+
+        grunt.config.set('aws', awsConfig);
+
+
     });
 
     // Project configuration
