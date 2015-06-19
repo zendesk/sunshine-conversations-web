@@ -229,7 +229,7 @@ module.exports = function(grunt) {
             commitFiles: {
                 cmd: function() {
                     return [
-                        'git commit -am "Release v' + this.option('globalVersion') + '"'
+                        'git commit -am "Release v' + this.option('globalVersion') + ' [ci skip]"'
                     ].join(' && ');
                 }
             },
