@@ -266,8 +266,8 @@ module.exports = function(grunt) {
             return false;
         }
 
-        if (!process.env.GITHUB_USERNAME || !process.env.GITHUB_PASSWORD) {
-            grunt.log.error('Please set your github username and password as env variables (GITHUB_USERNAME, GITHUB_PASSWORD)');
+        if (!process.env.GITHUB_ACCESS_TOKEN) {
+            grunt.log.error('Please set your github access token as env variables (GITHUB_ACCESS_TOKEN)');
             return false;
         }
     });
