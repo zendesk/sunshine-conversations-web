@@ -6,18 +6,24 @@
     <meta charset="utf-8">
     <title>Conversation Demo</title>
     <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="http://sugarjs.com/release/current/sugar.min.js"></script>    
     <script src="/dist/WIDGET_CODE"></script>
+
     <script>
         /* global SupportKit: false */
 
-        SupportKit.init({
-            appToken: 'APP_TOKEN',
-            givenName: 'GIVEN_NAME',
-            surname: 'SURNAME',
-            properties: {
-              'TEST': true
-            }
-        });
+        var blap = Date.create('2002-06-15');
+        var blap2 = (5).daysBefore('Monday');
+        var truth = blap.isBefore('next week tuesday');
+
+        // SupportKit.init({
+        //     appToken: 'APP_TOKEN',
+        //     givenName: 'GIVEN_NAME',
+        //     surname: 'SURNAME',
+        //     properties: {
+        //       'TEST': true
+        //     }
+        // });
     </script>
 </head>
   <body>
