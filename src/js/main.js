@@ -28,7 +28,7 @@ require('../stylesheets/main.less');
  * Contains all SupportKit API classes and functions.
  */
 var SupportKit = Marionette.Object.extend({
-    VERSION: '0.2.6',
+    VERSION: '0.2.7',
 
     defaultText: {
         headerText: 'How can we help?',

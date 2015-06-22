@@ -3,7 +3,6 @@
 /**
  * Browser compatibility
  */
-require('es5-shim');
 require('browsernizr/test/css/transforms');
 require('browsernizr');
 
