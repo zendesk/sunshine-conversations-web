@@ -2,5 +2,6 @@ var BaseCollection = require('./baseCollection');
 var Message = require('../models/message');
 
 module.exports = BaseCollection.extend({
-    model: Message
+    model: Message,
+    comparator: 'received'
 });

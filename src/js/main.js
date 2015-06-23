@@ -4,18 +4,25 @@
 require('./bootstrap');
 
 var Marionette = require('backbone.marionette'),
+    Backbone = require('backbone'),
     Modernizr = require('browsernizr'),
     _ = require('underscore'),
     $ = require('jquery'),
     cookie = require('cookie'),
     uuid = require('uuid'),
+    urljoin = require('url-join'),
     bindAll = require('lodash.bindall');
 
 var endpoint = require('./endpoint');
 
-var ChatController = require('./controllers/chatController'),
-    Conversations = require('./collections/conversations'),
+var BaseCollection = require('./collections/baseCollection');
+
+var Event = require('./models/event'),
+    Rule = require('./models/rule'),
     AppUser = require('./models/appUser');
+
+var ChatController = require('./controllers/chatController'),
+    Conversations = require('./collections/conversations');
 
 // appends the compile stylesheet to the HEAD
 require('../stylesheets/main.less');
@@ -79,10 +86,6 @@ var SupportKit = Marionette.Object.extend({
 
         var uiText = _.extend({}, this.defaultText, options.customText);
 
-        this._chatController = new ChatController({
-            collection: this._conversations,
-            uiText: uiText
-        });
 
         // TODO: Allow options to override the deviceId
         var deviceId = cookie.parse(document.cookie)['sk_deviceid'];
@@ -109,7 +112,30 @@ var SupportKit = Marionette.Object.extend({
                     id: res.appUserId
                 });
 
+                var EventCollection = BaseCollection.extend({
+                    url: urljoin('appusers', res.appUserId, 'event'),
+                    model: Event
+                });
+
+                var RuleCollection = Backbone.Collection.extend({
+                    model: Rule
+                });
+
+                this.events = new EventCollection(res.events, {
+                    parse: true
+                });
+
+                this.rules = new RuleCollection(res.rules, {
+                    parse: true
+                });
+
                 endpoint.appUserId = res.appUserId;
+
+                this._chatController = new ChatController({
+                    collection: this._conversations,
+                    user: this.user,
+                    uiText: uiText
+                });
 
                 return this.updateUser(_.pick(options, 'givenName', 'surname', 'email', 'properties'));
             }).bind(this))
@@ -173,9 +199,47 @@ var SupportKit = Marionette.Object.extend({
         return this.throttledUpdate();
     },
 
-    track: function(data) {
+    track: function(eventName) {
         this._checkReady();
-        this._chatController.track(data);
+
+        var hasEvent = this._hasEvent(eventName),
+            rulesContainEvent = this._rulesContainEvent(eventName);
+
+        if (rulesContainEvent) {
+            this.events.create({
+                name: eventName,
+                user: this.user
+            });
+        } else if (!rulesContainEvent && !hasEvent) {
+            this._createEvent(eventName);
+        }
+    },
+
+    _createEvent: function(eventName) {
+        this._checkReady();
+        endpoint.put('api/event', {
+            name: eventName
+        }).then(_.bind(function() {
+            this.events.add({
+                name: eventName,
+                user: this.user
+            })
+        }, this))
+            .done();
+    },
+
+    _rulesContainEvent: function(eventName) {
+        return !!this.rules.find(function(rule) {
+            return !!rule.get('events').findWhere({
+                name: eventName
+            });
+        });
+    },
+
+    _hasEvent: function(eventName) {
+        return !!this.events.findWhere({
+            name: eventName
+        });
     },
 
     _renderWidget: function() {

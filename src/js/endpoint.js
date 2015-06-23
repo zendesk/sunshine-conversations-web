@@ -8,6 +8,8 @@ module.exports.rootUrl = ROOT_URL;
 module.exports.appToken = undefined;
 module.exports.appUserId = undefined;
 
+module.exports.conversationStarted = false;
+
 module.exports._rest = function(method, path, body) {
     var deferred = $.Deferred();
     $.ajax({
