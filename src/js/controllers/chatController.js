@@ -29,7 +29,7 @@ module.exports = ViewController.extend({
         bindAll(this);
         this.isOpened = false;
         this.user = this.getOption('user');
-        this.uiText = this.getOption('uiText');
+        this.uiText = this.getOption('uiText') || {};
 
         this.listenTo(this.user, 'change:conversationStarted', this.onConversationStarted);
     },
