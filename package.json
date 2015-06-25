@@ -91,6 +91,6 @@
     ]
   },
   "browserify-shim": {
-    "jquery": "global:$"
+    "jquery": "global:jQuery"
   }
 }
