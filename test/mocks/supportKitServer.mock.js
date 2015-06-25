@@ -27,6 +27,11 @@ module.exports = BaseServerMock.extend({
             }, JSON.stringify(appData)]
         ],
         [
+            'POST', /\/api\/appusers\/([a-z0-9]+)\/event/, function(xhr) {
+                xhr.respond(200, {}, JSON.stringify(xhr.requestBody));
+            }
+        ],
+        [
             'PUT', /\/api\/appusers\/([a-z0-9]+)/, function(xhr, id) {
                 xhr.respond(200, {}, JSON.stringify(userStore[id]));
             }

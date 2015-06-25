@@ -99,56 +99,69 @@ describe('Main', function() {
     });
 
     describe('#_rulesContainEvent', function() {
-        it('should contain "in-rule" event', function(){
+        it('should contain "in-rule" event', function() {
             SupportKit._rulesContainEvent('in-rule').should.be.true;
         });
 
-        it('should not contain "not-in-rule" event', function(){
+        it('should not contain "not-in-rule" event', function() {
             SupportKit._rulesContainEvent('not-in-rule').should.be.false;
         });
     });
 
     describe('#_hasEvent', function() {
-        it('should contain "in-rule" and "not-in-rule" events', function(){
+        it('should contain "in-rule" and "not-in-rule" events', function() {
             SupportKit._hasEvent('in-rule').should.be.true;
             SupportKit._hasEvent('not-in-rule').should.be.true;
         });
 
-        it('should not contain "not-in-event" event', function(){
+        it('should not contain "not-in-event" event', function() {
             SupportKit._hasEvent('not-in-event').should.be.false;
         });
     });
 
     describe('#track', function() {
         var endpoint = require('../../src/js/endpoint');
+        var eventCreateSpy,
+            endpointSpy;
+
+        beforeEach(function() {
+            eventCreateSpy = sandbox.spy(SupportKit._eventCollection, 'create');
+            endpointSpy = sandbox.spy(endpoint, 'put');
+        });
 
         describe('tracking a new event', function() {
-            var endpointSpy;
-
-            before(function() {
-                endpointSpy = sandbox.spy(endpoint, 'put');
-            });
 
             it('should call /api/event', function() {
                 SupportKit._hasEvent('new-event').should.be.false;
                 SupportKit._rulesContainEvent('new-event').should.be.false;
 
                 SupportKit.track('new-event');
+
                 endpointSpy.should.have.been.calledWith('api/event');
             })
         });
 
 
         describe('tracking an existing event in rules', function() {
-            var eventCreateSpy;
 
-            before(function() {
-                eventCreateSpy = sandbox.spy(SupportKit._events, 'create');
-            });
-
-            it('should create an event through the collection', function(){
+            it('should create an event through the collection', function() {
                 SupportKit._rulesContainEvent('in-rule').should.be.true;
 
+                SupportKit.track('in-rule');
+
+                eventCreateSpy.should.have.been.calledOnce;
+            });
+        });
+
+        describe('tracking an existing event no in rules', function() {
+            it('should do nothing', function() {
+                SupportKit._hasEvent('not-in-rule').should.be.true;
+                SupportKit._rulesContainEvent('not-in-rule').should.be.false;
+
+                SupportKit.track('not-in-rule');
+
+                eventCreateSpy.should.not.have.been.called;
+                endpointSpy.should.not.have.been.called;
             });
         });
     });

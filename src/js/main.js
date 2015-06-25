@@ -120,11 +120,14 @@ var SupportKit = Marionette.Object.extend({
                     model: Rule
                 });
 
-                this._events = new EventCollection(res.events, {
+                // this._events overrides some internals for event bindings in Backbone
+                this._eventCollection = new EventCollection(res.events, {
                     parse: true
                 });
 
-                this._rules = new RuleCollection(res.rules, {
+
+                // for consistency, this will use the collection suffix too.
+                this._ruleCollection = new RuleCollection(res.rules, {
                     parse: true
                 });
 
@@ -205,7 +208,7 @@ var SupportKit = Marionette.Object.extend({
             rulesContainEvent = this._rulesContainEvent(eventName);
 
         if (rulesContainEvent) {
-            this._events.create({
+            this._eventCollection.create({
                 name: eventName,
                 user: this.user
             });
@@ -219,7 +222,7 @@ var SupportKit = Marionette.Object.extend({
         endpoint.put('api/event', {
             name: eventName
         }).then(_.bind(function() {
-            this._events.add({
+            this._eventCollection.add({
                 name: eventName,
                 user: this.user
             })
@@ -228,7 +231,7 @@ var SupportKit = Marionette.Object.extend({
     },
 
     _rulesContainEvent: function(eventName) {
-        return !!this._rules.find(function(rule) {
+        return !!this._ruleCollection.find(function(rule) {
             return !!rule.get('events').findWhere({
                 name: eventName
             });
@@ -236,7 +239,7 @@ var SupportKit = Marionette.Object.extend({
     },
 
     _hasEvent: function(eventName) {
-        return !!this._events.findWhere({
+        return !!this._eventCollection.findWhere({
             name: eventName
         });
     },
