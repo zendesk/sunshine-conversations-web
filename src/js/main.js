@@ -55,9 +55,9 @@ var SupportKit = Marionette.Object.extend({
     init: function(options) {
         // TODO: alternatively load fallback CSS that doesn't use
         // unsupported things like transforms
-        if (!$.support.cssProperty('transition')) {
+        if (!$.support.cssProperty('transform')) {
             console.error('SupportKit is not supported on this browser. ' +
-                'Missing capability: css-transition');
+                'Missing capability: css-transform');
             return;
         }
 
