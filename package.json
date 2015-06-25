@@ -1,7 +1,7 @@
 {
   "name": "supportkit",
   "analyze": false,
-  "version": "0.2.7",
+  "version": "0.2.8",
   "keywords": [
     "supportkit",
     "javascript",
@@ -23,7 +23,6 @@
     "backbone-computedfields": "0.0.10",
     "backbone.marionette": "^2.4.1",
     "backbone.stickit": "^0.9.2",
-    "browsernizr": "^1.0.2",
     "cookie": "^0.1.2",
     "faye": "^1.1.1",
     "jquery": "~1.11.0",

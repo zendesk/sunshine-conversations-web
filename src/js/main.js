@@ -5,7 +5,6 @@ require('./bootstrap');
 
 var Marionette = require('backbone.marionette'),
     Backbone = require('backbone'),
-    Modernizr = require('browsernizr'),
     _ = require('underscore'),
     $ = require('jquery'),
     cookie = require('cookie'),
@@ -35,7 +34,7 @@ require('../stylesheets/main.less');
  * Contains all SupportKit API classes and functions.
  */
 var SupportKit = Marionette.Object.extend({
-    VERSION: '0.2.7',
+    VERSION: '0.2.8',
 
     defaultText: {
         headerText: 'How can we help?',
@@ -63,9 +62,9 @@ var SupportKit = Marionette.Object.extend({
     init: function(options) {
         // TODO: alternatively load fallback CSS that doesn't use
         // unsupported things like transforms
-        if (!Modernizr.csstransforms) {
+        if (!$.support.cssProperty('transform')) {
             console.error('SupportKit is not supported on this browser. ' +
-                'Missing capability: csstransforms');
+                'Missing capability: css-transform');
             return;
         }
 

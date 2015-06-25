@@ -1,13 +1,10 @@
 'use strict';
 
-/**
- * Browser compatibility
- */
-require('browsernizr/test/css/transforms');
-require('browsernizr');
-
+var $ = require('jquery');
 // Enable CORS for IE8
-window.$.support.cors = true;
+$.support.cors = true;
+
+require('./utils/jquery.support.cssproperty');
 
 // Polyfill Object.getPrototypeOf
 // http://ejohn.org/blog/objectgetprototypeof/
@@ -27,8 +24,7 @@ if (typeof Object.getPrototypeOf !== 'function') {
 /**
  * Marionette setup
  */
-var Backbone = require('backbone'),
-    $ = require('jquery');
+var Backbone = require('backbone');
 Backbone.$ = $;
 var Marionette = require('backbone.marionette');
 
