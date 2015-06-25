@@ -94,4 +94,13 @@ describe('Main', function() {
             expect(SupportKit._updateUser).to.be.calledOnce;
         });
     });
+
+    describe('#track', function(){
+
+        describe('tracking a new event', function(){
+            it('should call /api/event', function(done){
+
+            })
+        });
+    });
 });
