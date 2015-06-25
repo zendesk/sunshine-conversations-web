@@ -120,11 +120,11 @@ var SupportKit = Marionette.Object.extend({
                     model: Rule
                 });
 
-                this.events = new EventCollection(res.events, {
+                this._events = new EventCollection(res.events, {
                     parse: true
                 });
 
-                this.rules = new RuleCollection(res.rules, {
+                this._rules = new RuleCollection(res.rules, {
                     parse: true
                 });
 
@@ -205,7 +205,7 @@ var SupportKit = Marionette.Object.extend({
             rulesContainEvent = this._rulesContainEvent(eventName);
 
         if (rulesContainEvent) {
-            this.events.create({
+            this._events.create({
                 name: eventName,
                 user: this.user
             });
@@ -219,7 +219,7 @@ var SupportKit = Marionette.Object.extend({
         endpoint.put('api/event', {
             name: eventName
         }).then(_.bind(function() {
-            this.events.add({
+            this._events.add({
                 name: eventName,
                 user: this.user
             })
@@ -228,7 +228,7 @@ var SupportKit = Marionette.Object.extend({
     },
 
     _rulesContainEvent: function(eventName) {
-        return !!this.rules.find(function(rule) {
+        return !!this._rules.find(function(rule) {
             return !!rule.get('events').findWhere({
                 name: eventName
             });
@@ -236,7 +236,7 @@ var SupportKit = Marionette.Object.extend({
     },
 
     _hasEvent: function(eventName) {
-        return !!this.events.findWhere({
+        return !!this._events.findWhere({
             name: eventName
         });
     },
