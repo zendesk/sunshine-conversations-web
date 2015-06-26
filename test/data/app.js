@@ -13,9 +13,9 @@ module.exports = {
     'rules': [
         {
             '_id': '558c455fa2dad5d0581f0a0b',
-            'events': ['in-rule']
+            'events': ['in-rule-in-event', 'in-rule-not-event']
         }
     ],
     'hasIcon': false,
-    'events': ['in-rule', 'not-in-rule']
+    'events': ['in-rule-in-event', 'not-rule-in-event']
 };

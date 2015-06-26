@@ -14,7 +14,7 @@ var Conversation = require('../models/conversation');
 
 var ChatView = require('../views/chatView'),
     HeaderView = require('../views/headerView'),
-    ConversationView = require('../views/conversationView');
+    ConversationView =  require('../views/conversationView');
 
 var ChatInputController = require('../controllers/chatInputController');
 

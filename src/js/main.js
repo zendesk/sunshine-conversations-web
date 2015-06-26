@@ -33,7 +33,7 @@ require('../stylesheets/main.less');
  *
  * Contains all SupportKit API classes and functions.
  */
-var SupportKit = Marionette.Object.extend({
+var SupportKit = Marionette.Controller.extend({
     VERSION: '0.2.9',
 
     defaultText: {
@@ -60,6 +60,10 @@ var SupportKit = Marionette.Object.extend({
     },
 
     init: function(options) {
+        if (this.ready) {
+            return;
+        }
+
         // TODO: alternatively load fallback CSS that doesn't use
         // unsupported things like transforms
         if (!$.support.cssProperty('transform')) {
@@ -211,6 +215,8 @@ var SupportKit = Marionette.Object.extend({
             this._eventCollection.create({
                 name: eventName,
                 user: this.user
+            }, {
+                success: _.bind(this._checkConversationState, this)
             });
         } else if (!rulesContainEvent && !hasEvent) {
             this._createEvent(eventName);
@@ -239,9 +245,16 @@ var SupportKit = Marionette.Object.extend({
     },
 
     _hasEvent: function(eventName) {
-        return !!this._eventCollection.findWhere({
+        return eventName === 'skt-appboot' || !!this._eventCollection.findWhere({
             name: eventName
         });
+    },
+
+    _checkConversationState: function() {
+
+        if (!this._chatController.conversation || this._chatController.conversation.isNew()) {
+            this._chatController._initConversation();
+        }
     },
 
     _renderWidget: function() {
@@ -261,6 +274,16 @@ var SupportKit = Marionette.Object.extend({
 
     onReady: function() {
         this.ready = true;
+    },
+
+    onDestroy: function() {
+        if (this.ready) {
+            this._ruleCollection.reset();
+            this._eventCollection.reset();
+            this._conversations.reset();
+            this._chatController.destroy();
+            this.ready = false;
+        }
     }
 });
 

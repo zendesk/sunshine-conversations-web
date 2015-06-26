@@ -19,12 +19,17 @@ describe('Main', function() {
         scenario.clean();
     });
 
-    beforeEach(function() {
+    beforeEach(function(done) {
         sandbox = sinon.sandbox.create();
         SupportKit = require('../../src/js/main.js');
+        SupportKit.once('ready', done);
+        SupportKit.init({
+            appToken: 'thisisanapptoken'
+        });
     });
 
     afterEach(function() {
+        SupportKit.destroy();
         delete global.SupportKit;
         sandbox.restore();
     });
@@ -44,6 +49,8 @@ describe('Main', function() {
 
     describe('#init', function() {
         it('should trigger ready', function(done) {
+            SupportKit.destroy();
+
             SupportKit.once('ready', function() {
                 done();
             });
@@ -100,22 +107,23 @@ describe('Main', function() {
 
     describe('#_rulesContainEvent', function() {
         it('should contain "in-rule" event', function() {
-            SupportKit._rulesContainEvent('in-rule').should.be.true;
+            SupportKit._rulesContainEvent('in-rule-in-event').should.be.true;
+            SupportKit._rulesContainEvent('in-rule-not-event').should.be.true;
         });
 
         it('should not contain "not-in-rule" event', function() {
-            SupportKit._rulesContainEvent('not-in-rule').should.be.false;
+            SupportKit._rulesContainEvent('not-rule-in-event').should.be.false;
         });
     });
 
     describe('#_hasEvent', function() {
         it('should contain "in-rule" and "not-in-rule" events', function() {
-            SupportKit._hasEvent('in-rule').should.be.true;
-            SupportKit._hasEvent('not-in-rule').should.be.true;
+            SupportKit._hasEvent('in-rule-in-event').should.be.true;
+            SupportKit._hasEvent('not-rule-in-event').should.be.true;
         });
 
         it('should not contain "not-in-event" event', function() {
-            SupportKit._hasEvent('not-in-event').should.be.false;
+            SupportKit._hasEvent('in-rule-not-event').should.be.false;
         });
     });
 
@@ -124,7 +132,7 @@ describe('Main', function() {
         var eventCreateSpy,
             endpointSpy;
 
-        beforeEach(function() {
+        beforeEach(function(){
             eventCreateSpy = sandbox.spy(SupportKit._eventCollection, 'create');
             endpointSpy = sandbox.spy(endpoint, 'put');
         });
@@ -138,27 +146,34 @@ describe('Main', function() {
                 SupportKit.track('new-event');
 
                 endpointSpy.should.have.been.calledWith('api/event');
-            })
+            });
         });
 
 
         describe('tracking an existing event in rules', function() {
 
             it('should create an event through the collection', function() {
-                SupportKit._rulesContainEvent('in-rule').should.be.true;
+                SupportKit._rulesContainEvent('in-rule-not-event').should.be.true;
+                SupportKit._hasEvent('in-rule-not-event').should.be.false;
 
-                SupportKit.track('in-rule');
+                SupportKit.track('in-rule-not-event');
 
-                eventCreateSpy.should.have.been.calledOnce;
+
+                SupportKit._rulesContainEvent('in-rule-in-event').should.be.true;
+                SupportKit._hasEvent('in-rule-in-event').should.be.true;
+
+                SupportKit.track('in-rule-in-event');
+
+                eventCreateSpy.should.have.been.calledTwice;
             });
         });
 
-        describe('tracking an existing event no in rules', function() {
-            it('should do nothing', function() {
-                SupportKit._hasEvent('not-in-rule').should.be.true;
-                SupportKit._rulesContainEvent('not-in-rule').should.be.false;
+        describe('tracking an existing event not in rules', function() {
+            it('should do nothing if already in events and not in rules', function() {
+                SupportKit._rulesContainEvent('not-rule-in-event').should.be.false;
+                SupportKit._hasEvent('not-rule-in-event').should.be.true;
 
-                SupportKit.track('not-in-rule');
+                SupportKit.track('not-rule-in-event');
 
                 eventCreateSpy.should.not.have.been.called;
                 endpointSpy.should.not.have.been.called;
