@@ -36,7 +36,7 @@ describe('Main', function() {
             global.SupportKit.should.exist;
         });
 
-        it('should not publish dep`encies in global context', function() {
+        it('should not publish dependencies in global context', function() {
             expect(global.Backbone).to.not.exist;
             expect(global._).to.not.exist;
         });
