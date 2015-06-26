@@ -11,5 +11,12 @@ module.exports = BaseModel.extend({
     },
     url: function() {
         return 'appusers/' + this.id;
+    },
+
+    defaults: function() {
+        return {
+            properties: {},
+            conversationStarted: false
+        };
     }
 });
