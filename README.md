@@ -111,7 +111,7 @@ SupportKit.updateUser({
 ```
 
 #### track(eventName)
-Tracks an event for the current user. This is used in conjunction with [whispers](http://docs.supportkit.io/#how-do-whispers-work).
+Tracks an event for the current user. 
 
 ```javascript
 SupportKit.track('item-in-cart');
