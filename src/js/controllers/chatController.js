@@ -2,9 +2,9 @@
 
 var $ = require('jquery'),
     cookie = require('cookie'),
-    bindAll = require('lodash.bindall');
-
-var ViewController = require('view-controller');
+    bindAll = require('lodash.bindall'),
+    _ = require('underscore'),
+    ViewController = require('view-controller');
 
 var endpoint = require('../endpoint'),
     vent = require('../vent'),
@@ -14,7 +14,7 @@ var Conversation = require('../models/conversation');
 
 var ChatView = require('../views/chatView'),
     HeaderView = require('../views/headerView'),
-    ConversationView =  require('../views/conversationView');
+    ConversationView = require('../views/conversationView');
 
 var ChatInputController = require('../controllers/chatInputController');
 
@@ -30,6 +30,8 @@ module.exports = ViewController.extend({
         this.isOpened = false;
         this.user = this.getOption('user');
         this.uiText = this.getOption('uiText') || {};
+
+        this.conversationInitiated = false;
 
         this.listenTo(this.user, 'change:conversationStarted', this.onConversationStarted);
     },
@@ -142,9 +144,21 @@ module.exports = ViewController.extend({
     },
 
     _initConversation: function() {
-        return this.collection.fetch()
-            .then(this._getConversation)
-            .then(this._initFaye);
+        var promise;
+
+        if (this.conversationInitiated) {
+            promise = this._getConversation();
+        } else {
+            promise = this.collection.fetch()
+                .then(this._getConversation)
+                .then(this._initFaye)
+                .then(_.bind(function(conversation) {
+                    this.conversationInitiated = true;
+                    return conversation;
+                }, this));
+        }
+
+        return promise;
     },
 
     _initMessagingBus: function(conversation) {
@@ -194,8 +208,8 @@ module.exports = ViewController.extend({
         this.view.footer.show(this.chatInputController.getView());
     },
 
-    onConversationStarted: function() {
-        if (this.model.get('conversationStarted')) {
+    onConversationStarted: function(model, conversationStarted) {
+        if (conversationStarted) {
             this._initConversation();
         }
     },

@@ -74,11 +74,13 @@ describe('Main', function() {
             var AppUser = require('../../src/js/models/appUser');
 
             sandbox.stub(SupportKit, '_updateUser');
-            SupportKit.throttledUpdate = SupportKit._updateUser;
+            SupportKit._throttledUpdate = SupportKit._updateUser;
 
-            SupportKit.user = new AppUser({
+            SupportKit.user.set({
                 givenName: 'test',
                 surname: 'user'
+            }, {
+                silent: true
             });
 
             SupportKit.updateUser({

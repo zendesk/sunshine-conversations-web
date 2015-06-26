@@ -15,7 +15,8 @@ module.exports = BaseModel.extend({
 
     defaults: function() {
         return {
-            properties: {}
+            properties: {},
+            conversationStarted: false
         };
     }
 });

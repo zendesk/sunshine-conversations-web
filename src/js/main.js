@@ -199,10 +199,12 @@ var SupportKit = Marionette.Controller.extend({
             return $.Deferred().resolve();
         }
 
-        this.user = new AppUser(userInfo);
+        this.user.set(userInfo, {
+            parse: true
+        });
 
-        this.throttledUpdate = this.throttledUpdate || _.throttle(this._updateUser.bind(this), 60000);
-        return this.throttledUpdate();
+        this._throttledUpdate = this._throttledUpdate || _.throttle(this._updateUser.bind(this), 60000);
+        return this._throttledUpdate();
     },
 
     track: function(eventName) {
