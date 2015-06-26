@@ -82,6 +82,13 @@ Closes the conversation widget
 SupportKit.close();
 ```
 
+#### destroy()
+Destroys the widget completely. Can be initiated again manually with `SupportKit.init(...)`
+
+```javascript
+SupportKit.destroy();
+```
+
 #### sendMessage(text)
 Sends a message on the user's behalf
 
@@ -103,13 +110,34 @@ SupportKit.updateUser({
 });
 ```
 
-### Events
+#### track(eventName)
+Tracks an event for the current user. This is used in conjunction with [whispers](http://docs.supportkit.io/#how-do-whispers-work).
 
+```javascript
+SupportKit.track('item-in-cart');
+```
+
+### Events
+If you want to make sure your events are triggered, try to bind them before calling `SupportKit.init`.
+
+#### ready
 ```
 // This event triggers when init completes successfully... Be sure to bind before calling init!
 SupportKit.on('ready', function(){
     console.log('the init has completed!');
 });
+
+SupportKit.init(...);
+```
+
+#### destroy
+```
+// This event triggers when init completes successfully... Be sure to bind before calling init!
+SupportKit.on('destroy', function(){
+    console.log('the widget is destroyed!');
+});
+
+SupportKit.destroy();
 ```
 
 ## How to contribute
