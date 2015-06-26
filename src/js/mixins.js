@@ -10,6 +10,7 @@ module.exports = {
         options.beforeSend = function(xhr) {
             xhr.setRequestHeader('app-token', endpoint.appToken);
             xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('Authorization', 'Bearer ' + endpoint.jwtToken);
 
             this.url = endpoint.rootUrl + '/api/' + this.url;
         };

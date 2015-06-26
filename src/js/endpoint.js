@@ -6,6 +6,7 @@ module.exports.rootUrl = ROOT_URL;
 
 // State params set by main
 module.exports.appToken = undefined;
+module.exports.jwtToken = undefined;
 module.exports.appUserId = undefined;
 
 module.exports._rest = function(method, path, body) {
@@ -14,14 +15,15 @@ module.exports._rest = function(method, path, body) {
         url: urljoin(this.rootUrl, path),
         type: method,
         headers: {
-            'app-token': this.appToken
+            'app-token': this.appToken,
+            'Authorization': 'Bearer ' + this.jwtToken
         },
         data: JSON.stringify(body),
         contentType: 'application/json',
         success: function(res) {
             deferred.resolve(res);
         },
-        error: function(xhr, textStatus, errorThrown) {
+        error: function(xhr) {
             if (method === 'PUT' && xhr.status === 200) {
                 deferred.resolve(xhr);
             } else {

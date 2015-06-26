@@ -16,6 +16,8 @@ var ChatController = require('./controllers/chatController'),
     Conversations = require('./collections/conversations'),
     AppUser = require('./models/appUser');
 
+var SK_STORAGE = 'sk_deviceid';
+
 // appends the compile stylesheet to the HEAD
 require('../stylesheets/main.less');
 
@@ -66,6 +68,7 @@ var SupportKit = Marionette.Object.extend({
 
         if (typeof options === 'object') {
             endpoint.appToken = options.appToken;
+            endpoint.jwtToken = options.jwtToken;
         } else if (typeof options === 'string') {
             endpoint.appToken = options;
         } else {
@@ -83,16 +86,11 @@ var SupportKit = Marionette.Object.extend({
             uiText: uiText
         });
 
-        // TODO: Allow options to override the deviceId
-        var deviceId = cookie.parse(document.cookie)['sk_deviceid'];
-        if (!deviceId) {
-            deviceId = uuid.v4().replace(/-/g, '');
-            document.cookie = 'sk_deviceid=' + deviceId;
-        }
-        this.deviceId = deviceId;
+        this.deviceId = this.getDeviceId(options);
 
         endpoint.post('/api/appboot', {
             deviceId: this.deviceId,
+            userId: options.userId,
             deviceInfo: {
                 URL: document.location.host,
                 userAgent: navigator.userAgent,
@@ -100,7 +98,7 @@ var SupportKit = Marionette.Object.extend({
                 browserLanguage: navigator.language,
                 currentUrl: document.location.href,
                 sdkVersion: this.VERSION,
-                currentTitle: document.title
+                currentTitle: document.title,
             }
         })
             .then(_(function(res) {
@@ -120,6 +118,30 @@ var SupportKit = Marionette.Object.extend({
                 console.error('SupportKit init error: ', message);
             })
             .done();
+    },
+
+    logout: function() {
+        // delete the deviceid cookie
+        document.cookie = SK_STORAGE + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    },
+
+    checkLocalStorage: function(userId) {
+        return userId && localStorage.getItem(SK_STORAGE + '_' + userId);
+    },
+
+    getDeviceId: function(options) {
+        var userId = options.userId, deviceId;
+
+        // get device ID first from local storage, then cookie. Otherwise generate new one
+        deviceId = this.checkLocalStorage(userId);
+        deviceId = deviceId || cookie.parse(document.cookie)[SK_STORAGE];
+        deviceId = deviceId || uuid.v4().replace(/-/g, '');
+
+        // reset the cookie and local storage
+        document.cookie = SK_STORAGE + '=' + deviceId;
+        userId && localStorage.setItem(SK_STORAGE + '_' + userId, deviceId);
+
+        return deviceId;
     },
 
     resetUnread: function() {
