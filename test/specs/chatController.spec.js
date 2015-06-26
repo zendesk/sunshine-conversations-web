@@ -1,7 +1,8 @@
 var sinon = require('sinon'),
     ChatController = require('../../src/js/controllers/chatController'),
     Conversations = require('../../src/js/collections/conversations'),
-    vent = require('../../src/js/vent');
+    vent = require('../../src/js/vent'),
+    AppUser = require('../../src/js/models/appUser');
 
 var ClientScenario = require('../scenarios/clientScenario');
 
@@ -10,6 +11,7 @@ describe('ChatController', function() {
         sandbox,
         chatController,
         conversations,
+        user,
         getConversationSpy,
         initFayeSpy,
         initMessagingBusSpy,
@@ -30,9 +32,14 @@ describe('ChatController', function() {
 
     beforeEach(function(done) {
         conversations = new Conversations();
+        user = new AppUser({
+            givenName: 'test',
+            surname: 'user'
+        });
 
         chatController = new ChatController({
-            collection: conversations
+            collection: conversations,
+            user: user
         });
 
         getConversationSpy = sandbox.spy(chatController, '_getConversation');
