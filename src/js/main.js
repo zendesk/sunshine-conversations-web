@@ -210,8 +210,7 @@ var SupportKit = Marionette.Controller.extend({
     track: function(eventName) {
         this._checkReady();
 
-        var hasEvent = this._hasEvent(eventName),
-            rulesContainEvent = this._rulesContainEvent(eventName);
+        var rulesContainEvent = this._rulesContainEvent(eventName);
 
         if (rulesContainEvent) {
             this._eventCollection.create({
@@ -220,22 +219,25 @@ var SupportKit = Marionette.Controller.extend({
             }, {
                 success: _.bind(this._checkConversationState, this)
             });
-        } else if (!rulesContainEvent && !hasEvent) {
-            this._createEvent(eventName);
+        } else {
+            this._ensureEventExists(eventName);
         }
     },
 
-    _createEvent: function(eventName) {
-        this._checkReady();
-        endpoint.put('api/event', {
-            name: eventName
-        }).then(_.bind(function() {
-            this._eventCollection.add({
-                name: eventName,
-                user: this.user
-            })
-        }, this))
-            .done();
+    _ensureEventExists: function(eventName) {
+        var hasEvent = this._hasEvent(eventName);
+
+        if(!hasEvent) {
+            endpoint.put('api/event', {
+                name: eventName
+            }).then(_.bind(function() {
+                this._eventCollection.add({
+                    name: eventName,
+                    user: this.user
+                })
+            }, this))
+                .done();
+        }
     },
 
     _rulesContainEvent: function(eventName) {
