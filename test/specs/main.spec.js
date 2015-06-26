@@ -48,16 +48,24 @@ describe('Main', function() {
     });
 
     describe('#init', function() {
-        it('should trigger ready', function(done) {
+        var trackSpy;
+
+        beforeEach(function(){
+            trackSpy = sandbox.spy(SupportKit, 'track');
+        });
+
+        it('should trigger ready and track appboot', function(done) {
             SupportKit.destroy();
 
             SupportKit.once('ready', function() {
+                trackSpy.should.have.been.calledWith('skt-appboot');
                 done();
             });
 
             SupportKit.init({
                 appToken: 'thisisanapptoken'
             });
+
         });
     });
 

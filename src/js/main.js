@@ -274,6 +274,7 @@ var SupportKit = Marionette.Controller.extend({
 
     onReady: function() {
         this.ready = true;
+        this.track('skt-appboot');
     },
 
     onDestroy: function() {
