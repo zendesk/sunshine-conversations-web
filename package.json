@@ -1,7 +1,7 @@
 {
   "name": "supportkit",
   "analyze": false,
-  "version": "0.2.9",
+  "version": "0.2.10",
   "keywords": [
     "supportkit",
     "javascript",
@@ -91,6 +91,6 @@
     ]
   },
   "browserify-shim": {
-    "jquery": "global:$"
+    "jquery": "global:jQuery"
   }
 }

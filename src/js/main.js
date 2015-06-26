@@ -33,8 +33,8 @@ require('../stylesheets/main.less');
  *
  * Contains all SupportKit API classes and functions.
  */
-var SupportKit = Marionette.Controller.extend({
-    VERSION: '0.2.9',
+var SupportKit = Marionette.Object.extend({
+    VERSION: '0.2.10',
 
     defaultText: {
         headerText: 'How can we help?',
