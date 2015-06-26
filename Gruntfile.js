@@ -346,7 +346,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('setMinMode', function() {
         grunt.config.set('config.WIDGET_CODE', 'supportkit.min.js');
-    })
+    });
 
     grunt.registerTask('build', ['clean', 'browserify', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'loadConfig', 'replace']);
