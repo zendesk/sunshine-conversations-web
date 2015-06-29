@@ -1,7 +1,7 @@
 {   
     "ROOT_URL": "https://sdk.supportkit.io",
     "APP_TOKEN": "3ea7dnnifzriurbnqkux3043o",
-    "JWT_TOKEN": "",
+    "JWT": "",
     "USER_ID": "",
     "GIVEN_NAME": "DEFAULT_NAME",
     "SURNAME": "DEFAULT_SURNAME",

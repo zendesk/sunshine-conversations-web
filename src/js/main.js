@@ -68,7 +68,7 @@ var SupportKit = Marionette.Object.extend({
 
         if (typeof options === 'object') {
             endpoint.appToken = options.appToken;
-            endpoint.jwtToken = options.jwtToken;
+            endpoint.jwt = options.jwt;
         } else if (typeof options === 'string') {
             endpoint.appToken = options;
         } else {
@@ -125,15 +125,11 @@ var SupportKit = Marionette.Object.extend({
         document.cookie = SK_STORAGE + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     },
 
-    checkLocalStorage: function(userId) {
-        return userId && localStorage.getItem(SK_STORAGE + '_' + userId);
-    },
-
     getDeviceId: function(options) {
         var userId = options.userId, deviceId;
 
         // get device ID first from local storage, then cookie. Otherwise generate new one
-        deviceId = this.checkLocalStorage(userId);
+        deviceId = userId && localStorage.getItem(SK_STORAGE + '_' + userId);
         deviceId = deviceId || cookie.parse(document.cookie)[SK_STORAGE];
         deviceId = deviceId || uuid.v4().replace(/-/g, '');
 

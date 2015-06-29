@@ -94,8 +94,8 @@ module.exports = function(grunt) {
                     from: /GIVEN_NAME/,
                     to: '<%= config.GIVEN_NAME %>'
                 }, {
-                    from: /JWT_TOKEN/,
-                    to: '<%= config.JWT_TOKEN %>'
+                    from: /JWT/,
+                    to: '<%= config.JWT %>'
                 }, {
                     from: /USER_ID/,
                     to: '<%= config.USER_ID %>'

@@ -45,7 +45,7 @@ describe('Main', function() {
     describe('#init', function() {
         var userId = 'thisisauserid',
             appToken = 'thisisanapptoken',
-            jwtToken = 'thisisajwttoken';
+            jwt = 'thisisajwt';
 
         it('should trigger ready', function(done) {
             SupportKit.once('ready', function() {
@@ -69,16 +69,16 @@ describe('Main', function() {
             });
         });
 
-        it('should populate endpoint with supplied appToken and jwtToken', function(done) {
+        it('should populate endpoint with supplied appToken and jwt', function(done) {
             SupportKit.once('ready', function() {
-                endpoint.jwtToken.should.eql(jwtToken);
+                endpoint.jwt.should.eql(jwt);
                 endpoint.appToken.should.eql(appToken);
                 done();
             });
 
             SupportKit.init({
                 appToken: appToken,
-                jwtToken: jwtToken
+                jwt: jwt
             });
         });
     });

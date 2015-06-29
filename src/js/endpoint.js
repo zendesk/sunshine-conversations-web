@@ -6,18 +6,21 @@ module.exports.rootUrl = ROOT_URL;
 
 // State params set by main
 module.exports.appToken = undefined;
-module.exports.jwtToken = undefined;
+module.exports.jwt = undefined;
 module.exports.appUserId = undefined;
 
 module.exports._rest = function(method, path, body) {
     var deferred = $.Deferred();
+    var headers = {
+        'app-token': this.appToken
+    };
+
+    this.jwt ? headers.Authorization = 'Bearer ' + this.jwt : '';
+
     $.ajax({
         url: urljoin(this.rootUrl, path),
         type: method,
-        headers: {
-            'app-token': this.appToken,
-            'Authorization': 'Bearer ' + this.jwtToken
-        },
+        headers: headers,
         data: JSON.stringify(body),
         contentType: 'application/json',
         success: function(res) {
