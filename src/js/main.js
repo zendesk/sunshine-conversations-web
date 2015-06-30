@@ -172,7 +172,7 @@ var SupportKit = Marionette.Object.extend({
 
     resetUnread: function() {
         this._checkReady();
-        this._chatController._resetUnread();
+        this._chatController.resetUnread();
     },
 
     sendMessage: function(text) {

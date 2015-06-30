@@ -101,6 +101,19 @@ describe('Main', function() {
                 jwt: jwt
             });
         });
+
+        it('should not populate endpoint jwt if unspecified', function(done) {
+            SupportKit.destroy();
+
+            SupportKit.once('ready', function() {
+                expect(endpoint.jwt).to.not.exit;
+                done();
+            });
+
+            SupportKit.init({
+                appToken: appToken
+            });
+        });
     });
 
     describe('#logout', function() {
@@ -111,6 +124,12 @@ describe('Main', function() {
 
         it('should remove the device id from cookies', function() {
             expect(cookie.parse(document.cookie)[SK_STORAGE]).to.not.exist;
+        });
+
+        it('should clear the endpoint of all variables', function() {
+            expect(endpoint.appToken).to.not.exist;
+            expect(endpoint.jwt).to.not.exist;
+            expect(endpoint.appUserId).to.not.exist;
         });
     });
 
