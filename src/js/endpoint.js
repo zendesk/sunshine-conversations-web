@@ -15,7 +15,9 @@ module.exports._rest = function(method, path, body) {
         'app-token': this.appToken
     };
 
-    this.jwt ? headers.Authorization = 'Bearer ' + this.jwt : '';
+    if (this.jwt) {
+        headers.Authorization = 'Bearer ' + this.jwt;
+    }
 
     $.ajax({
         url: urljoin(this.rootUrl, path),

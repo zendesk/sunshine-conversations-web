@@ -1,20 +1,25 @@
 /* global global:false */
-
 'use strict';
 require('./bootstrap');
 
 var Marionette = require('backbone.marionette'),
+    Backbone = require('backbone'),
     _ = require('underscore'),
     $ = require('jquery'),
     cookie = require('cookie'),
     uuid = require('uuid'),
+    urljoin = require('url-join'),
     bindAll = require('lodash.bindall');
 
-var endpoint = require('./endpoint');
-
-var ChatController = require('./controllers/chatController'),
+var BaseCollection = require('./collections/baseCollection'),
+    /*jshint -W079 */
+    Event = require('./models/event'),
+    /*jshint +W079 */
+    Rule = require('./models/rule'),
+    AppUser = require('./models/appUser'),
+    ChatController = require('./controllers/chatController'),
     Conversations = require('./collections/conversations'),
-    AppUser = require('./models/appUser');
+    endpoint = require('./endpoint');
 
 var SK_STORAGE = 'sk_deviceid';
 
@@ -29,7 +34,7 @@ require('../stylesheets/main.less');
  * Contains all SupportKit API classes and functions.
  */
 var SupportKit = Marionette.Object.extend({
-    VERSION: '0.2.10',
+    VERSION: '0.2.11',
 
     defaultText: {
         headerText: 'How can we help?',
@@ -55,6 +60,10 @@ var SupportKit = Marionette.Object.extend({
     },
 
     init: function(options) {
+        if (this.ready) {
+            return;
+        }
+
         // TODO: alternatively load fallback CSS that doesn't use
         // unsupported things like transforms
         if (!$.support.cssProperty('transform')) {
@@ -81,10 +90,6 @@ var SupportKit = Marionette.Object.extend({
 
         var uiText = _.extend({}, this.defaultText, options.customText);
 
-        this._chatController = new ChatController({
-            collection: this._conversations,
-            uiText: uiText
-        });
 
         this.deviceId = this.getDeviceId(options);
 
@@ -106,7 +111,33 @@ var SupportKit = Marionette.Object.extend({
                     id: res.appUserId
                 });
 
+                var EventCollection = BaseCollection.extend({
+                    url: urljoin('appusers', res.appUserId, 'event'),
+                    model: Event
+                });
+
+                var RuleCollection = Backbone.Collection.extend({
+                    model: Rule
+                });
+
+                // this._events overrides some internals for event bindings in Backbone
+                this._eventCollection = new EventCollection(res.events, {
+                    parse: true
+                });
+
+
+                // for consistency, this will use the collection suffix too.
+                this._ruleCollection = new RuleCollection(res.rules, {
+                    parse: true
+                });
+
                 endpoint.appUserId = res.appUserId;
+
+                this._chatController = new ChatController({
+                    collection: this._conversations,
+                    user: this.user,
+                    uiText: uiText
+                });
 
                 return this.updateUser(_.pick(options, 'givenName', 'surname', 'email', 'properties'));
             }).bind(this))
@@ -184,10 +215,66 @@ var SupportKit = Marionette.Object.extend({
             return $.Deferred().resolve();
         }
 
-        this.user = new AppUser(userInfo);
+        this.user.set(userInfo, {
+            parse: true
+        });
 
-        this.throttledUpdate = this.throttledUpdate || _.throttle(this._updateUser.bind(this), 60000);
-        return this.throttledUpdate();
+        this._throttledUpdate = this._throttledUpdate || _.throttle(this._updateUser.bind(this), 60000);
+        return this._throttledUpdate();
+    },
+
+    track: function(eventName) {
+        this._checkReady();
+
+        var rulesContainEvent = this._rulesContainEvent(eventName);
+
+        if (rulesContainEvent) {
+            this._eventCollection.create({
+                name: eventName,
+                user: this.user
+            }, {
+                success: _.bind(this._checkConversationState, this)
+            });
+        } else {
+            this._ensureEventExists(eventName);
+        }
+    },
+
+    _ensureEventExists: function(eventName) {
+        var hasEvent = this._hasEvent(eventName);
+
+        if (!hasEvent) {
+            endpoint.put('api/event', {
+                name: eventName
+            }).then(_.bind(function() {
+                this._eventCollection.add({
+                    name: eventName,
+                    user: this.user
+                });
+            }, this))
+                .done();
+        }
+    },
+
+    _rulesContainEvent: function(eventName) {
+        return !!this._ruleCollection.find(function(rule) {
+            return !!rule.get('events').findWhere({
+                name: eventName
+            });
+        });
+    },
+
+    _hasEvent: function(eventName) {
+        return eventName === 'skt-appboot' || !!this._eventCollection.findWhere({
+            name: eventName
+        });
+    },
+
+    _checkConversationState: function() {
+
+        if (!this._chatController.conversation || this._chatController.conversation.isNew()) {
+            this._chatController._initConversation();
+        }
     },
 
     _renderWidget: function() {
@@ -204,8 +291,20 @@ var SupportKit = Marionette.Object.extend({
         }, this));
 
     },
+
     onReady: function() {
         this.ready = true;
+        this.track('skt-appboot');
+    },
+
+    onDestroy: function() {
+        if (this.ready) {
+            this._ruleCollection.reset();
+            this._eventCollection.reset();
+            this._conversations.reset();
+            this._chatController.destroy();
+            this.ready = false;
+        }
     }
 });
 
