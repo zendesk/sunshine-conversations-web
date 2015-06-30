@@ -106,7 +106,7 @@ describe('Main', function() {
             SupportKit.destroy();
 
             SupportKit.once('ready', function() {
-                expect(endpoint.jwt).to.not.exit;
+                expect(endpoint.jwt).to.not.exist;
                 done();
             });
 
