@@ -50,3 +50,9 @@ module.exports.post = function(path, body) {
 module.exports.put = function(path, body) {
     return this._rest('PUT', path, body);
 };
+
+module.exports.reset = function() {
+    delete this.appToken;
+    delete this.jwt;
+    delete this.appUserId;
+};

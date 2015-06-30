@@ -152,17 +152,16 @@ var SupportKit = Marionette.Object.extend({
     },
 
     logout: function() {
-        // delete the deviceid cookie
-        document.cookie = SK_STORAGE + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        this.destroy();
     },
 
     getDeviceId: function(options) {
         var userId = options.userId, deviceId;
 
         // get device ID first from local storage, then cookie. Otherwise generate new one
-        deviceId = userId && localStorage.getItem(SK_STORAGE + '_' + userId);
-        deviceId = deviceId || cookie.parse(document.cookie)[SK_STORAGE];
-        deviceId = deviceId || uuid.v4().replace(/-/g, '');
+        deviceId = userId && localStorage.getItem(SK_STORAGE + '_' + userId) ||
+            cookie.parse(document.cookie)[SK_STORAGE] ||
+            uuid.v4().replace(/-/g, '');
 
         // reset the cookie and local storage
         document.cookie = SK_STORAGE + '=' + deviceId;
@@ -303,6 +302,12 @@ var SupportKit = Marionette.Object.extend({
             this._eventCollection.reset();
             this._conversations.reset();
             this._chatController.destroy();
+
+            // delete the deviceid cookie
+            document.cookie = SK_STORAGE + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+
+            endpoint.reset();
+
             this.ready = false;
         }
     }
