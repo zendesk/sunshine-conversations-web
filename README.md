@@ -61,6 +61,9 @@ SupportKit.init({
     givenName: 'Cool',
     surname: 'Person',
     email: 'their_email@whatever.com',
+    // For secure mode
+    jwt: 'your_jwt',
+    userId: 'user_id',
     // Additional properties
     properties: {
         'anything': 'whatever_you_want'    

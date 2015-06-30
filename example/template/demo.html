@@ -14,13 +14,18 @@
             appToken: 'APP_TOKEN',
             givenName: 'GIVEN_NAME',
             surname: 'SURNAME',
+            email: 'EMAIL',
+            jwt: 'JWT',
+            userId: 'USER_ID',
             properties: {
               'TEST': true
             }
         });
     </script>
+
 </head>
   <body>
     <h1>Test</h1>
+    <button onclick="SupportKit.logout(); document.location.reload(true);">Log Out</button>
   </body>
 </html>

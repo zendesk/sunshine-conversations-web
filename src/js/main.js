@@ -1,5 +1,4 @@
 /* global global:false */
-
 'use strict';
 require('./bootstrap');
 
@@ -12,16 +11,17 @@ var Marionette = require('backbone.marionette'),
     urljoin = require('url-join'),
     bindAll = require('lodash.bindall');
 
-var endpoint = require('./endpoint');
-
-var BaseCollection = require('./collections/baseCollection');
-
-var Event = require('./models/event'),
+var BaseCollection = require('./collections/baseCollection'),
+    /*jshint -W079 */
+    Event = require('./models/event'),
+    /*jshint +W079 */
     Rule = require('./models/rule'),
-    AppUser = require('./models/appUser');
+    AppUser = require('./models/appUser'),
+    ChatController = require('./controllers/chatController'),
+    Conversations = require('./collections/conversations'),
+    endpoint = require('./endpoint');
 
-var ChatController = require('./controllers/chatController'),
-    Conversations = require('./collections/conversations');
+var SK_STORAGE = 'sk_deviceid';
 
 // appends the compile stylesheet to the HEAD
 require('../stylesheets/main.less');
@@ -77,6 +77,7 @@ var SupportKit = Marionette.Object.extend({
 
         if (typeof options === 'object') {
             endpoint.appToken = options.appToken;
+            endpoint.jwt = options.jwt;
         } else if (typeof options === 'string') {
             endpoint.appToken = options;
         } else {
@@ -90,16 +91,11 @@ var SupportKit = Marionette.Object.extend({
         var uiText = _.extend({}, this.defaultText, options.customText);
 
 
-        // TODO: Allow options to override the deviceId
-        var deviceId = cookie.parse(document.cookie)['sk_deviceid'];
-        if (!deviceId) {
-            deviceId = uuid.v4().replace(/-/g, '');
-            document.cookie = 'sk_deviceid=' + deviceId;
-        }
-        this.deviceId = deviceId;
+        this.deviceId = this.getDeviceId(options);
 
         endpoint.post('/api/appboot', {
             deviceId: this.deviceId,
+            userId: options.userId,
             deviceInfo: {
                 URL: document.location.host,
                 userAgent: navigator.userAgent,
@@ -155,9 +151,28 @@ var SupportKit = Marionette.Object.extend({
             .done();
     },
 
+    logout: function() {
+        this.destroy();
+    },
+
+    getDeviceId: function(options) {
+        var userId = options.userId, deviceId;
+
+        // get device ID first from local storage, then cookie. Otherwise generate new one
+        deviceId = userId && localStorage.getItem(SK_STORAGE + '_' + userId) ||
+            cookie.parse(document.cookie)[SK_STORAGE] ||
+            uuid.v4().replace(/-/g, '');
+
+        // reset the cookie and local storage
+        document.cookie = SK_STORAGE + '=' + deviceId;
+        userId && localStorage.setItem(SK_STORAGE + '_' + userId, deviceId);
+
+        return deviceId;
+    },
+
     resetUnread: function() {
         this._checkReady();
-        this._chatController._resetUnread();
+        this._chatController.resetUnread();
     },
 
     sendMessage: function(text) {
@@ -227,14 +242,14 @@ var SupportKit = Marionette.Object.extend({
     _ensureEventExists: function(eventName) {
         var hasEvent = this._hasEvent(eventName);
 
-        if(!hasEvent) {
+        if (!hasEvent) {
             endpoint.put('api/event', {
                 name: eventName
             }).then(_.bind(function() {
                 this._eventCollection.add({
                     name: eventName,
                     user: this.user
-                })
+                });
             }, this))
                 .done();
         }
@@ -287,6 +302,12 @@ var SupportKit = Marionette.Object.extend({
             this._eventCollection.reset();
             this._conversations.reset();
             this._chatController.destroy();
+
+            // delete the deviceid cookie
+            document.cookie = SK_STORAGE + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+
+            endpoint.reset();
+
             this.ready = false;
         }
     }
