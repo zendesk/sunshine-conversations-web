@@ -45,6 +45,9 @@ module.exports = Marionette.ItemView.extend({
 
     _isAppMaker: function() {
         var appMakers = this.getOption('conversation').get('appMakers');
-        return !!appMakers.get(this.model.get('authorId'));
+
+        return !!appMakers.findWhere({
+            id: this.model.get('authorId')
+        });
     }
 });
