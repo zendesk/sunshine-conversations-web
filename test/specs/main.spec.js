@@ -1,9 +1,12 @@
 'use strict';
 
 var sinon = require('sinon'),
-    _ = require('underscore');
+    cookie = require('cookie');
 
-var ClientScenario = require('../scenarios/clientScenario');
+var ClientScenario = require('../scenarios/clientScenario'),
+    endpoint = require('../../src/js/endpoint');
+
+var SK_STORAGE = 'sk_deviceid';
 
 describe('Main', function() {
     var scenario,
@@ -38,7 +41,7 @@ describe('Main', function() {
         // those tests are using the expect form since undefined
         // cannot be tested with the should syntax
         it('should publish a global', function() {
-            expect(global.SupportKit).to.exist;
+            global.SupportKit.should.exist;
         });
 
         it('should not publish dependencies in global context', function() {
@@ -48,9 +51,12 @@ describe('Main', function() {
     });
 
     describe('#init', function() {
-        var trackSpy;
+        var userId = 'thisisauserid',
+            appToken = 'thisisanapptoken',
+            jwt = 'thisisajwt',
+            trackSpy;
 
-        beforeEach(function(){
+        beforeEach(function() {
             trackSpy = sandbox.spy(SupportKit, 'track');
         });
 
@@ -63,16 +69,72 @@ describe('Main', function() {
             });
 
             SupportKit.init({
-                appToken: 'thisisanapptoken'
+                appToken: appToken
+            });
+        });
+
+        it('if supplied a userId should store the deviceId in local storgae', function(done) {
+            SupportKit.destroy();
+
+            SupportKit.once('ready', function() {
+                localStorage.getItem(SK_STORAGE + '_' + userId).should.exist;
+                done();
             });
 
+            SupportKit.init({
+                appToken: appToken,
+                userId: userId
+            });
+        });
+
+        it('should populate endpoint with supplied appToken and jwt', function(done) {
+            SupportKit.destroy();
+
+            SupportKit.once('ready', function() {
+                endpoint.jwt.should.eql(jwt);
+                endpoint.appToken.should.eql(appToken);
+                done();
+            });
+
+            SupportKit.init({
+                appToken: appToken,
+                jwt: jwt
+            });
+        });
+
+        it('should not populate endpoint jwt if unspecified', function(done) {
+            SupportKit.destroy();
+
+            SupportKit.once('ready', function() {
+                expect(endpoint.jwt).to.not.exist;
+                done();
+            });
+
+            SupportKit.init({
+                appToken: appToken
+            });
+        });
+    });
+
+    describe('#logout', function() {
+        beforeEach(function() {
+            document.cookie = SK_STORAGE + '=' + 'test';
+            SupportKit.logout();
+        });
+
+        it('should remove the device id from cookies', function() {
+            expect(cookie.parse(document.cookie)[SK_STORAGE]).to.not.exist;
+        });
+
+        it('should clear the endpoint of all variables', function() {
+            expect(endpoint.appToken).to.not.exist;
+            expect(endpoint.jwt).to.not.exist;
+            expect(endpoint.appUserId).to.not.exist;
         });
     });
 
     describe('#updateUser', function() {
         beforeEach(function() {
-            var AppUser = require('../../src/js/models/appUser');
-
             sandbox.stub(SupportKit, '_updateUser');
             SupportKit._throttledUpdate = SupportKit._updateUser;
 
@@ -93,15 +155,15 @@ describe('Main', function() {
         });
 
         it('should call _updateUser', function() {
-            expect(SupportKit._updateUser).to.be.calledOnce;
+            SupportKit._updateUser.should.be.calledOnce;
         });
 
         it('should throw an error if called with bad parameters (empty, in this case)', function() {
-            expect(SupportKit.updateUser).to.throw(Error);
+            SupportKit.updateUser.should.throw(Error);
         });
 
         it('should not call update user if the user has not changed', function() {
-            expect(SupportKit._updateUser).to.be.calledOnce;
+            SupportKit._updateUser.should.be.calledOnce;
 
             SupportKit.updateUser({
                 givenName: 'GIVEN_NAME',
@@ -111,7 +173,7 @@ describe('Main', function() {
                 }
             });
 
-            expect(SupportKit._updateUser).to.be.calledOnce;
+            SupportKit._updateUser.should.be.calledOnce;
         });
     });
 

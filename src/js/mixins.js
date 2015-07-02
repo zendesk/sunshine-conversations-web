@@ -11,6 +11,10 @@ module.exports = {
             xhr.setRequestHeader('app-token', endpoint.appToken);
             xhr.setRequestHeader('Content-Type', 'application/json');
 
+            if (endpoint.jwt) {
+                xhr.setRequestHeader('Authorization', 'Bearer ' + endpoint.jwt);
+            }
+
             this.url = endpoint.rootUrl + '/api/' + this.url;
         };
         // on a GET call, it goes in the request params,

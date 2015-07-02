@@ -94,6 +94,12 @@ module.exports = function(grunt) {
                     from: /GIVEN_NAME/,
                     to: '<%= config.GIVEN_NAME %>'
                 }, {
+                    from: /JWT/,
+                    to: '<%= config.JWT %>'
+                }, {
+                    from: /USER_ID/,
+                    to: '<%= config.USER_ID %>'
+                }, {
                     from: /SURNAME/,
                     to: '<%= config.SURNAME %>'
                 }, {
@@ -340,7 +346,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('setMinMode', function() {
         grunt.config.set('config.WIDGET_CODE', 'supportkit.min.js');
-    })
+    });
 
     grunt.registerTask('build', ['clean', 'browserify', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'loadConfig', 'replace']);

@@ -22,7 +22,7 @@ module.exports = ViewController.extend({
     viewClass: ChatView,
 
     viewEvents: {
-        focus: '_resetUnread'
+        focus: 'resetUnread'
     },
 
     initialize: function() {
@@ -49,7 +49,7 @@ module.exports = ViewController.extend({
         if (!!this.view && this.isOpened) {
             this.isOpened = false;
             this.view.close();
-            this._resetUnread();
+            this.resetUnread();
         }
     },
 
@@ -201,7 +201,7 @@ module.exports = ViewController.extend({
         });
 
         this.listenTo(this.chatInputController, 'message:send', this.sendMessage);
-        this.listenTo(this.chatInputController, 'message:read', this._resetUnread);
+        this.listenTo(this.chatInputController, 'message:read', this.resetUnread);
 
         this.view.header.show(this.headerView);
         this.view.main.show(this.conversationView);
@@ -265,7 +265,7 @@ module.exports = ViewController.extend({
         }
     },
 
-    _resetUnread: function() {
+    resetUnread: function() {
         var latestReadTs = 0;
         var latestMessage = this.conversation.get('messages').max(function(message) {
             return message.get('received');

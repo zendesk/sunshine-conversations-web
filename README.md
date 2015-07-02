@@ -61,6 +61,9 @@ SupportKit.init({
     givenName: 'Cool',
     surname: 'Person',
     email: 'their_email@whatever.com',
+    // For secure mode
+    jwt: 'your_jwt',
+    userId: 'user_id',
     // Additional properties
     properties: {
         'anything': 'whatever_you_want'    
@@ -82,11 +85,12 @@ Closes the conversation widget
 SupportKit.close();
 ```
 
-#### destroy()
+#### logout()
+Removes deviceId cookie from the browser, effectively logging out the user.
 Destroys the widget completely. Can be initiated again manually with `SupportKit.init(...)`
 
-```javascript
-SupportKit.destroy();
+```
+SupportKit.logout();
 ```
 
 #### sendMessage(text)
@@ -111,7 +115,7 @@ SupportKit.updateUser({
 ```
 
 #### track(eventName)
-Tracks an event for the current user. This is used in conjunction with [whispers](http://docs.supportkit.io/#how-do-whispers-work).
+Tracks an event for the current user. 
 
 ```javascript
 SupportKit.track('item-in-cart');
