@@ -1,0 +1,43 @@
+#sk-footer {
+    width: 100%;
+    height: @footer-height;
+    bottom: 0;
+    left: 0;
+    border: none;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(0, 0, 0, 0.15);
+
+    .message-input {
+        margin: 5px 9px;
+        padding: 0 0 0 9px;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        border-radius: 4px 4px 4px 4px;
+        height: 33px;
+        width: 77%;
+        background-color: transparent;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        color: #333;
+        font-size: 13px;
+
+        &:focus {
+            outline: 0;
+        }
+        &::-webkit-input-placeholder, &:-moz-placeholder, &::-moz-placeholder, &::-ms-input-placeholder {
+            color: #cbcbcb;
+            opacity: 1;
+        }
+    }
+    .send {
+        right: 0px;
+        color: #b2b2b2;
+        font-weight: 600;
+        position: absolute;
+        height: 40px;
+        line-height: 42px;
+        text-decoration: none;
+        padding: 0 12px;
+
+        &:hover {
+            color: #00aeff;
+        }
+    }
+}
