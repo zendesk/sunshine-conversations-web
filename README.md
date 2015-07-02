@@ -85,11 +85,12 @@ Closes the conversation widget
 SupportKit.close();
 ```
 
-#### destroy()
+#### logout()
+Removes deviceId cookie from the browser, effectively logging out the user.
 Destroys the widget completely. Can be initiated again manually with `SupportKit.init(...)`
 
-```javascript
-SupportKit.destroy();
+```
+SupportKit.logout();
 ```
 
 #### sendMessage(text)
