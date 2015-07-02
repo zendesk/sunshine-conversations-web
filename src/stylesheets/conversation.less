@@ -1,5 +1,4 @@
 #sk-conversation {
-    background-color: #f8f8f8;
     padding: @conversation-padding 18px 0 13px;
     height: @conversation-height;
     overflow-y: scroll;
@@ -26,7 +25,9 @@
             position: relative;
 
             .sk-msg {
-                font-weight: 200;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.22);
+                font-size: 14px;
+                line-height: 20px;
                 padding: 8px 12px;
                 position: relative;
                 border-radius: 4px;
@@ -50,23 +51,26 @@
             .sk-from {
                 position: absolute;
                 white-space: nowrap;
-                top: -15px;
+                top: -20px;
                 font-size: 12px;
-                color: #bbb;
+                color: #797979;
+                font-weight: 400;
             }
         }
         &.sk-left-row {
+            margin-top: 30px;
             .sk-msg-wrapper {
                 display: inline-block;
                 max-width: 200px;
 
                 .sk-msg {
+                    background-color: white;
                     color: #333;
 
                     &:after {
                         right: 100%;
                         border-color: rgba(236, 236, 236, 0);
-                        border-right-color: #ececec;
+                        border-right-color: white;
                     }
                 }
             }
@@ -79,42 +83,37 @@
             }
         }
         &.sk-right-row {
+            margin-top: 10px;
             .sk-msg {
-                background-color: @sk-purple;
+                background-color: #00aeff;
                 float: right;
-                color: #fff;
+                color: white;
                 max-width: 204px;
 
                 &:after {
                     left: 100%;
                     border-color: rgba(0, 174, 255, 0);
-                    border-left-color: @sk-purple;
+                    border-left-color: #00aeff;
                 }
             }
         }
-    }
-    .sk-right-row + .sk-right-row {
-        margin-top: 6px;
-    }
-    .sk-left-row + .sk-left-row {
-        margin-top: 20px;
     }
     .sk-clear {
         clear: both;
     }
     &::-webkit-scrollbar-track {
         border-radius: 10px;
-        // box-shadow: inset 0 -6px 0 0 #ddd, inset 0 6px 0 0 #ddd;
-        background-color: #f0f0f0;
+        box-shadow: inset 0 -6px 0 0 @background-color, inset 0 6px 0 0 @background-color;
+        background-color: rgba(230,230,230,0.97);
     }
     &::-webkit-scrollbar {
         width: 8px;
-        background-color: white;
+        background-color: @background-color;
     }
     &::-webkit-scrollbar-thumb {
         border-radius: 10px;
-        // box-shadow: inset 0 -3px 0 #ddd, inset 0 3px 0 #ddd;
-        background-color: #ddd;
+        box-shadow: inset 0 -6px 0 0 @background-color, inset 0 6px 0 0 @background-color;
+        background-color: rgba(210,210,210,0.97);
     }
     .sk-logo {
         margin-top: 15px;
@@ -131,7 +130,7 @@
         }
         &.anchor-bottom {
             position: absolute;
-            width: 285px;
+            left: 0px;
             bottom: 45px;
         }
     }

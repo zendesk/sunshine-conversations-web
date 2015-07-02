@@ -4,29 +4,34 @@
     bottom: 0;
     left: 0;
     border: none;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(0, 0, 0, 0.15);
+    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+    background-color: white;
 
     .message-input {
+        background-color: #fbfbfb;
+        color: #bdbdbd;
+        border: 1px solid #e8e8e8;
         margin: 5px 9px;
-        padding: 0 0 0 9px;
-        border: 1px solid rgba(0, 0, 0, 0.15);
+        padding: 0 9px;
         border-radius: 4px 4px 4px 4px;
         height: 33px;
-        width: 77%;
-        background-color: transparent;
+        width: 75%;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        color: #333;
         font-size: 13px;
 
-        &:focus {
-            outline: 0;
-        }
-        &::-webkit-input-placeholder, &:-moz-placeholder, &::-moz-placeholder, &::-ms-input-placeholder {
-            color: #cbcbcb;
+        &::-webkit-input-placeholder, &:-moz-placeholder, &::-moz-placeholder, &:-ms-input-placeholder {
+            color: #bdbdbd;
             opacity: 1;
+        }
+
+        &:focus {
+            background-color: white;
+            color: #212121;
+            outline: 0;
         }
     }
     .send {
+        margin-top: 1px;
         right: 0px;
         color: #b2b2b2;
         font-weight: 600;
@@ -34,7 +39,7 @@
         height: 40px;
         line-height: 42px;
         text-decoration: none;
-        padding: 0 12px;
+        padding: 0 10px;
 
         &:hover {
             color: #00aeff;
