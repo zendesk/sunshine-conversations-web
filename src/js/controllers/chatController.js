@@ -14,7 +14,8 @@ var Conversation = require('../models/conversation');
 
 var ChatView = require('../views/chatView'),
     HeaderView = require('../views/headerView'),
-    ConversationView = require('../views/conversationView');
+    ConversationView = require('../views/conversationView'),
+    EmailNotificationView = require('../views/emailNotificationView');
 
 var ChatInputController = require('../controllers/chatInputController');
 
@@ -92,6 +93,25 @@ module.exports = ViewController.extend({
             this.conversationView.scrollToBottom();
         }
     },
+
+    showEmailNotification: function() {
+        var view = new EmailNotificationView();
+
+        this.listenTo(view, 'notification:close', this.hideEmailNotification);
+        this.listenTo(view, 'settings:navigate', this.showSettingsView);
+
+        this.listenToOnce(view, 'destroy', function() {
+            this.stopListening(view);
+        });
+
+        this.getView().notifications.show(view);
+    },
+
+    hideEmailNotification: function() {
+        this.getView().notifications.empty();
+    },
+
+    showSettingsView: function() {},
 
     _receiveMessage: function(message) {
         if (!!this.conversation) {

@@ -23,6 +23,7 @@ module.exports = Marionette.LayoutView.extend({
 
     regions: {
         header: '[data-region-header]',
+        notifications: '[data-region-notifications]',
         main: '[data-region-main]',
         footer: '[data-region-footer]'
     },
