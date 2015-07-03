@@ -4,10 +4,16 @@ Build status: [![Circle CI](https://circleci.com/gh/supportkit/supportkit-js.svg
 
 ### Script Tag
 
-Add the following code in between the ```<head>...</head>``` tags on your page.
+Add the following code towards the end of the `body` section on your page. Placing it at the end allows the rest of the page to load first.
 
 ```html
 <script src="https://cdn.supportkit.io/supportkit.min.js"></script>
+```
+
+Note that SupportKit requires jQuery to work. If you aren't using jQuery yet, then add the following code before the previous code snippet. This step is only needed if you are using the CDN version.<br>
+
+```
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 ```
 
 Initialize the plugin using this code snippet
@@ -23,13 +29,13 @@ Initialize the plugin using this code snippet
 Install from npm
 
 ```
-npm install supportkit-js
+npm install supportkit
 ```
 
 Require and init
 
 ```javascript
-var SupportKit = require('supportkit-js');
+var SupportKit = require('supportkit');
 
 SupportKit.init({appToken: 'your_app_token'});
 ```
@@ -39,7 +45,7 @@ SupportKit.init({appToken: 'your_app_token'});
 Install from bower
 
 ```
-bower install supportkit-js
+bower install supportkit
 ```
 
 Include in JS using preferred method and init
