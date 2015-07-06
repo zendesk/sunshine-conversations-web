@@ -15,9 +15,11 @@ var Conversation = require('../models/conversation');
 var ChatView = require('../views/chatView'),
     HeaderView = require('../views/headerView'),
     ConversationView = require('../views/conversationView'),
+    SettingsHeaderView = require('../views/settingsHeaderView'),
     EmailNotificationView = require('../views/emailNotificationView');
 
-var ChatInputController = require('../controllers/chatInputController');
+var ChatInputController = require('../controllers/chatInputController'),
+    SettingsController = require('../controllers/settingsController');
 
 module.exports = ViewController.extend({
     viewClass: ChatView,
@@ -41,6 +43,7 @@ module.exports = ViewController.extend({
         if (!!this.view && !!this.chatInputController && !this.isOpened) {
             this.isOpened = true;
             this.view.open();
+            this.headerView.showNotificationBadge();
             this.chatInputController.focus();
             this.conversationView.positionLogo();
         }
@@ -49,6 +52,7 @@ module.exports = ViewController.extend({
     close: function() {
         if (!!this.view && this.isOpened) {
             this.isOpened = false;
+            this.headerView.hideNotificationBadge();
             this.view.close();
             this.resetUnread();
         }
@@ -86,6 +90,14 @@ module.exports = ViewController.extend({
             messageDeferred.resolve(message);
         }).fail(messageDeferred.reject);
 
+
+        messageDeferred.then(_.bind(function(message) {
+            if (this.conversation.get('messages').length === 1) {
+                this._showEmailNotification();
+            }
+            return message;
+        }, this));
+
         return messageDeferred;
     },
     scrollToBottom: function() {
@@ -94,11 +106,11 @@ module.exports = ViewController.extend({
         }
     },
 
-    showEmailNotification: function() {
+    _showEmailNotification: function() {
         var view = new EmailNotificationView();
 
-        this.listenTo(view, 'notification:close', this.hideEmailNotification);
-        this.listenTo(view, 'settings:navigate', this.showSettingsView);
+        this.listenTo(view, 'notification:close', this._hideEmailNotification);
+        this.listenTo(view, 'settings:navigate', this._showSettings);
 
         this.listenToOnce(view, 'destroy', function() {
             this.stopListening(view);
@@ -107,11 +119,20 @@ module.exports = ViewController.extend({
         this.getView().notifications.show(view);
     },
 
-    hideEmailNotification: function() {
+    _hideEmailNotification: function() {
         this.getView().notifications.empty();
     },
 
-    showSettingsView: function() {},
+    _showSettings: function() {
+        this._hideEmailNotification();
+        this._renderSettingsHeader();
+        this._renderSettingsView();
+    },
+
+    _hideSettings: function() {
+        this.getView().settings.empty();
+        this._renderChatHeader();
+    },
 
     _receiveMessage: function(message) {
         if (!!this.conversation) {
@@ -192,28 +213,61 @@ module.exports = ViewController.extend({
         return conversation;
     },
 
-    _renderWidget: function(conversation) {
-        this.model = conversation;
-
+    _renderChatHeader: function() {
         this.headerView = new HeaderView({
-            model: conversation,
+            model: this.model,
             headerText: this.uiText.headerText
         });
 
         this.listenTo(this.headerView, 'toggle', this.toggle);
+        this.listenTo(this.headerView, 'notification:click', this._showSettings);
 
+        this.getView().header.show(this.headerView);
+
+        if(this.isOpened) {
+            this.headerView.showNotificationBadge();
+        }
+    },
+
+    _renderSettingsHeader: function() {
+        var settingsHeaderView = new SettingsHeaderView();
+        this.listenTo(settingsHeaderView, 'settings:close', this._hideSettings);
+
+        this.listenToOnce(settingsHeaderView, 'destroy', function() {
+            this.stopListening(settingsHeaderView);
+        });
+
+        this.getView().header.show(settingsHeaderView);
+    },
+
+    _renderSettingsView: function() {
+        var settingsController = new SettingsController();
+
+        this.listenToOnce(settingsController, 'destroy', function() {
+            this.stopListening(settingsController);
+        });
+
+        this.getView().settings.show(settingsController.getView());
+    },
+
+    _renderConversation: function() {
         this.conversationView = new ConversationView({
-            model: conversation,
-            collection: conversation.get('messages'),
+            model: this.model,
+            collection: this.model.get('messages'),
             childViewOptions: {
-                conversation: conversation
+                conversation: this.model
             },
             introText: this.uiText.introText
         });
 
+        this.getView().main.show(this.conversationView);
+
+    },
+
+    _renderConversationInput: function() {
         this.chatInputController = new ChatInputController({
-            model: conversation,
-            collection: conversation.get('messages'),
+            model: this.model,
+            collection: this.model.get('messages'),
             viewOptions: {
                 inputPlaceholder: this.uiText.inputPlaceholder,
                 sendButtonText: this.uiText.sendButtonText
@@ -222,10 +276,15 @@ module.exports = ViewController.extend({
 
         this.listenTo(this.chatInputController, 'message:send', this.sendMessage);
         this.listenTo(this.chatInputController, 'message:read', this.resetUnread);
+        this.getView().footer.show(this.chatInputController.getView());
+    },
 
-        this.view.header.show(this.headerView);
-        this.view.main.show(this.conversationView);
-        this.view.footer.show(this.chatInputController.getView());
+    _renderWidget: function(conversation) {
+        this.model = conversation;
+
+        this._renderChatHeader();
+        this._renderConversation();
+        this._renderConversationInput();
     },
 
     onConversationStarted: function(model, conversationStarted) {
