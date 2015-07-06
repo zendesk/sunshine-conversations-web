@@ -25,7 +25,7 @@
             position: relative;
 
             .sk-msg {
-                box-shadow: 0 1px 2px rgba(0,0,0,0.22);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
                 font-size: 14px;
                 line-height: 20px;
                 padding: 8px 12px;
@@ -59,6 +59,7 @@
         }
         &.sk-left-row {
             margin-top: 30px;
+
             .sk-msg-wrapper {
                 display: inline-block;
                 max-width: 200px;
@@ -84,6 +85,7 @@
         }
         &.sk-right-row {
             margin-top: 10px;
+
             .sk-msg {
                 background-color: #00aeff;
                 float: right;
@@ -104,7 +106,7 @@
     &::-webkit-scrollbar-track {
         border-radius: 10px;
         box-shadow: inset 0 -6px 0 0 @background-color, inset 0 6px 0 0 @background-color;
-        background-color: rgba(230,230,230,0.97);
+        background-color: rgba(230, 230, 230, 0.97);
     }
     &::-webkit-scrollbar {
         width: 8px;
@@ -113,7 +115,7 @@
     &::-webkit-scrollbar-thumb {
         border-radius: 10px;
         box-shadow: inset 0 -6px 0 0 @background-color, inset 0 6px 0 0 @background-color;
-        background-color: rgba(210,210,210,0.97);
+        background-color: rgba(210, 210, 210, 0.97);
     }
     .sk-logo {
         margin-top: 15px;
@@ -123,10 +125,24 @@
         color: #bbbbbb;
         font-size: 12px;
 
-        .sk-image {
+        .sk-image, .sk-image-retina {
             position: relative;
             left: 2px;
             top: 3px;
+ 
+            @media (-o-min-device-pixel-ratio: 5/4), (-webkit-min-device-pixel-ratio: 1.25), (min-resolution: 120dpi) {
+                display: none;
+            }
+        }
+
+        .sk-image-retina {
+            width: 83px;
+            display: none;
+            
+            /* HiDPI support */
+            @media (-o-min-device-pixel-ratio: 5/4), (-webkit-min-device-pixel-ratio: 1.25), (min-resolution: 120dpi) {
+                display: inherit;
+            }
         }
         &.anchor-bottom {
             position: absolute;
