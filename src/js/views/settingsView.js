@@ -43,7 +43,7 @@ module.exports = Marionette.ItemView.extend({
 
         var isValid = regex.test(value);
 
-        if (isValid) {
+        if (isValid || _.isEmpty(value)) {
             this.ui.email.parent().removeClass('has-error');
             this.ui.saveButton.removeAttr('disabled');
         } else {
@@ -84,14 +84,16 @@ module.exports = Marionette.ItemView.extend({
 
     transitionIn: function() {
         this.$el.animate({
-            width: 'toggle'
+            width: 'toggle',
+            opacity: 1
         }, 250);
     },
 
     transitionOut: function(cb) {
         this.$el.animate({
-            width: 'toggle'
-        }, 150, cb);
+            width: 'toggle',
+            opacity: 0
+        }, 250, cb);
     },
 
     remove: function() {

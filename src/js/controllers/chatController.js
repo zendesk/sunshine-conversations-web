@@ -230,6 +230,10 @@ module.exports = ViewController.extend({
     _renderSettingsHeader: function() {
         var settingsHeaderView = new SettingsHeaderView();
         this.listenTo(settingsHeaderView, 'settings:close', this._hideSettings);
+        this.listenTo(settingsHeaderView, 'widget:close', function() {
+            this.toggle();
+            this._hideSettings();
+        });
 
         this.listenToOnce(settingsHeaderView, 'destroy', function() {
             this.stopListening(settingsHeaderView);

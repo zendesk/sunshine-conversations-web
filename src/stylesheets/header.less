@@ -1,6 +1,7 @@
 .header() {
     z-index: 1;
     height: @header-height;
+    box-size: border-box;
     line-height: 28px;
     padding: @header-padding 18px;
     position: relative;
@@ -8,6 +9,30 @@
     background-color: white;
     cursor: pointer;
     border-radius: 8px 8px 0 0;
+
+    .sk-show-handle {
+        position: absolute;
+        top: 6px;
+        right: 10px;
+        .rotate(270deg);
+        color: #808080;
+        font-size: 20px;
+    }
+
+    .sk-close-handle {
+        position: absolute;
+        top: 6px;
+        right: 10px;
+        color: #808080;
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .sk-back-handle {
+        .rotate(180deg);
+        display: inline-block;
+        margin-right: 5px;
+    }
 }
 
 #sk-header {
@@ -30,12 +55,6 @@
     line-height: 18px;
 }
 #sk-handle {
-    position: absolute;
-    top: 6px;
-    right: 10px;
-    .rotate(270deg);
-    color: #808080;
-    font-size: 20px;
 }
 
 #sk-notification-badge  {
@@ -59,21 +78,6 @@
 
 #sk-settings-header {
     .header();
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     font-size: 14px;
     font-weight: 600;
-
-    .sk-back-handle {
-        .rotate(180deg);
-        display: inline-block;
-        margin-right: 5px;
-    }
-
-    .sk-close-handle {
-        position: absolute;
-        top: 6px;
-        right: 10px;
-        color: #808080;
-        font-size: 20px;
-    }
 }
