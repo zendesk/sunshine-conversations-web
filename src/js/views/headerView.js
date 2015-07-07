@@ -33,14 +33,6 @@ module.exports = Marionette.ItemView.extend({
         return val > 0;
     },
 
-    showNotificationBadge: function() {
-        this.ui.notificationBadge.show();
-    },
-
-    hideNotificationBadge: function() {
-        this.ui.notificationBadge.hide();
-    },
-
     serializeData: function() {
         return {
             headerText: this.getOption('headerText')

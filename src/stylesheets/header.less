@@ -33,19 +33,28 @@
     position: absolute;
     top: 6px;
     right: 10px;
-    -webkit-transform: rotate(270deg);
-    transform: rotate(270deg);
+    .rotate(270deg);
     color: #808080;
     font-size: 20px;
 }
 
 #sk-notification-badge  {
     position: absolute;
-    top: 10px;
+    top: 6px;
     right: 36px;
     color: #808080;
     font-size: 17px;
     display: none;
+
+    i {
+        line-height: 28px;
+    }
+}
+
+&.sk-appear {
+    #sk-notification-badge {
+        display: block;
+    }
 }
 
 #sk-settings-header {
@@ -55,8 +64,7 @@
     font-weight: 600;
 
     .sk-back-handle {
-        -webkit-transform: rotate(180deg);
-        transform: rotate(180deg);
+        .rotate(180deg);
         display: inline-block;
         margin-right: 5px;
     }

@@ -14,18 +14,25 @@
         .input-group {
             position: relative;
 
-            color: #bdbdbd;
-
-            i {
+            i.before-icon {
+                color: #bdbdbd;
                 position: absolute;
                 top: 16px;
                 left: 20px;
             }
 
             .email-input {
-                .input();
                 padding: 0 @input-horizontal-padding 0 30px;
                 width: 310px - 2 * @input-horizontal-margin - 2 * @input-horizontal-padding - 21px;
+            }
+
+            .form-message {
+                .button-size(@padding-base-vertical; @padding-base-horizontal; @font-size-base; @line-height-base; @btn-border-radius-base);
+                vertical-align: middle;
+
+                i.success {
+                    color: @brand-success;
+                }
             }
         }
     }

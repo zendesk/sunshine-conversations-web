@@ -43,7 +43,6 @@ module.exports = ViewController.extend({
         if (!!this.view && !!this.chatInputController && !this.isOpened) {
             this.isOpened = true;
             this.view.open();
-            this.headerView.showNotificationBadge();
             this.chatInputController.focus();
             this.conversationView.positionLogo();
         }
@@ -52,7 +51,6 @@ module.exports = ViewController.extend({
     close: function() {
         if (!!this.view && this.isOpened) {
             this.isOpened = false;
-            this.headerView.hideNotificationBadge();
             this.view.close();
             this.resetUnread();
         }
@@ -92,7 +90,7 @@ module.exports = ViewController.extend({
 
 
         messageDeferred.then(_.bind(function(message) {
-            if (this.conversation.get('messages').length === 1) {
+            if (this.conversation.get('messages').length === 1 && !this.user.get('email')) {
                 this._showEmailNotification();
             }
             return message;
@@ -214,19 +212,19 @@ module.exports = ViewController.extend({
     },
 
     _renderChatHeader: function() {
-        this.headerView = new HeaderView({
+        var headerView = new HeaderView({
             model: this.model,
             headerText: this.uiText.headerText
         });
 
-        this.listenTo(this.headerView, 'toggle', this.toggle);
-        this.listenTo(this.headerView, 'notification:click', this._showSettings);
+        this.listenTo(headerView, 'toggle', this.toggle);
+        this.listenTo(headerView, 'notification:click', this._showSettings);
 
-        this.getView().header.show(this.headerView);
+        this.listenTo(headerView, 'destroy', function() {
+            this.stopListening(headerView);
+        });
 
-        if(this.isOpened) {
-            this.headerView.showNotificationBadge();
-        }
+        this.getView().header.show(headerView);
     },
 
     _renderSettingsHeader: function() {
@@ -241,7 +239,9 @@ module.exports = ViewController.extend({
     },
 
     _renderSettingsView: function() {
-        var settingsController = new SettingsController();
+        var settingsController = new SettingsController({
+            model: this.user
+        });
 
         this.listenToOnce(settingsController, 'destroy', function() {
             this.stopListening(settingsController);

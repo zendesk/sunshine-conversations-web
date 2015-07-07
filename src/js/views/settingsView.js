@@ -1,11 +1,80 @@
 var Marionette = require('backbone.marionette'),
-    _ = require('underscore');
+    _ = require('underscore'),
+    $ = require('jquery'),
+    bindAll = require('lodash.bindall');
 
 var template = require('../../templates/settings.tpl');
 
 module.exports = Marionette.ItemView.extend({
     id: 'sk-settings',
     template: template,
+
+    ui: {
+        email: '[data-ui-email]',
+        saveButton: '[data-ui-save]',
+        formMessage: '[data-ui-form-message]',
+        form: '[data-ui-form]'
+    },
+
+    behaviors: {
+        stickit: {
+            '@ui.email': {
+                observe: 'email',
+                onSet: 'onEmailSet'
+            }
+        }
+    },
+
+    triggers: {
+        'click @ui.saveButton': 'settings:save'
+    },
+
+    events: {
+        'submit @ui.form': 'onFormSubmit'
+    },
+
+    initialize: function() {
+        bindAll(this);
+    },
+
+    onEmailSet: function(value) {
+        // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
+        var regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+        var isValid = regex.test(value);
+
+        if (isValid) {
+            this.ui.email.parent().removeClass('has-error');
+            this.ui.saveButton.removeAttr('disabled');
+        } else {
+            this.ui.email.parent().addClass('has-error');
+            this.ui.saveButton.attr('disabled', true);
+        }
+
+        return value;
+    },
+
+    onFormSubmit: function(event) {
+        event.preventDefault();
+
+        var hasError = this.ui.email.parent().hasClass('has-error');
+
+        if (!hasError) {
+            this.trigger('settings:save');
+        }
+    },
+
+    showSavedMessage: function() {
+        var $message = $('<span><i class="fa fa-check success"></i> Saved!</span>');
+
+        var hideMessage = function() {
+            $message.fadeOut(500, $message.remove);
+        };
+
+        this.ui.formMessage.append($message);
+        _(hideMessage).chain().bind(this).delay(400);
+
+    },
 
     onRender: function() {
         this.$el.hide();
