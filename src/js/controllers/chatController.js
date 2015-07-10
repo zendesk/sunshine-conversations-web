@@ -153,7 +153,7 @@ module.exports = ViewController.extend({
                 .then(this._getConversation)
                 .then(this._initFaye)
                 .then(_.bind(function(conversation) {
-                    this.conversationInitiated = true;
+                    this.conversationInitiated = !conversation.isNew();
                     return conversation;
                 }, this));
         }
