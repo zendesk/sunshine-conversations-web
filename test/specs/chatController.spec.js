@@ -49,6 +49,10 @@ describe('ChatController', function() {
         renderWidgetSpy = sandbox.spy(chatController, '_renderWidget');
         receiveSpy = sandbox.spy(chatController, '_receiveMessage');
 
+        sandbox.stub(user, 'isDirty', function() {
+            return false;
+        });
+
         chatController.getWidget().then(function() {
             done();
         });
@@ -79,14 +83,16 @@ describe('ChatController', function() {
             });
         });
 
-        it('should add a message to the conversation', function() {
+        it('should add a message to the conversation', function(done) {
             var message = 'Hey!';
 
             var messages = chatController.conversation.get('messages');
             var initialLength = messages.length;
-            chatController.sendMessage(message);
-            messages.length.should.equals(initialLength + 1);
-            messages.last().get('text').should.equals(message);
+            chatController.sendMessage(message).then(function() {
+                messages.length.should.equals(initialLength + 1);
+                messages.last().get('text').should.equals(message);
+                done();
+            });
         });
     });
 
