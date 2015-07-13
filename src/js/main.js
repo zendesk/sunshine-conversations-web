@@ -56,7 +56,7 @@ var SupportKit = Marionette.Object.extend({
     },
 
     _updateUser: function() {
-        return this.user.saveIfDirty();
+        return this.user.save();
     },
 
     init: function(options) {
@@ -218,7 +218,7 @@ var SupportKit = Marionette.Object.extend({
             parse: true
         });
 
-        this._throttledUpdate = this._throttledUpdate || _.throttle(this._updateUser.bind(this), 10000);
+        this._throttledUpdate = this._throttledUpdate || _.throttle(this._updateUser.bind(this), 60000);
         return this._throttledUpdate();
     },
 

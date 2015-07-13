@@ -61,8 +61,8 @@ module.exports = ViewController.extend({
         }
     },
 
-    updateUserIfDirty: function() {
-        return this.user.saveIfDirty();
+    updateUser: function() {
+        return this.user.save();
     },
 
     sendMessage: function(text) {
@@ -81,7 +81,8 @@ module.exports = ViewController.extend({
         }
 
         conversationDeferred.then(function(conversation) {
-            this.updateUserIfDirty().then(function() {
+            // update the user before sending the message to ensure properties are correct
+            this.updateUser().then(function() {
                 var message = conversation.get('messages').create({
                     authorId: endpoint.appUserId,
                     text: text

@@ -2,9 +2,18 @@
 
 var _ = require('underscore'),
     $ = require('jquery'),
+    Backbone = require('backbone'),
     BaseModel = require('./baseModel');
 
-var AppUserModel = module.exports = BaseModel.extend({
+var AppUser = module.exports = BaseModel.extend({
+    initialize: function() {
+        this._lastPropertyValues = {};
+
+        this.on('sync', function() {
+            this._lastPropertyValues = this.pick(AppUser.EDITABLE_PROPERTIES);
+        }.bind(this));
+    },
+
     parse: function(data) {
         return _.isObject(data) ? data : {
             id: data
@@ -25,18 +34,18 @@ var AppUserModel = module.exports = BaseModel.extend({
     isDirty: function() {
         var hasChanged = false;
 
-        _.each(AppUserModel.EDITABLE_PROPERTIES, function(property) {
-            hasChanged = hasChanged || this.hasChanged(property);
+        _.each(AppUser.EDITABLE_PROPERTIES, function(property) {
+            hasChanged = hasChanged || this._lastPropertyValues[property] !== this.get(property);
         }.bind(this));
 
         return hasChanged;
     },
 
-    saveIfDirty: function() {
+    save: function() {
         if (this.isDirty()) {
-            return this.save();
+            return Backbone.Model.prototype.save.apply(this, _.toArray(arguments));
         } else {
-            return $.Deferred().resolve().promise();
+            return $.Deferred().resolve(this, null, null).promise();
         }
     }
 }, {
