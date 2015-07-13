@@ -61,6 +61,10 @@ module.exports = ViewController.extend({
         }
     },
 
+    updateUserIfDirty: function() {
+        return this.user.saveIfDirty();
+    },
+
     sendMessage: function(text) {
         var conversationDeferred = $.Deferred(),
             messageDeferred = $.Deferred();
@@ -77,13 +81,15 @@ module.exports = ViewController.extend({
         }
 
         conversationDeferred.then(function(conversation) {
-            var message = conversation.get('messages').create({
-                authorId: endpoint.appUserId,
-                text: text
-            });
+            this.updateUserIfDirty().then(function() {
+                var message = conversation.get('messages').create({
+                    authorId: endpoint.appUserId,
+                    text: text
+                });
 
-            messageDeferred.resolve(message);
-        }).fail(messageDeferred.reject);
+                messageDeferred.resolve(message);
+            });
+        }.bind(this)).fail(messageDeferred.reject);
 
         return messageDeferred;
     },
