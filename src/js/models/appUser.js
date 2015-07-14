@@ -42,7 +42,7 @@ var AppUser = module.exports = BaseModel.extend({
             return Backbone.Model.prototype.save.apply(this, _.toArray(arguments)).then(function() {
                 this._lastPropertyValues = this.pick(AppUser.EDITABLE_PROPERTIES);
                 return arguments;
-            });
+            }.bind(this));
         } else {
             return $.Deferred().resolve(this, null, null);
         }
