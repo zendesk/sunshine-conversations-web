@@ -45,7 +45,7 @@ var SupportKit = Marionette.Object.extend({
 
     initialize: function() {
         bindAll(this);
-
+        this._readyPromise = $.Deferred();
         this._conversations = new Conversations();
     },
 
@@ -149,6 +149,8 @@ var SupportKit = Marionette.Object.extend({
                 console.error('SupportKit init error: ', message);
             })
             .done();
+
+        return this._readyPromise;
     },
 
     logout: function() {
@@ -294,6 +296,7 @@ var SupportKit = Marionette.Object.extend({
     onReady: function() {
         this.ready = true;
         this.track('skt-appboot');
+        this._readyPromise.resolve();
     },
 
     onDestroy: function() {

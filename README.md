@@ -59,10 +59,10 @@ SupportKit.init({appToken: 'your_app_token'});
 ### Individual functions
 
 #### init(options)
-Initializes the SupportKit widget in the web page using the specified options
+Initializes the SupportKit widget in the web page using the specified options. It returns a promise that will resolve when the widget is ready if you need to do different things at different times.
 
 ```javascript
-SupportKit.init({
+var skPromise = SupportKit.init({
     appToken: 'your_app_token',
     givenName: 'Cool',
     surname: 'Person',
@@ -75,6 +75,19 @@ SupportKit.init({
         'anything': 'whatever_you_want'    
     }
 });
+
+
+skPromise.then(function() {
+    // do something
+});
+
+// pass it around...
+
+skPromise.then(function() {
+    //do something else
+});
+
+
 ```
 
 #### open()
