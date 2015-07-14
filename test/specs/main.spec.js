@@ -54,23 +54,28 @@ describe('Main', function() {
         var userId = 'thisisauserid',
             appToken = 'thisisanapptoken',
             jwt = 'thisisajwt',
-            trackSpy;
+            trackSpy,
+            initSpy;
 
         beforeEach(function() {
             trackSpy = sandbox.spy(SupportKit, 'track');
+            initSpy = sandbox.spy();
         });
 
-        it('should trigger ready and track appboot', function(done) {
+        it('should trigger ready, track appboot and resolve the promise', function(done) {
             SupportKit.destroy();
 
             SupportKit.once('ready', function() {
                 trackSpy.should.have.been.calledWith('skt-appboot');
+                initSpy.should.have.been.calledOnce;
                 done();
             });
 
-            SupportKit.init({
+            var initPromise = SupportKit.init({
                 appToken: appToken
             });
+
+            initPromise.then(initSpy);
         });
 
         it('if supplied a userId should store the deviceId in local storgae', function(done) {
