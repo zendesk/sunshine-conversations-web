@@ -139,7 +139,7 @@ var SupportKit = Marionette.Object.extend({
                     uiText: uiText
                 });
 
-                return this.updateUser(_.pick(options, 'givenName', 'surname', 'email', 'properties'));
+                return this.updateUser(_.pick(options, AppUser.EDITABLE_PROPERTIES));
             }).bind(this))
             .then(_(function() {
                 this._renderWidget();
@@ -211,7 +211,7 @@ var SupportKit = Marionette.Object.extend({
         }
 
         if (!userChanged) {
-            return $.Deferred().resolve();
+            return $.Deferred().resolve(this.user);
         }
 
         this.user.set(userInfo, {
