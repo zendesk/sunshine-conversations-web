@@ -211,7 +211,7 @@ var SupportKit = Marionette.Object.extend({
         }
 
         if (!userChanged) {
-            return $.Deferred().resolve();
+            return $.Deferred().resolve(this.user);
         }
 
         this.user.set(userInfo, {

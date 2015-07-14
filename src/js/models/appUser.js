@@ -8,10 +8,6 @@ var _ = require('underscore'),
 var AppUser = module.exports = BaseModel.extend({
     initialize: function() {
         this._lastPropertyValues = {};
-
-        this.on('sync', function() {
-            this._lastPropertyValues = this.pick(AppUser.EDITABLE_PROPERTIES);
-        }.bind(this));
     },
 
     parse: function(data) {
@@ -43,9 +39,12 @@ var AppUser = module.exports = BaseModel.extend({
 
     save: function() {
         if (this.isDirty()) {
-            return Backbone.Model.prototype.save.apply(this, _.toArray(arguments));
+            return Backbone.Model.prototype.save.apply(this, _.toArray(arguments)).then(function() {
+                this._lastPropertyValues = this.pick(AppUser.EDITABLE_PROPERTIES);
+                return arguments;
+            });
         } else {
-            return $.Deferred().resolve(this, null, null).promise();
+            return $.Deferred().resolve(this, null, null);
         }
     }
 }, {
