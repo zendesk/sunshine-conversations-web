@@ -2,6 +2,7 @@ var sinon = require('sinon'),
     ChatController = require('../../src/js/controllers/chatController'),
     Conversations = require('../../src/js/collections/conversations'),
     vent = require('../../src/js/vent'),
+    $ = require('jquery'),
     AppUser = require('../../src/js/models/appUser');
 
 var ClientScenario = require('../scenarios/clientScenario');
@@ -17,6 +18,7 @@ describe('ChatController', function() {
         initMessagingBusSpy,
         manageUnreadSpy,
         receiveSpy,
+        saveUserStub,
         renderWidgetSpy;
 
     before(function() {
@@ -49,6 +51,10 @@ describe('ChatController', function() {
         renderWidgetSpy = sandbox.spy(chatController, '_renderWidget');
         receiveSpy = sandbox.spy(chatController, '_receiveMessage');
 
+        sandbox.stub(user, 'isDirty', function() {
+            return false;
+        });
+
         chatController.getWidget().then(function() {
             done();
         });
@@ -71,22 +77,52 @@ describe('ChatController', function() {
         });
     });
 
-
     describe('#sendMessage', function() {
+        var message = 'Hey!';
+        var messages;
+        var initialLength;
+
         beforeEach(function(done) {
             chatController.getWidget().then(function() {
                 done();
             });
         });
 
-        it('should add a message to the conversation', function() {
-            var message = 'Hey!';
+        it('should add a message to the conversation', function(done) {
+            messages = chatController.conversation.get('messages');
+            initialLength = messages.length;
 
-            var messages = chatController.conversation.get('messages');
-            var initialLength = messages.length;
-            chatController.sendMessage(message);
-            messages.length.should.equals(initialLength + 1);
-            messages.last().get('text').should.equals(message);
+            chatController.sendMessage(message).then(function() {
+                messages.length.should.equals(initialLength + 1);
+                messages.last().get('text').should.equals(message);
+                done();
+            });
+        });
+
+        describe('if user is dirty', function() {
+            beforeEach(function() {
+                sandbox.restore(user, 'isDirty');
+
+                sandbox.stub(user, 'isDirty', function() {
+                    return true;
+                });
+
+                saveUserStub = sandbox.stub(user, 'save', function() {
+                    return $.Deferred().resolve(user);
+                });
+            });
+
+            it('should save the user before sending the message', function(done) {
+                messages = chatController.conversation.get('messages');
+                initialLength = messages.length;
+
+                chatController.sendMessage(message).then(function() {
+                    saveUserStub.should.have.been.calledOnce;
+                    messages.length.should.equals(initialLength + 1);
+                    messages.last().get('text').should.equals(message);
+                    done();
+                });
+            });
         });
     });
 
