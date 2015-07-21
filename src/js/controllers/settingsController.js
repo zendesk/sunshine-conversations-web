@@ -17,11 +17,17 @@ module.exports = ViewController.extend({
         'settings:save': 'onSettingsSave'
     },
 
+    viewOptions: {
+        readOnlyEmail: false
+    },
+
+    modelEvents: {
+        change: 'onEmailChange'
+    },
+
     initialize: function() {
         this.savedEmail = this.model.get('email');
         this.isDirty = false;
-
-        this.listenTo(this.model, 'change:email', this.onEmailChange);
     },
 
     onSettingsSave: function() {

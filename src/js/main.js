@@ -133,9 +133,13 @@ var SupportKit = Marionette.Object.extend({
 
                 endpoint.appUserId = res.appUserId;
 
+                // if the email was passed at init, it can't be changed through the web widget UI
+                var readOnlyEmail = !_.isEmpty(options.email);
+
                 this._chatController = new ChatController({
                     collection: this._conversations,
                     user: this.user,
+                    readOnlyEmail: readOnlyEmail,
                     uiText: uiText
                 });
 

@@ -18,10 +18,10 @@
   "homepage": "http://supportkit.io",
   "license": "http://supportkit.io/terms.html",
   "dependencies": {
-    "backbone": "1.1.2",
+    "backbone": "1.2.1",
     "backbone-associations": "^0.6.2",
     "backbone-computedfields": "0.0.10",
-    "backbone.marionette": "^2.4.1",
+    "backbone.marionette": "^2.4.2",
     "backbone.stickit": "^0.9.2",
     "bootstrap": "^3.3.5",
     "cookie": "^0.1.2",
@@ -30,13 +30,13 @@
     "jquery": "~1.11.0",
     "jstify": "^0.7.0",
     "lodash.bindall": "^3.1.0",
-    "marionette.behaviors": "0.0.12",
+    "marionette.behaviors": "0.0.13",
     "node-lessify": "0.0.10",
-    "underscore": "~1.5.2",
+    "underscore": "1.8.3",
     "url-join": "0.0.1",
     "urljoin": "^0.1.5",
     "uuid": "^2.0.1",
-    "view-controller": "^1.0.1"
+    "view-controller": "^1.0.3"
   },
   "engines": {
     "node": ">=0.10",

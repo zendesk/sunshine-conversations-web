@@ -244,7 +244,10 @@ module.exports = ViewController.extend({
 
     _renderSettingsView: function() {
         var settingsController = new SettingsController({
-            model: this.user
+            model: this.user,
+            viewOptions: {
+                readOnlyEmail: this.getOption('readOnlyEmail')
+            }
         });
 
         this.listenToOnce(settingsController, 'destroy', function() {

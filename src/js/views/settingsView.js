@@ -20,7 +20,8 @@ module.exports = Marionette.ItemView.extend({
         stickit: {
             '@ui.email': {
                 observe: 'email',
-                onSet: 'onEmailSet'
+                onSet: 'onEmailSet',
+                update: 'emailUpdate'
             }
         }
     },
@@ -37,13 +38,21 @@ module.exports = Marionette.ItemView.extend({
         bindAll(this);
     },
 
+    emailUpdate: function($el, val, model, options) {
+        $el.val(val);
+
+        if (this.getOption('readOnlyEmail')) {
+            $el.attr('disabled', true);
+        }
+    },
+
     onEmailSet: function(value) {
         // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
         var regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
         var isValid = regex.test(value);
 
-        if (isValid || _.isEmpty(value)) {
+        if (isValid) {
             this.ui.email.parent().removeClass('has-error');
             this.ui.saveButton.removeAttr('disabled');
         } else {
@@ -74,6 +83,14 @@ module.exports = Marionette.ItemView.extend({
         this.ui.formMessage.append($message);
         _(hideMessage).chain().bind(this).delay(400);
 
+    },
+
+    serializeData: function() {
+        var data = Marionette.ItemView.prototype.serializeData.apply(this, _.toArray(arguments));
+
+        return _.extend(data, {
+            readOnlyEmail: this.getOption('readOnlyEmail')
+        });
     },
 
     onRender: function() {
