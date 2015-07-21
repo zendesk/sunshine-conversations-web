@@ -139,7 +139,7 @@ var SupportKit = Marionette.Object.extend({
                     uiText: uiText
                 });
 
-                return this.updateUser(_.pick(options, AppUser.EDITABLE_PROPERTIES));
+                return this.updateUser(_.pick(options, AppUser.EDITABLE_PROPERTIES), true);
             }).bind(this))
             .then(_(function() {
                 this._renderWidget();
@@ -192,7 +192,7 @@ var SupportKit = Marionette.Object.extend({
         this._chatController.close();
     },
 
-    updateUser: function(userInfo) {
+    updateUser: function(userInfo, force) {
         var userChanged = false;
 
         if (typeof userInfo !== 'object') {
@@ -212,7 +212,7 @@ var SupportKit = Marionette.Object.extend({
             });
         }
 
-        if (!userChanged) {
+        if (!userChanged && !force) {
             return $.Deferred().resolve(this.user);
         }
 
