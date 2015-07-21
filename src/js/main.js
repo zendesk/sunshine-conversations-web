@@ -55,7 +55,11 @@ var SupportKit = Marionette.Object.extend({
         }
     },
 
-    _updateUser: function() {
+    _updateUser: function(userInfo) {
+        this.user.set(userInfo, {
+            parse: true
+        });
+
         return this.user.save();
     },
 
@@ -139,7 +143,7 @@ var SupportKit = Marionette.Object.extend({
                     uiText: uiText
                 });
 
-                return this.updateUser(_.pick(options, AppUser.EDITABLE_PROPERTIES), true);
+                return this._updateUser(_.pick(options, AppUser.EDITABLE_PROPERTIES));
             }).bind(this))
             .then(_(function() {
                 this._renderWidget();
@@ -192,7 +196,7 @@ var SupportKit = Marionette.Object.extend({
         this._chatController.close();
     },
 
-    updateUser: function(userInfo, force) {
+    updateUser: function(userInfo) {
         var userChanged = false;
 
         if (typeof userInfo !== 'object') {
@@ -212,16 +216,12 @@ var SupportKit = Marionette.Object.extend({
             });
         }
 
-        if (!userChanged && !force) {
+        if (!userChanged) {
             return $.Deferred().resolve(this.user);
         }
 
-        this.user.set(userInfo, {
-            parse: true
-        });
-
         this._throttledUpdate = this._throttledUpdate || _.throttle(this._updateUser.bind(this), 60000);
-        return this._throttledUpdate();
+        return this._throttledUpdate(userInfo);
     },
 
     track: function(eventName) {

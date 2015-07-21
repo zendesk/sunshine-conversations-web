@@ -140,7 +140,9 @@ describe('Main', function() {
 
     describe('#updateUser', function() {
         beforeEach(function() {
-            sandbox.stub(SupportKit, '_updateUser');
+            sandbox.stub(SupportKit.user, 'save');
+            sandbox.spy(SupportKit, '_updateUser');
+
             SupportKit._throttledUpdate = SupportKit._updateUser;
 
             SupportKit.user.set({
