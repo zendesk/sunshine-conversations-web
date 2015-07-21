@@ -56,7 +56,7 @@ var SupportKit = Marionette.Object.extend({
     },
 
     _updateUser: function(userInfo) {
-        this.user.set(userInfo, {
+        userInfo && this.user.set(userInfo, {
             parse: true
         });
 
@@ -220,8 +220,12 @@ var SupportKit = Marionette.Object.extend({
             return $.Deferred().resolve(this.user);
         }
 
+        this.user.set(userInfo, {
+            parse: true
+        });
+
         this._throttledUpdate = this._throttledUpdate || _.throttle(this._updateUser.bind(this), 60000);
-        return this._throttledUpdate(userInfo);
+        return this._throttledUpdate();
     },
 
     track: function(eventName) {
