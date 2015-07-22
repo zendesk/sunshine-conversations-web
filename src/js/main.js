@@ -55,10 +55,6 @@ var SupportKit = Marionette.Object.extend({
         }
     },
 
-    _updateUser: function() {
-        return this.user.save();
-    },
-
     init: function(options) {
         if (this.ready) {
             return;
@@ -139,7 +135,10 @@ var SupportKit = Marionette.Object.extend({
                     uiText: uiText
                 });
 
-                return this.updateUser(_.pick(options, AppUser.EDITABLE_PROPERTIES));
+                return this.user.save(_.pick(options, AppUser.EDITABLE_PROPERTIES), {
+                    parse: true,
+                    wait: true
+                });
             }).bind(this))
             .then(_(function() {
                 this._renderWidget();
@@ -196,7 +195,7 @@ var SupportKit = Marionette.Object.extend({
         var userChanged = false;
 
         if (typeof userInfo !== 'object') {
-            throw new Error('updateUser accepts an object as parameter');
+            return $.Deferred().reject(new Error('updateUser accepts an object as parameter'));
         }
 
         userInfo.id = this.user.id;
@@ -216,12 +215,12 @@ var SupportKit = Marionette.Object.extend({
             return $.Deferred().resolve(this.user);
         }
 
-        this.user.set(userInfo, {
-            parse: true
-        });
-
-        this._throttledUpdate = this._throttledUpdate || _.throttle(this._updateUser.bind(this), 60000);
-        return this._throttledUpdate();
+        return this.user.save(userInfo, {
+            parse: true,
+            wait: true
+        }).then(function(){
+            return this.user;
+        }.bind(this));
     },
 
     track: function(eventName) {
