@@ -2,7 +2,6 @@ var sinon = require('sinon'),
     ChatController = require('../../src/js/controllers/chatController'),
     Conversations = require('../../src/js/collections/conversations'),
     vent = require('../../src/js/vent'),
-    $ = require('jquery'),
     AppUser = require('../../src/js/models/appUser');
 
 var ClientScenario = require('../scenarios/clientScenario');
@@ -18,7 +17,6 @@ describe('ChatController', function() {
         initMessagingBusSpy,
         manageUnreadSpy,
         receiveSpy,
-        saveUserStub,
         renderWidgetSpy;
 
     before(function() {
@@ -50,10 +48,6 @@ describe('ChatController', function() {
         manageUnreadSpy = sandbox.spy(chatController, '_manageUnread');
         renderWidgetSpy = sandbox.spy(chatController, '_renderWidget');
         receiveSpy = sandbox.spy(chatController, '_receiveMessage');
-
-        sandbox.stub(user, 'isDirty', function() {
-            return false;
-        });
 
         chatController.getWidget().then(function() {
             done();
@@ -98,34 +92,7 @@ describe('ChatController', function() {
                 done();
             });
         });
-
-        describe('if user is dirty', function() {
-            beforeEach(function() {
-                sandbox.restore(user, 'isDirty');
-
-                sandbox.stub(user, 'isDirty', function() {
-                    return true;
-                });
-
-                saveUserStub = sandbox.stub(user, 'save', function() {
-                    return $.Deferred().resolve(user);
-                });
-            });
-
-            it('should save the user before sending the message', function(done) {
-                messages = chatController.conversation.get('messages');
-                initialLength = messages.length;
-
-                chatController.sendMessage(message).then(function() {
-                    saveUserStub.should.have.been.calledOnce;
-                    messages.length.should.equals(initialLength + 1);
-                    messages.last().get('text').should.equals(message);
-                    done();
-                });
-            });
-        });
     });
-
 
     describe('#_receiveMessage', function() {
         beforeEach(function(done) {
@@ -149,7 +116,6 @@ describe('ChatController', function() {
         });
 
     });
-
 
     describe('vent', function() {
         var message = {
