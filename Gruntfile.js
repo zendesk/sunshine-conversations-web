@@ -354,7 +354,7 @@ module.exports = function(grunt) {
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3:js', 'cloudfront:prod']);
     grunt.registerTask('run', ['runlog', 'devbuild', 'concurrent:dev']);
     grunt.registerTask('run:min', ['runlog', 'devbuild:min', 'concurrent:min']);
-    grunt.registerTask('test:unit', ['karma:unit']);
+    grunt.registerTask('test', ['karma:unit']);
     grunt.registerTask('test:ci', ['karma:ci']);
     grunt.registerTask('default', ['run']);
 

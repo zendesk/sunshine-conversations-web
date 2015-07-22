@@ -139,11 +139,17 @@ describe('Main', function() {
     });
 
     describe('#updateUser', function() {
-        beforeEach(function() {
-            sandbox.stub(SupportKit.user, 'save');
-            sandbox.spy(SupportKit, '_updateUser');
 
-            SupportKit._throttledUpdate = SupportKit._updateUser;
+        var saveSpy;
+
+        it('should fail the promise if called with bad parameters (empty, in this case)', function(done) {
+            SupportKit.updateUser().fail(function() {
+                done();
+            });
+        });
+
+        it('should not call save if the user has not changed', function(done) {
+            saveSpy = sandbox.spy(SupportKit.user, 'save');
 
             SupportKit.user.set({
                 givenName: 'test',
@@ -158,29 +164,23 @@ describe('Main', function() {
                 properties: {
                     'TEST': true
                 }
-            });
-        });
+            }).then(function() {
+                saveSpy.should.be.calledOnce;
 
-        it('should call _updateUser', function() {
-            SupportKit._updateUser.should.be.calledOnce;
-        });
-
-        it('should throw an error if called with bad parameters (empty, in this case)', function() {
-            SupportKit.updateUser.should.throw(Error);
-        });
-
-        it('should not call update user if the user has not changed', function() {
-            SupportKit._updateUser.should.be.calledOnce;
-
-            SupportKit.updateUser({
-                givenName: 'GIVEN_NAME',
-                surname: 'SURNAME',
-                properties: {
-                    'TEST': true
-                }
+                return SupportKit.updateUser({
+                    givenName: 'GIVEN_NAME',
+                    surname: 'SURNAME',
+                    properties: {
+                        'TEST': true
+                    }
+                });
+            }).then(function() {
+                saveSpy.should.be.calledOnce;
+            }).always(function() {
+                done();
             });
 
-            SupportKit._updateUser.should.be.calledOnce;
+
         });
     });
 
