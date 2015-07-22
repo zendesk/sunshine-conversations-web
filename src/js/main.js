@@ -55,10 +55,6 @@ var SupportKit = Marionette.Object.extend({
         }
     },
 
-    _updateUser: function() {
-        return this.user.save();
-    },
-
     init: function(options) {
         if (this.ready) {
             return;
@@ -218,12 +214,9 @@ var SupportKit = Marionette.Object.extend({
             return $.Deferred().resolve();
         }
 
-        this.user.set(userInfo, {
-            parse: true
+        return this.user.save(userInfo, {
+            wait: true
         });
-
-        this._throttledUpdate = this._throttledUpdate || _.throttle(this._updateUser.bind(this), 60000);
-        return this._throttledUpdate();
     },
 
     track: function(eventName) {
@@ -316,7 +309,7 @@ var SupportKit = Marionette.Object.extend({
         }
     },
 
-    __showNotification: function(){
+    __showNotification: function() {
         this._chatController.__showNotification();
     }
 });

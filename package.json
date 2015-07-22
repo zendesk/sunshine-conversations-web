@@ -36,7 +36,7 @@
     "url-join": "0.0.1",
     "urljoin": "^0.1.5",
     "uuid": "^2.0.1",
-    "view-controller": "^1.0.3"
+    "view-controller": "1.0.4"
   },
   "engines": {
     "node": ">=0.10",

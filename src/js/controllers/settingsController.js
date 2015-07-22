@@ -22,7 +22,8 @@ module.exports = ViewController.extend({
     },
 
     modelEvents: {
-        change: 'onEmailChange'
+        'change:email': 'onEmailChange',
+        sync: 'onModelSync'
     },
 
     initialize: function() {
@@ -31,17 +32,22 @@ module.exports = ViewController.extend({
     },
 
     onSettingsSave: function() {
-        this.model.save({
-            wait: true
-        }).then(_(function() {
-            this.isDirty = false;
-            this.savedEmail = this.model.get('email');
+        this.listenToOnce(this.model, 'sync', function() {
             this.view.showSavedMessage();
-        }).bind(this));
+        });
+
+        this.model.save({}, {
+            wait: true
+        });
     },
 
     onEmailChange: function() {
         this.isDirty = true;
+    },
+
+    onModelSync: function() {
+        this.isDirty = false;
+        this.savedEmail = this.model.get('email');
     },
 
     onDestroy: function() {
