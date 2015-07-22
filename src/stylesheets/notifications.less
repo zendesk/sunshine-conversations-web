@@ -3,20 +3,32 @@
     position: absolute;
 
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
     background-color: white;
     z-index: 1;
 
     p {
         margin: 18px;
 
+        a {
+            color: @sk-blue;
+        }
+
         .sk-notification-close {
             position: absolute;
-            right: 18px;
-            top: 50%;
+            top: 0px;
+            right: 10px;
             font-size: 20px;
-            color: inherit;
+            color: #808080;
+            font-weight: 600;
             text-decoration: none;
-            transform: translateY(-50%);
+            display: none;
+        }
+
+        &:hover {
+            .sk-notification-close {
+                display: block;
+            }
         }
     }
 }

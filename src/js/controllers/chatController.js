@@ -219,7 +219,8 @@ module.exports = ViewController.extend({
     _renderChatHeader: function() {
         var headerView = new HeaderView({
             model: this.model,
-            headerText: this.uiText.headerText
+            headerText: this.uiText.headerText,
+            readOnlyEmail: this.getOption('readOnlyEmail')
         });
 
         this.listenTo(headerView, 'toggle', this.toggle);

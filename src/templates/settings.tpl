@@ -1,7 +1,7 @@
 <div class="settings-wrapper">
     <p>
         <% if (readOnlyEmail) { %>
-            We'll get back to you at this address if we missed you.
+            We'll get back to you at this email address if we missed you.
         <% } else { %>
             You can leave us your email so that we can get back to you this way.
         <% } %>
