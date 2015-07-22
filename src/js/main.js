@@ -34,7 +34,7 @@ require('../stylesheets/main.less');
  * Contains all SupportKit API classes and functions.
  */
 var SupportKit = Marionette.Object.extend({
-    VERSION: '0.2.12',
+    VERSION: '0.2.15',
 
     defaultText: {
         headerText: 'How can we help?',
@@ -45,7 +45,7 @@ var SupportKit = Marionette.Object.extend({
 
     initialize: function() {
         bindAll(this);
-
+        this._readyPromise = $.Deferred();
         this._conversations = new Conversations();
     },
 
@@ -139,7 +139,10 @@ var SupportKit = Marionette.Object.extend({
                     uiText: uiText
                 });
 
-                return this.updateUser(_.pick(options, 'givenName', 'surname', 'email', 'properties'));
+                return this.user.save(_.pick(options, AppUser.EDITABLE_PROPERTIES), {
+                    parse: true,
+                    wait: true
+                });
             }).bind(this))
             .then(_(function() {
                 this._renderWidget();
@@ -149,6 +152,8 @@ var SupportKit = Marionette.Object.extend({
                 console.error('SupportKit init error: ', message);
             })
             .done();
+
+        return this._readyPromise;
     },
 
     logout: function() {
@@ -194,7 +199,7 @@ var SupportKit = Marionette.Object.extend({
         var userChanged = false;
 
         if (typeof userInfo !== 'object') {
-            throw new Error('updateUser accepts an object as parameter');
+            return $.Deferred().reject(new Error('updateUser accepts an object as parameter'));
         }
 
         userInfo.id = this.user.id;
@@ -211,12 +216,15 @@ var SupportKit = Marionette.Object.extend({
         }
 
         if (!userChanged) {
-            return $.Deferred().resolve();
+            return $.Deferred().resolve(this.user);
         }
 
         return this.user.save(userInfo, {
+            parse: true,
             wait: true
-        });
+        }).then(function(){
+            return this.user;
+        }.bind(this));
     },
 
     track: function(eventName) {
@@ -291,6 +299,7 @@ var SupportKit = Marionette.Object.extend({
     onReady: function() {
         this.ready = true;
         this.track('skt-appboot');
+        this._readyPromise.resolve();
     },
 
     onDestroy: function() {
