@@ -23,6 +23,7 @@
     "backbone-computedfields": "0.0.10",
     "backbone.marionette": "^2.4.1",
     "backbone.stickit": "^0.9.2",
+    "bootstrap": "^3.3.5",
     "cookie": "^0.1.2",
     "faye": "^1.1.1",
     "jquery": "~1.11.0",
