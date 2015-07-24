@@ -61,10 +61,6 @@ module.exports = ViewController.extend({
         }
     },
 
-    updateUser: function() {
-        return this.user.save();
-    },
-
     sendMessage: function(text) {
         var conversationDeferred = $.Deferred(),
             messageDeferred = $.Deferred();
@@ -82,7 +78,9 @@ module.exports = ViewController.extend({
 
         conversationDeferred.then(function(conversation) {
             // update the user before sending the message to ensure properties are correct
-            this.updateUser().then(function() {
+            this.user.save({}, {
+                wait: true
+            }).then(function() {
                 var message = conversation.get('messages').create({
                     authorId: endpoint.appUserId,
                     text: text
