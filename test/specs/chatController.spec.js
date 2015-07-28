@@ -36,7 +36,8 @@ describe('ChatController', function() {
         conversations = new Conversations();
         user = new AppUser({
             givenName: 'test',
-            surname: 'user'
+            surname: 'user',
+            id: '12345'
         });
 
         chatController = new ChatController({
@@ -51,9 +52,6 @@ describe('ChatController', function() {
         renderWidgetSpy = sandbox.spy(chatController, '_renderWidget');
         receiveSpy = sandbox.spy(chatController, '_receiveMessage');
 
-        sandbox.stub(user, 'isDirty', function() {
-            return false;
-        });
 
         chatController.getWidget().then(function() {
             done();
@@ -96,32 +94,6 @@ describe('ChatController', function() {
                 messages.length.should.equals(initialLength + 1);
                 messages.last().get('text').should.equals(message);
                 done();
-            });
-        });
-
-        describe('if user is dirty', function() {
-            beforeEach(function() {
-                sandbox.restore(user, 'isDirty');
-
-                sandbox.stub(user, 'isDirty', function() {
-                    return true;
-                });
-
-                saveUserStub = sandbox.stub(user, 'save', function() {
-                    return $.Deferred().resolve(user);
-                });
-            });
-
-            it('should save the user before sending the message', function(done) {
-                messages = chatController.conversation.get('messages');
-                initialLength = messages.length;
-
-                chatController.sendMessage(message).then(function() {
-                    saveUserStub.should.have.been.calledOnce;
-                    messages.length.should.equals(initialLength + 1);
-                    messages.last().get('text').should.equals(message);
-                    done();
-                });
             });
         });
     });

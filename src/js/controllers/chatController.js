@@ -79,14 +79,17 @@ module.exports = ViewController.extend({
         conversationDeferred.then(function(conversation) {
             // update the user before sending the message to ensure properties are correct
             this.user.save({}, {
-                wait: true
+                wait: true,
+                parse: true
             }).then(function() {
-                var message = conversation.get('messages').create({
+                conversation.get('messages').create({
                     authorId: endpoint.appUserId,
                     text: text
+                }, {
+                    success: messageDeferred.resolve,
+                    error: messageDeferred.reject
                 });
 
-                messageDeferred.resolve(message);
             });
         }.bind(this)).fail(messageDeferred.reject);
 

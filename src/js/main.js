@@ -178,7 +178,7 @@ var SupportKit = Marionette.Object.extend({
 
     sendMessage: function(text) {
         this._checkReady('Can not send messages until init has completed');
-        this._chatController.sendMessage(text);
+        return this._chatController.sendMessage(text);
     },
 
     open: function() {
