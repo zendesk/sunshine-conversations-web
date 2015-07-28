@@ -192,7 +192,7 @@ var SupportKit = Marionette.Object.extend({
     },
 
     updateUser: function(userInfo) {
-        var userChanged = false;
+        var userChanged = false, user = this.user;
 
         if (typeof userInfo !== 'object') {
             return $.Deferred().reject(new Error('updateUser accepts an object as parameter'));
@@ -200,16 +200,12 @@ var SupportKit = Marionette.Object.extend({
 
         userInfo.id = this.user.id;
 
-        userChanged = userChanged || (userInfo.givenName && this.user.get('givenName') !== userInfo.givenName);
-        userChanged = userChanged || (userInfo.surname && this.user.get('surname') !== userInfo.surname);
-        userChanged = userChanged || (userInfo.email && this.user.get('email') !== userInfo.email);
-
-        if (!userChanged && userInfo.properties) {
-            var props = this.user.get('properties');
-            _.each(userInfo.properties, function(value, key) {
-                userChanged = userChanged || value !== props[key];
-            });
-        }
+        _.each(AppUser.EDITABLE_PROPERTIES, function(property){
+            if(_.has(userInfo, property) && userInfo[property] !== user.get(property)){
+                user.set(property, userInfo[property]);
+                userChanged = true;
+            }
+        })
 
         if (!userChanged) {
             return $.Deferred().resolve(this.user);
