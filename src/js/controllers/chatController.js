@@ -81,12 +81,14 @@ module.exports = ViewController.extend({
             this.user.save({}, {
                 wait: true
             }).then(function() {
-                var message = conversation.get('messages').create({
+                conversation.get('messages').create({
                     authorId: endpoint.appUserId,
                     text: text
+                }, {
+                    success: messageDeferred.resolve,
+                    error: messageDeferred.reject
                 });
 
-                messageDeferred.resolve(message);
             });
         }.bind(this)).fail(messageDeferred.reject);
 
