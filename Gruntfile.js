@@ -71,7 +71,7 @@ module.exports = function(grunt) {
             },
             dist: {
                 src: 'dist/supportkit.js',
-                dest: 'dist/supportkit.min.js'
+                dest: 'dist/supportkit.min.uncompressed.js'
             }
         },
 
@@ -145,8 +145,8 @@ module.exports = function(grunt) {
                 options: {
                     mode: 'gzip'
                 },
-                src: 'dist/supportkit.min.js',
-                dest: 'dist/supportkit.min.js.gz'
+                src: 'dist/supportkit.min.uncompressed.js',
+                dest: 'dist/supportkit.min.js'
             }
         },
 
@@ -160,11 +160,11 @@ module.exports = function(grunt) {
             js: {
                 // Files to be uploaded.
                 upload: [{
-                    src: 'dist/supportkit.min.js',
-                    dest: 'supportkit.min.js'
+                    src: 'dist/supportkit.min.uncompressed.js',
+                    dest: 'supportkit.min.uncompressed.js'
                 }, {
-                    src: 'dist/supportkit.min.js.gz',
-                    dest: 'supportkit.min.js.gz',
+                    src: 'dist/supportkit.min.js',
+                    dest: 'supportkit.min.js',
                     options: {
                         gzip: true
                     }
@@ -210,7 +210,7 @@ module.exports = function(grunt) {
                 CallerReference: Date.now().toString(),
                 Paths: {
                     Quantity: 1,
-                    Items: ['/supportkit.min.js', '/supportkit.min.js.gz']
+                    Items: ['/supportkit.min.js', '/supportkit.min.uncompressed.js']
                 }
             }
         },
