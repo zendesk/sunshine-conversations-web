@@ -166,7 +166,10 @@ module.exports = function(grunt) {
                     src: 'dist/supportkit.min.js',
                     dest: 'supportkit.min.js',
                     options: {
-                        gzip: true
+                        gzip: true,
+                        headers: {
+                            'Content-Type': 'text/javascript'
+                        }
                     }
                 }]
             },
