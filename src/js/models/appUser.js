@@ -1,11 +1,9 @@
 'use strict';
 
 var _ = require('underscore'),
-    $ = require('jquery'),
-    Backbone = require('backbone'),
     BaseModel = require('./baseModel');
 
-var AppUser = module.exports = BaseModel.extend({
+module.exports = BaseModel.extend({
     parse: function(data) {
         return _.isObject(data) ? data : {
             id: data
