@@ -163,7 +163,10 @@ module.exports = function(grunt) {
                     src: 'dist/supportkit.min.compressed.js',
                     dest: 'supportkit.min.compressed.js',
                     options: {
-                        gzip: true
+                        gzip: true,
+                        headers: {
+                            'Content-Type': 'text/javascript'
+                        }
                     }
                 }, {
                     src: 'dist/supportkit.min.js',
@@ -209,7 +212,7 @@ module.exports = function(grunt) {
                 },
                 CallerReference: Date.now().toString(),
                 Paths: {
-                    Quantity: 1,
+                    Quantity: 2,
                     Items: ['/supportkit.min.js', '/supportkit.min.compressed.js']
                 }
             }
