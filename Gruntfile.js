@@ -161,10 +161,7 @@ module.exports = function(grunt) {
                 // Files to be uploaded.
                 upload: [{
                     src: 'dist/supportkit.min.js',
-                    dest: 'supportkit.min.js',
-                    options: {
-                        gzip: true
-                    }
+                    dest: 'supportkit.min.js'
                 }, {
                     src: 'dist/supportkit.min.js.gz',
                     dest: 'supportkit.min.js.gz',
