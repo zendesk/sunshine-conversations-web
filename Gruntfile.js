@@ -140,6 +140,15 @@ module.exports = function(grunt) {
                 }
             }
         },
+        compress: {
+            main: {
+                options: {
+                    mode: 'gzip'
+                },
+                src: 'dist/supportkit.min.js',
+                dest: 'dist/supportkit.min.compressed.js'
+            }
+        },
 
         s3: {
             options: {
@@ -151,6 +160,12 @@ module.exports = function(grunt) {
             js: {
                 // Files to be uploaded.
                 upload: [{
+                    src: 'dist/supportkit.min.compressed.js',
+                    dest: 'supportkit.min.compressed.js',
+                    options: {
+                        gzip: true
+                    }
+                }, {
                     src: 'dist/supportkit.min.js',
                     dest: 'supportkit.min.js'
                 }]
@@ -195,7 +210,7 @@ module.exports = function(grunt) {
                 CallerReference: Date.now().toString(),
                 Paths: {
                     Quantity: 1,
-                    Items: ['/supportkit.min.js']
+                    Items: ['/supportkit.min.js', '/supportkit.min.compressed.js']
                 }
             }
         },
@@ -348,7 +363,7 @@ module.exports = function(grunt) {
         grunt.config.set('config.WIDGET_CODE', 'supportkit.min.js');
     });
 
-    grunt.registerTask('build', ['clean', 'browserify', 'uglify']);
+    grunt.registerTask('build', ['clean', 'browserify', 'uglify', 'compress']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'loadConfig', 'replace']);
     grunt.registerTask('devbuild:min', ['clean', 'browserify', 'loadConfig', 'setMinMode', 'replace', 'uglify']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3:js', 'cloudfront:prod']);
