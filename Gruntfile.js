@@ -209,7 +209,7 @@ module.exports = function(grunt) {
                 },
                 CallerReference: Date.now().toString(),
                 Paths: {
-                    Quantity: 1,
+                    Quantity: 2,
                     Items: ['/supportkit.min.js', '/supportkit.min.uncompressed.js']
                 }
             }
