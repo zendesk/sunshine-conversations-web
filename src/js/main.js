@@ -204,9 +204,9 @@ var SupportKit = Marionette.Object.extend({
 
         userInfo.id = this.user.id;
 
-        userChanged = userChanged || (userInfo.givenName && this.user.get('givenName') !== userInfo.givenName);
-        userChanged = userChanged || (userInfo.surname && this.user.get('surname') !== userInfo.surname);
-        userChanged = userChanged || (userInfo.email && this.user.get('email') !== userInfo.email);
+        userChanged = _.some(AppUser.EDITABLE_PROPERTIES, function(property) {
+            return userInfo[property] !== this.user.get(property);
+        }.bind(this));
 
         if (!userChanged && userInfo.properties) {
             var props = this.user.get('properties');
@@ -222,7 +222,7 @@ var SupportKit = Marionette.Object.extend({
         return this.user.save(userInfo, {
             parse: true,
             wait: true
-        }).then(function(){
+        }).then(function() {
             return this.user;
         }.bind(this));
     },

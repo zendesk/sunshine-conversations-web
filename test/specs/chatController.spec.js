@@ -30,12 +30,16 @@ describe('ChatController', function() {
         scenario.clean();
     });
 
-    beforeEach(function() {
+    beforeEach(function(done) {
         conversations = new Conversations();
         user = new AppUser({
             givenName: 'test',
             surname: 'user',
             id: '12345'
+        });
+
+        sandbox.stub(user, 'save', function(attributes, options) {
+            return this._save(attributes, options);
         });
 
         chatController = new ChatController({
@@ -50,7 +54,9 @@ describe('ChatController', function() {
         renderWidgetSpy = sandbox.spy(chatController, '_renderWidget');
         receiveSpy = sandbox.spy(chatController, '_receiveMessage');
 
-        return chatController.getWidget();
+        chatController.getWidget().then(function() {
+            done();
+        });
     });
 
     afterEach(function() {

@@ -3,7 +3,7 @@ var sinon = require('sinon'),
 
 var ClientScenario = require('../scenarios/clientScenario');
 
-describe('ChatController', function() {
+describe('AppUser', function() {
     var scenario,
         sandbox,
         user;
@@ -13,6 +13,10 @@ describe('ChatController', function() {
         scenario.build();
 
         sandbox = sinon.sandbox.create();
+    });
+
+    afterEach(function() {
+        sandbox.restore();
     });
 
     after(function() {
@@ -41,8 +45,8 @@ describe('ChatController', function() {
             });
         });
 
-        describe('with id', function(){
-            it('should map the id in the attributes', function(){
+        describe('with id', function() {
+            it('should map the id in the attributes', function() {
                 var id = '12345';
 
                 var user = new AppUser(id, {
@@ -56,50 +60,82 @@ describe('ChatController', function() {
     });
 
     describe('#isDirty', function() {
-            it('should mark the user as dirty after a set', function() {
-                var email = 'some@email.com',
-                    givenName = 'Some',
-                    surname = 'Name';
+        it('should mark the user as dirty after init', function() {
+            var email = 'some@email.com',
+                givenName = 'Some',
+                surname = 'Name',
+                id = '12345';
 
-                var user = new AppUser({
-                    email: email,
-                    givenName: givenName,
-                    surname: surname
-                }, {
-                    parse: true
-                });
+            var user = new AppUser({
+                email: email,
+                givenName: givenName,
+                surname: surname,
+                id: id
+            }, {
+                parse: true
+            });
 
+            user.isDirty().should.be.true;
+        });
+
+        it('should not be marked as dirty after saving', function(done) {
+            var email = 'some@email.com',
+                givenName = 'Some',
+                surname = 'Name',
+                id = '12345';
+
+            var user = new AppUser({
+                email: email,
+                givenName: givenName,
+                surname: surname,
+                id: id
+            }, {
+                parse: true
+            });
+
+            sandbox.stub(user, 'save', function(attributes, options) {
+                return this._save(attributes, options);
+            });
+
+            user.isDirty().should.be.true;
+
+            user.save().then(function() {
+                user.isDirty().should.be.false;
+                done();
+            }).fail(done);
+
+        });
+
+        it('should not be marked as dirty if changes are reverted', function(done) {
+            var email = 'some@email.com',
+                givenName = 'Some',
+                surname = 'Name',
+                id = '12345';
+
+            var user = new AppUser({
+                email: email,
+                givenName: givenName,
+                surname: surname,
+                id: id
+            }, {
+                parse: true
+            });
+
+            sandbox.stub(user, 'save', function(attributes, options) {
+                return this._save(attributes, options);
+            });
+
+            user.isDirty().should.be.true;
+
+            user.save().then(function() {
                 user.isDirty().should.be.false;
 
                 user.set('email', 'other@email.com');
 
                 user.isDirty().should.be.true;
-            });
+                done();
+            }).fail(done);
 
-            it('should not be marked as dirty if changes are reverted', function() {
-                var email = 'some@email.com',
-                    givenName = 'Some',
-                    surname = 'Name';
-
-                var user = new AppUser({
-                    email: email,
-                    givenName: givenName,
-                    surname: surname
-                }, {
-                    parse: true
-                });
-
-                user.isDirty().should.be.false;
-
-                user.set('email', 'other@email.com');
-
-                user.isDirty().should.be.true;
-
-                user.set('email', email);
-
-                user.isDirty().should.be.false;
-            });
-
+        });
     });
-
 });

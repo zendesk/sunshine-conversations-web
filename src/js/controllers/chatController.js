@@ -91,7 +91,8 @@ module.exports = ViewController.extend({
                     success: messageDeferred.resolve,
                     error: messageDeferred.reject
                 });
-            }.bind(this)).fail(messageDeferred.reject);
+            }.bind(this))
+                .fail(messageDeferred.reject);
 
 
             messageDeferred.then(_.bind(function(message) {
@@ -104,6 +105,7 @@ module.exports = ViewController.extend({
 
         return messageDeferred;
     },
+
     scrollToBottom: function() {
         if (!!this.conversationView) {
             this.conversationView.scrollToBottom();

@@ -25,10 +25,16 @@ describe('Main', function() {
     beforeEach(function(done) {
         sandbox = sinon.sandbox.create();
         SupportKit = require('../../src/js/main.js');
-        SupportKit.once('ready', done);
+        SupportKit.once('ready', function() {
+            sandbox.stub(SupportKit.user, 'save', function(attributes, options) {
+                return this._save(attributes, options);
+            });
+            done();
+        });
         SupportKit.init({
             appToken: 'thisisanapptoken'
         });
+
     });
 
     afterEach(function() {
@@ -138,10 +144,7 @@ describe('Main', function() {
         });
     });
 
-    describe('#updateUser', function() {
-
-        var saveSpy;
-
+    describe.only('#updateUser', function() {
         it('should fail the promise if called with bad parameters (empty, in this case)', function(done) {
             SupportKit.updateUser().fail(function() {
                 done();
@@ -149,14 +152,6 @@ describe('Main', function() {
         });
 
         it('should not call save if the user has not changed', function(done) {
-            saveSpy = sandbox.spy(SupportKit.user, 'save');
-
-            SupportKit.user.set({
-                givenName: 'test',
-                surname: 'user'
-            }, {
-                silent: true
-            });
 
             SupportKit.updateUser({
                 givenName: 'GIVEN_NAME',
@@ -165,7 +160,7 @@ describe('Main', function() {
                     'TEST': true
                 }
             }).then(function() {
-                saveSpy.should.be.calledOnce;
+                SupportKit.user.save.should.be.calledOnce;
 
                 return SupportKit.updateUser({
                     givenName: 'GIVEN_NAME',
@@ -175,7 +170,7 @@ describe('Main', function() {
                     }
                 });
             }).then(function() {
-                saveSpy.should.be.calledOnce;
+                SupportKit.user.save.should.be.calledOnce;
             }).always(function() {
                 done();
             });
