@@ -30,11 +30,12 @@ describe('ChatController', function() {
         scenario.clean();
     });
 
-    beforeEach(function(done) {
+    beforeEach(function() {
         conversations = new Conversations();
         user = new AppUser({
             givenName: 'test',
-            surname: 'user'
+            surname: 'user',
+            id: '12345'
         });
 
         chatController = new ChatController({
@@ -49,9 +50,7 @@ describe('ChatController', function() {
         renderWidgetSpy = sandbox.spy(chatController, '_renderWidget');
         receiveSpy = sandbox.spy(chatController, '_receiveMessage');
 
-        chatController.getWidget().then(function() {
-            done();
-        });
+        return chatController.getWidget();
     });
 
     afterEach(function() {
@@ -76,12 +75,6 @@ describe('ChatController', function() {
         var messages;
         var initialLength;
 
-        beforeEach(function(done) {
-            chatController.getWidget().then(function() {
-                done();
-            });
-        });
-
         it('should add a message to the conversation', function(done) {
             messages = chatController.conversation.get('messages');
             initialLength = messages.length;
@@ -95,12 +88,6 @@ describe('ChatController', function() {
     });
 
     describe('#_receiveMessage', function() {
-        beforeEach(function(done) {
-            chatController.getWidget().then(function() {
-                done();
-            });
-        });
-
         it('should add a message to the conversation', function() {
 
             var message = {

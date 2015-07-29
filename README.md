@@ -1,5 +1,8 @@
 # [SupportKit Javascript SDK](supportkit.io)
-Build status: [![Circle CI](https://circleci.com/gh/supportkit/supportkit-js.svg?style=svg)](https://circleci.com/gh/supportkit/supportkit-js)
+*SupportKit adds beautifully simple messaging to your app to keep your users engaged and coming back.*
+
+[![Circle CI](https://circleci.com/gh/supportkit/supportkit-js.svg?style=svg)](https://circleci.com/gh/supportkit/supportkit-js) [![npm version](https://badge.fury.io/js/supportkit.svg)](http://badge.fury.io/js/supportkit) [![Bower version](https://badge.fury.io/bo/supportkit.svg)](http://badge.fury.io/bo/supportkit)
+
 ## Usage
 
 ### Script Tag

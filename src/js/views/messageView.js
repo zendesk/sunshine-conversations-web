@@ -1,5 +1,6 @@
 var Marionette = require('backbone.marionette'),
-    urljoin = require('urljoin');
+    urljoin = require('urljoin'),
+    $ = require('jquery');
 
 var template = require('../../templates/message.tpl'),
     endpoint = require('../endpoint');
@@ -24,7 +25,14 @@ module.exports = Marionette.ItemView.extend({
                     return this._isAppMaker() ? value : '';
                 }
             },
-            '@ui.message': 'text',
+            '@ui.message': {
+                observe: 'text',
+                update: function($el, text) {
+                    var escapedText = $('<div/>').text(text).html().replace(/\n/g, '<br />');
+
+                    $el.html(escapedText);
+                }
+            },
             '@ui.avatar': {
                 observe: ['avatarUrl', 'authorId'],
                 update: function($el, values) {

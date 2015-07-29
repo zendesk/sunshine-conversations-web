@@ -34,7 +34,7 @@ require('../stylesheets/main.less');
  * Contains all SupportKit API classes and functions.
  */
 var SupportKit = Marionette.Object.extend({
-    VERSION: '0.2.15',
+    VERSION: '0.2.20',
 
     defaultText: {
         headerText: 'How can we help?',
@@ -182,7 +182,7 @@ var SupportKit = Marionette.Object.extend({
 
     sendMessage: function(text) {
         this._checkReady('Can not send messages until init has completed');
-        this._chatController.sendMessage(text);
+        return this._chatController.sendMessage(text);
     },
 
     open: function() {
