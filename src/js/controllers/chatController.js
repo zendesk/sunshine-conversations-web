@@ -35,8 +35,6 @@ module.exports = ViewController.extend({
         this.uiText = this.getOption('uiText') || {};
 
         this.conversationInitiated = false;
-
-        this.listenTo(this.user, 'change:conversationStarted', this.onConversationStarted);
     },
 
     open: function() {
@@ -201,6 +199,12 @@ module.exports = ViewController.extend({
                 .then(this._initFaye)
                 .then(_.bind(function(conversation) {
                     this.conversationInitiated = !conversation.isNew();
+
+                    // let's listen on the user attribute change instead
+                    if(!this.conversationInitiated) {
+                        this.listenTo(this.user, 'change:conversationStarted', this.onConversationStarted);
+                    }
+
                     return conversation;
                 }, this));
         }
@@ -305,6 +309,7 @@ module.exports = ViewController.extend({
 
     onConversationStarted: function(model, conversationStarted) {
         if (conversationStarted) {
+            this.stopListening(this.user, 'change:conversationStarted', this.onConversationStarted);
             this._initConversation();
         }
     },

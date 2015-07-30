@@ -1,7 +1,8 @@
 'use strict';
 
 var sinon = require('sinon'),
-    cookie = require('cookie');
+    cookie = require('cookie'),
+    Backbone = require('backbone');
 
 var ClientScenario = require('../scenarios/clientScenario'),
     endpoint = require('../../src/js/endpoint');
@@ -144,7 +145,14 @@ describe('Main', function() {
         });
     });
 
-    describe.only('#updateUser', function() {
+    describe('#updateUser', function() {
+
+        // check if `save` actually calls the server or not
+        var syncSpy;
+        beforeEach(function(){
+            syncSpy = sandbox.spy(Backbone, 'sync');
+        });
+
         it('should fail the promise if called with bad parameters (empty, in this case)', function(done) {
             SupportKit.updateUser().fail(function() {
                 done();
@@ -160,7 +168,7 @@ describe('Main', function() {
                     'TEST': true
                 }
             }).then(function() {
-                SupportKit.user.save.should.be.calledOnce;
+                syncSpy.should.be.calledOnce;
 
                 return SupportKit.updateUser({
                     givenName: 'GIVEN_NAME',
@@ -170,7 +178,7 @@ describe('Main', function() {
                     }
                 });
             }).then(function() {
-                SupportKit.user.save.should.be.calledOnce;
+                syncSpy.should.be.calledOnce;
             }).always(function() {
                 done();
             });

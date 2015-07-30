@@ -28,9 +28,14 @@ var AppUser = module.exports = BaseModel.extend({
         };
     },
 
-    isDirty: function() {
+    isDirty: function(attributes) {
+        attributes || (attributes = {});
+
+        var comparableAttributes = _.extend({}, this.attributes, attributes);
+
+
         return !this._lastPropertyValues || _.some(AppUser.EDITABLE_PROPERTIES, function(property) {
-            return this._lastPropertyValues[property] !== this.get(property);
+            return !_.isEqual(this._lastPropertyValues[property], comparableAttributes[property]);
         }.bind(this));
     },
 
@@ -38,14 +43,15 @@ var AppUser = module.exports = BaseModel.extend({
         attributes || (attributes = {});
         options || (options = {});
 
-        if (this.isDirty()) {
-            var success = options && options.success;
+        var success = options && options.success;
+        if (this.isDirty(attributes)) {
             options.success = _.bind(function(model, response, options) {
                 this._lastPropertyValues = this.pick(AppUser.EDITABLE_PROPERTIES);
                 success && success(model, response, options);
             }, this);
             return Backbone.Model.prototype.save.call(this, attributes, options);
         } else {
+            success && success(model, null, null);
             return $.Deferred().resolve(this, null, null);
         }
     },
