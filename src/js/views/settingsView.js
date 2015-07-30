@@ -89,7 +89,11 @@ module.exports = Marionette.ItemView.extend({
         var data = Marionette.ItemView.prototype.serializeData.apply(this, _.toArray(arguments));
 
         return _.extend(data, {
-            readOnlyEmail: this.getOption('readOnlyEmail')
+            readOnlyEmail: this.getOption('readOnlyEmail'),
+            settingsText: this.getOption('settingsText'),
+            settingsReadOnlyText: this.getOption('settingsReadOnlyText'),
+            settingsInputPlaceholder: this.getOption('settingsInputPlaceholder'),
+            settingsSaveButtonText: this.getOption('settingsSaveButtonText')
         });
     },
 

@@ -40,7 +40,13 @@ var SupportKit = Marionette.Object.extend({
         headerText: 'How can we help?',
         inputPlaceholder: 'Type a message...',
         sendButtonText: 'Send',
-        introText: 'This is the beginning of your conversation.<br/> Ask us anything!'
+        introText: 'This is the beginning of your conversation.<br/> Ask us anything!',
+        settingsText: 'You can leave us your email so that we can get back to you this way.',
+        settingsReadOnlyText: 'We\'ll get back to you at this email address if we missed you.',
+        settingsInputPlaceholder: 'Your email address',
+        settingsSaveButtonText: 'Save',
+        settingsHeaderText: 'Email Settings',
+        settingsNotificationText: 'In case we\'re slow to respond you can <a href="#" data-ui-settings-link>leave us your email</a>.'
     },
 
     initialize: function() {
@@ -70,6 +76,10 @@ var SupportKit = Marionette.Object.extend({
 
         this.ready = false;
         options = options || {};
+
+        options = _.defaults(options, {
+            emailCaptureEnabled: false
+        });
 
         if (typeof options === 'object') {
             endpoint.appToken = options.appToken;
@@ -132,10 +142,13 @@ var SupportKit = Marionette.Object.extend({
                 // if the email was passed at init, it can't be changed through the web widget UI
                 var readOnlyEmail = !_.isEmpty(options.email);
 
+                var emailCaptureEnabled = options.emailCaptureEnabled && !readOnlyEmail
+
                 this._chatController = new ChatController({
                     collection: this._conversations,
                     user: this.user,
                     readOnlyEmail: readOnlyEmail,
+                    emailCaptureEnabled: emailCaptureEnabled,
                     uiText: uiText
                 });
 

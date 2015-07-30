@@ -1,6 +1,7 @@
 'use strict';
 
 var Marionette = require('backbone.marionette');
+var _ = require('underscore');
 
 var template = require('../../templates/settingsHeader.tpl');
 
@@ -16,5 +17,11 @@ module.exports = Marionette.ItemView.extend({
         'click @ui.closeButton': 'widget:close'
     },
 
-    template: template
+    template: template,
+
+    serializeData: function() {
+        return _.extend(Marionette.ItemView.prototype.serializeData.call(this), {
+            settingsHeaderText: this.getOption('settingsHeaderText')
+        });
+    }
 });

@@ -36,7 +36,8 @@ module.exports = ViewController.extend({
             this.view.showSavedMessage();
         });
 
-        this.model.save({}, {
+        // bypass throttling
+        this.model._save({}, {
             wait: true
         });
     },

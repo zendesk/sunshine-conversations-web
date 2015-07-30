@@ -94,9 +94,16 @@ module.exports = ViewController.extend({
 
 
             messageDeferred.then(_.bind(function(message) {
-                if (this.conversation.get('messages').length === 1 && !this.user.get('email')) {
+                var appUserMessages = this.conversation.get('messages').filter(function(message) {
+                    return message.get('authorId') === endpoint.appUserId;
+                });
+
+                if (this.getOption('emailCaptureEnabled')
+                    && appUserMessages.length === 1
+                    && !this.user.get('email')) {
                     this._showEmailNotification();
                 }
+
                 return message;
             }, this));
         }, this));
@@ -111,7 +118,9 @@ module.exports = ViewController.extend({
     },
 
     _showEmailNotification: function() {
-        var view = new EmailNotificationView();
+        var view = new EmailNotificationView({
+            settingsNotificationText: this.uiText.settingsNotificationText
+        });
 
         this.listenTo(view, 'notification:close', this._hideEmailNotification);
         this.listenTo(view, 'settings:navigate', this._showSettings);
@@ -201,7 +210,7 @@ module.exports = ViewController.extend({
                     this.conversationInitiated = !conversation.isNew();
 
                     // let's listen on the user attribute change instead
-                    if(!this.conversationInitiated) {
+                    if (!this.conversationInitiated) {
                         this.listenTo(this.user, 'change:conversationStarted', this.onConversationStarted);
                     }
 
@@ -227,7 +236,7 @@ module.exports = ViewController.extend({
         var headerView = new HeaderView({
             model: this.model,
             headerText: this.uiText.headerText,
-            readOnlyEmail: this.getOption('readOnlyEmail')
+            emailCaptureEnabled: this.getOption('emailCaptureEnabled')
         });
 
         this.listenTo(headerView, 'toggle', this.toggle);
@@ -241,7 +250,9 @@ module.exports = ViewController.extend({
     },
 
     _renderSettingsHeader: function() {
-        var settingsHeaderView = new SettingsHeaderView();
+        var settingsHeaderView = new SettingsHeaderView({
+            settingsHeaderText: this.uiText.settingsHeaderText
+        });
         this.listenTo(settingsHeaderView, 'settings:close', this._hideSettings);
         this.listenTo(settingsHeaderView, 'widget:close', function() {
             this.toggle();
@@ -259,7 +270,12 @@ module.exports = ViewController.extend({
         var settingsController = new SettingsController({
             model: this.user,
             viewOptions: {
-                readOnlyEmail: this.getOption('readOnlyEmail')
+                emailCaptureEnabled: this.getOption('emailCaptureEnabled'),
+                readOnlyEmail: this.getOption('readOnlyEmail'),
+                settingsText: this.uiText.settingsText,
+                settingsReadOnlyText: this.uiText.settingsReadOnlyText,
+                settingsInputPlaceholder: this.uiText.settingsInputPlaceholder,
+                settingsSaveButtonText: this.uiText.settingsSaveButtonText
             }
         });
 

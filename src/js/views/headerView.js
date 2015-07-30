@@ -36,7 +36,7 @@ module.exports = Marionette.ItemView.extend({
     serializeData: function() {
         return {
             headerText: this.getOption('headerText'),
-            readOnlyEmail: this.getOption('readOnlyEmail')
+            emailCaptureEnabled: this.getOption('emailCaptureEnabled')
         };
     }
 });

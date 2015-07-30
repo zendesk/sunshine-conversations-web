@@ -36,5 +36,11 @@ module.exports = Marionette.ItemView.extend({
 
         // Calls parent's `view` method after animation completes
         this.$el.slideUp(400, parent_remove);
+    },
+
+    serializeData: function() {
+        return _.extend(Marionette.ItemView.prototype.serializeData.call(this), {
+            settingsNotificationText: this.getOption('settingsNotificationText')
+        });
     }
 });

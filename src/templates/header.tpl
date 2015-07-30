@@ -1,6 +1,6 @@
 <%= headerText %>
 <div id="sk-badge" data-ui-badge></div>
-<% if(!readOnlyEmail) { %>
+<% if(emailCaptureEnabled) { %>
     <div id="sk-notification-badge" data-ui-notification-badge><i class="fa fa-gear"></i></div>
 <% } %>
 <div class="sk-show-handle sk-appear-hidden">&#10140;</div>
