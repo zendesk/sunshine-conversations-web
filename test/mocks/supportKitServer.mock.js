@@ -3,9 +3,8 @@
 var _ = require('underscore');
 var BaseServerMock = require('./baseServerMock');
 
-var userStore = require('../data/users'),
-    conversationStore = require('../data/conversations'),
-    appData = require('../data/app');
+var conversationStore = require('../data/conversations');
+var appData = require('../data/app');
 
 module.exports = BaseServerMock.extend({
     routes: [
@@ -34,7 +33,7 @@ module.exports = BaseServerMock.extend({
             }
         ],
         [
-            'PUT', /\/api\/appusers\/([a-z0-9]+)/, function(xhr, id) {
+            'PUT', /\/api\/appusers\/([a-z0-9]+)/, function(xhr/*, id*/) {
                 xhr.respond(200, {
                     'Content-Type': 'application/json'
                 }, _.isString(xhr.requestBody) ? xhr.requestBody : JSON.stringify(xhr.requestBody));

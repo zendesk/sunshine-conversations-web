@@ -1,12 +1,12 @@
-var sinon = require('sinon'),
-    _ = require('underscore'),
-    AppUser = require('../../src/js/models/appUser');
+var sinon = require('sinon');
+var _ = require('underscore');
+var AppUser = require('../../src/js/models/appUser');
 
 var ClientScenario = require('../scenarios/clientScenario');
 
 describe('AppUser', function() {
-    var scenario,
-        sandbox;
+    var scenario;
+    var sandbox;
 
     before(function() {
         scenario = new ClientScenario();
@@ -26,9 +26,9 @@ describe('AppUser', function() {
     describe('#parse', function() {
         describe('with object', function() {
             it('should set the object in the attributes', function() {
-                var email = 'some@email.com',
-                    givenName = 'Some',
-                    surname = 'Name';
+                var email = 'some@email.com';
+                var givenName = 'Some';
+                var surname = 'Name';
 
                 var user = new AppUser({
                     email: email,
@@ -61,10 +61,10 @@ describe('AppUser', function() {
 
     describe('#isDirty', function() {
         it('should mark the user as dirty after init', function() {
-            var email = 'some@email.com',
-                givenName = 'Some',
-                surname = 'Name',
-                id = '12345';
+            var email = 'some@email.com';
+            var givenName = 'Some';
+            var surname = 'Name';
+            var id = '12345';
 
             var user = new AppUser({
                 email: email,
@@ -79,10 +79,10 @@ describe('AppUser', function() {
         });
 
         it('should not be marked as dirty after saving', function(done) {
-            var email = 'some@email.com',
-                givenName = 'Some',
-                surname = 'Name',
-                id = '12345';
+            var email = 'some@email.com';
+            var givenName = 'Some';
+            var surname = 'Name';
+            var id = '12345';
 
             var user = new AppUser({
                 email: email,
@@ -107,11 +107,11 @@ describe('AppUser', function() {
         });
 
         it('should not be marked as dirty if changes are reverted', function(done) {
-            var email = 'some@email.com',
-                givenName = 'Some',
-                surname = 'Name',
-                id = '12345',
-                properties = {
+            var email = 'some@email.com';
+            var givenName = 'Some';
+            var surname = 'Name';
+            var id = '12345';
+            var properties = {
                     TEST: true
                 };
 
@@ -152,11 +152,11 @@ describe('AppUser', function() {
         });
 
         it('should be true if different properties are passed', function() {
-            var email = 'some@email.com',
-                givenName = 'Some',
-                surname = 'Name',
-                id = '12345',
-                properties = {
+            var email = 'some@email.com';
+            var givenName = 'Some';
+            var surname = 'Name';
+            var id = '12345';
+            var properties = {
                     TEST: true
                 };
 
@@ -182,11 +182,11 @@ describe('AppUser', function() {
         });
 
         it('should be false if same properties are passed', function() {
-            var email = 'some@email.com',
-                givenName = 'Some',
-                surname = 'Name',
-                id = '12345',
-                properties = {
+            var email = 'some@email.com';
+            var givenName = 'Some';
+            var surname = 'Name';
+            var id = '12345';
+            var properties = {
                     TEST: true
                 };
 

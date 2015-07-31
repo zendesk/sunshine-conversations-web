@@ -1,25 +1,25 @@
 'use strict';
 
-var $ = require('jquery'),
-    cookie = require('cookie'),
-    bindAll = require('lodash.bindall'),
-    _ = require('underscore'),
-    ViewController = require('view-controller');
+var $ = require('jquery');
+var cookie = require('cookie');
+var bindAll = require('lodash.bindall');
+var _ = require('underscore');
+var ViewController = require('view-controller');
 
-var endpoint = require('../endpoint'),
-    vent = require('../vent'),
-    faye = require('../faye');
+var endpoint = require('../endpoint');
+var vent = require('../vent');
+var faye = require('../faye');
 
 var Conversation = require('../models/conversation');
 
-var ChatView = require('../views/chatView'),
-    HeaderView = require('../views/headerView'),
-    ConversationView = require('../views/conversationView'),
-    SettingsHeaderView = require('../views/settingsHeaderView'),
-    EmailNotificationView = require('../views/emailNotificationView');
+var ChatView = require('../views/chatView');
+var HeaderView = require('../views/headerView');
+var ConversationView = require('../views/conversationView');
+var SettingsHeaderView = require('../views/settingsHeaderView');
+var EmailNotificationView = require('../views/emailNotificationView');
 
-var ChatInputController = require('../controllers/chatInputController'),
-    SettingsController = require('../controllers/settingsController');
+var ChatInputController = require('../controllers/chatInputController');
+var SettingsController = require('../controllers/settingsController');
 
 module.exports = ViewController.extend({
     viewClass: ChatView,
@@ -63,8 +63,8 @@ module.exports = ViewController.extend({
     },
 
     sendMessage: function(text) {
-        var conversationDeferred = $.Deferred(),
-            messageDeferred = $.Deferred();
+        var conversationDeferred = $.Deferred();
+        var messageDeferred = $.Deferred();
 
         if (this.conversation.isNew()) {
             this.conversation = this.collection.create(this.conversation, {
@@ -355,7 +355,7 @@ module.exports = ViewController.extend({
 
     _getLatestReadTime: function() {
         if (!this.latestReadTs) {
-            this.latestReadTs = parseInt(cookie.parse(document.cookie)['sk_latestts'] || 0);
+            this.latestReadTs = parseInt(cookie.parse(document.cookie).sk_latestts || 0);
         }
         return this.latestReadTs;
     },

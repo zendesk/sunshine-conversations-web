@@ -2,24 +2,24 @@
 'use strict';
 require('./bootstrap');
 
-var Marionette = require('backbone.marionette'),
-    Backbone = require('backbone'),
-    _ = require('underscore'),
-    $ = require('jquery'),
-    cookie = require('cookie'),
-    uuid = require('uuid'),
-    urljoin = require('url-join'),
-    bindAll = require('lodash.bindall');
+var Marionette = require('backbone.marionette');
+var Backbone = require('backbone');
+var _ = require('underscore');
+var $ = require('jquery');
+var cookie = require('cookie');
+var uuid = require('uuid');
+var urljoin = require('url-join');
+var bindAll = require('lodash.bindall');
 
-var BaseCollection = require('./collections/baseCollection'),
-    /*jshint -W079 */
-    Event = require('./models/event'),
-    /*jshint +W079 */
-    Rule = require('./models/rule'),
-    AppUser = require('./models/appUser'),
-    ChatController = require('./controllers/chatController'),
-    Conversations = require('./collections/conversations'),
-    endpoint = require('./endpoint');
+var BaseCollection = require('./collections/baseCollection');
+/*jshint -W079 */
+var Event = require('./models/event');
+/*jshint +W079 */
+var Rule = require('./models/rule');
+var AppUser = require('./models/appUser');
+var ChatController = require('./controllers/chatController');
+var Conversations = require('./collections/conversations');
+var endpoint = require('./endpoint');
 
 var SK_STORAGE = 'sk_deviceid';
 
@@ -144,6 +144,7 @@ var SupportKit = Marionette.Object.extend({
 
                 var emailCaptureEnabled = options.emailCaptureEnabled && !readOnlyEmail
 
+
                 this._chatController = new ChatController({
                     collection: this._conversations,
                     user: this.user,
@@ -174,7 +175,8 @@ var SupportKit = Marionette.Object.extend({
     },
 
     getDeviceId: function(options) {
-        var userId = options.userId, deviceId;
+        var userId = options.userId;
+        var deviceId;
 
         // get device ID first from local storage, then cookie. Otherwise generate new one
         deviceId = userId && localStorage.getItem(SK_STORAGE + '_' + userId) ||

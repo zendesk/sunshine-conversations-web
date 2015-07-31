@@ -1,18 +1,18 @@
 'use strict';
 
-var sinon = require('sinon'),
-    cookie = require('cookie'),
-    Backbone = require('backbone');
+var sinon = require('sinon');
+var cookie = require('cookie');
+var Backbone = require('backbone');
 
-var ClientScenario = require('../scenarios/clientScenario'),
-    endpoint = require('../../src/js/endpoint');
+var ClientScenario = require('../scenarios/clientScenario');
+var endpoint = require('../../src/js/endpoint');
 
 var SK_STORAGE = 'sk_deviceid';
 
 describe('Main', function() {
-    var scenario,
-        sandbox,
-        SupportKit;
+    var scenario;
+    var sandbox;
+    var SupportKit;
 
     before(function() {
         scenario = new ClientScenario();
@@ -58,11 +58,11 @@ describe('Main', function() {
     });
 
     describe('#init', function() {
-        var userId = 'thisisauserid',
-            appToken = 'thisisanapptoken',
-            jwt = 'thisisajwt',
-            trackSpy,
-            initSpy;
+        var userId = 'thisisauserid';
+        var appToken = 'thisisanapptoken';
+        var jwt = 'thisisajwt';
+        var trackSpy;
+        var initSpy;
 
         beforeEach(function() {
             trackSpy = sandbox.spy(SupportKit, 'track');
@@ -149,7 +149,7 @@ describe('Main', function() {
 
         // check if `save` actually calls the server or not
         var syncSpy;
-        beforeEach(function(){
+        beforeEach(function() {
             syncSpy = sandbox.spy(Backbone, 'sync');
         });
 
@@ -211,8 +211,8 @@ describe('Main', function() {
 
     describe('#track', function() {
         var endpoint = require('../../src/js/endpoint');
-        var eventCreateSpy,
-            endpointSpy;
+        var eventCreateSpy;
+        var endpointSpy;
 
         beforeEach(function() {
             eventCreateSpy = sandbox.spy(SupportKit._eventCollection, 'create');

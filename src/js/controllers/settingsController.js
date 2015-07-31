@@ -1,7 +1,4 @@
 'use strict';
-
-var _ = require('underscore');
-
 var ViewController = require('view-controller');
 
 var SettingsView = require('../views/settingsView');

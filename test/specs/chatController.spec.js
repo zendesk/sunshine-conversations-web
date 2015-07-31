@@ -1,23 +1,23 @@
-var sinon = require('sinon'),
-    ChatController = require('../../src/js/controllers/chatController'),
-    Conversations = require('../../src/js/collections/conversations'),
-    vent = require('../../src/js/vent'),
-    AppUser = require('../../src/js/models/appUser');
+var sinon = require('sinon');
+var ChatController = require('../../src/js/controllers/chatController');
+var Conversations = require('../../src/js/collections/conversations');
+var vent = require('../../src/js/vent');
+var AppUser = require('../../src/js/models/appUser');
 
 var ClientScenario = require('../scenarios/clientScenario');
 
 describe('ChatController', function() {
-    var scenario,
-        sandbox,
-        chatController,
-        conversations,
-        user,
-        getConversationSpy,
-        initFayeSpy,
-        initMessagingBusSpy,
-        manageUnreadSpy,
-        receiveSpy,
-        renderWidgetSpy;
+    var scenario;
+    var sandbox;
+    var chatController;
+    var conversations;
+    var user;
+    var getConversationSpy;
+    var initFayeSpy;
+    var initMessagingBusSpy;
+    var manageUnreadSpy;
+    var receiveSpy;
+    var renderWidgetSpy;
 
     before(function() {
         scenario = new ClientScenario();
