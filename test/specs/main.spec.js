@@ -61,11 +61,13 @@ describe('Main', function() {
         var userId = 'thisisauserid';
         var appToken = 'thisisanapptoken';
         var jwt = 'thisisajwt';
+        var endpointSpy;
         var trackSpy;
         var initSpy;
 
         beforeEach(function() {
             trackSpy = sandbox.spy(SupportKit, 'track');
+            endpointSpy = sandbox.spy(endpoint, 'post');
             initSpy = sandbox.spy();
         });
 
@@ -119,6 +121,19 @@ describe('Main', function() {
 
             SupportKit.once('ready', function() {
                 expect(endpoint.jwt).to.not.exist;
+                done();
+            });
+
+            SupportKit.init({
+                appToken: appToken
+            });
+        });
+
+        it('should post platform device info to appboot', function(done) {
+            SupportKit.destroy();
+
+            SupportKit.once('ready', function() {
+                expect(endpointSpy.args[0][1].deviceInfo.platform).to.equal('web');
                 done();
             });
 

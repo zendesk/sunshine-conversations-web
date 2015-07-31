@@ -109,7 +109,8 @@ var SupportKit = Marionette.Object.extend({
                 browserLanguage: navigator.language,
                 currentUrl: document.location.href,
                 sdkVersion: this.VERSION,
-                currentTitle: document.title
+                currentTitle: document.title,
+                platform: 'web'
             }
         })
             .then(_(function(res) {
@@ -143,6 +144,7 @@ var SupportKit = Marionette.Object.extend({
                 var readOnlyEmail = !_.isEmpty(options.email);
 
                 var emailCaptureEnabled = options.emailCaptureEnabled && !readOnlyEmail
+
 
 
                 this._chatController = new ChatController({
