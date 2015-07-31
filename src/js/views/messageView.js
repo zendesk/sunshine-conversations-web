@@ -1,9 +1,9 @@
-var Marionette = require('backbone.marionette'),
-    urljoin = require('urljoin'),
-    $ = require('jquery');
+var Marionette = require('backbone.marionette');
+var urljoin = require('urljoin');
+var $ = require('jquery');
 
-var template = require('../../templates/message.tpl'),
-    endpoint = require('../endpoint');
+var template = require('../../templates/message.tpl');
+var endpoint = require('../endpoint');
 
 module.exports = Marionette.ItemView.extend({
     template: template,
@@ -36,8 +36,8 @@ module.exports = Marionette.ItemView.extend({
             '@ui.avatar': {
                 observe: ['avatarUrl', 'authorId'],
                 update: function($el, values) {
-                    var url = values[0],
-                        id = values[1];
+                    var url = values[0];
+                    var id = values[1];
                     if (this._isAppMaker()) {
                         url = url || urljoin(endpoint.rootUrl, '/api/users/', id, '/avatar');
                         $el.attr('src', url);

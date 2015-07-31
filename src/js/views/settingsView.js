@@ -1,7 +1,7 @@
-var Marionette = require('backbone.marionette'),
-    _ = require('underscore'),
-    $ = require('jquery'),
-    bindAll = require('lodash.bindall');
+var Marionette = require('backbone.marionette');
+var _ = require('underscore');
+var $ = require('jquery');
+var bindAll = require('lodash.bindall');
 
 var template = require('../../templates/settings.tpl');
 
@@ -38,7 +38,7 @@ module.exports = Marionette.ItemView.extend({
         bindAll(this);
     },
 
-    emailUpdate: function($el, val, model, options) {
+    emailUpdate: function($el, val) {
         $el.val(val);
 
         if (this.getOption('readOnlyEmail')) {

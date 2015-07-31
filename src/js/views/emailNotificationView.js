@@ -1,7 +1,7 @@
 'use strict';
 
-var Marionette = require('backbone.marionette'),
-    _ = require('underscore');
+var Marionette = require('backbone.marionette');
+var _ = require('underscore');
 
 var EmailNotificationTemplate = require('../../templates/emailNotification.tpl');
 
