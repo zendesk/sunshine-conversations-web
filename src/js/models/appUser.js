@@ -49,9 +49,11 @@ var AppUser = module.exports = BaseModel.extend({
                 this._lastPropertyValues = this.pick(AppUser.EDITABLE_PROPERTIES);
                 success && success(model, response, options);
             }, this);
+
             return Backbone.Model.prototype.save.call(this, attributes, options);
         } else {
-            success && success(model, null, null);
+            success && success(this, null, null);
+
             return $.Deferred().resolve(this, null, null);
         }
     },

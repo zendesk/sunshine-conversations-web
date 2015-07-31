@@ -1,12 +1,12 @@
 var sinon = require('sinon'),
+    _ = require('underscore'),
     AppUser = require('../../src/js/models/appUser');
 
 var ClientScenario = require('../scenarios/clientScenario');
 
 describe('AppUser', function() {
     var scenario,
-        sandbox,
-        user;
+        sandbox;
 
     before(function() {
         scenario = new ClientScenario();
@@ -110,12 +110,16 @@ describe('AppUser', function() {
             var email = 'some@email.com',
                 givenName = 'Some',
                 surname = 'Name',
-                id = '12345';
+                id = '12345',
+                properties = {
+                    TEST: true
+                };
 
             var user = new AppUser({
                 email: email,
                 givenName: givenName,
                 surname: surname,
+                properties: properties,
                 id: id
             }, {
                 parse: true
@@ -127,14 +131,83 @@ describe('AppUser', function() {
 
             user.isDirty().should.be.true;
 
-            user.save().then(function() {
-                user.isDirty().should.be.false;
+            user.save()
+                .then(function() {
+                    user.isDirty().should.be.false;
 
-                user.set('email', 'other@email.com');
+                    user.set({
+                        email: 'other@email.com'
+                    });
 
-                user.isDirty().should.be.true;
-                done();
-            }).fail(done);
+                    user.isDirty().should.be.true;
+                })
+                .then(function() {
+                    user.set({
+                        email: email
+                    });
+                    user.isDirty().should.be.false;
+                    done();
+                })
+                .fail(done);
+        });
+
+        it('should be true if different properties are passed', function() {
+            var email = 'some@email.com',
+                givenName = 'Some',
+                surname = 'Name',
+                id = '12345',
+                properties = {
+                    TEST: true
+                };
+
+            var user = new AppUser({
+                email: email,
+                givenName: givenName,
+                surname: surname,
+                properties: properties,
+                id: id
+            }, {
+                parse: true
+            });
+
+            // force isDirty to be false at start
+            user._lastPropertyValues = user.pick(AppUser.EDITABLE_PROPERTIES);
+            user.isDirty().should.be.false;
+
+            user.isDirty({
+                email: 'other@email.com',
+                properties: _.clone(properties)
+            }).should.be.true;
+
+        });
+
+        it('should be false if same properties are passed', function() {
+            var email = 'some@email.com',
+                givenName = 'Some',
+                surname = 'Name',
+                id = '12345',
+                properties = {
+                    TEST: true
+                };
+
+            var user = new AppUser({
+                email: email,
+                givenName: givenName,
+                surname: surname,
+                properties: properties,
+                id: id
+            }, {
+                parse: true
+            });
+
+            // force isDirty to be false at start
+            user._lastPropertyValues = user.pick(AppUser.EDITABLE_PROPERTIES);
+            user.isDirty().should.be.false;
+
+            user.isDirty({
+                email: email,
+                properties: _.clone(properties)
+            }).should.be.false;
 
         });
     });
