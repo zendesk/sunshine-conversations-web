@@ -77,6 +77,7 @@ module.exports = ViewController.extend({
             conversationDeferred.resolve(this.conversation);
         }
 
+
         conversationDeferred.then(_.bind(function(conversation) {
             // update the user before sending the message to ensure properties are correct
             this.user.save({}, {
@@ -98,9 +99,9 @@ module.exports = ViewController.extend({
                     return message.get('authorId') === endpoint.appUserId;
                 });
 
-                if (this.getOption('emailCaptureEnabled')
-                    && appUserMessages.length === 1
-                    && !this.user.get('email')) {
+                if (this.getOption('emailCaptureEnabled') &&
+                    appUserMessages.length === 1 &&
+                    !this.user.get('email')) {
                     this._showEmailNotification();
                 }
 

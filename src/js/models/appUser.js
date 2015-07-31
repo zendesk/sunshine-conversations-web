@@ -2,15 +2,16 @@
 
 var _ = require('underscore'),
     $ = require('jquery'),
-    Backbone = require('backbone'),
-    BaseModel = require('./baseModel');
+    Backbone = require('backbone');
+
+var BaseModel = require('./baseModel');
+
 
 var AppUser = module.exports = BaseModel.extend({
 
     initialize: function() {
         this._throttleSave = _.throttle(this._save.bind(this), 5000);
     },
-
     parse: function(data) {
         return _.isObject(data) ? data : {
             id: data
