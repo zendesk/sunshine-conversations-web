@@ -316,10 +316,6 @@ var SupportKit = Marionette.Object.extend({
 
             this.ready = false;
         }
-    },
-
-    __showNotification: function() {
-        this._chatController.__showNotification();
     }
 });
 
