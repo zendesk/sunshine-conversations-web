@@ -10,28 +10,10 @@
     z-index: 1;
 
     .message-input {
-        background-color: #fbfbfb;
-        color: #bdbdbd;
-        border: 1px solid #e8e8e8;
-        margin: 5px 9px;
-        padding: 0 9px;
-        border-radius: 4px;
-        height: 33px;
         width: 75%;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        font-size: 13px;
-
-        &::-webkit-input-placeholder, &:-moz-placeholder, &::-moz-placeholder, &:-ms-input-placeholder {
-            color: #00aeff;
-            opacity: 1;
-        }
-
-        &:focus {
-            background-color: white;
-            color: #212121;
-            outline: 0;
-        }
+        margin: 5px @input-horizontal-margin;
     }
+
     .send {
         margin-top: 1px;
         right: 0px;

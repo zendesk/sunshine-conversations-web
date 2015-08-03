@@ -1,8 +1,8 @@
 'use strict';
 
-var _ = require('underscore'),
-    Backbone = require('backbone'),
-    BaseModel = require('./baseModel');
+var _ = require('underscore');
+var Backbone = require('backbone');
+var BaseModel = require('./baseModel');
 
 var AppUser = require('./appUser');
 

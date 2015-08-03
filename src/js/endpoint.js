@@ -1,5 +1,5 @@
-var $ = require('jquery'),
-    urljoin = require('urljoin');
+var $ = require('jquery');
+var urljoin = require('urljoin');
 
 var ROOT_URL = 'https://sdk.supportkit.io';
 module.exports.rootUrl = ROOT_URL;

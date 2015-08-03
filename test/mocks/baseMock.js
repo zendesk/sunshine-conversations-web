@@ -1,7 +1,7 @@
 'use strict';
 
-var _ = require('underscore'),
-    sinon = require('sinon');
+var _ = require('underscore');
+var sinon = require('sinon');
 
 var helpers = require('../helpers');
 
@@ -24,8 +24,8 @@ _.extend(BaseMock.prototype, {
     },
 
     mock: function() {
-        var target = helpers.getOption(this, 'target'),
-            methods = helpers.getOption(this, 'methods');
+        var target = helpers.getOption(this, 'target');
+        var methods = helpers.getOption(this, 'methods');
 
         if (!target || !methods) {
             throw new Error('Must provide a target and methods to mock');
