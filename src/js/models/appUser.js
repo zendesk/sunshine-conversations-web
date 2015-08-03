@@ -34,7 +34,6 @@ var AppUser = module.exports = BaseModel.extend({
 
         var comparableAttributes = _.extend({}, this.attributes, attributes);
 
-
         return !this._lastPropertyValues || _.some(AppUser.EDITABLE_PROPERTIES, function(property) {
             return !_.isEqual(this._lastPropertyValues[property], comparableAttributes[property]);
         }.bind(this));

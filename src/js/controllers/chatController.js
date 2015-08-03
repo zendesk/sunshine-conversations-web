@@ -80,7 +80,7 @@ module.exports = ViewController.extend({
 
         conversationDeferred.then(_.bind(function(conversation) {
             // update the user before sending the message to ensure properties are correct
-            this.user.save({}, {
+            this.user._save({}, {
                 wait: true
             }).then(function() {
                 conversation.get('messages').create({

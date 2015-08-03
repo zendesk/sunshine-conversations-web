@@ -18,6 +18,7 @@ describe('ChatController', function() {
     var manageUnreadSpy;
     var receiveSpy;
     var renderWidgetSpy;
+    var initConversationSpy;
 
     before(function() {
         scenario = new ClientScenario();
@@ -53,6 +54,7 @@ describe('ChatController', function() {
         manageUnreadSpy = sandbox.spy(chatController, '_manageUnread');
         renderWidgetSpy = sandbox.spy(chatController, '_renderWidget');
         receiveSpy = sandbox.spy(chatController, '_receiveMessage');
+        initConversationSpy = sandbox.spy(chatController, '_initConversation');
 
         chatController.getWidget().then(function() {
             done();
@@ -73,6 +75,7 @@ describe('ChatController', function() {
             initMessagingBusSpy.should.have.been.calledOnce;
             manageUnreadSpy.should.have.been.calledOnce;
             renderWidgetSpy.should.have.been.calledOnce;
+            initConversationSpy.should.have.been.calledOnce;
         });
     });
 

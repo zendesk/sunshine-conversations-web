@@ -145,8 +145,6 @@ var SupportKit = Marionette.Object.extend({
 
                 var emailCaptureEnabled = options.emailCaptureEnabled && !readOnlyEmail
 
-
-
                 this._chatController = new ChatController({
                     collection: this._conversations,
                     user: this.user,

@@ -87,7 +87,7 @@ describe('Main', function() {
             initPromise.then(initSpy);
         });
 
-        it('if supplied a userId should store the deviceId in local storgae', function(done) {
+        it('if supplied a userId should store the deviceId in local storage', function(done) {
             SupportKit.destroy();
 
             SupportKit.once('ready', function() {
