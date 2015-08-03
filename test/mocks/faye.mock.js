@@ -1,8 +1,8 @@
 'use strict';
 
 var BaseMock = require('./baseMock');
-var faye = require('faye'),
-    sinon = require('sinon');
+var faye = require('faye');
+var sinon = require('sinon');
 
 require('sinon-as-promised');
 

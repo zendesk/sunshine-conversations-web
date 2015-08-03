@@ -3,6 +3,7 @@ module.exports = {
         givenName: 'Testing',
         surname: 'Guy',
         email: 'testing@supportkit.io',
+        conversationStarted: true,
         properties: {}
     }
 };

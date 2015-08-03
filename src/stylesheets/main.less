@@ -16,8 +16,7 @@
     border-radius: 10px 10px 0 0;
     text-rendering: optimizeLegibility;
     color: #333;
-    -webkit-transform: translateY(90%);
-    transform: translateY(90%);
+    .translate(0, 90%);
     z-index: 2147483647;
 
     text-rendering: optimizeLegibility;
@@ -30,15 +29,21 @@
     }
     #sk-wrapper {
         background: @background-color;
-        width: 330px;
-        height: 420px;
+        width: @widget-width;
+        height: @widget-height;
         position: relative;
         border-radius: 10px 10px 0 0;
     }
-
-    @import "reset.less";
+    @import "../../node_modules/bootstrap/less/variables.less";
+    @import "font-awesome.less";
     @import "variables.less";
+    @import "reset.less";
+    @import "forms.less";
+    @import "buttons.less";
+    @import "visibility.less";
     @import "header.less";
+    @import "notifications.less";
     @import "conversation.less";
     @import "footer.less";
+    @import "settings.less";
 }

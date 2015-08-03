@@ -1,25 +1,24 @@
-var sinon = require('sinon'),
-    ChatController = require('../../src/js/controllers/chatController'),
-    Conversations = require('../../src/js/collections/conversations'),
-    vent = require('../../src/js/vent'),
-    $ = require('jquery'),
-    AppUser = require('../../src/js/models/appUser');
+var sinon = require('sinon');
+var ChatController = require('../../src/js/controllers/chatController');
+var Conversations = require('../../src/js/collections/conversations');
+var vent = require('../../src/js/vent');
+var AppUser = require('../../src/js/models/appUser');
 
 var ClientScenario = require('../scenarios/clientScenario');
 
 describe('ChatController', function() {
-    var scenario,
-        sandbox,
-        chatController,
-        conversations,
-        user,
-        getConversationSpy,
-        initFayeSpy,
-        initMessagingBusSpy,
-        manageUnreadSpy,
-        receiveSpy,
-        saveUserStub,
-        renderWidgetSpy;
+    var scenario;
+    var sandbox;
+    var chatController;
+    var conversations;
+    var user;
+    var getConversationSpy;
+    var initFayeSpy;
+    var initMessagingBusSpy;
+    var manageUnreadSpy;
+    var receiveSpy;
+    var renderWidgetSpy;
+    var initConversationSpy;
 
     before(function() {
         scenario = new ClientScenario();
@@ -40,6 +39,10 @@ describe('ChatController', function() {
             id: '12345'
         });
 
+        sandbox.stub(user, 'save', function(attributes, options) {
+            return this._save(attributes, options);
+        });
+
         chatController = new ChatController({
             collection: conversations,
             user: user
@@ -51,7 +54,7 @@ describe('ChatController', function() {
         manageUnreadSpy = sandbox.spy(chatController, '_manageUnread');
         renderWidgetSpy = sandbox.spy(chatController, '_renderWidget');
         receiveSpy = sandbox.spy(chatController, '_receiveMessage');
-
+        initConversationSpy = sandbox.spy(chatController, '_initConversation');
 
         chatController.getWidget().then(function() {
             done();
@@ -72,6 +75,7 @@ describe('ChatController', function() {
             initMessagingBusSpy.should.have.been.calledOnce;
             manageUnreadSpy.should.have.been.calledOnce;
             renderWidgetSpy.should.have.been.calledOnce;
+            initConversationSpy.should.have.been.calledOnce;
         });
     });
 
@@ -79,12 +83,6 @@ describe('ChatController', function() {
         var message = 'Hey!';
         var messages;
         var initialLength;
-
-        beforeEach(function(done) {
-            chatController.getWidget().then(function() {
-                done();
-            });
-        });
 
         it('should add a message to the conversation', function(done) {
             messages = chatController.conversation.get('messages');
@@ -98,14 +96,7 @@ describe('ChatController', function() {
         });
     });
 
-
     describe('#_receiveMessage', function() {
-        beforeEach(function(done) {
-            chatController.getWidget().then(function() {
-                done();
-            });
-        });
-
         it('should add a message to the conversation', function() {
 
             var message = {
@@ -121,7 +112,6 @@ describe('ChatController', function() {
         });
 
     });
-
 
     describe('vent', function() {
         var message = {

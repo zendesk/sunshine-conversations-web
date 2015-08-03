@@ -1,12 +1,12 @@
 'use strict';
 
-var Backbone = require('backbone'),
-    urljoin = require('url-join');
+var Backbone = require('backbone');
+var urljoin = require('url-join');
 
-var BaseModel = require('./baseModel'),
-    AppMaker = require('./appMaker'),
-    AppUser = require('./appUser'),
-    Messages = require('../collections/messages');
+var BaseModel = require('./baseModel');
+var AppMaker = require('./appMaker');
+var AppUser = require('./appUser');
+var Messages = require('../collections/messages');
 
 module.exports = BaseModel.extend({
     idAttribute: '_id',

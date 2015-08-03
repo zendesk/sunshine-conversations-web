@@ -2,3 +2,25 @@
      word-break: break-word;
     .hyphens();
 }
+
+
+.input-mixin() {
+    background-color: #fbfbfb;
+    border: 1px solid #e8e8e8;
+    padding: 0 @input-horizontal-padding;
+    border-radius: 4px;
+    height: 33px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 13px;
+
+    &::-webkit-input-placeholder, &:-moz-placeholder, &::-moz-placeholder, &:-ms-input-placeholder {
+        color: #00aeff;
+        opacity: 1;
+    }
+
+    &:focus {
+        background-color: white;
+        color: #212121;
+        outline: 0;
+    }
+}

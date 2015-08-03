@@ -302,7 +302,9 @@
 
   "plugins": [
     "esformatter-quotes",
-    "esformatter-braces"
+    "esformatter-braces",
+    "esformatter-var-each",
+    "esformatter-dot-notation"
   ],
   "quotes": {
     "type": "single",

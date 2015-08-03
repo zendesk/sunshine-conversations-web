@@ -38,11 +38,11 @@ module.exports = Marionette.CompositeView.extend({
     },
 
     positionLogo: function() {
-        var conversationHeight = this.$el.outerHeight(),
-            logoHeight = this.ui.logo.outerHeight(),
-            introHeight = this.ui.intro.outerHeight(),
-            messagesHeight = this.ui.messages.outerHeight(),
-            heightRemaining = conversationHeight - (introHeight + messagesHeight + logoHeight);
+        var conversationHeight = this.$el.outerHeight();
+        var logoHeight = this.ui.logo.outerHeight();
+        var introHeight = this.ui.intro.outerHeight();
+        var messagesHeight = this.ui.messages.outerHeight();
+        var heightRemaining = conversationHeight - (introHeight + messagesHeight + logoHeight);
 
         if (heightRemaining > logoHeight) {
             this.ui.logo.addClass('anchor-bottom');

@@ -1,22 +1,25 @@
 'use strict';
 
-var $ = require('jquery'),
-    cookie = require('cookie'),
-    bindAll = require('lodash.bindall'),
-    _ = require('underscore'),
-    ViewController = require('view-controller');
+var $ = require('jquery');
+var cookie = require('cookie');
+var bindAll = require('lodash.bindall');
+var _ = require('underscore');
+var ViewController = require('view-controller');
 
-var endpoint = require('../endpoint'),
-    vent = require('../vent'),
-    faye = require('../faye');
+var endpoint = require('../endpoint');
+var vent = require('../vent');
+var faye = require('../faye');
 
 var Conversation = require('../models/conversation');
 
-var ChatView = require('../views/chatView'),
-    HeaderView = require('../views/headerView'),
-    ConversationView = require('../views/conversationView');
+var ChatView = require('../views/chatView');
+var HeaderView = require('../views/headerView');
+var ConversationView = require('../views/conversationView');
+var SettingsHeaderView = require('../views/settingsHeaderView');
+var EmailNotificationView = require('../views/emailNotificationView');
 
 var ChatInputController = require('../controllers/chatInputController');
+var SettingsController = require('../controllers/settingsController');
 
 module.exports = ViewController.extend({
     viewClass: ChatView,
@@ -32,8 +35,6 @@ module.exports = ViewController.extend({
         this.uiText = this.getOption('uiText') || {};
 
         this.conversationInitiated = false;
-
-        this.listenTo(this.user, 'change:conversationStarted', this.onConversationStarted);
     },
 
     open: function() {
@@ -62,8 +63,8 @@ module.exports = ViewController.extend({
     },
 
     sendMessage: function(text) {
-        var conversationDeferred = $.Deferred(),
-            messageDeferred = $.Deferred();
+        var conversationDeferred = $.Deferred();
+        var messageDeferred = $.Deferred();
 
         if (this.conversation.isNew()) {
             this.conversation = this.collection.create(this.conversation, {
@@ -76,23 +77,75 @@ module.exports = ViewController.extend({
             conversationDeferred.resolve(this.conversation);
         }
 
-        conversationDeferred.then(function(conversation) {
-            conversation.get('messages').create({
-                authorId: endpoint.appUserId,
-                text: text
-            }, {
-                success: messageDeferred.resolve,
-                error: messageDeferred.reject
-            });
 
-        });
+        conversationDeferred.then(_.bind(function(conversation) {
+            // update the user before sending the message to ensure properties are correct
+            this.user._save({}, {
+                wait: true
+            }).then(function() {
+                conversation.get('messages').create({
+                    authorId: endpoint.appUserId,
+                    text: text
+                }, {
+                    success: messageDeferred.resolve,
+                    error: messageDeferred.reject
+                });
+            }.bind(this))
+                .fail(messageDeferred.reject);
+
+
+            messageDeferred.then(_.bind(function(message) {
+                var appUserMessages = this.conversation.get('messages').filter(function(message) {
+                    return message.get('authorId') === endpoint.appUserId;
+                });
+
+                if (this.getOption('emailCaptureEnabled') &&
+                    appUserMessages.length === 1 &&
+                    !this.user.get('email')) {
+                    this._showEmailNotification();
+                }
+
+                return message;
+            }, this));
+        }, this));
 
         return messageDeferred;
     },
+
     scrollToBottom: function() {
         if (!!this.conversationView) {
             this.conversationView.scrollToBottom();
         }
+    },
+
+    _showEmailNotification: function() {
+        var view = new EmailNotificationView({
+            settingsNotificationText: this.uiText.settingsNotificationText
+        });
+
+        this.listenTo(view, 'notification:close', this._hideEmailNotification);
+        this.listenTo(view, 'settings:navigate', this._showSettings);
+
+        this.listenToOnce(view, 'destroy', function() {
+            this.stopListening(view);
+        });
+
+        this.getView().notifications.show(view);
+    },
+
+    _hideEmailNotification: function() {
+        this.getView().notifications.empty();
+    },
+
+    _showSettings: function() {
+        this._hideEmailNotification();
+        this._renderSettingsHeader();
+        this._renderSettingsView();
+    },
+
+    _hideSettings: function() {
+        this.getView().settings.empty();
+        this._renderChatHeader();
     },
 
     _receiveMessage: function(message) {
@@ -156,6 +209,12 @@ module.exports = ViewController.extend({
                 .then(this._initFaye)
                 .then(_.bind(function(conversation) {
                     this.conversationInitiated = !conversation.isNew();
+
+                    // let's listen on the user attribute change instead
+                    if (!this.conversationInitiated) {
+                        this.listenTo(this.user, 'change:conversationStarted', this.onConversationStarted);
+                    }
+
                     return conversation;
                 }, this));
         }
@@ -174,28 +233,78 @@ module.exports = ViewController.extend({
         return conversation;
     },
 
-    _renderWidget: function(conversation) {
-        this.model = conversation;
-
-        this.headerView = new HeaderView({
-            model: conversation,
-            headerText: this.uiText.headerText
+    _renderChatHeader: function() {
+        var headerView = new HeaderView({
+            model: this.model,
+            headerText: this.uiText.headerText,
+            emailCaptureEnabled: this.getOption('emailCaptureEnabled')
         });
 
-        this.listenTo(this.headerView, 'toggle', this.toggle);
+        this.listenTo(headerView, 'toggle', this.toggle);
+        this.listenTo(headerView, 'notification:click', this._showSettings);
 
+        this.listenTo(headerView, 'destroy', function() {
+            this.stopListening(headerView);
+        });
+
+        this.getView().header.show(headerView);
+    },
+
+    _renderSettingsHeader: function() {
+        var settingsHeaderView = new SettingsHeaderView({
+            settingsHeaderText: this.uiText.settingsHeaderText
+        });
+        this.listenTo(settingsHeaderView, 'settings:close', this._hideSettings);
+        this.listenTo(settingsHeaderView, 'widget:close', function() {
+            this.toggle();
+            this._hideSettings();
+        });
+
+        this.listenToOnce(settingsHeaderView, 'destroy', function() {
+            this.stopListening(settingsHeaderView);
+        });
+
+        this.getView().header.show(settingsHeaderView);
+    },
+
+    _renderSettingsView: function() {
+        var settingsController = new SettingsController({
+            model: this.user,
+            viewOptions: {
+                emailCaptureEnabled: this.getOption('emailCaptureEnabled'),
+                readOnlyEmail: this.getOption('readOnlyEmail'),
+                settingsText: this.uiText.settingsText,
+                settingsReadOnlyText: this.uiText.settingsReadOnlyText,
+                settingsInputPlaceholder: this.uiText.settingsInputPlaceholder,
+                settingsSaveButtonText: this.uiText.settingsSaveButtonText
+            }
+        });
+
+        this.listenToOnce(settingsController, 'destroy', function() {
+            this.stopListening(settingsController);
+        });
+
+        this.getView().settings.show(settingsController.getView());
+    },
+
+    _renderConversation: function() {
         this.conversationView = new ConversationView({
-            model: conversation,
-            collection: conversation.get('messages'),
+            model: this.model,
+            collection: this.model.get('messages'),
             childViewOptions: {
-                conversation: conversation
+                conversation: this.model
             },
             introText: this.uiText.introText
         });
 
+        this.getView().main.show(this.conversationView);
+
+    },
+
+    _renderConversationInput: function() {
         this.chatInputController = new ChatInputController({
-            model: conversation,
-            collection: conversation.get('messages'),
+            model: this.model,
+            collection: this.model.get('messages'),
             viewOptions: {
                 inputPlaceholder: this.uiText.inputPlaceholder,
                 sendButtonText: this.uiText.sendButtonText
@@ -204,14 +313,20 @@ module.exports = ViewController.extend({
 
         this.listenTo(this.chatInputController, 'message:send', this.sendMessage);
         this.listenTo(this.chatInputController, 'message:read', this.resetUnread);
+        this.getView().footer.show(this.chatInputController.getView());
+    },
 
-        this.view.header.show(this.headerView);
-        this.view.main.show(this.conversationView);
-        this.view.footer.show(this.chatInputController.getView());
+    _renderWidget: function(conversation) {
+        this.model = conversation;
+
+        this._renderChatHeader();
+        this._renderConversation();
+        this._renderConversationInput();
     },
 
     onConversationStarted: function(model, conversationStarted) {
         if (conversationStarted) {
+            this.stopListening(this.user, 'change:conversationStarted', this.onConversationStarted);
             this._initConversation();
         }
     },
@@ -240,7 +355,7 @@ module.exports = ViewController.extend({
 
     _getLatestReadTime: function() {
         if (!this.latestReadTs) {
-            this.latestReadTs = parseInt(cookie.parse(document.cookie)['sk_latestts'] || 0);
+            this.latestReadTs = parseInt(cookie.parse(document.cookie).sk_latestts || 0);
         }
         return this.latestReadTs;
     },

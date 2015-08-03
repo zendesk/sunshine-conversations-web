@@ -1,17 +1,18 @@
 'use strict';
 
-var sinon = require('sinon'),
-    cookie = require('cookie');
+var sinon = require('sinon');
+var cookie = require('cookie');
+var Backbone = require('backbone');
 
-var ClientScenario = require('../scenarios/clientScenario'),
-    endpoint = require('../../src/js/endpoint');
+var ClientScenario = require('../scenarios/clientScenario');
+var endpoint = require('../../src/js/endpoint');
 
 var SK_STORAGE = 'sk_deviceid';
 
 describe('Main', function() {
-    var scenario,
-        sandbox,
-        SupportKit;
+    var scenario;
+    var sandbox;
+    var SupportKit;
 
     before(function() {
         scenario = new ClientScenario();
@@ -25,10 +26,16 @@ describe('Main', function() {
     beforeEach(function(done) {
         sandbox = sinon.sandbox.create();
         SupportKit = require('../../src/js/main.js');
-        SupportKit.once('ready', done);
+        SupportKit.once('ready', function() {
+            sandbox.stub(SupportKit.user, 'save', function(attributes, options) {
+                return this._save(attributes, options);
+            });
+            done();
+        });
         SupportKit.init({
             appToken: 'thisisanapptoken'
         });
+
     });
 
     afterEach(function() {
@@ -51,14 +58,16 @@ describe('Main', function() {
     });
 
     describe('#init', function() {
-        var userId = 'thisisauserid',
-            appToken = 'thisisanapptoken',
-            jwt = 'thisisajwt',
-            trackSpy,
-            initSpy;
+        var userId = 'thisisauserid';
+        var appToken = 'thisisanapptoken';
+        var jwt = 'thisisajwt';
+        var endpointSpy;
+        var trackSpy;
+        var initSpy;
 
         beforeEach(function() {
             trackSpy = sandbox.spy(SupportKit, 'track');
+            endpointSpy = sandbox.spy(endpoint, 'post');
             initSpy = sandbox.spy();
         });
 
@@ -78,7 +87,7 @@ describe('Main', function() {
             initPromise.then(initSpy);
         });
 
-        it('if supplied a userId should store the deviceId in local storgae', function(done) {
+        it('if supplied a userId should store the deviceId in local storage', function(done) {
             SupportKit.destroy();
 
             SupportKit.once('ready', function() {
@@ -119,6 +128,19 @@ describe('Main', function() {
                 appToken: appToken
             });
         });
+
+        it('should post platform device info to appboot', function(done) {
+            SupportKit.destroy();
+
+            SupportKit.once('ready', function() {
+                expect(endpointSpy.args[0][1].deviceInfo.platform).to.equal('web');
+                done();
+            });
+
+            SupportKit.init({
+                appToken: appToken
+            });
+        });
     });
 
     describe('#logout', function() {
@@ -140,7 +162,11 @@ describe('Main', function() {
 
     describe('#updateUser', function() {
 
-        var saveSpy;
+        // check if `save` actually calls the server or not
+        var syncSpy;
+        beforeEach(function() {
+            syncSpy = sandbox.spy(Backbone, 'sync');
+        });
 
         it('should fail the promise if called with bad parameters (empty, in this case)', function(done) {
             SupportKit.updateUser().fail(function() {
@@ -149,14 +175,6 @@ describe('Main', function() {
         });
 
         it('should not call save if the user has not changed', function(done) {
-            saveSpy = sandbox.spy(SupportKit.user, 'save');
-
-            SupportKit.user.set({
-                givenName: 'test',
-                surname: 'user'
-            }, {
-                silent: true
-            });
 
             SupportKit.updateUser({
                 givenName: 'GIVEN_NAME',
@@ -165,7 +183,7 @@ describe('Main', function() {
                     'TEST': true
                 }
             }).then(function() {
-                saveSpy.should.be.calledOnce;
+                syncSpy.should.be.calledOnce;
 
                 return SupportKit.updateUser({
                     givenName: 'GIVEN_NAME',
@@ -175,7 +193,7 @@ describe('Main', function() {
                     }
                 });
             }).then(function() {
-                saveSpy.should.be.calledOnce;
+                syncSpy.should.be.calledOnce;
             }).always(function() {
                 done();
             });
@@ -208,8 +226,8 @@ describe('Main', function() {
 
     describe('#track', function() {
         var endpoint = require('../../src/js/endpoint');
-        var eventCreateSpy,
-            endpointSpy;
+        var eventCreateSpy;
+        var endpointSpy;
 
         beforeEach(function() {
             eventCreateSpy = sandbox.spy(SupportKit._eventCollection, 'create');

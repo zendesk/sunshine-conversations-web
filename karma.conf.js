@@ -2,7 +2,7 @@
 // Generated on Fri Nov 07 2014 08:13:06 GMT-0500 (EST)
 
 module.exports = function(config) {
-    var testReportsPath = process.env['CIRCLE_TEST_REPORTS'] || '.';
+    var testReportsPath = process.env.CIRCLE_TEST_REPORTS || '.';
 
     config.set({
 

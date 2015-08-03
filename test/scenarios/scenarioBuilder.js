@@ -1,8 +1,8 @@
 'use strict';
 
 
-var _ = require('underscore'),
-    helpers = require('../helpers');
+var _ = require('underscore');
+var helpers = require('../helpers');
 
 var ScenarioBuilder = module.exports = function(options) {
     options || (options = {});
