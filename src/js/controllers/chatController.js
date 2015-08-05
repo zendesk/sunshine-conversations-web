@@ -193,9 +193,10 @@ module.exports = ViewController.extend({
 
     _initFaye: function(conversation) {
         if (!conversation.isNew()) {
-            return faye.init(conversation.id).then(function() {
+            return faye.init(conversation.id).then(_.bind(function(client) {
+                this._fayeClient = client;
                 return conversation;
-            });
+            }, this));
         }
 
         return $.Deferred().resolve(conversation);
@@ -396,5 +397,13 @@ module.exports = ViewController.extend({
         }
         this._setLatestReadTime(latestReadTs);
         this._updateUnread();
+    },
+
+    onDestroy: function() {
+        if (this._fayeClient) {
+            this._fayeClient.disconnect();
+        }
+
+        ViewController.prototype.onDestroy.call(this);
     }
 });

@@ -26,7 +26,7 @@ module.exports.init = function(conversationId) {
     faye.subscribe('/conversations/' + conversationId, function(message) {
         vent.trigger('receive:message', message);
     }).then(function() {
-        deferred.resolve();
+        deferred.resolve(faye);
     }, function(err) {
         console.error('Faye subscription error:', err && err.message);
         deferred.reject(err);
