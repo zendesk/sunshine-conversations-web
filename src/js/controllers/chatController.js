@@ -193,9 +193,12 @@ module.exports = ViewController.extend({
 
     _initFaye: function(conversation) {
         if (!conversation.isNew()) {
-            faye.init(conversation.id);
+            return faye.init(conversation.id).then(function() {
+                return conversation;
+            });
         }
-        return conversation;
+
+        return $.Deferred().resolve(conversation);
     },
 
     _initConversation: function() {
