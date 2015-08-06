@@ -74,7 +74,7 @@ module.exports = ViewController.extend({
 
             conversationDeferred = conversationDeferred.then(this._initFaye);
         } else {
-            conversationDeferred = conversationDeferred.resolve(this.conversation);
+            conversationDeferred.resolve(this.conversation);
         }
 
 
