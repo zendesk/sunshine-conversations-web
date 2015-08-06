@@ -29,11 +29,11 @@ module.exports = ViewController.extend({
     },
 
     onSettingsSave: function() {
-        this.listenToOnce(this.model, 'sync', function() {
-            this.trigger('settings:close');
-        });
-
         if (this.isDirty) {
+            this.listenToOnce(this.model, 'sync', function() {
+                this.trigger('settings:close');
+            });
+
             // bypass throttling
             this.model._save({}, {
                 wait: true
