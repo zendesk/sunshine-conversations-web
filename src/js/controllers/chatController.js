@@ -72,13 +72,13 @@ module.exports = ViewController.extend({
                 error: conversationDeferred.reject
             });
 
-            conversationDeferred.then(this._initFaye);
+            conversationDeferred = conversationDeferred.then(this._initFaye);
         } else {
-            conversationDeferred.resolve(this.conversation);
+            conversationDeferred = conversationDeferred.resolve(this.conversation);
         }
 
 
-        conversationDeferred.then(_.bind(function(conversation) {
+        conversationDeferred = conversationDeferred.then(_.bind(function(conversation) {
             // update the user before sending the message to ensure properties are correct
             this.user._save({}, {
                 wait: true
@@ -94,7 +94,7 @@ module.exports = ViewController.extend({
                 .fail(messageDeferred.reject);
 
 
-            messageDeferred.then(_.bind(function(message) {
+            messageDeferred = messageDeferred.then(_.bind(function(message) {
                 var appUserMessages = this.conversation.get('messages').filter(function(message) {
                     return message.get('authorId') === endpoint.appUserId;
                 });

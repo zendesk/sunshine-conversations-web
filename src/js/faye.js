@@ -18,7 +18,6 @@ module.exports.init = function(conversationId) {
         }
     });
 
-
     // this is needed since Faye is using a Promise implementation
     // that only has `then(resolve, reject)` and `all` methods.
     var deferred = $.Deferred();
