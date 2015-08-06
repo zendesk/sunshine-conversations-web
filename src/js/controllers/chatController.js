@@ -284,6 +284,9 @@ module.exports = ViewController.extend({
             }
         });
 
+
+        this.listenToOnce(settingsController, 'settings:close', this._hideSettings);
+
         this.listenToOnce(settingsController, 'destroy', function() {
             this.stopListening(settingsController);
         });
