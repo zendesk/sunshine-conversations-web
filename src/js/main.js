@@ -145,6 +145,7 @@ var SupportKit = Marionette.Object.extend({
 
                 var emailCaptureEnabled = options.emailCaptureEnabled && !readOnlyEmail
 
+
                 this._chatController = new ChatController({
                     collection: this._conversations,
                     user: this.user,
@@ -306,6 +307,8 @@ var SupportKit = Marionette.Object.extend({
             this._eventCollection.reset();
             this._conversations.reset();
             this._chatController.destroy();
+
+            this._readyPromise = $.Deferred();
 
             // delete the deviceid cookie
             document.cookie = SK_STORAGE + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';

@@ -1,6 +1,7 @@
 var sinon = require('sinon');
 var ChatController = require('../../src/js/controllers/chatController');
 var Conversations = require('../../src/js/collections/conversations');
+var Conversation = require('../../src/js/models/conversation');
 var vent = require('../../src/js/vent');
 var AppUser = require('../../src/js/models/appUser');
 
@@ -49,7 +50,10 @@ describe('ChatController', function() {
         });
 
         getConversationSpy = sandbox.spy(chatController, '_getConversation');
-        initFayeSpy = sandbox.spy(chatController, '_initFaye');
+        initFayeSpy = sandbox.stub(chatController, '_initFaye', function(conversation) {
+            chatController._fayeClient = {disconnect: function(){}};
+            return $.Deferred().resolve(conversation);
+        });
         initMessagingBusSpy = sandbox.spy(chatController, '_initMessagingBus');
         manageUnreadSpy = sandbox.spy(chatController, '_manageUnread');
         renderWidgetSpy = sandbox.spy(chatController, '_renderWidget');
@@ -79,10 +83,31 @@ describe('ChatController', function() {
         });
     });
 
-    describe('#sendMessage', function() {
+    describe('#sendMessage on existing conversation', function() {
         var message = 'Hey!';
         var messages;
         var initialLength;
+
+        it('should add a message to the conversation', function(done) {
+            messages = chatController.conversation.get('messages');
+            initialLength = messages.length;
+
+            chatController.sendMessage(message).then(function() {
+                messages.length.should.equals(initialLength + 1);
+                messages.last().get('text').should.equals(message);
+                done();
+            });
+        });
+    });
+
+    describe('#sendMessage on new conversation', function() {
+        var message = 'Hey!';
+        var messages;
+        var initialLength;
+
+        beforeEach(function() {
+            chatController.conversation = new Conversation();
+        });
 
         it('should add a message to the conversation', function(done) {
             messages = chatController.conversation.get('messages');
