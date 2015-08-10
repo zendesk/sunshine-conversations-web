@@ -4,6 +4,8 @@ var BaseMock = require('./baseMock');
 var faye = require('faye');
 var sinon = require('sinon');
 
+var $ = require('jquery');
+
 require('sinon-as-promised');
 
 module.exports = BaseMock.extend({
@@ -11,6 +13,10 @@ module.exports = BaseMock.extend({
     methods: {
         addExtension: sinon.stub(),
         connect: sinon.stub(),
-        subscribe: sinon.stub().resolves()
+        subscribe: function() {
+            return $.Deferred().resolve({
+                disconnect: function(){}
+            });
+        }
     }
 });
