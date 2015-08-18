@@ -17,6 +17,8 @@ var Event = require('./models/event');
 /*jshint +W079 */
 var Rule = require('./models/rule');
 var AppUser = require('./models/appUser');
+var ChatView = require('./views/chatView');
+var ConversationView = require('./views/conversationView');
 var ChatController = require('./controllers/chatController');
 var Conversations = require('./collections/conversations');
 var endpoint = require('./endpoint');
@@ -53,6 +55,7 @@ var SupportKit = Marionette.Object.extend({
         bindAll(this);
         this._readyPromise = $.Deferred();
         this._conversations = new Conversations();
+        this._placeHolder = $();
     },
 
     _checkReady: function(message) {
@@ -94,10 +97,8 @@ var SupportKit = Marionette.Object.extend({
             throw new Error('init method requires an appToken');
         }
 
-        var uiText = _.extend({}, this.defaultText, options.customText);
-
-
         this.deviceId = this.getDeviceId(options);
+        this._renderPlaceholder();
 
         endpoint.post('/api/appboot', {
             deviceId: this.deviceId,
@@ -132,7 +133,6 @@ var SupportKit = Marionette.Object.extend({
                     parse: true
                 });
 
-
                 // for consistency, this will use the collection suffix too.
                 this._ruleCollection = new RuleCollection(res.rules, {
                     parse: true
@@ -142,9 +142,8 @@ var SupportKit = Marionette.Object.extend({
 
                 // if the email was passed at init, it can't be changed through the web widget UI
                 var readOnlyEmail = !_.isEmpty(options.email);
-
-                var emailCaptureEnabled = options.emailCaptureEnabled && !readOnlyEmail
-
+                var emailCaptureEnabled = options.emailCaptureEnabled && !readOnlyEmail;
+                var uiText = _.extend({}, this.defaultText, options.customText);
 
                 this._chatController = new ChatController({
                     collection: this._conversations,
@@ -212,8 +211,6 @@ var SupportKit = Marionette.Object.extend({
     },
 
     updateUser: function(userInfo) {
-        var userChanged = false;
-
         if (typeof userInfo !== 'object') {
             return $.Deferred().reject(new Error('updateUser accepts an object as parameter'));
         }
@@ -274,16 +271,27 @@ var SupportKit = Marionette.Object.extend({
     },
 
     _checkConversationState: function() {
-
         if (!this._chatController.conversation || this._chatController.conversation.isNew()) {
             this._chatController._initConversation();
         }
     },
 
+    // Add placeholder to support back links to supportkit
+    _renderPlaceholder: function() {
+        $(_(function() {
+            if (!this.ready) {
+                var placeHolder = new ChatView().render();
+                placeHolder.main.show(new ConversationView());
+                this._placeHolder = $(placeHolder.el);
+                this._placeHolder.addClass('placeHolder').appendTo('body');
+            }
+        }).bind(this));
+    },
+
     _renderWidget: function() {
         this._chatController.getWidget().then(_.bind(function(widget) {
+            this._placeHolder.remove();
             $('body').append(widget.el);
-
 
             _(function() {
                 this._chatController.scrollToBottom();
@@ -292,7 +300,6 @@ var SupportKit = Marionette.Object.extend({
             // Tell the world we're ready
             this.triggerMethod('ready');
         }, this));
-
     },
 
     onReady: function() {
