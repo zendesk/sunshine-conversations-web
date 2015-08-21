@@ -11,6 +11,12 @@
     font-size: 16px;
     font-weight: 300;
 
+    .fa {
+        line-height: 28px;
+        color: #808080;
+        font-size: 15px;
+    }
+
     .sk-close-handle,
     .sk-show-handle {
         position: absolute;
@@ -18,19 +24,13 @@
         right: 10px;
     }
 
-    .sk-show-handle {
-        font-size: 20px;
-    }
-
     .sk-back-handle {
         display: inline-block;
         margin-right: 8px;
     }
 
-    .fa {
-        line-height: 28px;
+    .sk-close-handle .fa {
         font-size: 17px;
-        color: #808080;
     }
 }
 
@@ -55,7 +55,7 @@
 
 #sk-notification-badge  {
     position: absolute;
-    top: @header-padding;
+    top: 7px;
     right: 36px;
     display: none;
 }
