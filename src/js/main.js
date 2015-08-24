@@ -55,7 +55,6 @@ var SupportKit = Marionette.Object.extend({
         bindAll(this);
         this._readyPromise = $.Deferred();
         this._conversations = new Conversations();
-        this._placeHolder = $();
     },
 
     _checkReady: function(message) {
@@ -280,17 +279,20 @@ var SupportKit = Marionette.Object.extend({
     _renderPlaceholder: function() {
         $(_(function() {
             if (!this.ready) {
-                var placeHolder = new ChatView().render();
-                placeHolder.main.show(new ConversationView());
-                this._placeHolder = $(placeHolder.el);
-                this._placeHolder.addClass('placeHolder').appendTo('body');
+                this._placeHolder = new ChatView();
+                this._placeHolder.render();
+                this._placeHolder.main.show(new ConversationView());
+                this._placeHolder.$el.addClass('placeHolder').appendTo('body');
             }
         }).bind(this));
     },
 
     _renderWidget: function() {
         this._chatController.getWidget().then(_.bind(function(widget) {
-            this._placeHolder.remove();
+            if (this._placeHolder) {
+                this._placeHolder.destroy();
+            }
+
             $('body').append(widget.el);
 
             _(function() {
