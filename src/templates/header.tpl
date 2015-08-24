@@ -3,5 +3,5 @@
 <% if(emailCaptureEnabled) { %>
     <div id="sk-notification-badge" data-ui-notification-badge><i class="fa fa-gear"></i></div>
 <% } %>
-<div class="sk-show-handle sk-appear-hidden">&#10140;</div>
-<div class="sk-close-handle sk-close-hidden">&times;</div>
+<div class="sk-show-handle sk-appear-hidden"><i class="fa fa-arrow-up"></i></div>
+<div class="sk-close-handle sk-close-hidden"><i class="fa fa-times"></i></div>
