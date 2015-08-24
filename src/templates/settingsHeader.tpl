@@ -1,3 +1,3 @@
-<div class="sk-back-handle">&#10140;</div>
+<div class="sk-back-handle"><i class="fa fa-arrow-left"></i></div>
 <%= settingsHeaderText %>
-<div class="sk-close-handle" data-ui-close>&times;</div>
+<div class="sk-close-handle" data-ui-close><i class="fa fa-times"></i></div>
