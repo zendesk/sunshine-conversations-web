@@ -33,7 +33,6 @@ module.exports = ViewController.extend({
         this.isOpened = false;
         this.user = this.getOption('user');
         this.uiText = this.getOption('uiText') || {};
-
         this.conversationInitiated = false;
     },
 
@@ -303,7 +302,6 @@ module.exports = ViewController.extend({
         });
 
         this.getView().main.show(this.conversationView);
-
     },
 
     _renderConversationInput: function() {
@@ -356,7 +354,6 @@ module.exports = ViewController.extend({
                 return view;
             });
     },
-
 
     _getLatestReadTime: function() {
         if (!this.latestReadTs) {
