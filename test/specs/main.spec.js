@@ -149,8 +149,8 @@ describe('Main', function() {
             SupportKit.logout();
         });
 
-        it('should remove the device id from cookies', function() {
-            expect(cookie.parse(document.cookie)[SK_STORAGE]).to.not.exist;
+        it('should not remove the device id from cookies', function() {
+            expect(cookie.parse(document.cookie)[SK_STORAGE]).to.exist;
         });
 
         it('should clear the endpoint of all variables', function() {
