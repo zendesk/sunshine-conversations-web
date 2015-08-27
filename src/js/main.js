@@ -96,7 +96,7 @@ var SupportKit = Marionette.Object.extend({
             throw new Error('init method requires an appToken');
         }
 
-        this.deviceId = this.getDeviceId(options);
+        this.deviceId = this.getDeviceId();
         this._renderPlaceholder();
 
         endpoint.post('/api/appboot', {
@@ -173,18 +173,17 @@ var SupportKit = Marionette.Object.extend({
         this.destroy();
     },
 
-    getDeviceId: function(options) {
-        var userId = options.userId;
+    getDeviceId: function() {
         var deviceId;
 
         // get device ID first from local storage, then cookie. Otherwise generate new one
-        deviceId = userId && localStorage.getItem(SK_STORAGE + '_' + userId) ||
+        deviceId = localStorage.getItem(SK_STORAGE) ||
             cookie.parse(document.cookie)[SK_STORAGE] ||
             uuid.v4().replace(/-/g, '');
 
         // reset the cookie and local storage
         document.cookie = SK_STORAGE + '=' + deviceId;
-        userId && localStorage.setItem(SK_STORAGE + '_' + userId, deviceId);
+        localStorage.setItem(SK_STORAGE, deviceId);
 
         return deviceId;
     },
@@ -318,9 +317,6 @@ var SupportKit = Marionette.Object.extend({
             this._chatController.destroy();
 
             this._readyPromise = $.Deferred();
-
-            // delete the deviceid cookie
-            document.cookie = SK_STORAGE + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 
             endpoint.reset();
 

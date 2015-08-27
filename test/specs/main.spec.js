@@ -87,11 +87,12 @@ describe('Main', function() {
             initPromise.then(initSpy);
         });
 
-        it('if supplied a userId should store the deviceId in local storage', function(done) {
+        it('it should store the deviceId in local storage and cookies', function(done) {
             SupportKit.destroy();
 
             SupportKit.once('ready', function() {
-                localStorage.getItem(SK_STORAGE + '_' + userId).should.exist;
+                localStorage.getItem(SK_STORAGE).should.exist;
+                expect(cookie.parse(document.cookie)[SK_STORAGE]).to.exist;
                 done();
             });
 
@@ -146,11 +147,19 @@ describe('Main', function() {
     describe('#logout', function() {
         beforeEach(function() {
             document.cookie = SK_STORAGE + '=' + 'test';
+            localStorage.setItem(SK_STORAGE, 'test');
             SupportKit.logout();
         });
 
-        it('should remove the device id from cookies', function() {
-            expect(cookie.parse(document.cookie)[SK_STORAGE]).to.not.exist;
+        afterEach(function(){
+            document.cookie = undefined;
+            localStorage.setItem(SK_STORAGE, undefined);
+        });
+
+        it('should not remove the device id from cookies or local storage', function() {
+            expect(cookie.parse(document.cookie)[SK_STORAGE]).to.exist;
+            expect(localStorage.getItem(SK_STORAGE)).to.exist;
+
         });
 
         it('should clear the endpoint of all variables', function() {
