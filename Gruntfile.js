@@ -31,7 +31,7 @@ module.exports = function(grunt) {
         // Metadata
         pkg: grunt.file.readJSON('package.json'),
         license: grunt.file.read('LICENSE'),
-        banner: '/*! \n\t<%= pkg.name %> <%= pkg.version %> \n\t<%= license %> \n*/\n',
+        banner: '/*! \n\t<%= pkg.name %> <%= globalVersion %> \n\t<%= license %> \n*/\n',
         // Task configuration
         clean: ['dist/*'],
         karma: {
@@ -327,6 +327,7 @@ module.exports = function(grunt) {
         });
 
         grunt.option('globalVersion', globalVersion);
+        grunt.config.set('globalVersion', globalVersion);
 
         try {
             grunt.file.read('release_notes/v' + globalVersion + '.md');
