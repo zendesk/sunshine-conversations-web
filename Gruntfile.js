@@ -367,8 +367,4 @@ module.exports = function(grunt) {
     grunt.registerTask('branchCheck', 'Checks that you are publishing from Master branch with no working changes', ['gitinfo', 'checkBranchStatus']);
 
     grunt.registerTask('cdnify', ['awsconfig', 's3:images']);
-
-    grunt.registerTask('bannerPkg', function(){
-        grunt.log.warn(grunt.config.get('globalVersion'))
-    })
 };
