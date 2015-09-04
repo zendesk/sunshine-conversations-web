@@ -17,8 +17,6 @@ var Event = require('./models/event');
 /*jshint +W079 */
 var Rule = require('./models/rule');
 var AppUser = require('./models/appUser');
-var ChatView = require('./views/chatView');
-var ConversationView = require('./views/conversationView');
 var ChatController = require('./controllers/chatController');
 var Conversations = require('./collections/conversations');
 var endpoint = require('./endpoint');
@@ -68,6 +66,20 @@ var SupportKit = Marionette.Object.extend({
             return;
         }
 
+
+        if(/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
+            var link = $('<a>')
+                .attr('href', 'https://supportkit.io')
+                .text('In app messaging by supportkit');
+
+            $(function(){
+                $('body').append(link);
+            });
+
+            this.ready = true;
+            return;
+        }
+
         // TODO: alternatively load fallback CSS that doesn't use
         // unsupported things like transforms
         if (!$.support.cssProperty('transform')) {
@@ -97,7 +109,6 @@ var SupportKit = Marionette.Object.extend({
         }
 
         this.deviceId = this.getDeviceId();
-        this._renderPlaceholder();
 
         endpoint.post('/api/appboot', {
             deviceId: this.deviceId,
@@ -272,18 +283,6 @@ var SupportKit = Marionette.Object.extend({
         if (!this._chatController.conversation || this._chatController.conversation.isNew()) {
             this._chatController._initConversation();
         }
-    },
-
-    // Add placeholder to support back links to supportkit
-    _renderPlaceholder: function() {
-        $(_(function() {
-            if (!this.ready) {
-                this._placeHolder = new ChatView();
-                this._placeHolder.render();
-                this._placeHolder.main.show(new ConversationView());
-                this._placeHolder.$el.addClass('placeHolder').appendTo('body');
-            }
-        }).bind(this));
     },
 
     _renderWidget: function() {
