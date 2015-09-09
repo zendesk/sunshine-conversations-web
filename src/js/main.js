@@ -69,7 +69,7 @@ var SupportKit = Marionette.Object.extend({
 
         if(/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
             var link = $('<a>')
-                .attr('href', 'https://supportkit.io')
+                .attr('href', 'https://supportkit.io?utm_source=widget')
                 .text('In app messaging by supportkit');
 
             $(function(){
