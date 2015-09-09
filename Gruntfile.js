@@ -31,6 +31,7 @@ module.exports = function(grunt) {
         // Metadata
         pkg: grunt.file.readJSON('package.json'),
         license: grunt.file.read('LICENSE'),
+        globalVersion: '<%= pkg.version %>',
         banner: '/*! \n\t<%= pkg.name %> <%= globalVersion %> \n\t<%= license %> \n*/\n',
         // Task configuration
         clean: ['dist/*'],
@@ -140,16 +141,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-        compress: {
-            main: {
-                options: {
-                    mode: 'gzip',
-                    level: 5
-                },
-                src: 'dist/supportkit.min.js',
-                dest: 'dist/supportkit.min.js.gz'
-            }
-        },
 
         s3: {
             options: {
@@ -163,15 +154,6 @@ module.exports = function(grunt) {
                 upload: [{
                     src: 'dist/supportkit.min.js',
                     dest: 'supportkit.min.js'
-                }, {
-                    src: 'dist/supportkit.min.js.gz',
-                    dest: 'supportkit.min.js.gz',
-                    options: {
-                        gzip: true,
-                        headers: {
-                            'Content-Type': 'text/javascript'
-                        }
-                    }
                 }]
             },
             images: {
@@ -213,8 +195,8 @@ module.exports = function(grunt) {
                 },
                 CallerReference: Date.now().toString(),
                 Paths: {
-                    Quantity: 2,
-                    Items: ['/supportkit.min.js', '/supportkit.min.js.gz']
+                    Quantity: 1,
+                    Items: ['/supportkit.min.js']
                 }
             }
         },
@@ -368,7 +350,7 @@ module.exports = function(grunt) {
         grunt.config.set('config.WIDGET_CODE', 'supportkit.min.js');
     });
 
-    grunt.registerTask('build', ['clean', 'browserify', 'uglify', 'compress']);
+    grunt.registerTask('build', ['clean', 'browserify', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'loadConfig', 'replace']);
     grunt.registerTask('devbuild:min', ['clean', 'browserify', 'loadConfig', 'setMinMode', 'replace', 'uglify']);
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3:js', 'cloudfront:prod']);
