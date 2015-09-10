@@ -26,6 +26,23 @@ module.exports = function(grunt) {
         grunt.config.set('aws', awsConfig);
     });
 
+    grunt.registerTask('maxcdnconfig', function() {
+        var maxCDN;
+        try {
+            maxCDN = grunt.file.readJSON('grunt-maxcdn.json');
+        }
+        catch (e) {
+            maxCDN = {};
+        }
+
+        maxCDN.companyAlias = (process.env.MAXCDN_COMPANY_ALIAS || maxCDN.companyAlias);
+        maxCDN.consumerKey = (process.env.MAXCDN_CONSUMER_KEY || maxCDN.consumerKey);
+        maxCDN.consumerSecret = (process.env.MAXCDN_CONSUMER_SECRET || maxCDN.consumerSecret);
+        maxCDN.zoneId = (process.env.MAXCDN_ZONE_ID || maxCDN.zoneId);
+
+        grunt.config.set('maxcdn.options', maxCDN);
+    });
+
     // Project configuration
     grunt.initConfig({
         // Metadata
@@ -177,28 +194,19 @@ module.exports = function(grunt) {
             }
         },
 
-        cloudfront: {
+        maxcdn: {
+          purgeCache: {
             options: {
-                region: 'us-east-1', // your AWS region
-                distributionId: 'E1RI234SLR5ORA', // DistributionID where files are stored
-                credentials: {
-                    accessKeyId: '<%= aws.key %>',
-                    secretAccessKey: '<%= aws.secret %>'
-                },
-                listInvalidations: true, // if you want to see the status of invalidations
-                listDistributions: false, // if you want to see your distributions list in the console
-                version: '1.0' // if you want to invalidate a specific version (file-1.0.js)
+              companyAlias:   '<%= maxcdn.options.companyAlias %>',
+              consumerKey:    '<%= maxcdn.options.consumerKey %>',
+              consumerSecret: '<%= maxcdn.options.consumerSecret %>',
+              zone_id:        '<%= maxcdn.options.zoneId %>',
+              method:         'delete'
             },
-            prod: {
-                options: {
-                    distributionId: 'E1RI234SLR5ORA'
-                },
-                CallerReference: Date.now().toString(),
-                Paths: {
-                    Quantity: 1,
-                    Items: ['/supportkit.min.js']
-                }
-            }
+            files: [
+              { dest: '/supportkit.min.js' }
+            ],
+          },
         },
 
         release: {
@@ -353,7 +361,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['clean', 'browserify', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'loadConfig', 'replace']);
     grunt.registerTask('devbuild:min', ['clean', 'browserify', 'loadConfig', 'setMinMode', 'replace', 'uglify']);
-    grunt.registerTask('deploy', ['build', 'awsconfig', 's3:js', 'cloudfront:prod']);
+    grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig','s3:js', 'maxcdn:prod']);
     grunt.registerTask('run', ['runlog', 'devbuild', 'concurrent:dev']);
     grunt.registerTask('run:min', ['runlog', 'devbuild:min', 'concurrent:min']);
     grunt.registerTask('test', ['karma:unit']);

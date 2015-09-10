@@ -5,6 +5,7 @@ build
 tmp
 dist/
 grunt-aws.json
+grunt-maxcdn.json
 *.sublime-workspace
 junit
 config/*
