@@ -287,10 +287,6 @@ var SupportKit = Marionette.Object.extend({
 
     _renderWidget: function() {
         this._chatController.getWidget().then(_.bind(function(widget) {
-            if (this._placeHolder) {
-                this._placeHolder.destroy();
-            }
-
             $('body').append(widget.el);
 
             _(function() {
