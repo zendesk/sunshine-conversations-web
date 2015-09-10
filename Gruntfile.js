@@ -361,7 +361,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['clean', 'browserify', 'uglify']);
     grunt.registerTask('devbuild', ['clean', 'browserify', 'loadConfig', 'replace']);
     grunt.registerTask('devbuild:min', ['clean', 'browserify', 'loadConfig', 'setMinMode', 'replace', 'uglify']);
-    grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig','s3:js', 'maxcdn:prod']);
+    grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig','s3:js', 'maxcdn']);
     grunt.registerTask('run', ['runlog', 'devbuild', 'concurrent:dev']);
     grunt.registerTask('run:min', ['runlog', 'devbuild:min', 'concurrent:min']);
     grunt.registerTask('test', ['karma:unit']);
