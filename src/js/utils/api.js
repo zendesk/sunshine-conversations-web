@@ -42,10 +42,14 @@ module.exports.call = function call(options) {
         appUserId: endpoint.appUserId
     });
 
+    var fetchOptions = {
+        method: method
+    };
+
     if (method === 'GET') {
         url = stringifyGETParams(url, data);
-    } else {
-        data = JSON.stringify(data);
+    } else if(method === 'POST' || method === 'PUT') {
+        fetchOptions.body = JSON.stringify(data);
     }
 
     var headers = {
@@ -61,12 +65,10 @@ module.exports.call = function call(options) {
         headers['Authorization'] = 'Bearer ' + endpoint.jwt;
     }
 
+    fetchOptions.headers = headers;
+
     var promise = new Promise(function(resolve, reject) {
-        fetch(url, {
-                method: method,
-                headers: headers,
-                body: data
-            })
+        fetch(url, fetchOptions)
             .then(status)
             .then(json)
             .then(function(body) {
