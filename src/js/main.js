@@ -98,8 +98,8 @@ var SupportKit = Marionette.Object.extend({
         if (typeof options === 'object') {
             endpoint.appToken = options.appToken;
             endpoint.jwt = options.jwt;
-            if (options.serverUrl) {
-                endpoint.rootUrl = options.serverUrl;
+            if (options.serviceUrl) {
+                endpoint.rootUrl = options.serviceUrl;
             }
         } else if (typeof options === 'string') {
             endpoint.appToken = options;
