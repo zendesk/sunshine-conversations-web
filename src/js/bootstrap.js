@@ -1,25 +1,11 @@
 'use strict';
 
+// polyfill for window.fetch
+require('whatwg-fetch');
+require('./utils/backbone.ajax');
 var $ = require('jquery');
-// Enable CORS for IE8
-$.support.cors = true;
 
 require('./utils/jquery.support.cssproperty');
-
-// Polyfill Object.getPrototypeOf
-// http://ejohn.org/blog/objectgetprototypeof/
-if (typeof Object.getPrototypeOf !== 'function') {
-    if (typeof 'test'.__proto__ === 'object') {
-        Object.getPrototypeOf = function(object) {
-            return object.__proto__;
-        };
-    } else {
-        Object.getPrototypeOf = function(object) {
-            // May break if the constructor has been tampered with
-            return object.constructor.prototype;
-        };
-    }
-}
 
 /**
  * Marionette setup

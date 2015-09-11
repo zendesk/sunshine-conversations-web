@@ -11,7 +11,6 @@ var uuid = require('uuid');
 var urljoin = require('url-join');
 var bindAll = require('lodash.bindall');
 
-var BaseCollection = require('./collections/baseCollection');
 /*jshint -W079 */
 var Event = require('./models/event');
 /*jshint +W079 */
@@ -20,6 +19,7 @@ var AppUser = require('./models/appUser');
 var ChatController = require('./controllers/chatController');
 var Conversations = require('./collections/conversations');
 var endpoint = require('./endpoint');
+var api = require('./utils/api');
 
 var SK_STORAGE = 'sk_deviceid';
 
@@ -67,12 +67,12 @@ var SupportKit = Marionette.Object.extend({
         }
 
 
-        if(/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
+        if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
             var link = $('<a>')
                 .attr('href', 'https://supportkit.io?utm_source=widget')
                 .text('In app messaging by supportkit');
 
-            $(function(){
+            $(function() {
                 $('body').append(link);
             });
 
@@ -110,26 +110,30 @@ var SupportKit = Marionette.Object.extend({
 
         this.deviceId = this.getDeviceId();
 
-        endpoint.post('/api/appboot', {
-            deviceId: this.deviceId,
-            userId: options.userId,
-            deviceInfo: {
-                URL: document.location.host,
-                userAgent: navigator.userAgent,
-                referrer: document.referrer,
-                browserLanguage: navigator.language,
-                currentUrl: document.location.href,
-                sdkVersion: this.VERSION,
-                currentTitle: document.title,
-                platform: 'web'
-            }
-        })
+        api.call({
+                url: 'appboot',
+                method: 'POST',
+                data: {
+                    deviceId: this.deviceId,
+                    userId: options.userId,
+                    deviceInfo: {
+                        URL: document.location.host,
+                        userAgent: navigator.userAgent,
+                        referrer: document.referrer,
+                        browserLanguage: navigator.language,
+                        currentUrl: document.location.href,
+                        sdkVersion: this.VERSION,
+                        currentTitle: document.title,
+                        platform: 'web'
+                    }
+                }
+            })
             .then(_(function(res) {
                 this.user = new AppUser({
                     id: res.appUserId
                 });
 
-                var EventCollection = BaseCollection.extend({
+                var EventCollection = Backbone.Collection.extend({
                     url: urljoin('appusers', res.appUserId, 'event'),
                     model: Event
                 });
@@ -171,11 +175,10 @@ var SupportKit = Marionette.Object.extend({
             .then(_(function() {
                 this._renderWidget();
             }).bind(this))
-            .fail(function(err) {
+            .catch(function(err) {
                 var message = err && (err.message || err.statusText);
                 console.error('SupportKit init error: ', message);
-            })
-            .done();
+            });
 
         return this._readyPromise;
     },
@@ -221,15 +224,20 @@ var SupportKit = Marionette.Object.extend({
 
     updateUser: function(userInfo) {
         if (typeof userInfo !== 'object') {
-            return $.Deferred().reject(new Error('updateUser accepts an object as parameter'));
+            return new Promise(function(resolve, reject) {
+                reject(new Error('updateUser accepts an object as parameter'));
+            });
         }
+        var user = this.user;
 
-        return this.user.save(userInfo, {
-            parse: true,
-            wait: true
-        }).then(function() {
-            return this.user;
-        }.bind(this));
+        return new Promise(function(resolve, reject)  {
+            user.save(userInfo, {
+                parse: true,
+                wait: true
+            }).then(function() {
+                resolve(user);
+            }).catch(reject);
+        });
     },
 
     track: function(eventName) {
@@ -253,15 +261,18 @@ var SupportKit = Marionette.Object.extend({
         var hasEvent = this._hasEvent(eventName);
 
         if (!hasEvent) {
-            endpoint.put('api/event', {
-                name: eventName
-            }).then(_.bind(function() {
-                this._eventCollection.add({
-                    name: eventName,
-                    user: this.user
-                });
-            }, this))
-                .done();
+            api.call({
+                    url: 'event',
+                    method: 'PUT',
+                    data: {
+                        name: eventName
+                    }
+                }).then(_.bind(function() {
+                    this._eventCollection.add({
+                        name: eventName,
+                        user: this.user
+                    });
+                }, this));
         }
     },
 

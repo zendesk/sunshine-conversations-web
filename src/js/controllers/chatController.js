@@ -62,51 +62,46 @@ module.exports = ViewController.extend({
     },
 
     sendMessage: function(text) {
-        return $.Deferred().resolve().then(function() {
-            var promise = $.Deferred();
-
-            if (this.conversation.isNew()) {
-                this.conversation = this.collection.create(this.conversation, {
-                    success: promise.resolve,
-                    error: promise.reject
-                });
-            } else {
-                promise.resolve(this.conversation);
-            }
-
-            return promise;
-        }.bind(this))
+        var self = this;
+        return new Promise(function(resolve, reject) {
+                if (self.conversation.isNew()) {
+                    self.conversation = self.collection.create(self.conversation, {
+                        success: resolve,
+                        error: reject
+                    });
+                } else {
+                    resolve(self.conversation);
+                }
+            })
             .then(this._initFaye)
             .then(function(conversation) {
                 // update the user before sending the message to ensure properties are correct
-                return this.user._save({}, {
+                return self.user._save({}, {
                     wait: true
                 }).then(_.constant(conversation));
-            }.bind(this)).then(function(conversation) {
-            var promise = $.Deferred();
+            }).then(function(conversation) {
+                return new Promise(function(resolve, reject){
+                    conversation.get('messages').create({
+                        authorId: endpoint.appUserId,
+                        text: text
+                    }, {
+                        success: resolve,
+                        error: reject
+                    });
+                });
+            }).then(function(message) {
+                var appUserMessages = self.conversation.get('messages').filter(function(message) {
+                    return message.get('authorId') === endpoint.appUserId;
+                });
 
-            conversation.get('messages').create({
-                authorId: endpoint.appUserId,
-                text: text
-            }, {
-                success: promise.resolve,
-                error: promise.reject
+                if (self.getOption('emailCaptureEnabled') &&
+                    appUserMessages.length === 1 &&
+                    !self.user.get('email')) {
+                    self._showEmailNotification();
+                }
+
+                return message;
             });
-
-            return promise;
-        }.bind(this)).then(function(message) {
-            var appUserMessages = this.conversation.get('messages').filter(function(message) {
-                return message.get('authorId') === endpoint.appUserId;
-            });
-
-            if (this.getOption('emailCaptureEnabled') &&
-                appUserMessages.length === 1 &&
-                !this.user.get('email')) {
-                this._showEmailNotification();
-            }
-
-            return message;
-        }.bind(this));
     },
 
     scrollToBottom: function() {

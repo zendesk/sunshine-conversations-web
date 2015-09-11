@@ -2,12 +2,9 @@
 
 var _ = require('underscore');
 var $ = require('jquery');
-var Backbone = require('backbone');
+var Backbone = require('backbone-associations');
 
-var BaseModel = require('./baseModel');
-
-
-var AppUser = module.exports = BaseModel.extend({
+var AppUser = module.exports = Backbone.AssociatedModel.extend({
 
     initialize: function() {
         this._throttleSave = _.throttle(this._save.bind(this), 5000);

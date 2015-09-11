@@ -1,12 +1,13 @@
 'use strict';
 
 var _ = require('underscore');
-var Backbone = require('backbone');
-var BaseModel = require('./baseModel');
+var Backbone = require('backbone-associations');
 
+/*jshint -W079 */
 var Event = require('./event');
+/*jshint +W079 */
 
-module.exports = BaseModel.extend({
+module.exports = Backbone.AssociatedModel.extend({
     idAttribute: '_id',
 
     parse: function(data) {

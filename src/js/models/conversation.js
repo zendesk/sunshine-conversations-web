@@ -1,14 +1,13 @@
 'use strict';
 
-var Backbone = require('backbone');
+var Backbone = require('backbone-associations');
 var urljoin = require('url-join');
 
-var BaseModel = require('./baseModel');
 var AppMaker = require('./appMaker');
 var AppUser = require('./appUser');
 var Messages = require('../collections/messages');
 
-module.exports = BaseModel.extend({
+module.exports = Backbone.AssociatedModel.extend({
     idAttribute: '_id',
     urlRoot: 'conversations/',
 

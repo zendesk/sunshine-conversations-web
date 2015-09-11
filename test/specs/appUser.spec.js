@@ -102,7 +102,7 @@ describe('AppUser', function() {
             user.save().then(function() {
                 user.isDirty().should.be.false;
                 done();
-            }).fail(done);
+            }).catch(done);
 
         });
 
@@ -148,7 +148,7 @@ describe('AppUser', function() {
                     user.isDirty().should.be.false;
                     done();
                 })
-                .fail(done);
+                .catch(done);
         });
 
         it('should be true if different properties are passed', function() {
