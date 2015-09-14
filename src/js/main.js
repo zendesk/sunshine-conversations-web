@@ -1,4 +1,4 @@
-/* global global:false */
+/* global global:false, Promise:false */
 'use strict';
 require('./bootstrap');
 
@@ -17,7 +17,6 @@ var Event = require('./models/event');
 var Rule = require('./models/rule');
 var AppUser = require('./models/appUser');
 var ChatController = require('./controllers/chatController');
-var Conversations = require('./collections/conversations');
 var endpoint = require('./endpoint');
 var api = require('./utils/api');
 
@@ -25,6 +24,15 @@ var SK_STORAGE = 'sk_deviceid';
 
 // appends the compile stylesheet to the HEAD
 require('../stylesheets/main.less');
+
+
+var EventCollection = Backbone.Collection.extend({
+    model: Event
+});
+
+var RuleCollection = Backbone.Collection.extend({
+    model: Rule
+});
 
 /**
  * Contains all SupportKit API classes and functions.
@@ -51,8 +59,12 @@ var SupportKit = Marionette.Object.extend({
 
     initialize: function() {
         bindAll(this);
-        this._readyPromise = $.Deferred();
-        this._conversations = new Conversations();
+        this._widgetRendered = false;
+
+        this.user = new AppUser();
+
+        this._eventCollection = new EventCollection();
+        this._ruleCollection = new RuleCollection();
     },
 
     _checkReady: function(message) {
@@ -62,129 +74,129 @@ var SupportKit = Marionette.Object.extend({
     },
 
     init: function(options) {
-        if (this.ready) {
-            return;
-        }
+        return new Promise(function(resolve, reject) {
+            if (this.ready) {
+                return resolve();
+            }
+
+            if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
+                var link = $('<a>')
+                    .attr('href', 'https://supportkit.io?utm_source=widget')
+                    .text('In app messaging by supportkit');
+
+                $(function() {
+                    $('body').append(link);
+                });
+
+                this.ready = true;
+                return resolve();
+            }
+
+            // TODO: alternatively load fallback CSS that doesn't use
+            // unsupported things like transforms
+            if (!$.support.cssProperty('transform')) {
+                return reject(new Error('SupportKit is not supported on this browser. ' +
+                        'Missing capability: css-transform'));
+            }
 
 
-        if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
-            var link = $('<a>')
-                .attr('href', 'https://supportkit.io?utm_source=widget')
-                .text('In app messaging by supportkit');
+            this.ready = false;
+            options = options || {};
 
-            $(function() {
-                $('body').append(link);
+            // if the email was passed at init, it can't be changed through the web widget UI
+            var readOnlyEmail = !_.isEmpty(options.email);
+            var emailCaptureEnabled = options.emailCaptureEnabled && !readOnlyEmail;
+            var uiText = _.extend({}, this.defaultText, options.customText);
+
+            this.options = _.defaults(options, {
+                emailCaptureEnabled: emailCaptureEnabled,
+                readOnlyEmail: readOnlyEmail,
+                uiText: uiText
             });
 
-            this.ready = true;
-            return;
+            if (typeof options === 'string') {
+                options = {
+                    appToken: options
+                };
+            }
+
+            if (typeof options === 'object') {
+                endpoint.appToken = options.appToken;
+            } else {
+                return reject(new Error('init method accepts an object or string'));
+            }
+
+            if (!endpoint.appToken) {
+                return reject(new Error('init method requires an appToken'));
+            }
+
+            resolve(this.login(options.userId, options.jwt));
+
+        }.bind(this));
+    },
+
+    login: function(userId, jwt) {
+        this._cleanState();
+
+        var data = {
+            deviceId: this.getDeviceId(),
+            deviceInfo: {
+                URL: document.location.host,
+                userAgent: navigator.userAgent,
+                referrer: document.referrer,
+                browserLanguage: navigator.language,
+                currentUrl: document.location.href,
+                sdkVersion: this.VERSION,
+                currentTitle: document.title,
+                platform: 'web'
+            }
+        };
+
+        if (userId) {
+            data.userId = userId;
         }
 
-        // TODO: alternatively load fallback CSS that doesn't use
-        // unsupported things like transforms
-        if (!$.support.cssProperty('transform')) {
-            console.error('SupportKit is not supported on this browser. ' +
-                'Missing capability: css-transform');
-            return;
+        if (jwt) {
+            endpoint.jwt = jwt;
         }
 
-        this.ready = false;
-        options = options || {};
-
-        options = _.defaults(options, {
-            emailCaptureEnabled: false
-        });
-
-        if (typeof options === 'object') {
-            endpoint.appToken = options.appToken;
-            endpoint.jwt = options.jwt;
-        } else if (typeof options === 'string') {
-            endpoint.appToken = options;
-        } else {
-            throw new Error('init method accepts an object or string');
-        }
-
-        if (!endpoint.appToken) {
-            throw new Error('init method requires an appToken');
-        }
-
-        this.deviceId = this.getDeviceId();
-
-        api.call({
-                url: 'appboot',
-                method: 'POST',
-                data: {
-                    deviceId: this.deviceId,
-                    userId: options.userId,
-                    deviceInfo: {
-                        URL: document.location.host,
-                        userAgent: navigator.userAgent,
-                        referrer: document.referrer,
-                        browserLanguage: navigator.language,
-                        currentUrl: document.location.href,
-                        sdkVersion: this.VERSION,
-                        currentTitle: document.title,
-                        platform: 'web'
-                    }
-                }
-            })
+        return api.call({
+            url: 'appboot',
+            method: 'POST',
+            data: data
+        })
             .then(_(function(res) {
-                this.user = new AppUser({
-                    id: res.appUserId
-                });
+                this.user.set(res.appUser);
+                endpoint.appUserId = this.user.id;
 
-                var EventCollection = Backbone.Collection.extend({
-                    url: urljoin('appusers', res.appUserId, 'event'),
-                    model: Event
-                });
-
-                var RuleCollection = Backbone.Collection.extend({
-                    model: Rule
-                });
+                this._eventCollection.url = urljoin('appusers', this.user.id, 'event');
 
                 // this._events overrides some internals for event bindings in Backbone
-                this._eventCollection = new EventCollection(res.events, {
+                this._eventCollection.reset(res.events, {
                     parse: true
                 });
 
                 // for consistency, this will use the collection suffix too.
-                this._ruleCollection = new RuleCollection(res.rules, {
+                this._ruleCollection.reset(res.rules, {
                     parse: true
                 });
 
-                endpoint.appUserId = res.appUserId;
-
-                // if the email was passed at init, it can't be changed through the web widget UI
-                var readOnlyEmail = !_.isEmpty(options.email);
-                var emailCaptureEnabled = options.emailCaptureEnabled && !readOnlyEmail;
-                var uiText = _.extend({}, this.defaultText, options.customText);
-
-                this._chatController = new ChatController({
-                    collection: this._conversations,
-                    user: this.user,
-                    readOnlyEmail: readOnlyEmail,
-                    emailCaptureEnabled: emailCaptureEnabled,
-                    uiText: uiText
-                });
-
-                return this.user.save(_.pick(options, AppUser.EDITABLE_PROPERTIES), {
+                return this.user.save(_.pick(this.options, AppUser.EDITABLE_PROPERTIES), {
                     parse: true,
                     wait: true
                 });
             }).bind(this))
             .then(_(function() {
-                this._renderWidget();
+                return this._renderWidget();
             }).bind(this))
             .catch(function(err) {
                 var message = err && (err.message || err.statusText);
                 console.error('SupportKit init error: ', message);
             });
-
-        return this._readyPromise;
     },
 
     logout: function() {
-        this.destroy();
+        return Promise.resolve(this.ready ? this.login() : undefined);
     },
 
     getDeviceId: function() {
@@ -230,7 +242,7 @@ var SupportKit = Marionette.Object.extend({
         }
         var user = this.user;
 
-        return new Promise(function(resolve, reject)  {
+        return new Promise(function(resolve, reject) {
             user.save(userInfo, {
                 parse: true,
                 wait: true
@@ -262,17 +274,17 @@ var SupportKit = Marionette.Object.extend({
 
         if (!hasEvent) {
             api.call({
-                    url: 'event',
-                    method: 'PUT',
-                    data: {
-                        name: eventName
-                    }
-                }).then(_.bind(function() {
-                    this._eventCollection.add({
-                        name: eventName,
-                        user: this.user
-                    });
-                }, this));
+                url: 'event',
+                method: 'PUT',
+                data: {
+                    name: eventName
+                }
+            }).then(_.bind(function() {
+                this._eventCollection.add({
+                    name: eventName,
+                    user: this.user
+                });
+            }, this));
         }
     },
 
@@ -297,37 +309,48 @@ var SupportKit = Marionette.Object.extend({
     },
 
     _renderWidget: function() {
-        this._chatController.getWidget().then(_.bind(function(widget) {
+        this._chatController = new ChatController({
+            user: this.user,
+            readOnlyEmail: this.options.readOnlyEmail,
+            emailCaptureEnabled: this.options.emailCaptureEnabled,
+            uiText: this.options.uiText
+        });
+
+        return this._chatController.getWidget().then(function(widget) {
             $('body').append(widget.el);
+            this._widgetRendered = true;
 
             _(function() {
                 this._chatController.scrollToBottom();
             }).chain().bind(this).delay();
 
-            // Tell the world we're ready
             this.triggerMethod('ready');
-        }, this));
+            return;
+        }.bind(this));
+    },
+
+    _cleanState: function() {
+        this.user.clear();
+        this._ruleCollection.reset();
+        this._eventCollection.reset();
+
+        if (this._widgetRendered) {
+            this._chatController.destroy();
+        }
+
+        endpoint.reset();
+        this.ready = false;
+        this._widgetRendered = false;
     },
 
     onReady: function() {
         this.ready = true;
         this.track('skt-appboot');
-        this._readyPromise.resolve();
     },
 
     onDestroy: function() {
-        if (this.ready) {
-            this._ruleCollection.reset();
-            this._eventCollection.reset();
-            this._conversations.reset();
-            this._chatController.destroy();
-
-            this._readyPromise = $.Deferred();
-
-            endpoint.reset();
-
-            this.ready = false;
-        }
+        this._cleanState();
+        delete endpoint.appToken;
     }
 });
 

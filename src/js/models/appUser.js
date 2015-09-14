@@ -5,10 +5,12 @@ var $ = require('jquery');
 var Backbone = require('backbone-associations');
 
 var AppUser = module.exports = Backbone.AssociatedModel.extend({
+    idAttribute: '_id',
 
     initialize: function() {
         this._throttleSave = _.throttle(this._save.bind(this), 5000);
     },
+
     parse: function(data) {
         return _.isObject(data) ? data : {
             id: data

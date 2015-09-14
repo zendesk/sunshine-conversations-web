@@ -1,3 +1,4 @@
+/* global Promise:false */
 'use strict';
 
 var $ = require('jquery');
@@ -11,6 +12,7 @@ var vent = require('../vent');
 var faye = require('../faye');
 
 var Conversation = require('../models/conversation');
+var Conversations = require('../collections/conversations');
 
 var ChatView = require('../views/chatView');
 var HeaderView = require('../views/headerView');
@@ -34,6 +36,7 @@ module.exports = ViewController.extend({
         this.user = this.getOption('user');
         this.uiText = this.getOption('uiText') || {};
         this.conversationInitiated = false;
+        this.collection = new Conversations();
     },
 
     open: function() {
@@ -64,15 +67,15 @@ module.exports = ViewController.extend({
     sendMessage: function(text) {
         var self = this;
         return new Promise(function(resolve, reject) {
-                if (self.conversation.isNew()) {
-                    self.conversation = self.collection.create(self.conversation, {
-                        success: resolve,
-                        error: reject
-                    });
-                } else {
-                    resolve(self.conversation);
-                }
-            })
+            if (self.conversation.isNew()) {
+                self.conversation = self.collection.create(self.conversation, {
+                    success: resolve,
+                    error: reject
+                });
+            } else {
+                resolve(self.conversation);
+            }
+        })
             .then(this._initFaye)
             .then(function(conversation) {
                 // update the user before sending the message to ensure properties are correct
@@ -80,28 +83,28 @@ module.exports = ViewController.extend({
                     wait: true
                 }).then(_.constant(conversation));
             }).then(function(conversation) {
-                return new Promise(function(resolve, reject){
-                    conversation.get('messages').create({
-                        authorId: endpoint.appUserId,
-                        text: text
-                    }, {
-                        success: resolve,
-                        error: reject
-                    });
+            return new Promise(function(resolve, reject) {
+                conversation.get('messages').create({
+                    authorId: endpoint.appUserId,
+                    text: text
+                }, {
+                    success: resolve,
+                    error: reject
                 });
-            }).then(function(message) {
-                var appUserMessages = self.conversation.get('messages').filter(function(message) {
-                    return message.get('authorId') === endpoint.appUserId;
-                });
-
-                if (self.getOption('emailCaptureEnabled') &&
-                    appUserMessages.length === 1 &&
-                    !self.user.get('email')) {
-                    self._showEmailNotification();
-                }
-
-                return message;
             });
+        }).then(function(message) {
+            var appUserMessages = self.conversation.get('messages').filter(function(message) {
+                return message.get('authorId') === endpoint.appUserId;
+            });
+
+            if (self.getOption('emailCaptureEnabled') &&
+                appUserMessages.length === 1 &&
+                !self.user.get('email')) {
+                self._showEmailNotification();
+            }
+
+            return message;
+        });
     },
 
     scrollToBottom: function() {
@@ -157,8 +160,6 @@ module.exports = ViewController.extend({
     },
 
     _getConversation: function() {
-        var deferred = $.Deferred();
-
         if (this.conversation) {
             // we created an empty collection, but a remote one was created
             // we need to swap them without unbinding everything
@@ -178,9 +179,7 @@ module.exports = ViewController.extend({
             }
         }
 
-        deferred.resolve(this.conversation);
-
-        return deferred;
+        return Promise.resolve(this.conversation);
     },
 
     _initFaye: function(conversation) {

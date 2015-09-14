@@ -7,7 +7,6 @@ module.exports.jwt = undefined;
 module.exports.appUserId = undefined;
 
 module.exports.reset = function() {
-    delete this.appToken;
     delete this.jwt;
     delete this.appUserId;
 };
