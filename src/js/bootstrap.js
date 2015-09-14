@@ -1,4 +1,5 @@
 'use strict';
+require('es6-promise').polyfill();
 
 // polyfill for window.fetch
 require('whatwg-fetch');
