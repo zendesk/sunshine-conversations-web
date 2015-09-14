@@ -1,5 +1,4 @@
 'use strict';
-require("babelify/polyfill");
 
 // polyfill for window.fetch
 require('whatwg-fetch');
