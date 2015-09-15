@@ -23,6 +23,8 @@ var EmailNotificationView = require('../views/emailNotificationView');
 var ChatInputController = require('../controllers/chatInputController');
 var SettingsController = require('../controllers/settingsController');
 
+var SK_LATEST_TS = 'sk_latestts';
+
 module.exports = ViewController.extend({
     viewClass: ChatView,
 
@@ -351,14 +353,21 @@ module.exports = ViewController.extend({
 
     _getLatestReadTime: function() {
         if (!this.latestReadTs) {
-            this.latestReadTs = parseInt(cookie.parse(document.cookie).sk_latestts || 0);
+            var key = SK_LATEST_TS + '_' + endpoint.appUserId;
+
+            this.latestReadTs = parseInt(localStorage.getItem(key) ||
+                cookie.parse(document.cookie)[key] ||
+                0);
         }
         return this.latestReadTs;
     },
 
     _setLatestReadTime: function(ts) {
         this.latestReadTs = ts;
-        document.cookie = 'sk_latestts=' + ts;
+
+        var key = SK_LATEST_TS + '_' + endpoint.appUserId;
+        document.cookie = key + '=' + ts;
+        localStorage.setItem(key, ts);
     },
 
     _updateUnread: function() {
