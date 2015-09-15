@@ -1,7 +1,7 @@
+/* global Promise:false */
 'use strict';
 
 var _ = require('underscore');
-var $ = require('jquery');
 var Backbone = require('backbone-associations');
 
 var AppUser = module.exports = Backbone.AssociatedModel.extend({
@@ -53,7 +53,7 @@ var AppUser = module.exports = Backbone.AssociatedModel.extend({
         } else {
             success && success(this, null, null);
 
-            return $.Deferred().resolve(this, null, null);
+            return Promise.resolve(this, null, null);
         }
     },
 

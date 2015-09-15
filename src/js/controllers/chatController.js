@@ -190,7 +190,7 @@ module.exports = ViewController.extend({
             }.bind(this));
         }
 
-        return $.Deferred().resolve(conversation);
+        return Promise.resolve(conversation);
     },
 
     _initConversation: function() {
