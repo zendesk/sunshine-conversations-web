@@ -355,9 +355,15 @@ module.exports = ViewController.extend({
         if (!this.latestReadTs) {
             var key = SK_LATEST_TS + '_' + endpoint.appUserId;
 
-            this.latestReadTs = parseInt(localStorage.getItem(key) ||
+            try {
+
+                this.latestReadTs = parseInt(localStorage.getItem(key) ||
                 cookie.parse(document.cookie)[key] ||
                 0);
+            }
+            catch (e) {
+                this.latestReadTs = 0;
+            }
         }
         return this.latestReadTs;
     },
