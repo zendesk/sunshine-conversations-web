@@ -1,12 +1,11 @@
 'use strict';
 
 var _ = require('underscore');
-var Backbone = require('backbone');
-var BaseModel = require('./baseModel');
+var Backbone = require('backbone-associations');
 
 var AppUser = require('./appUser');
 
-module.exports = BaseModel.extend({
+module.exports = Backbone.AssociatedModel.extend({
     parse: function(data) {
         return _.isObject(data) ? data : {
             name: data

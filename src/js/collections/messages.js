@@ -1,7 +1,8 @@
-var BaseCollection = require('./baseCollection');
+'use strict';
+var Backbone = require('backbone');
 var Message = require('../models/message');
 
-module.exports = BaseCollection.extend({
+module.exports = Backbone.Collection.extend({
     model: Message,
     comparator: 'received'
 });

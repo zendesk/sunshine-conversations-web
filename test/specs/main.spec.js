@@ -6,6 +6,7 @@ var Backbone = require('backbone');
 
 var ClientScenario = require('../scenarios/clientScenario');
 var endpoint = require('../../src/js/endpoint');
+var api = require('../../src/js/utils/api');
 
 var SK_STORAGE = 'sk_deviceid';
 
@@ -61,13 +62,13 @@ describe('Main', function() {
         var userId = 'thisisauserid';
         var appToken = 'thisisanapptoken';
         var jwt = 'thisisajwt';
-        var endpointSpy;
+        var apiSpy;
         var trackSpy;
         var initSpy;
 
         beforeEach(function() {
             trackSpy = sandbox.spy(SupportKit, 'track');
-            endpointSpy = sandbox.spy(endpoint, 'post');
+            apiSpy = sandbox.spy(api, 'call');
             initSpy = sandbox.spy();
         });
 
@@ -134,7 +135,9 @@ describe('Main', function() {
             SupportKit.destroy();
 
             SupportKit.once('ready', function() {
-                expect(endpointSpy.args[0][1].deviceInfo.platform).to.equal('web');
+                apiSpy.args[0][0].url.should.eql('appboot');
+                apiSpy.args[0][0].method.should.eql('POST');
+                apiSpy.args[0][0].data.deviceInfo.platform.should.eq('web');
                 done();
             });
 
@@ -151,7 +154,7 @@ describe('Main', function() {
             SupportKit.logout();
         });
 
-        afterEach(function(){
+        afterEach(function() {
             document.cookie = undefined;
             localStorage.setItem(SK_STORAGE, undefined);
         });
@@ -178,7 +181,7 @@ describe('Main', function() {
         });
 
         it('should fail the promise if called with bad parameters (empty, in this case)', function(done) {
-            SupportKit.updateUser().fail(function() {
+            SupportKit.updateUser().catch(function() {
                 done();
             });
         });
@@ -203,7 +206,6 @@ describe('Main', function() {
                 });
             }).then(function() {
                 syncSpy.should.be.calledOnce;
-            }).always(function() {
                 done();
             });
 
@@ -234,13 +236,13 @@ describe('Main', function() {
     });
 
     describe('#track', function() {
-        var endpoint = require('../../src/js/endpoint');
+        var api = require('../../src/js/utils/api');
         var eventCreateSpy;
-        var endpointSpy;
+        var apiSpy;
 
         beforeEach(function() {
             eventCreateSpy = sandbox.spy(SupportKit._eventCollection, 'create');
-            endpointSpy = sandbox.spy(endpoint, 'put');
+            apiSpy = sandbox.spy(api, 'call');
         });
 
         describe('tracking a new event', function() {
@@ -251,7 +253,9 @@ describe('Main', function() {
 
                 SupportKit.track('new-event');
 
-                endpointSpy.should.have.been.calledWith('api/event');
+                apiSpy.args[0][0].url.should.eq('event');
+                apiSpy.args[0][0].method.should.eq('PUT');
+                apiSpy.args[0][0].data.name.should.eq('new-event');
             });
         });
 
@@ -281,7 +285,7 @@ describe('Main', function() {
                 SupportKit.track('not-rule-in-event');
 
                 eventCreateSpy.should.not.have.been.called;
-                endpointSpy.should.not.have.been.called;
+                apiSpy.should.not.have.been.called;
             });
         });
 
@@ -295,7 +299,7 @@ describe('Main', function() {
                 SupportKit.track('skt-appboot');
 
                 eventCreateSpy.should.not.have.been.called;
-                endpointSpy.should.not.have.been.called;
+                apiSpy.should.not.have.been.called;
             });
 
 
