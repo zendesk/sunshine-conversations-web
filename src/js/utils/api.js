@@ -67,7 +67,7 @@ module.exports.call = function call(options) {
 
     fetchOptions.headers = headers;
 
-    var promise = new Promise(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
         fetch(url, fetchOptions)
             .then(status)
             .then(json)
@@ -85,6 +85,4 @@ module.exports.call = function call(options) {
             });
 
     });
-
-    return promise;
 };
