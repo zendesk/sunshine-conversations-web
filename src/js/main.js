@@ -67,12 +67,12 @@ var SupportKit = Marionette.Object.extend({
         }
 
 
-        if(/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
+        if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
             var link = $('<a>')
                 .attr('href', 'https://supportkit.io?utm_source=widget')
                 .text('In app messaging by supportkit');
 
-            $(function(){
+            $(function() {
                 $('body').append(link);
             });
 
@@ -98,6 +98,9 @@ var SupportKit = Marionette.Object.extend({
         if (typeof options === 'object') {
             endpoint.appToken = options.appToken;
             endpoint.jwt = options.jwt;
+            if (options.serviceUrl) {
+                endpoint.rootUrl = options.serviceUrl;
+            }
         } else if (typeof options === 'string') {
             endpoint.appToken = options;
         } else {
