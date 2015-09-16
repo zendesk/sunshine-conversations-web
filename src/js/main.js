@@ -42,7 +42,7 @@ var RuleCollection = Backbone.Collection.extend({
  * Contains all SupportKit API classes and functions.
  */
 var SupportKit = Marionette.Object.extend({
-    VERSION: '0.2.30',
+    VERSION: '0.2.31',
 
     defaultText: {
         headerText: 'How can we help?',
@@ -132,8 +132,22 @@ var SupportKit = Marionette.Object.extend({
 
             resolve(this.login(options.userId, options.jwt));
 
+<<<<<<< HEAD
         }.bind(this));
     },
+=======
+        if (typeof options === 'object') {
+            endpoint.appToken = options.appToken;
+            endpoint.jwt = options.jwt;
+            if (options.serviceUrl) {
+                endpoint.rootUrl = options.serviceUrl;
+            }
+        } else if (typeof options === 'string') {
+            endpoint.appToken = options;
+        } else {
+            throw new Error('init method accepts an object or string');
+        }
+>>>>>>> integration
 
     login: function(userId, jwt) {
         this._cleanState();
