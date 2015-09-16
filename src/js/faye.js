@@ -9,8 +9,13 @@ module.exports.init = function(conversationId) {
     faye.addExtension({
         outgoing: function(message, callback) {
             if (message.channel === '/meta/subscribe') {
+                if(endpoint.jwt) {
+                    message.jwt = endpoint.jwt;
+                } else {
+                    message.appUserId = endpoint.appUserId;
+                }
+
                 message.appToken = endpoint.appToken;
-                message.appUserId = endpoint.appUserId;
             }
 
             callback(message);
