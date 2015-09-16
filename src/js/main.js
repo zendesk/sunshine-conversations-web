@@ -74,9 +74,8 @@ var SupportKit = Marionette.Object.extend({
     },
 
     init: function(options) {
-        return new Promise(function(resolve, reject) {
-            if (this.ready) {
-                return resolve();
+        if (this.ready) {
+                return Promise.resolve();
             }
 
             if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
@@ -89,13 +88,13 @@ var SupportKit = Marionette.Object.extend({
                 });
 
                 this.ready = true;
-                return resolve();
+                return Promise.resolve();
             }
 
             // TODO: alternatively load fallback CSS that doesn't use
             // unsupported things like transforms
             if (!$.support.cssProperty('transform')) {
-                return reject(new Error('SupportKit is not supported on this browser. ' +
+                return Promise.reject(new Error('SupportKit is not supported on this browser. ' +
                         'Missing capability: css-transform'));
             }
 
@@ -122,32 +121,19 @@ var SupportKit = Marionette.Object.extend({
 
             if (typeof options === 'object') {
                 endpoint.appToken = options.appToken;
+                if (options.serviceUrl) {
+                    endpoint.rootUrl = options.serviceUrl;
+                }
             } else {
-                return reject(new Error('init method accepts an object or string'));
+                return Promise.reject(new Error('init method accepts an object or string'));
             }
 
             if (!endpoint.appToken) {
-                return reject(new Error('init method requires an appToken'));
+                return Promise.reject(new Error('init method requires an appToken'));
             }
 
-            resolve(this.login(options.userId, options.jwt));
-
-<<<<<<< HEAD
-        }.bind(this));
+            return this.login(options.userId, options.jwt);
     },
-=======
-        if (typeof options === 'object') {
-            endpoint.appToken = options.appToken;
-            endpoint.jwt = options.jwt;
-            if (options.serviceUrl) {
-                endpoint.rootUrl = options.serviceUrl;
-            }
-        } else if (typeof options === 'string') {
-            endpoint.appToken = options;
-        } else {
-            throw new Error('init method accepts an object or string');
-        }
->>>>>>> integration
 
     login: function(userId, jwt) {
         this._cleanState();
