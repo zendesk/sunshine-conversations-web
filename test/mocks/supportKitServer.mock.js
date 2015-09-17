@@ -21,9 +21,22 @@ module.exports = BaseServerMock.extend({
             'GET', /\/faye.*/, [200, {}, '']
         ],
         [
-            'POST', /\/api\/appboot/, [201, {
-                'Content-Type': 'application/json'
-            }, JSON.stringify(appData)]
+            'POST', /\/api\/appboot/, function(xhr) {
+                var body = JSON.parse(xhr.requestBody);
+                var data = _.extend({}, appData);
+                if (body.userId) {
+                    _.extend(data, {
+                        appUserId: body.userId
+                    });
+
+                    _.extend(data.appUser, {
+                        _id: body.userId
+                    });
+                }
+                xhr.respond(201, {
+                    'Content-Type': 'application/json'
+                }, JSON.stringify(data));
+            }
         ],
         [
             'POST', /\/api\/appusers\/([a-z0-9]+)\/event/, function(xhr) {
@@ -33,7 +46,7 @@ module.exports = BaseServerMock.extend({
             }
         ],
         [
-            'PUT', /\/api\/appusers\/([a-z0-9]+)/, function(xhr/*, id*/) {
+            'PUT', /\/api\/appusers\/([a-z0-9]+)/, function(xhr /*, id*/ ) {
                 xhr.respond(200, {
                     'Content-Type': 'application/json'
                 }, _.isString(xhr.requestBody) ? xhr.requestBody : JSON.stringify(xhr.requestBody));
@@ -47,7 +60,9 @@ module.exports = BaseServerMock.extend({
         [
             'POST', /\/api\/conversations/, [200, {
                 'Content-Type': 'application/json'
-            }, JSON.stringify({_id: '123123'})]
+            }, JSON.stringify({
+                _id: '123123'
+            })]
         ],
         [
             'POST', /\/api\/conversations\/([a-z0-9]+)\/messages/, function(xhr) {

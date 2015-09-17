@@ -1,3 +1,4 @@
+/* global Promise:false */
 'use strict';
 
 var sinon = require('sinon');
@@ -30,7 +31,7 @@ describe('Main', function() {
 
         return SupportKit.init({
             appToken: 'thisisanapptoken'
-        }).then(function(){
+        }).then(function() {
             sandbox.stub(SupportKit.user, 'save', function(attributes, options) {
                 return this._save(attributes, options);
             });
@@ -85,7 +86,7 @@ describe('Main', function() {
                 appToken: appToken
             });
 
-            initPromise.then(initSpy).then(function(){
+            initPromise.then(initSpy).then(function() {
                 trackSpy.should.have.been.calledWith('skt-appboot');
                 loginSpy.should.have.been.calledOnce;
                 initSpy.should.have.been.calledOnce;
@@ -98,7 +99,7 @@ describe('Main', function() {
             SupportKit.init({
                 appToken: appToken,
                 userId: userId
-            }).then(function(){
+            }).then(function() {
                 localStorage.getItem(SK_STORAGE).should.exist;
                 expect(cookie.parse(document.cookie)[SK_STORAGE]).to.exist;
                 done();
@@ -143,28 +144,56 @@ describe('Main', function() {
         });
     });
 
-    describe('#logout', function() {
+    describe('#login', function() {
+        var cleanSpy;
+
         beforeEach(function() {
-            document.cookie = SK_STORAGE + '=' + 'test';
-            localStorage.setItem(SK_STORAGE, 'test');
-            SupportKit.logout();
+            cleanSpy = sandbox.spy(SupportKit, '_cleanState');
         });
 
-        afterEach(function() {
-            document.cookie = undefined;
-            localStorage.setItem(SK_STORAGE, undefined);
+        it('should cleanState', function(done) {
+            SupportKit.login('some_user_id').then(function() {
+                cleanSpy.should.have.been.calledOnce;
+                done();
+            });
         });
 
-        it('should not remove the device id from cookies or local storage', function() {
-            expect(cookie.parse(document.cookie)[SK_STORAGE]).to.exist;
-            expect(localStorage.getItem(SK_STORAGE)).to.exist;
+        it('should change the user id and jwt', function() {
+            var oldAppUserId = endpoint.appUserId;
+            var oldJwt = endpoint.jwt;
+
+            var newAppUserId = 'new_app_user_id';
+            var newJwt = 'new_jwt';
+
+            return SupportKit.login(newAppUserId, newJwt).then(function(){
+                newAppUserId.should.not.equal(oldAppUserId);
+                newJwt.should.not.equal(oldJwt);
+
+                endpoint.appUserId.should.equal(newAppUserId);
+                endpoint.jwt.should.equal(newJwt);
+            });
 
         });
+    });
 
-        it('should clear the endpoint of all variables but the app token', function() {
-            expect(endpoint.appToken).to.exist;
-            expect(endpoint.jwt).to.not.exist;
-            expect(endpoint.appUserId).to.not.exist;
+    describe('#logout', function() {
+        var loginStub;
+        beforeEach(function() {
+            loginStub = sandbox.stub(SupportKit, 'login').returns(Promise.resolve());
+        });
+
+        it('should call login with no user id if ready', function() {
+            SupportKit.true = false;
+            SupportKit.logout().then(function(){
+                loginStub.should.have.been.calledWithExactly();
+            });
+        });
+
+        it('should do nothing if not ready', function() {
+            SupportKit.ready = false;
+            SupportKit.logout().then(function(){
+                loginStub.should.not.have.been.called();
+            });
         });
     });
 
@@ -231,6 +260,32 @@ describe('Main', function() {
             });
 
 
+        });
+    });
+
+    describe('#_cleanState', function(){
+
+        beforeEach(function(){
+            document.cookie = SK_STORAGE + '=' + 'test';
+            localStorage.setItem(SK_STORAGE, 'test');
+        });
+
+        afterEach(function() {
+            document.cookie = undefined;
+            localStorage.setItem(SK_STORAGE, undefined);
+        });
+
+        it('should not remove the device id from cookies or local storage', function() {
+            expect(cookie.parse(document.cookie)[SK_STORAGE]).to.exist;
+            expect(localStorage.getItem(SK_STORAGE)).to.exist;
+        });
+
+        it('should clear endpoint values but keep the app token', function(){
+            SupportKit._cleanState();
+
+            expect(endpoint.appToken).to.exist;
+            expect(endpoint.jwt).to.not.exist;
+            expect(endpoint.appUserId).to.not.exist;
         });
     });
 
