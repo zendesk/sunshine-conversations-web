@@ -105,43 +105,37 @@ describe('Main', function() {
         it('should populate endpoint with supplied appToken and jwt', function(done) {
             SupportKit.destroy();
 
-            SupportKit.once('ready', function() {
-                endpoint.jwt.should.eql(jwt);
-                endpoint.appToken.should.eql(appToken);
-                done();
-            });
-
             SupportKit.init({
                 appToken: appToken,
                 jwt: jwt
+            }).then(function() {
+                endpoint.jwt.should.eql(jwt);
+                endpoint.appToken.should.eql(appToken);
+                done();
             });
         });
 
         it('should not populate endpoint jwt if unspecified', function(done) {
             SupportKit.destroy();
 
-            SupportKit.once('ready', function() {
-                expect(endpoint.jwt).to.not.exist;
-                done();
-            });
-
             SupportKit.init({
                 appToken: appToken
+            }).then(function() {
+                expect(endpoint.jwt).to.not.exist;
+                done();
             });
         });
 
         it('should post platform device info to appboot', function(done) {
             SupportKit.destroy();
 
-            SupportKit.once('ready', function() {
+            SupportKit.init({
+                appToken: appToken
+            }).then(function() {
                 apiSpy.args[0][0].url.should.eql('appboot');
                 apiSpy.args[0][0].method.should.eql('POST');
                 apiSpy.args[0][0].data.deviceInfo.platform.should.eq('web');
                 done();
-            });
-
-            SupportKit.init({
-                appToken: appToken
             });
         });
     });
