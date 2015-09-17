@@ -54,7 +54,7 @@ describe('AppUser', function() {
                 });
 
                 user.id.should.equals(id);
-                user.get('id').should.equals(id);
+                user.get('_id').should.equals(id);
             });
         });
     });
@@ -88,7 +88,7 @@ describe('AppUser', function() {
                 email: email,
                 givenName: givenName,
                 surname: surname,
-                id: id
+                _id: id
             }, {
                 parse: true
             });
@@ -120,7 +120,7 @@ describe('AppUser', function() {
                 givenName: givenName,
                 surname: surname,
                 properties: properties,
-                id: id
+                _id: id
             }, {
                 parse: true
             });
@@ -165,7 +165,7 @@ describe('AppUser', function() {
                 givenName: givenName,
                 surname: surname,
                 properties: properties,
-                id: id
+                _id: id
             }, {
                 parse: true
             });
@@ -195,7 +195,7 @@ describe('AppUser', function() {
                 givenName: givenName,
                 surname: surname,
                 properties: properties,
-                id: id
+                _id: id
             }, {
                 parse: true
             });

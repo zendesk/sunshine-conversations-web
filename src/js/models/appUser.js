@@ -13,7 +13,7 @@ var AppUser = module.exports = Backbone.AssociatedModel.extend({
 
     parse: function(data) {
         return _.isObject(data) ? data : {
-            id: data
+            _id: data
         };
     },
 
@@ -43,18 +43,21 @@ var AppUser = module.exports = Backbone.AssociatedModel.extend({
         options || (options = {});
 
         var success = options && options.success;
-        if (this.isDirty(attributes)) {
-            options.success = _.bind(function(model, response, options) {
-                this._lastPropertyValues = this.pick(AppUser.EDITABLE_PROPERTIES);
-                success && success(model, response, options);
-            }, this);
+        return new Promise(function(resolve) {
 
-            return Backbone.Model.prototype.save.call(this, attributes, options);
-        } else {
-            success && success(this, null, null);
+            if (this.isDirty(attributes)) {
+                options.success = _.bind(function(model, response, options) {
+                    this._lastPropertyValues = this.pick(AppUser.EDITABLE_PROPERTIES);
+                    success && success(model, response, options);
+                    resolve(model, response, options);
+                }, this);
 
-            return Promise.resolve(this, null, null);
-        }
+                return Backbone.Model.prototype.save.call(this, attributes, options);
+            } else {
+                success && success(this, null, null);
+                return resolve(this, null, null);
+            }
+        }.bind(this));
     },
 
     save: function(attributes, options) {

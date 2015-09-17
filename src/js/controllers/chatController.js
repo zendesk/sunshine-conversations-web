@@ -110,7 +110,7 @@ module.exports = ViewController.extend({
     },
 
     scrollToBottom: function() {
-        if (!!this.conversationView) {
+        if (this.conversationView && !this.conversationView.isDestroyed) {
             this.conversationView.scrollToBottom();
         }
     },

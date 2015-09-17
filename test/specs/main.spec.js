@@ -65,41 +65,40 @@ describe('Main', function() {
         var apiSpy;
         var trackSpy;
         var initSpy;
+        var readySpy;
 
         beforeEach(function() {
             trackSpy = sandbox.spy(SupportKit, 'track');
             apiSpy = sandbox.spy(api, 'call');
             initSpy = sandbox.spy();
+            readySpy = sandbox.spy();
         });
 
         it('should trigger ready, track appboot and resolve the promise', function(done) {
             SupportKit.destroy();
 
-            SupportKit.once('ready', function() {
-                trackSpy.should.have.been.calledWith('skt-appboot');
-                initSpy.should.have.been.calledOnce;
-                done();
-            });
+            SupportKit.once('ready', readySpy);
 
             var initPromise = SupportKit.init({
                 appToken: appToken
             });
 
-            initPromise.then(initSpy);
+            initPromise.then(initSpy).then(function(){
+                trackSpy.should.have.been.calledWith('skt-appboot');
+                initSpy.should.have.been.calledOnce;
+                done();
+            });
         });
 
         it('it should store the deviceId in local storage and cookies', function(done) {
             SupportKit.destroy();
-
-            SupportKit.once('ready', function() {
-                localStorage.getItem(SK_STORAGE).should.exist;
-                expect(cookie.parse(document.cookie)[SK_STORAGE]).to.exist;
-                done();
-            });
-
             SupportKit.init({
                 appToken: appToken,
                 userId: userId
+            }).then(function(){
+                localStorage.getItem(SK_STORAGE).should.exist;
+                expect(cookie.parse(document.cookie)[SK_STORAGE]).to.exist;
+                done();
             });
         });
 
@@ -152,6 +151,31 @@ describe('Main', function() {
             document.cookie = SK_STORAGE + '=' + 'test';
             localStorage.setItem(SK_STORAGE, 'test');
             SupportKit.logout();
+        });
+
+        afterEach(function() {
+            document.cookie = undefined;
+            localStorage.setItem(SK_STORAGE, undefined);
+        });
+
+        it('should not remove the device id from cookies or local storage', function() {
+            expect(cookie.parse(document.cookie)[SK_STORAGE]).to.exist;
+            expect(localStorage.getItem(SK_STORAGE)).to.exist;
+
+        });
+
+        it('should clear the endpoint of all variables but the app token', function() {
+            expect(endpoint.appToken).to.exist;
+            expect(endpoint.jwt).to.not.exist;
+            expect(endpoint.appUserId).to.not.exist;
+        });
+    });
+
+    describe('#destroy', function() {
+        beforeEach(function() {
+            document.cookie = SK_STORAGE + '=' + 'test';
+            localStorage.setItem(SK_STORAGE, 'test');
+            SupportKit.destroy();
         });
 
         afterEach(function() {
