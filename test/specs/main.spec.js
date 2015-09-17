@@ -24,17 +24,16 @@ describe('Main', function() {
         scenario.clean();
     });
 
-    beforeEach(function(done) {
+    beforeEach(function() {
         sandbox = sinon.sandbox.create();
         SupportKit = require('../../src/js/main.js');
-        SupportKit.once('ready', function() {
+
+        return SupportKit.init({
+            appToken: 'thisisanapptoken'
+        }).then(function(){
             sandbox.stub(SupportKit.user, 'save', function(attributes, options) {
                 return this._save(attributes, options);
             });
-            done();
-        });
-        SupportKit.init({
-            appToken: 'thisisanapptoken'
         });
 
     });
@@ -54,6 +53,7 @@ describe('Main', function() {
 
         it('should not publish dependencies in global context', function() {
             expect(global.Backbone).to.not.exist;
+            expect(global.jQuery).to.not.exist;
             expect(global._).to.not.exist;
         });
     });
@@ -66,15 +66,17 @@ describe('Main', function() {
         var trackSpy;
         var initSpy;
         var readySpy;
+        var loginSpy;
 
         beforeEach(function() {
             trackSpy = sandbox.spy(SupportKit, 'track');
             apiSpy = sandbox.spy(api, 'call');
             initSpy = sandbox.spy();
             readySpy = sandbox.spy();
+            loginSpy = sandbox.spy(SupportKit, 'login');
         });
 
-        it('should trigger ready, track appboot and resolve the promise', function(done) {
+        it('should trigger ready, track appboot, login the user and resolve the promise', function(done) {
             SupportKit.destroy();
 
             SupportKit.once('ready', readySpy);
@@ -85,6 +87,7 @@ describe('Main', function() {
 
             initPromise.then(initSpy).then(function(){
                 trackSpy.should.have.been.calledWith('skt-appboot');
+                loginSpy.should.have.been.calledOnce;
                 initSpy.should.have.been.calledOnce;
                 done();
             });
