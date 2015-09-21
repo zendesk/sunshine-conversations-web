@@ -172,7 +172,7 @@ var SupportKit = Marionette.Object.extend({
                 });
             }).bind(this))
             .then(_(function() {
-                this._renderWidget();
+                return this._renderWidget();
             }).bind(this))
             .fail(function(err) {
                 var message = err && (err.message || err.statusText);
