@@ -6,6 +6,7 @@ var cookie = require('cookie');
 var Backbone = require('backbone');
 
 var ClientScenario = require('../scenarios/clientScenario');
+var usersData = require('../data/users');
 var endpoint = require('../../src/js/endpoint');
 var api = require('../../src/js/utils/api');
 
@@ -151,11 +152,19 @@ describe('Main', function() {
             cleanSpy = sandbox.spy(SupportKit, '_cleanState');
         });
 
-        it('should cleanState', function(done) {
-            SupportKit.login('some_user_id').then(function() {
+        it('should cleanState', function() {
+            return SupportKit.login('some_user_id').then(function() {
                 cleanSpy.should.have.been.calledOnce;
-                done();
             });
+        });
+
+        it('should receive a user even if no user id provided', function() {
+            SupportKit._cleanState();
+
+            return SupportKit.login().then(function() {
+                endpoint.appUserId.should.equal(usersData[1]._id);
+            });
+
         });
 
         it('should change the user id and jwt', function() {
