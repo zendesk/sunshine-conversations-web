@@ -168,17 +168,17 @@ describe('Main', function() {
         });
 
         it('should change the user id and jwt', function() {
-            var oldAppUserId = endpoint.appUserId;
+            var oldUserId = endpoint.userId;
             var oldJwt = endpoint.jwt;
 
-            var newAppUserId = 'new_app_user_id';
+            var newUserId = 'new_user_id';
             var newJwt = 'new_jwt';
 
-            return SupportKit.login(newAppUserId, newJwt).then(function(){
-                newAppUserId.should.not.equal(oldAppUserId);
+            return SupportKit.login(newUserId, newJwt).then(function(){
+                newUserId.should.not.equal(oldUserId);
                 newJwt.should.not.equal(oldJwt);
 
-                endpoint.appUserId.should.equal(newAppUserId);
+                endpoint.userId.should.equal(newUserId);
                 endpoint.jwt.should.equal(newJwt);
             });
 
