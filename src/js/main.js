@@ -1,8 +1,6 @@
-/* global global:false, Promise:false */
 'use strict';
 require('./bootstrap');
 
-var Marionette = require('backbone.marionette');
 var Backbone = require('backbone');
 var _ = require('underscore');
 var $ = require('jquery');
@@ -41,7 +39,17 @@ var RuleCollection = Backbone.Collection.extend({
  *
  * Contains all SupportKit API classes and functions.
  */
-var SupportKit = Marionette.Object.extend({
+var SupportKit = function() {
+    bindAll(this);
+    this._widgetRendered = false;
+
+    this.user = new AppUser();
+
+    this._eventCollection = new EventCollection();
+    this._ruleCollection = new RuleCollection();
+};
+
+_.extend(SupportKit.prototype, Backbone.Events, {
     VERSION: '0.2.31',
 
     defaultText: {
@@ -55,16 +63,6 @@ var SupportKit = Marionette.Object.extend({
         settingsSaveButtonText: 'Save',
         settingsHeaderText: 'Email Settings',
         settingsNotificationText: 'In case we\'re slow to respond you can <a href="#" data-ui-settings-link>leave us your email</a>.'
-    },
-
-    initialize: function() {
-        bindAll(this);
-        this._widgetRendered = false;
-
-        this.user = new AppUser();
-
-        this._eventCollection = new EventCollection();
-        this._ruleCollection = new RuleCollection();
     },
 
     _checkReady: function(message) {
@@ -331,7 +329,10 @@ var SupportKit = Marionette.Object.extend({
                 this._chatController.scrollToBottom();
             }).chain().bind(this).delay();
 
-            this.triggerMethod('ready');
+
+            this.ready = true;
+            this.track('skt-appboot');
+            this.trigger('ready');
             return;
         }.bind(this));
     },
@@ -350,12 +351,7 @@ var SupportKit = Marionette.Object.extend({
         this._widgetRendered = false;
     },
 
-    onReady: function() {
-        this.ready = true;
-        this.track('skt-appboot');
-    },
-
-    onDestroy: function() {
+    destroy: function() {
         this._cleanState();
         delete endpoint.appToken;
     }
