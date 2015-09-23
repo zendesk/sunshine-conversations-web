@@ -5,9 +5,10 @@ module.exports.rootUrl = ROOT_URL;
 module.exports.appToken = undefined;
 module.exports.jwt = undefined;
 module.exports.appUserId = undefined;
+module.exports.userId = undefined;
 
 module.exports.reset = function() {
-    delete this.appToken;
     delete this.jwt;
     delete this.appUserId;
+    delete this.userId;
 };

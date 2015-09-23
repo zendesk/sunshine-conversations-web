@@ -1,3 +1,4 @@
+/* global Promise:false */
 'use strict';
 
 var sinon = require('sinon');
@@ -5,6 +6,7 @@ var cookie = require('cookie');
 var Backbone = require('backbone');
 
 var ClientScenario = require('../scenarios/clientScenario');
+var usersData = require('../data/users');
 var endpoint = require('../../src/js/endpoint');
 var api = require('../../src/js/utils/api');
 
@@ -24,17 +26,16 @@ describe('Main', function() {
         scenario.clean();
     });
 
-    beforeEach(function(done) {
+    beforeEach(function() {
         sandbox = sinon.sandbox.create();
         SupportKit = require('../../src/js/main.js');
-        SupportKit.once('ready', function() {
+
+        return SupportKit.init({
+            appToken: 'thisisanapptoken'
+        }).then(function() {
             sandbox.stub(SupportKit.user, 'save', function(attributes, options) {
                 return this._save(attributes, options);
             });
-            done();
-        });
-        SupportKit.init({
-            appToken: 'thisisanapptoken'
         });
 
     });
@@ -54,6 +55,7 @@ describe('Main', function() {
 
         it('should not publish dependencies in global context', function() {
             expect(global.Backbone).to.not.exist;
+            expect(global.jQuery).to.not.exist;
             expect(global._).to.not.exist;
         });
     });
@@ -65,93 +67,150 @@ describe('Main', function() {
         var apiSpy;
         var trackSpy;
         var initSpy;
+        var readySpy;
+        var loginSpy;
 
         beforeEach(function() {
             trackSpy = sandbox.spy(SupportKit, 'track');
             apiSpy = sandbox.spy(api, 'call');
             initSpy = sandbox.spy();
+            readySpy = sandbox.spy();
+            loginSpy = sandbox.spy(SupportKit, 'login');
         });
 
-        it('should trigger ready, track appboot and resolve the promise', function(done) {
+        it('should trigger ready, track appboot, login the user and resolve the promise', function(done) {
             SupportKit.destroy();
 
-            SupportKit.once('ready', function() {
-                trackSpy.should.have.been.calledWith('skt-appboot');
-                initSpy.should.have.been.calledOnce;
-                done();
-            });
+            SupportKit.once('ready', readySpy);
 
             var initPromise = SupportKit.init({
                 appToken: appToken
             });
 
-            initPromise.then(initSpy);
+            initPromise.then(initSpy).then(function() {
+                trackSpy.should.have.been.calledWith('skt-appboot');
+                loginSpy.should.have.been.calledOnce;
+                initSpy.should.have.been.calledOnce;
+                done();
+            });
         });
 
         it('it should store the deviceId in local storage and cookies', function(done) {
             SupportKit.destroy();
-
-            SupportKit.once('ready', function() {
-                localStorage.getItem(SK_STORAGE).should.exist;
-                expect(cookie.parse(document.cookie)[SK_STORAGE]).to.exist;
-                done();
-            });
-
             SupportKit.init({
                 appToken: appToken,
                 userId: userId
+            }).then(function() {
+                localStorage.getItem(SK_STORAGE).should.exist;
+                expect(cookie.parse(document.cookie)[SK_STORAGE]).to.exist;
+                done();
             });
         });
 
         it('should populate endpoint with supplied appToken and jwt', function(done) {
             SupportKit.destroy();
 
-            SupportKit.once('ready', function() {
-                endpoint.jwt.should.eql(jwt);
-                endpoint.appToken.should.eql(appToken);
-                done();
-            });
-
             SupportKit.init({
                 appToken: appToken,
                 jwt: jwt
+            }).then(function() {
+                endpoint.jwt.should.eql(jwt);
+                endpoint.appToken.should.eql(appToken);
+                done();
             });
         });
 
         it('should not populate endpoint jwt if unspecified', function(done) {
             SupportKit.destroy();
 
-            SupportKit.once('ready', function() {
-                expect(endpoint.jwt).to.not.exist;
-                done();
-            });
-
             SupportKit.init({
                 appToken: appToken
+            }).then(function() {
+                expect(endpoint.jwt).to.not.exist;
+                done();
             });
         });
 
         it('should post platform device info to appboot', function(done) {
             SupportKit.destroy();
 
-            SupportKit.once('ready', function() {
+            SupportKit.init({
+                appToken: appToken
+            }).then(function() {
                 apiSpy.args[0][0].url.should.eql('appboot');
                 apiSpy.args[0][0].method.should.eql('POST');
                 apiSpy.args[0][0].data.deviceInfo.platform.should.eq('web');
                 done();
             });
+        });
+    });
 
-            SupportKit.init({
-                appToken: appToken
+    describe('#login', function() {
+        var cleanSpy;
+
+        beforeEach(function() {
+            cleanSpy = sandbox.spy(SupportKit, '_cleanState');
+        });
+
+        it('should cleanState', function() {
+            return SupportKit.login('some_user_id').then(function() {
+                cleanSpy.should.have.been.calledOnce;
             });
+        });
+
+        it('should receive a user even if no user id provided', function() {
+            SupportKit._cleanState();
+
+            return SupportKit.login().then(function() {
+                endpoint.appUserId.should.equal(usersData[1]._id);
+            });
+
+        });
+
+        it('should change the user id and jwt', function() {
+            var oldUserId = endpoint.userId;
+            var oldJwt = endpoint.jwt;
+
+            var newUserId = 'new_user_id';
+            var newJwt = 'new_jwt';
+
+            return SupportKit.login(newUserId, newJwt).then(function(){
+                newUserId.should.not.equal(oldUserId);
+                newJwt.should.not.equal(oldJwt);
+
+                endpoint.userId.should.equal(newUserId);
+                endpoint.jwt.should.equal(newJwt);
+            });
+
         });
     });
 
     describe('#logout', function() {
+        var loginStub;
+        beforeEach(function() {
+            loginStub = sandbox.stub(SupportKit, 'login').returns(Promise.resolve());
+        });
+
+        it('should call login with no user id if ready', function() {
+            SupportKit.true = false;
+            SupportKit.logout().then(function(){
+                loginStub.should.have.been.calledWithExactly();
+            });
+        });
+
+        it('should do nothing if not ready', function() {
+            SupportKit.ready = false;
+            SupportKit.logout().then(function(){
+                loginStub.should.not.have.been.called();
+            });
+        });
+    });
+
+    describe('#destroy', function() {
         beforeEach(function() {
             document.cookie = SK_STORAGE + '=' + 'test';
             localStorage.setItem(SK_STORAGE, 'test');
-            SupportKit.logout();
+            SupportKit.destroy();
         });
 
         afterEach(function() {
@@ -210,6 +269,32 @@ describe('Main', function() {
             });
 
 
+        });
+    });
+
+    describe('#_cleanState', function(){
+
+        beforeEach(function(){
+            document.cookie = SK_STORAGE + '=' + 'test';
+            localStorage.setItem(SK_STORAGE, 'test');
+        });
+
+        afterEach(function() {
+            document.cookie = undefined;
+            localStorage.setItem(SK_STORAGE, undefined);
+        });
+
+        it('should not remove the device id from cookies or local storage', function() {
+            expect(cookie.parse(document.cookie)[SK_STORAGE]).to.exist;
+            expect(localStorage.getItem(SK_STORAGE)).to.exist;
+        });
+
+        it('should clear endpoint values but keep the app token', function(){
+            SupportKit._cleanState();
+
+            expect(endpoint.appToken).to.exist;
+            expect(endpoint.jwt).to.not.exist;
+            expect(endpoint.appUserId).to.not.exist;
         });
     });
 

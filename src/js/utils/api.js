@@ -1,4 +1,4 @@
-/* globals fetch: false */
+/* globals fetch: false, Promise: false */
 'use strict';
 var _ = require('underscore');
 var endpoint = require('../endpoint');
@@ -62,7 +62,7 @@ module.exports.call = function call(options) {
     }
 
     if (endpoint.jwt) {
-        headers['Authorization'] = 'Bearer ' + endpoint.jwt;
+        headers.Authorization = 'Bearer ' + endpoint.jwt;
     }
 
     fetchOptions.headers = headers;
