@@ -23,8 +23,6 @@ var EmailNotificationView = require('../views/emailNotificationView');
 var ChatInputController = require('../controllers/chatInputController');
 var SettingsController = require('../controllers/settingsController');
 
-var SK_LATEST_TS = 'sk_latestts';
-
 module.exports = ViewController.extend({
     viewClass: ChatView,
 
@@ -352,7 +350,7 @@ module.exports = ViewController.extend({
     },
 
     _getLatestReadTimeKey: function() {
-        return SK_LATEST_TS + '_' + (endpoint.userId || 'anonymous');
+        return 'sk_latestts_' + (endpoint.userId || 'anonymous');
     },
 
     _getLatestReadTime: function() {
