@@ -1,8 +1,11 @@
-var Marionette = require('backbone.marionette');
-
 var template = require('../../templates/conversation.tpl');
-
+var $ = require('jquery');
+var Marionette = require('backbone.marionette');
 var MessageView = require('./messageView');
+
+var isKeyboard = false;
+var isLandscape = false;
+var initialScreenSize;
 
 module.exports = Marionette.CompositeView.extend({
     id: 'sk-conversation',
@@ -18,8 +21,32 @@ module.exports = Marionette.CompositeView.extend({
         messages: '[data-ui-messages]'
     },
 
-    scrollToBottom: function() {
-        this.$el.scrollTop(this.$el.get(0).scrollHeight - this.$el.outerHeight() - this.ui.logo.outerHeight());
+    initialize: function() {
+        // http://stackoverflow.com/questions/11600040/jquery-js-html5-change-page-content-when-keyboard-is-visible-on-mobile-devices
+
+        initialScreenSize = window.innerHeight;
+
+        /* Android */
+        window.addEventListener('resize', function() {
+            isKeyboard = (window.innerHeight < initialScreenSize);
+            isLandscape = (screen.height < screen.width);
+
+            this.keyboardToggled();
+        }.bind(this), false);
+
+        /* iOS */
+        $('input').bind('focus blur', function() {
+            $(window).scrollTop(10);
+            isKeyboard = $(window).scrollTop() > 0;
+            $(window).scrollTop(0);
+
+            this.keyboardToggled();
+        });
+    },
+
+    scrollToBottom: function(forceBottom) {
+        forceBottom ? this.$el.scrollTop(this.$el.get(0).scrollHeight) :
+            this.$el.scrollTop(this.$el.get(0).scrollHeight - this.$el.outerHeight() - this.ui.logo.outerHeight());
     },
 
     onAddChild: function() {
@@ -35,6 +62,16 @@ module.exports = Marionette.CompositeView.extend({
         return {
             introText: this.getOption('introText')
         };
+    },
+
+    keyboardToggled: function() {
+        if (isKeyboard) {
+            this.ui.logo.hide();
+            this.scrollToBottom(true);
+        } else {
+            this.ui.logo.show();
+            this.scrollToBottom();
+        }
     },
 
     positionLogo: function() {
