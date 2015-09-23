@@ -36,6 +36,26 @@
         border-radius: 10px 10px 0 0;
     }
 
+    @media (max-width: @screen-sm-min) {
+        right: 0px;
+        border-radius: 0;
+        width: 100%;
+
+        &.sk-appear {
+            &, #sk-wrapper {
+                height: 100%;                
+            }
+        }
+
+        #sk-wrapper {
+            width: 100%;
+        }
+
+        [data-region-main] {
+            height: @main-region-height-mobile;
+        }
+    }
+
     @import "bootstrap/variables.less";
     @import "font-awesome.less";
     @import "variables.less";
