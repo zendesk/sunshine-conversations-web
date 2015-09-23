@@ -351,28 +351,24 @@ module.exports = ViewController.extend({
             });
     },
 
+    _getLatestReadTimeKey: function() {
+        return SK_LATEST_TS + '_' + (endpoint.userId || 'anonymous');
+    },
+
     _getLatestReadTime: function() {
-        if (!this.latestReadTs) {
-            var key = SK_LATEST_TS + '_' + endpoint.appUserId;
-
-            try {
-
-                this.latestReadTs = parseInt(localStorage.getItem(key) ||
-                cookie.parse(document.cookie)[key] ||
-                0);
-            }
-            catch (e) {
-                this.latestReadTs = 0;
-            }
+        var key = this._getLatestReadTimeKey();
+        var latestReadTs;
+        try {
+            latestReadTs = parseInt(localStorage.getItem(key) || 0);
         }
-        return this.latestReadTs;
+        catch (e) {
+            latestReadTs = 0;
+        }
+        return latestReadTs;
     },
 
     _setLatestReadTime: function(ts) {
-        this.latestReadTs = ts;
-
-        var key = SK_LATEST_TS + '_' + endpoint.appUserId;
-        document.cookie = key + '=' + ts;
+        var key = this._getLatestReadTimeKey();
         localStorage.setItem(key, ts);
     },
 
@@ -391,6 +387,11 @@ module.exports = ViewController.extend({
         if (this.unread !== unreadMessages.length) {
             this.conversation.set('unread', unreadMessages.length);
         }
+    },
+
+    clearUnread: function() {
+        var key = this._getLatestReadTimeKey();
+        localStorage.removeItem(key);
     },
 
     resetUnread: function() {

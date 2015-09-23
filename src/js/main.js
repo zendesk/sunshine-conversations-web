@@ -75,67 +75,73 @@ var SupportKit = Marionette.Object.extend({
 
     init: function(options) {
         if (this.ready) {
-                return Promise.resolve();
-            }
+            return Promise.resolve();
+        }
 
-            if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
-                var link = $('<a>')
-                    .attr('href', 'https://supportkit.io?utm_source=widget')
-                    .text('In app messaging by supportkit');
+        if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
+            var link = $('<a>')
+                .attr('href', 'https://supportkit.io?utm_source=widget')
+                .text('In app messaging by supportkit');
 
-                $(function() {
-                    $('body').append(link);
-                });
-
-                this.ready = true;
-                return Promise.resolve();
-            }
-
-            // TODO: alternatively load fallback CSS that doesn't use
-            // unsupported things like transforms
-            if (!$.support.cssProperty('transform')) {
-                return Promise.reject(new Error('SupportKit is not supported on this browser. ' +
-                        'Missing capability: css-transform'));
-            }
-
-
-            this.ready = false;
-            options = options || {};
-
-            // if the email was passed at init, it can't be changed through the web widget UI
-            var readOnlyEmail = !_.isEmpty(options.email);
-            var emailCaptureEnabled = options.emailCaptureEnabled && !readOnlyEmail;
-            var uiText = _.extend({}, this.defaultText, options.customText);
-
-            this.options = _.defaults(options, {
-                emailCaptureEnabled: emailCaptureEnabled,
-                readOnlyEmail: readOnlyEmail,
-                uiText: uiText
+            $(function() {
+                $('body').append(link);
             });
 
-            if (typeof options === 'string') {
-                options = {
-                    appToken: options
-                };
-            }
+            this.ready = true;
+            return Promise.resolve();
+        }
 
-            if (typeof options === 'object') {
-                endpoint.appToken = options.appToken;
-                if (options.serviceUrl) {
-                    endpoint.rootUrl = options.serviceUrl;
-                }
-            } else {
-                return Promise.reject(new Error('init method accepts an object or string'));
-            }
+        // TODO: alternatively load fallback CSS that doesn't use
+        // unsupported things like transforms
+        if (!$.support.cssProperty('transform')) {
+            return Promise.reject(new Error('SupportKit is not supported on this browser. ' +
+                    'Missing capability: css-transform'));
+        }
 
-            if (!endpoint.appToken) {
-                return Promise.reject(new Error('init method requires an appToken'));
-            }
 
-            return this.login(options.userId, options.jwt);
+        this.ready = false;
+        options = options || {};
+
+        // if the email was passed at init, it can't be changed through the web widget UI
+        var readOnlyEmail = !_.isEmpty(options.email);
+        var emailCaptureEnabled = options.emailCaptureEnabled && !readOnlyEmail;
+        var uiText = _.extend({}, this.defaultText, options.customText);
+
+        this.options = _.defaults(options, {
+            emailCaptureEnabled: emailCaptureEnabled,
+            readOnlyEmail: readOnlyEmail,
+            uiText: uiText
+        });
+
+        if (typeof options === 'string') {
+            options = {
+                appToken: options
+            };
+        }
+
+        if (typeof options === 'object') {
+            endpoint.appToken = options.appToken;
+            if (options.serviceUrl) {
+                endpoint.rootUrl = options.serviceUrl;
+            }
+        } else {
+            return Promise.reject(new Error('init method accepts an object or string'));
+        }
+
+        if (!endpoint.appToken) {
+            return Promise.reject(new Error('init method requires an appToken'));
+        }
+
+        return this.login(options.userId, options.jwt);
     },
 
     login: function(userId, jwt) {
+        // clear unread for anonymous
+        if (!this.user.isNew() && userId && !this.user.get('userId')) {
+            // the previous user had no userId and it's switching to one with an id
+            this._chatController.clearUnread();
+        }
+
         this._cleanState();
 
         var data = {
@@ -154,6 +160,7 @@ var SupportKit = Marionette.Object.extend({
 
         if (userId) {
             data.userId = userId;
+            endpoint.userId = userId;
         }
 
         if (jwt) {

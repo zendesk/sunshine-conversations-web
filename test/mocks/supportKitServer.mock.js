@@ -23,16 +23,21 @@ module.exports = BaseServerMock.extend({
         [
             'POST', /\/api\/appboot/, function(xhr) {
                 var body = JSON.parse(xhr.requestBody);
-                var data = _.extend({}, appData);
-                if (body.userId) {
-                    _.extend(data, {
-                        appUserId: body.userId
-                    });
 
+                var data = _.extend({
+                    appUserId: _.uniqueId()
+                }, appData);
+
+                _.extend(data.appUser, {
+                    _id: data.appUserId
+                });
+
+                if (body.userId) {
                     _.extend(data.appUser, {
-                        _id: body.userId
+                        userId: body.userId
                     });
                 }
+
                 xhr.respond(201, {
                     'Content-Type': 'application/json'
                 }, JSON.stringify(data));
