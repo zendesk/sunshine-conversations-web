@@ -35,7 +35,7 @@ module.exports = Marionette.CompositeView.extend({
         }.bind(this), false);
 
         /* iOS */
-        $('input').bind('focus blur', function() {
+        $('.message-input').bind('focus blur', function() {
             $(window).scrollTop(10);
             isKeyboard = $(window).scrollTop() > 0;
             $(window).scrollTop(0);
