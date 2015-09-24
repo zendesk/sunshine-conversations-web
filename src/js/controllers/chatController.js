@@ -2,7 +2,6 @@
 'use strict';
 
 var $ = require('jquery');
-var cookie = require('cookie');
 var bindAll = require('lodash.bindall');
 var _ = require('underscore');
 var ViewController = require('view-controller');
@@ -22,6 +21,8 @@ var EmailNotificationView = require('../views/emailNotificationView');
 
 var ChatInputController = require('../controllers/chatInputController');
 var SettingsController = require('../controllers/settingsController');
+
+var initialScreenSize;
 
 module.exports = ViewController.extend({
     viewClass: ChatView,
@@ -295,6 +296,18 @@ module.exports = ViewController.extend({
             introText: this.uiText.introText
         });
 
+        if (this.isMobileDevice()) {
+            this.listenTo(this.conversationView, 'render', function() {
+                // From: http://stackoverflow.com/questions/11600040/jquery-js-html5-change-page-content-when-keyboard-is-visible-on-mobile-devices
+                initialScreenSize = window.innerHeight;
+
+                /* Android */
+                window.addEventListener('resize', function() {
+                    this.keyboardToggled(window.innerHeight < initialScreenSize);
+                }.bind(this), false);
+            });
+        }
+
         this.getView().main.show(this.conversationView);
     },
 
@@ -310,6 +323,7 @@ module.exports = ViewController.extend({
 
         this.listenTo(this.chatInputController, 'message:send', this.sendMessage);
         this.listenTo(this.chatInputController, 'message:read', this.resetUnread);
+
         this.getView().footer.show(this.chatInputController.getView());
     },
 
@@ -403,6 +417,16 @@ module.exports = ViewController.extend({
         }
         this._setLatestReadTime(latestReadTs);
         this._updateUnread();
+    },
+
+    keyboardToggled: function(isKeyboard) {
+        if (this.conversationView && !this.conversationView.isDestroyed) {
+            this.conversationView.keyboardToggled(isKeyboard);
+        }
+    },
+
+    isMobileDevice: function() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     },
 
     onDestroy: function() {
