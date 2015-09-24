@@ -1,7 +1,9 @@
-var BaseCollection = require('./baseCollection');
+'use strict';
+
+var Backbone = require('backbone');
 var Conversation = require('../models/conversation');
 
-module.exports = BaseCollection.extend({
+module.exports = Backbone.Collection.extend({
     model: Conversation,
     url: 'conversations/'
 });

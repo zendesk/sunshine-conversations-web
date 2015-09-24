@@ -1,5 +1,7 @@
-var BaseModel = require('./baseModel');
+'use strict';
 
-module.exports = BaseModel.extend({
+var Backbone = require('backbone-associations');
+
+module.exports = Backbone.AssociatedModel.extend({
     idAttribute: '_id'
 });

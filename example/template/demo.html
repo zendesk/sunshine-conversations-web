@@ -9,7 +9,7 @@
     <script>
         /* global SupportKit: false */
 
-        SupportKit.init({
+        window.SupportKitOptions = {
             appToken: 'APP_TOKEN',
             givenName: 'GIVEN_NAME',
             surname: 'SURNAME',
@@ -20,11 +20,215 @@
               'TEST': true
             },
             emailCaptureEnabled: true
-        });
+        };
+
+        SupportKit.init(SupportKitOptions);
     </script>
+
+    <style type="text/css">
+        body {
+            padding-top: 100px;
+        }
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 </head>
   <body>
-    <h1>Test</h1>
-    <button onclick="SupportKit.logout(); document.location.reload(true);">Log Out</button>
+
+    <div class="container">
+
+      <div class="row">
+          <div class="col-sm-6">
+                <form class="form-horizontal" id="formMain">
+                    <legend>Login</legend>
+                    <div class="form-group">
+                        <label for="userId" class="col-sm-3 control-label">User ID</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="userId">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="jwt" class="col-sm-3 control-label">JWT</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="jwt">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-6">
+                            <button type="submit" class="btn btn-primary">Sign in</button>
+                            <button type="button" class="btn btn-danger" id="signOut">Sign out</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-6">
+                            <button type="button" class="btn btn-default" id="reset">Reset device id</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-6">
+                            <button type="button" class="btn btn-default" id="init">Init</button>
+                            <button type="button" class="btn btn-default" id="destroy">Destroy</button>
+                        </div>
+                    </div>
+                </form>
+          </div>
+          <div class="col-sm-6">
+                <form class="form-horizontal" id="formTrack">
+                    <legend>Track</legend>
+                    <div class="form-group">
+                        <label for="track" class="col-sm-3 control-label">Event name</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="trackEvent">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-default" id="track">Track</button>
+                        </div>
+                    </div>
+                </form>
+          </div>
+          <div class="col-sm-6">
+              <form class="form-horizontal" id="formUser">
+                    <legend>Update user</legend>
+                    <div class="form-group">
+                        <label for="updateUser" class="col-sm-3 control-label">JSON</label>
+                        <div class="col-sm-6">
+                            <textarea class="form-control" id="updateUser"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-6">
+                            <button type="submit" class="btn btn-default" id="update">Update</button>
+                        </div>
+                    </div>
+              </form>
+          </div>
+          <div class="col-sm-6">
+                <form class="form-horizontal">
+                    <legend>General API</legend>
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-6">
+                            <button type="button" class="btn btn-default" id="open">Open</button>
+                            <button type="button" class="btn btn-default" id="close">Close</button>
+                        </div>
+                    </div>
+                </form>
+          </div>
+          <div class="col-sm-6">
+                <form class="form-horizontal" id="formMessage">
+                    <legend>Send Message</legend>
+                    <div class="form-group">
+                        <label for="track" class="col-sm-3 control-label">Text</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="message">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-default" id="sendMessage">Send</button>
+                        </div>
+                    </div>
+                </form>
+          </div>
+      </div>
+
+    </div>
+    <script>
+        window.addEventListener('load', function() {
+            var formMain = document.getElementById('formMain');
+            var formTrack = document.getElementById('formTrack');
+            var formUser = document.getElementById('formUser');
+            var formMessage = document.getElementById('formMessage');
+
+            var userIdInput = document.getElementById('userId');
+            var jwtInput = document.getElementById('jwt');
+            var trackEventInput = document.getElementById('trackEvent');
+            var updateUserInput = document.getElementById('updateUser');
+            var messageInput = document.getElementById('message');
+
+            var signOutButton = document.getElementById('signOut');
+            var resetButton = document.getElementById('reset');
+            var initButton = document.getElementById('init');
+            var destroyButton = document.getElementById('destroy');
+            var openButton = document.getElementById('open');
+            var closeButton = document.getElementById('close');
+
+            if(window.SupportKitOptions.userId) {
+                userIdInput.value = window.SupportKitOptions.userId;
+            }
+
+            if(window.SupportKitOptions.jwt) {
+                jwtInput.value = window.SupportKitOptions.jwt;
+            }
+
+
+
+            formMain.addEventListener('submit', function(e) {
+                e.preventDefault();
+                SupportKit.login(userIdInput.value, jwtInput.value);
+            });
+
+            formTrack.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if(trackEventInput.value) {
+                    SupportKit.track(trackEventInput.value);
+                }
+            });
+
+            formUser.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if(updateUserInput.value) {
+                    try {
+                        var value = JSON.parse(updateUserInput.value);
+                        SupportKit.updateUser(value);
+                    } catch(err) {
+                        alert('Bad json')
+                    }
+                }
+            });
+
+            formMessage.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if(messageInput.value) {
+                    SupportKit.sendMessage(messageInput.value);
+                    messageInput.value = '';
+                }
+            });
+
+            signOutButton.addEventListener('click', function() {
+                SupportKit.logout();
+            });
+
+            resetButton.addEventListener('click', function() {
+                localStorage.removeItem('sk_deviceid');
+                SupportKit.logout();
+            });
+
+            initButton.addEventListener('click', function() {
+                if (!SupportKit.ready) {
+                    SupportKit.init(window.SupportKitOptions);
+                }
+            });
+
+            destroyButton.addEventListener('click', function() {
+                SupportKit.destroy();
+            });
+
+            openButton.addEventListener('click', function() {
+                if (SupportKit.ready) {
+                    SupportKit.open();
+                }
+            });
+
+            closeButton.addEventListener('click', function() {
+                if (SupportKit.ready) {
+                    SupportKit.close();
+                }
+            });
+
+        }, false);
+    </script>
   </body>
 </html>

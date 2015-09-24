@@ -1,8 +1,10 @@
 'use strict';
+require('es6-promise').polyfill();
 
+// polyfill for window.fetch
+require('whatwg-fetch');
+require('./utils/backbone.ajax');
 var $ = require('jquery');
-// Enable CORS for IE8
-$.support.cors = true;
 
 require('./utils/jquery.support.cssproperty');
 
