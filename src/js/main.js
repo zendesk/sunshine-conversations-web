@@ -209,11 +209,8 @@ _.extend(SupportKit.prototype, Backbone.Events, {
 
         // get device ID first from local storage, then cookie. Otherwise generate new one
         deviceId = localStorage.getItem(SK_STORAGE) ||
-            cookie.parse(document.cookie)[SK_STORAGE] ||
             uuid.v4().replace(/-/g, '');
 
-        // reset the cookie and local storage
-        document.cookie = SK_STORAGE + '=' + deviceId;
         localStorage.setItem(SK_STORAGE, deviceId);
 
         return deviceId;
