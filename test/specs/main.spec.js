@@ -2,7 +2,6 @@
 'use strict';
 
 var sinon = require('sinon');
-var cookie = require('cookie');
 var Backbone = require('backbone');
 
 var ClientScenario = require('../scenarios/clientScenario');
@@ -95,14 +94,13 @@ describe('Main', function() {
             });
         });
 
-        it('it should store the deviceId in local storage and cookies', function(done) {
+        it('it should store the deviceId in local storage', function(done) {
             SupportKit.destroy();
             SupportKit.init({
                 appToken: appToken,
                 userId: userId
             }).then(function() {
                 localStorage.getItem(SK_STORAGE).should.exist;
-                expect(cookie.parse(document.cookie)[SK_STORAGE]).to.exist;
                 done();
             });
         });
@@ -174,7 +172,7 @@ describe('Main', function() {
             var newUserId = 'new_user_id';
             var newJwt = 'new_jwt';
 
-            return SupportKit.login(newUserId, newJwt).then(function(){
+            return SupportKit.login(newUserId, newJwt).then(function() {
                 newUserId.should.not.equal(oldUserId);
                 newJwt.should.not.equal(oldJwt);
 
@@ -193,14 +191,14 @@ describe('Main', function() {
 
         it('should call login with no user id if ready', function() {
             SupportKit.true = false;
-            SupportKit.logout().then(function(){
+            SupportKit.logout().then(function() {
                 loginStub.should.have.been.calledWithExactly();
             });
         });
 
         it('should do nothing if not ready', function() {
             SupportKit.ready = false;
-            SupportKit.logout().then(function(){
+            SupportKit.logout().then(function() {
                 loginStub.should.not.have.been.called();
             });
         });
@@ -208,18 +206,15 @@ describe('Main', function() {
 
     describe('#destroy', function() {
         beforeEach(function() {
-            document.cookie = SK_STORAGE + '=' + 'test';
             localStorage.setItem(SK_STORAGE, 'test');
             SupportKit.destroy();
         });
 
         afterEach(function() {
-            document.cookie = undefined;
             localStorage.setItem(SK_STORAGE, undefined);
         });
 
-        it('should not remove the device id from cookies or local storage', function() {
-            expect(cookie.parse(document.cookie)[SK_STORAGE]).to.exist;
+        it('should not remove the device id from local storage', function() {
             expect(localStorage.getItem(SK_STORAGE)).to.exist;
 
         });
@@ -272,24 +267,21 @@ describe('Main', function() {
         });
     });
 
-    describe('#_cleanState', function(){
+    describe('#_cleanState', function() {
 
-        beforeEach(function(){
-            document.cookie = SK_STORAGE + '=' + 'test';
+        beforeEach(function() {
             localStorage.setItem(SK_STORAGE, 'test');
         });
 
         afterEach(function() {
-            document.cookie = undefined;
             localStorage.setItem(SK_STORAGE, undefined);
         });
 
-        it('should not remove the device id from cookies or local storage', function() {
-            expect(cookie.parse(document.cookie)[SK_STORAGE]).to.exist;
+        it('should not remove the device id from local storage', function() {
             expect(localStorage.getItem(SK_STORAGE)).to.exist;
         });
 
-        it('should clear endpoint values but keep the app token', function(){
+        it('should clear endpoint values but keep the app token', function() {
             SupportKit._cleanState();
 
             expect(endpoint.appToken).to.exist;
