@@ -326,9 +326,14 @@ _.extend(SupportKit.prototype, Backbone.Events, {
                 this._chatController.scrollToBottom();
             }).chain().bind(this).delay();
 
-
             this.ready = true;
-            this.track('skt-appboot');
+
+            if (!this.appbootedOnce) {
+                // skt-appboot event should only happen on page load, not on login/logout
+                this.track('skt-appboot');
+                this.appbootedOnce = true;
+            }
+
             this.trigger('ready');
             return;
         }.bind(this));

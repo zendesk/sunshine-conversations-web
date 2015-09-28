@@ -1,7 +1,5 @@
-var Marionette = require('backbone.marionette');
-
 var template = require('../../templates/conversation.tpl');
-
+var Marionette = require('backbone.marionette');
 var MessageView = require('./messageView');
 
 module.exports = Marionette.CompositeView.extend({
@@ -18,8 +16,9 @@ module.exports = Marionette.CompositeView.extend({
         messages: '[data-ui-messages]'
     },
 
-    scrollToBottom: function() {
-        this.$el.scrollTop(this.$el.get(0).scrollHeight - this.$el.outerHeight() - this.ui.logo.outerHeight());
+    scrollToBottom: function(forceBottom) {
+        forceBottom ? this.$el.scrollTop(this.$el.get(0).scrollHeight) :
+            this.$el.scrollTop(this.$el.get(0).scrollHeight - this.$el.outerHeight() - this.ui.logo.outerHeight());
     },
 
     onAddChild: function() {
@@ -35,6 +34,16 @@ module.exports = Marionette.CompositeView.extend({
         return {
             introText: this.getOption('introText')
         };
+    },
+
+    keyboardToggled: function(isKeyboardShown) {
+        if (isKeyboardShown) {
+            this.ui.logo.hide();
+            this.scrollToBottom(true);
+        } else {
+            this.ui.logo.show();
+            this.scrollToBottom();
+        }
     },
 
     positionLogo: function() {
