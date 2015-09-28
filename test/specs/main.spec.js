@@ -179,7 +179,7 @@ describe('Main', function() {
 
         });
 
-        it.only('should not trigger skt-appboot again', function() {
+        it('should not trigger skt-appboot again', function() {
             SupportKit.destroy();
             SupportKit.appbootedOnce = false;
 
