@@ -77,8 +77,9 @@ describe('Main', function() {
             loginSpy = sandbox.spy(SupportKit, 'login');
         });
 
-        it('should trigger ready, track appboot, login the user and resolve the promise', function(done) {
+        it('should trigger ready, track appboot, login the user and resolve the promise', function() {
             SupportKit.destroy();
+            SupportKit.appbootedOnce = false;
 
             SupportKit.once('ready', readySpy);
 
@@ -86,59 +87,55 @@ describe('Main', function() {
                 appToken: appToken
             });
 
-            initPromise.then(initSpy).then(function() {
+            return initPromise.then(initSpy).then(function() {
                 trackSpy.should.have.been.calledWith('skt-appboot');
                 loginSpy.should.have.been.calledOnce;
                 initSpy.should.have.been.calledOnce;
-                done();
             });
         });
 
-        it('it should store the deviceId in local storage', function(done) {
+        it('it should store the deviceId in local storage', function() {
             SupportKit.destroy();
-            SupportKit.init({
+
+            return SupportKit.init({
                 appToken: appToken,
                 userId: userId
             }).then(function() {
                 localStorage.getItem(SK_STORAGE).should.exist;
-                done();
             });
         });
 
-        it('should populate endpoint with supplied appToken and jwt', function(done) {
+        it('should populate endpoint with supplied appToken and jwt', function() {
             SupportKit.destroy();
 
-            SupportKit.init({
+            return SupportKit.init({
                 appToken: appToken,
                 jwt: jwt
             }).then(function() {
                 endpoint.jwt.should.eql(jwt);
                 endpoint.appToken.should.eql(appToken);
-                done();
             });
         });
 
-        it('should not populate endpoint jwt if unspecified', function(done) {
+        it('should not populate endpoint jwt if unspecified', function() {
             SupportKit.destroy();
 
-            SupportKit.init({
+            return SupportKit.init({
                 appToken: appToken
             }).then(function() {
                 expect(endpoint.jwt).to.not.exist;
-                done();
             });
         });
 
-        it('should post platform device info to appboot', function(done) {
+        it('should post platform device info to appboot', function() {
             SupportKit.destroy();
 
-            SupportKit.init({
+            return SupportKit.init({
                 appToken: appToken
             }).then(function() {
                 apiSpy.args[0][0].url.should.eql('appboot');
                 apiSpy.args[0][0].method.should.eql('POST');
                 apiSpy.args[0][0].data.deviceInfo.platform.should.eq('web');
-                done();
             });
         });
     });
@@ -180,6 +177,26 @@ describe('Main', function() {
                 endpoint.jwt.should.equal(newJwt);
             });
 
+        });
+
+        it.only('should not trigger skt-appboot again', function() {
+            SupportKit.destroy();
+            SupportKit.appbootedOnce = false;
+
+            var trackSpy = sandbox.spy(SupportKit, 'track');
+
+            return SupportKit.init({
+                appToken: 'appToken'
+            })
+                .then(function() {
+                    trackSpy.should.have.been.calledWith('skt-appboot');
+                    SupportKit.appbootedOnce.should.be.true;
+
+                    return SupportKit.login('user_id');
+                })
+                .then(function() {
+                    trackSpy.should.have.been.calledOnce;
+                });
         });
     });
 
@@ -234,15 +251,19 @@ describe('Main', function() {
             syncSpy = sandbox.spy(Backbone, 'sync');
         });
 
-        it('should fail the promise if called with bad parameters (empty, in this case)', function(done) {
-            SupportKit.updateUser().catch(function() {
-                done();
-            });
+        it('should fail the promise if called with bad parameters (empty, in this case)', function() {
+            var failed;
+            return SupportKit.updateUser()
+                .catch(function() {
+                    failed = true;
+                })
+                .then(function() {
+                    failed.should.be.true;
+                });
         });
 
-        it('should not call save if the user has not changed', function(done) {
-
-            SupportKit.updateUser({
+        it('should not call save if the user has not changed', function() {
+            return SupportKit.updateUser({
                 givenName: 'GIVEN_NAME',
                 surname: 'SURNAME',
                 properties: {
@@ -260,10 +281,7 @@ describe('Main', function() {
                 });
             }).then(function() {
                 syncSpy.should.be.calledOnce;
-                done();
             });
-
-
         });
     });
 
