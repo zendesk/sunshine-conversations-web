@@ -209,11 +209,8 @@ _.extend(SupportKit.prototype, Backbone.Events, {
 
         // get device ID first from local storage, then cookie. Otherwise generate new one
         deviceId = localStorage.getItem(SK_STORAGE) ||
-            cookie.parse(document.cookie)[SK_STORAGE] ||
             uuid.v4().replace(/-/g, '');
 
-        // reset the cookie and local storage
-        document.cookie = SK_STORAGE + '=' + deviceId;
         localStorage.setItem(SK_STORAGE, deviceId);
 
         return deviceId;
@@ -329,9 +326,14 @@ _.extend(SupportKit.prototype, Backbone.Events, {
                 this._chatController.scrollToBottom();
             }).chain().bind(this).delay();
 
-
             this.ready = true;
-            this.track('skt-appboot');
+
+            if (!this.appbootedOnce) {
+                // skt-appboot event should only happen on page load, not on login/logout
+                this.track('skt-appboot');
+                this.appbootedOnce = true;
+            }
+
             this.trigger('ready');
             return;
         }.bind(this));

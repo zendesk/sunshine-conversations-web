@@ -26,6 +26,10 @@ function status(response) {
 }
 
 function json(response) {
+    if (response.status === 202 || response.status === 204) {
+        return;
+    }
+
     return response.json();
 }
 
@@ -34,7 +38,7 @@ module.exports.call = function call(options) {
     var data = options.data;
     var method = options.method;
 
-    if(_.isString(data)) {
+    if (_.isString(data)) {
         data = JSON.parse(data);
     }
 
@@ -48,7 +52,7 @@ module.exports.call = function call(options) {
 
     if (method === 'GET') {
         url = stringifyGETParams(url, data);
-    } else if(method === 'POST' || method === 'PUT') {
+    } else if (method === 'POST' || method === 'PUT') {
         fetchOptions.body = JSON.stringify(data);
     }
 
@@ -57,7 +61,7 @@ module.exports.call = function call(options) {
         'Content-Type': 'application/json'
     };
 
-    if(endpoint.appToken) {
+    if (endpoint.appToken) {
         headers['app-token'] = endpoint.appToken;
     }
 
@@ -78,7 +82,7 @@ module.exports.call = function call(options) {
                 resolve(body);
             })
             .catch(function(err) {
-                if (typeof options.success === 'function') {
+                if (typeof options.error === 'function') {
                     options.error(err);
                 }
                 reject(err);
