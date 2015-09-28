@@ -3,6 +3,8 @@ var urljoin = require('urljoin');
 var $ = require('jquery');
 var _ = require('underscore');
 
+var htmlUtils = require('../utils/html');
+
 var template = require('../../templates/message.tpl');
 var endpoint = require('../endpoint');
 
@@ -32,6 +34,8 @@ module.exports = Marionette.ItemView.extend({
                     if (values[0].trim().length > 0) {
 
                         var escapedText = $('<div/>').text(values[0]).html().replace(/\n/g, '<br />');
+
+                        escapedText = htmlUtils.autolink(escapedText);
 
                         if (values[1] && values[1].length > 0) {
                             $el.addClass('has-actions');
