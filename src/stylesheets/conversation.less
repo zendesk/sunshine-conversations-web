@@ -2,7 +2,7 @@
     @media (max-width: @screen-sm-min) {
         height: @main-region-height-mobile;
     }
-    
+
     #sk-conversation {
         padding: @conversation-padding 18px 0 13px;
         height: @conversation-height;
@@ -51,6 +51,11 @@
                         border-left-color: @sk-blue;
                         border-width: 6px;
                         margin-top: -6px;
+                    }
+
+                    .has-actions {
+                        margin-bottom: 5px;
+                        display: inline-block;
                     }
                 }
                 .sk-from {
@@ -125,7 +130,7 @@
             box-shadow: inset 0 -6px 0 0 @background-color, inset 0 6px 0 0 @background-color;
             background-color: rgba(210, 210, 210, 0.97);
         }
-        
+
         .sk-logo {
             padding-top: 10px;
             margin-bottom: 10px;
@@ -156,7 +161,7 @@
                     display: inherit;
                 }
             }
-            
+
             &.anchor-bottom {
                 position: absolute;
                 left: 0px;
