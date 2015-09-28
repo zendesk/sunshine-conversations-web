@@ -36,8 +36,8 @@ module.exports = Marionette.CompositeView.extend({
         };
     },
 
-    keyboardToggled: function(isKeyboard) {
-        if (isKeyboard) {
+    keyboardToggled: function(isKeyboardShown) {
+        if (isKeyboardShown) {
             this.ui.logo.hide();
             this.scrollToBottom(true);
         } else {

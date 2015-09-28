@@ -419,9 +419,9 @@ module.exports = ViewController.extend({
         this._updateUnread();
     },
 
-    keyboardToggled: function(isKeyboard) {
+    keyboardToggled: function(isKeyboardShown) {
         if (this.conversationView && !this.conversationView.isDestroyed) {
-            this.conversationView.keyboardToggled(isKeyboard);
+            this.conversationView.keyboardToggled(isKeyboardShown);
         }
     },
 
