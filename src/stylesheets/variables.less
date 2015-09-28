@@ -3,12 +3,17 @@
 @widget-height: 420px;
 @widget-width: 330px;
 
+@main-region-height-mobile: ~"calc(100% - @{footer-height} - @{header-height} - 2*@{header-padding})";
+
 @header-height: 28px;
 @header-padding: 6px;
 @footer-height: 45px;
 
 @conversation-padding: 18px;
 @conversation-height: calc(@widget-height - (@header-height + 2 * @header-padding) - @footer-height - @conversation-padding);
+@conversation-height-mobile: ~"calc(100%  - @{conversation-padding})";
+
+@logo-margin: ~"calc(50% - 100px)";
 
 @fa-font-path: '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts';
 
