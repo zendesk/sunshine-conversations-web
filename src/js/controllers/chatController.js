@@ -104,8 +104,6 @@ module.exports = ViewController.extend({
             }
 
             return message;
-        }).catch(function(err){
-            console.log(err);
         });
     },
 
