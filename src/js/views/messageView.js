@@ -35,7 +35,10 @@ module.exports = Marionette.ItemView.extend({
 
                         var escapedText = $('<div/>').text(values[0]).html().replace(/\n/g, '<br />');
 
-                        escapedText = htmlUtils.autolink(escapedText);
+                        escapedText = htmlUtils.autolink(escapedText, {
+                            class: 'link',
+                            target: '_blank'
+                        });
 
                         if (values[1] && values[1].length > 0) {
                             $el.addClass('has-actions');

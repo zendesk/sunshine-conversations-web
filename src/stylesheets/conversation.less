@@ -57,6 +57,10 @@
                         margin-bottom: 5px;
                         display: inline-block;
                     }
+
+                    a.link {
+                        text-decoration: underline;
+                    }
                 }
                 .sk-from {
                     position: absolute;
@@ -83,6 +87,11 @@
                             border-color: rgba(236, 236, 236, 0);
                             border-right-color: white;
                         }
+
+                        a.link, a.link:visited {
+                            color: @sk-blue;
+                        }
+
                     }
                 }
                 .sk-msg-avatar {
@@ -106,6 +115,10 @@
                         left: 100%;
                         border-color: rgba(0, 174, 255, 0);
                         border-left-color: @sk-blue;
+                    }
+
+                    a.link, a.link:visited {
+                        color: white;
                     }
                 }
             }
