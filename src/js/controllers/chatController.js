@@ -36,7 +36,6 @@ module.exports = ViewController.extend({
         this.isOpened = false;
         this.user = this.getOption('user');
         this.uiText = this.getOption('uiText') || {};
-        this.conversationInitiated = false;
         this.collection = new Conversations();
     },
 
@@ -165,8 +164,15 @@ module.exports = ViewController.extend({
             // we created an empty collection, but a remote one was created
             // we need to swap them without unbinding everything
             if (this.conversation.isNew() && this.collection.length > 0) {
-                var remoteConversation = this.collection.at(0);
-                this.conversation.set(remoteConversation.toJSON());
+                var remoteConversation = this.collection.at(0).toJSON();
+
+                // if we have local messages, merge them.
+                this.conversation.get('messages').forEach(function(message) {
+                    remoteConversation.messages.push(message.toJSON());
+                });
+
+
+                this.conversation.set(remoteConversation);
                 this.collection.shift();
                 this.collection.unshift(this.conversation);
             }
@@ -197,17 +203,14 @@ module.exports = ViewController.extend({
     _initConversation: function() {
         var promise;
 
-        if (this.conversationInitiated) {
+        if (this.collection.length > 0 && !this.collection.at(0).isNew()) {
             promise = this._getConversation();
         } else {
             promise = this.collection.fetch()
                 .then(this._getConversation)
                 .then(this._initFaye)
                 .then(_.bind(function(conversation) {
-                    this.conversationInitiated = !conversation.isNew();
-
-                    // let's listen on the user attribute change instead
-                    if (!this.conversationInitiated) {
+                    if (conversation.isNew()) {
                         this.listenTo(this.user, 'change:conversationStarted', this.onConversationStarted);
                     }
 
