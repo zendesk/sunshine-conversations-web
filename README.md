@@ -13,11 +13,6 @@ Add the following code towards the end of the `body` section on your page. Placi
 <script src="https://cdn.supportkit.io/supportkit.min.js"></script>
 ```
 
-Note that SupportKit requires jQuery to work. If you aren't using jQuery yet, then add the following code before the previous code snippet. This step is only needed if you are using the CDN version.<br>
-
-```
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-```
 
 Initialize the plugin using this code snippet
 

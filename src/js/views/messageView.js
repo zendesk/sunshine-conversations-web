@@ -1,6 +1,9 @@
 var Marionette = require('backbone.marionette');
 var urljoin = require('urljoin');
 var $ = require('jquery');
+var _ = require('underscore');
+
+var htmlUtils = require('../utils/html');
 
 var template = require('../../templates/message.tpl');
 var endpoint = require('../endpoint');
@@ -26,11 +29,23 @@ module.exports = Marionette.ItemView.extend({
                 }
             },
             '@ui.message': {
-                observe: 'text',
-                update: function($el, text) {
-                    var escapedText = $('<div/>').text(text).html().replace(/\n/g, '<br />');
+                observe: ['text', 'actions'],
+                update: function($el, values) {
+                    if (values[0].trim().length > 0) {
 
-                    $el.html(escapedText);
+                        var escapedText = $('<div/>').text(values[0]).html().replace(/\n/g, '<br />');
+
+                        escapedText = htmlUtils.autolink(escapedText, {
+                            class: 'link',
+                            target: '_blank'
+                        });
+
+                        if (values[1] && values[1].length > 0) {
+                            $el.addClass('has-actions');
+                        }
+
+                        $el.html(escapedText);
+                    }
                 }
             },
             '@ui.avatar': {
@@ -56,6 +71,14 @@ module.exports = Marionette.ItemView.extend({
 
         return !!appMakers.findWhere({
             id: this.model.get('authorId')
+        });
+    },
+
+    serializeData: function() {
+        var data = Marionette.ItemView.prototype.serializeData.call(this);
+
+        return _.defaults(data, {
+            actions: []
         });
     }
 });
