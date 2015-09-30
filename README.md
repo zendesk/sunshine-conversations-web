@@ -123,7 +123,7 @@ SupportKit.logout();
 Destroys the widget and makes it disappear. The widget has to be reinitialized with `init`  to be working again because it also clears up the app token from the widget.
 
 ```
-SupportKit.logout();
+SupportKit.destroy();
 ```
 
 #### sendMessage(text)
