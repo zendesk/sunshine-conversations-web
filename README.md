@@ -102,9 +102,25 @@ Closes the conversation widget
 SupportKit.close();
 ```
 
+#### login(userId [, jwt])
+Logs a user in the widget, retrieving the conversation that user already had on other browsers and/or devices. This will destroy and reinitialize the widget with the user's data. Note that you don't need to call this after `init`, it's already done internally. This returns a promise that resolves when the widget is ready again.
+```
+SupportKit.login('some-id');
+
+// in case you are using the jwt authentication
+SupportKit.login('some-id', 'some-jwt');
+
+```
+
 #### logout()
-Removes deviceId cookie from the browser, effectively logging out the user.
-Destroys the widget completely. Can be initiated again manually with `SupportKit.init(...)`
+Logs out the current user and reinitialize the widget with an anonymous user.This returns a promise that resolves when the widget is ready again.
+
+```
+SupportKit.logout();
+```
+
+#### destroy()
+Destroys the widget and makes it disappear. The widget has to be reinitialized with `init`  to be working again because it also clears up the app token from the widget.
 
 ```
 SupportKit.logout();
