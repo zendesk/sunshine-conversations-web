@@ -50,7 +50,7 @@ var SupportKit = function() {
 };
 
 _.extend(SupportKit.prototype, Backbone.Events, {
-    VERSION: '0.2.31',
+    VERSION: '1.0.0',
 
     defaultText: {
         headerText: 'How can we help?',
