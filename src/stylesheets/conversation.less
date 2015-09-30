@@ -1,15 +1,14 @@
 [data-region-main] {
-    @media (max-width: @screen-sm-min) {
+    @media (max-width:@screen-sm-min) {
         height: @main-region-height-mobile;
     }
-
     #sk-conversation {
         padding: @conversation-padding 18px 0 13px;
         height: @conversation-height;
         overflow-y: scroll;
         overflow-x: hidden;
 
-        @media (max-width: @screen-sm-min) {
+        @media (max-width:@screen-sm-min) {
             height: @conversation-height-mobile;
         }
 
@@ -52,12 +51,10 @@
                         border-width: 6px;
                         margin-top: -6px;
                     }
-
                     .has-actions {
                         margin-bottom: 5px;
                         display: inline-block;
                     }
-
                     a.link {
                         text-decoration: underline;
                     }
@@ -70,10 +67,12 @@
                     color: #797979;
                     font-weight: 500;
                 }
-
                 .sk-action {
                     margin-bottom: 5px;
 
+                    .btn {
+                        white-space: inherit;
+                    }
                     &:last-child {
                         margin-bottom: 0px;
                     }
@@ -95,11 +94,9 @@
                             border-color: rgba(236, 236, 236, 0);
                             border-right-color: white;
                         }
-
                         a.link, a.link:visited {
                             color: @sk-blue;
                         }
-
                     }
                 }
                 .sk-msg-avatar {
@@ -124,7 +121,6 @@
                         border-color: rgba(0, 174, 255, 0);
                         border-left-color: @sk-blue;
                     }
-
                     a.link, a.link:visited {
                         color: white;
                     }
@@ -151,7 +147,6 @@
             box-shadow: inset 0 -6px 0 0 @background-color, inset 0 6px 0 0 @background-color;
             background-color: rgba(210, 210, 210, 0.97);
         }
-
         .sk-logo {
             padding-top: 10px;
             margin-bottom: 10px;
@@ -162,27 +157,24 @@
                 color: #bbb;
                 text-decoration: none;
             }
-
             .sk-image, .sk-image-retina {
                 position: relative;
                 left: 2px;
                 top: 3px;
 
-                @media (-o-min-device-pixel-ratio: 5/4), (-webkit-min-device-pixel-ratio: 1.25), (min-resolution: 120dpi) {
+                @media (-o-min-device-pixel-ratio:5/4), (-webkit-min-device-pixel-ratio:1.25), (min-resolution:120dpi) {
                     display: none;
                 }
             }
-
             .sk-image-retina {
                 width: 83px;
                 display: none;
 
                 /* HiDPI support */
-                @media (-o-min-device-pixel-ratio: 5/4), (-webkit-min-device-pixel-ratio: 1.25), (min-resolution: 120dpi) {
+                @media (-o-min-device-pixel-ratio:5/4), (-webkit-min-device-pixel-ratio:1.25), (min-resolution:120dpi) {
                     display: inherit;
                 }
             }
-
             &.anchor-bottom {
                 position: absolute;
                 left: 0px;
@@ -191,4 +183,3 @@
         }
     }
 }
-
