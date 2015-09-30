@@ -13,11 +13,6 @@ Add the following code towards the end of the `body` section on your page. Placi
 <script src="https://cdn.supportkit.io/supportkit.min.js"></script>
 ```
 
-Note that SupportKit requires jQuery to work. If you aren't using jQuery yet, then add the following code before the previous code snippet. This step is only needed if you are using the CDN version.<br>
-
-```
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-```
 
 Initialize the plugin using this code snippet
 
@@ -107,12 +102,28 @@ Closes the conversation widget
 SupportKit.close();
 ```
 
+#### login(userId [, jwt])
+Logs a user in the widget, retrieving the conversation that user already had on other browsers and/or devices. This will destroy and reinitialize the widget with the user's data. Note that you don't need to call this after `init`, it's already done internally. This returns a promise that resolves when the widget is ready again.
+```
+SupportKit.login('some-id');
+
+// in case you are using the jwt authentication
+SupportKit.login('some-id', 'some-jwt');
+
+```
+
 #### logout()
-Removes deviceId cookie from the browser, effectively logging out the user.
-Destroys the widget completely. Can be initiated again manually with `SupportKit.init(...)`
+Logs out the current user and reinitialize the widget with an anonymous user.This returns a promise that resolves when the widget is ready again.
 
 ```
 SupportKit.logout();
+```
+
+#### destroy()
+Destroys the widget and makes it disappear. The widget has to be reinitialized with `init`  to be working again because it also clears up the app token from the widget.
+
+```
+SupportKit.destroy();
 ```
 
 #### sendMessage(text)

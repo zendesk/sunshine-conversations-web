@@ -1,7 +1,7 @@
+/* global Promise:false */
 'use strict';
 
 var $ = require('jquery');
-var cookie = require('cookie');
 var bindAll = require('lodash.bindall');
 var _ = require('underscore');
 var ViewController = require('view-controller');
@@ -11,6 +11,7 @@ var vent = require('../vent');
 var faye = require('../faye');
 
 var Conversation = require('../models/conversation');
+var Conversations = require('../collections/conversations');
 
 var ChatView = require('../views/chatView');
 var HeaderView = require('../views/headerView');
@@ -20,6 +21,8 @@ var EmailNotificationView = require('../views/emailNotificationView');
 
 var ChatInputController = require('../controllers/chatInputController');
 var SettingsController = require('../controllers/settingsController');
+
+var initialScreenSize;
 
 module.exports = ViewController.extend({
     viewClass: ChatView,
@@ -33,15 +36,18 @@ module.exports = ViewController.extend({
         this.isOpened = false;
         this.user = this.getOption('user');
         this.uiText = this.getOption('uiText') || {};
-        this.conversationInitiated = false;
+        this.collection = new Conversations();
     },
 
     open: function() {
         if (!!this.view && !!this.chatInputController && !this.isOpened) {
             this.isOpened = true;
             this.view.open();
-            this.chatInputController.focus();
             this.conversationView.positionLogo();
+
+            if (!this.isMobileDevice()) {
+                this.chatInputController.focus();
+            }
         }
     },
 
@@ -62,55 +68,50 @@ module.exports = ViewController.extend({
     },
 
     sendMessage: function(text) {
-        return $.Deferred().resolve().then(function() {
-            var promise = $.Deferred();
-
-            if (this.conversation.isNew()) {
-                this.conversation = this.collection.create(this.conversation, {
-                    success: promise.resolve,
-                    error: promise.reject
+        var self = this;
+        return new Promise(function(resolve, reject) {
+            if (self.conversation.isNew()) {
+                self.conversation = self.collection.create(self.conversation, {
+                    success: resolve,
+                    error: reject
                 });
             } else {
-                promise.resolve(this.conversation);
+                resolve(self.conversation);
             }
-
-            return promise;
-        }.bind(this))
+        })
             .then(this._initFaye)
             .then(function(conversation) {
                 // update the user before sending the message to ensure properties are correct
-                return this.user._save({}, {
+                return self.user._save({}, {
                     wait: true
                 }).then(_.constant(conversation));
-            }.bind(this)).then(function(conversation) {
-            var promise = $.Deferred();
-
-            conversation.get('messages').create({
-                authorId: endpoint.appUserId,
-                text: text
-            }, {
-                success: promise.resolve,
-                error: promise.reject
+            }).then(function(conversation) {
+            return new Promise(function(resolve, reject) {
+                conversation.get('messages').create({
+                    authorId: endpoint.appUserId,
+                    text: text
+                }, {
+                    success: resolve,
+                    error: reject
+                });
             });
-
-            return promise;
-        }.bind(this)).then(function(message) {
-            var appUserMessages = this.conversation.get('messages').filter(function(message) {
+        }).then(function(message) {
+            var appUserMessages = self.conversation.get('messages').filter(function(message) {
                 return message.get('authorId') === endpoint.appUserId;
             });
 
-            if (this.getOption('emailCaptureEnabled') &&
+            if (self.getOption('emailCaptureEnabled') &&
                 appUserMessages.length === 1 &&
-                !this.user.get('email')) {
-                this._showEmailNotification();
+                !self.user.get('email')) {
+                self._showEmailNotification();
             }
 
             return message;
-        }.bind(this));
+        });
     },
 
     scrollToBottom: function() {
-        if (!!this.conversationView) {
+        if (this.conversationView && !this.conversationView.isDestroyed) {
             this.conversationView.scrollToBottom();
         }
     },
@@ -162,14 +163,19 @@ module.exports = ViewController.extend({
     },
 
     _getConversation: function() {
-        var deferred = $.Deferred();
-
         if (this.conversation) {
             // we created an empty collection, but a remote one was created
             // we need to swap them without unbinding everything
             if (this.conversation.isNew() && this.collection.length > 0) {
-                var remoteConversation = this.collection.at(0);
-                this.conversation.set(remoteConversation.toJSON());
+                var remoteConversation = this.collection.at(0).toJSON();
+
+                // if we have local messages, merge them.
+                this.conversation.get('messages').forEach(function(message) {
+                    remoteConversation.messages.push(message.toJSON());
+                });
+
+
+                this.conversation.set(remoteConversation);
                 this.collection.shift();
                 this.collection.unshift(this.conversation);
             }
@@ -183,9 +189,7 @@ module.exports = ViewController.extend({
             }
         }
 
-        deferred.resolve(this.conversation);
-
-        return deferred;
+        return Promise.resolve(this.conversation);
     },
 
     _initFaye: function(conversation) {
@@ -196,23 +200,20 @@ module.exports = ViewController.extend({
             }.bind(this));
         }
 
-        return $.Deferred().resolve(conversation);
+        return Promise.resolve(conversation);
     },
 
     _initConversation: function() {
         var promise;
 
-        if (this.conversationInitiated) {
+        if (this.collection.length > 0 && !this.collection.at(0).isNew()) {
             promise = this._getConversation();
         } else {
             promise = this.collection.fetch()
                 .then(this._getConversation)
                 .then(this._initFaye)
                 .then(_.bind(function(conversation) {
-                    this.conversationInitiated = !conversation.isNew();
-
-                    // let's listen on the user attribute change instead
-                    if (!this.conversationInitiated) {
+                    if (conversation.isNew()) {
                         this.listenTo(this.user, 'change:conversationStarted', this.onConversationStarted);
                     }
 
@@ -301,6 +302,18 @@ module.exports = ViewController.extend({
             introText: this.uiText.introText
         });
 
+        if (this.isMobileDevice()) {
+            this.listenTo(this.conversationView, 'render', function() {
+                // From: http://stackoverflow.com/questions/11600040/jquery-js-html5-change-page-content-when-keyboard-is-visible-on-mobile-devices
+                initialScreenSize = window.innerHeight;
+
+                /* Android */
+                window.addEventListener('resize', function() {
+                    this.keyboardToggled(window.innerHeight < initialScreenSize);
+                }.bind(this), false);
+            });
+        }
+
         this.getView().main.show(this.conversationView);
     },
 
@@ -316,6 +329,7 @@ module.exports = ViewController.extend({
 
         this.listenTo(this.chatInputController, 'message:send', this.sendMessage);
         this.listenTo(this.chatInputController, 'message:read', this.resetUnread);
+
         this.getView().footer.show(this.chatInputController.getView());
     },
 
@@ -355,16 +369,25 @@ module.exports = ViewController.extend({
             });
     },
 
+    _getLatestReadTimeKey: function() {
+        return 'sk_latestts_' + (endpoint.userId || 'anonymous');
+    },
+
     _getLatestReadTime: function() {
-        if (!this.latestReadTs) {
-            this.latestReadTs = parseInt(cookie.parse(document.cookie).sk_latestts || 0);
+        var key = this._getLatestReadTimeKey();
+        var latestReadTs;
+        try {
+            latestReadTs = parseInt(localStorage.getItem(key) || 0);
         }
-        return this.latestReadTs;
+        catch (e) {
+            latestReadTs = 0;
+        }
+        return latestReadTs;
     },
 
     _setLatestReadTime: function(ts) {
-        this.latestReadTs = ts;
-        document.cookie = 'sk_latestts=' + ts;
+        var key = this._getLatestReadTimeKey();
+        localStorage.setItem(key, ts);
     },
 
     _updateUnread: function() {
@@ -384,6 +407,11 @@ module.exports = ViewController.extend({
         }
     },
 
+    clearUnread: function() {
+        var key = this._getLatestReadTimeKey();
+        localStorage.removeItem(key);
+    },
+
     resetUnread: function() {
         var latestReadTs = 0;
         var latestMessage = this.conversation.get('messages').max(function(message) {
@@ -395,6 +423,16 @@ module.exports = ViewController.extend({
         }
         this._setLatestReadTime(latestReadTs);
         this._updateUnread();
+    },
+
+    keyboardToggled: function(isKeyboardShown) {
+        if (this.conversationView && !this.conversationView.isDestroyed) {
+            this.conversationView.keyboardToggled(isKeyboardShown);
+        }
+    },
+
+    isMobileDevice: function() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     },
 
     onDestroy: function() {

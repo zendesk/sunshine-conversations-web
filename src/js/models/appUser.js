@@ -1,20 +1,19 @@
+/* global Promise:false */
 'use strict';
 
 var _ = require('underscore');
-var $ = require('jquery');
-var Backbone = require('backbone');
+var Backbone = require('backbone-associations');
 
-var BaseModel = require('./baseModel');
-
-
-var AppUser = module.exports = BaseModel.extend({
+var AppUser = module.exports = Backbone.AssociatedModel.extend({
+    idAttribute: '_id',
 
     initialize: function() {
         this._throttleSave = _.throttle(this._save.bind(this), 5000);
     },
+
     parse: function(data) {
         return _.isObject(data) ? data : {
-            id: data
+            _id: data
         };
     },
 
@@ -44,18 +43,21 @@ var AppUser = module.exports = BaseModel.extend({
         options || (options = {});
 
         var success = options && options.success;
-        if (this.isDirty(attributes)) {
-            options.success = _.bind(function(model, response, options) {
-                this._lastPropertyValues = this.pick(AppUser.EDITABLE_PROPERTIES);
-                success && success(model, response, options);
-            }, this);
+        return new Promise(function(resolve) {
 
-            return Backbone.Model.prototype.save.call(this, attributes, options);
-        } else {
-            success && success(this, null, null);
+            if (this.isDirty(attributes)) {
+                options.success = _.bind(function(model, response, options) {
+                    this._lastPropertyValues = this.pick(AppUser.EDITABLE_PROPERTIES);
+                    success && success(model, response, options);
+                    resolve(model, response, options);
+                }, this);
 
-            return $.Deferred().resolve(this, null, null);
-        }
+                return Backbone.Model.prototype.save.call(this, attributes, options);
+            } else {
+                success && success(this, null, null);
+                return resolve(this, null, null);
+            }
+        }.bind(this));
     },
 
     save: function(attributes, options) {

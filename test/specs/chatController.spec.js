@@ -1,8 +1,10 @@
+/* global Promise:false */
 var sinon = require('sinon');
 var ChatController = require('../../src/js/controllers/chatController');
 var Conversations = require('../../src/js/collections/conversations');
 var Conversation = require('../../src/js/models/conversation');
 var vent = require('../../src/js/vent');
+var endpoint = require('../../src/js/endpoint');
 var AppUser = require('../../src/js/models/appUser');
 
 var ClientScenario = require('../scenarios/clientScenario');
@@ -37,8 +39,10 @@ describe('ChatController', function() {
         user = new AppUser({
             givenName: 'test',
             surname: 'user',
-            id: '12345'
+            _id: '12345'
         });
+
+        endpoint.appUserId = user.id;
 
         sandbox.stub(user, 'save', function(attributes, options) {
             return this._save(attributes, options);
@@ -52,7 +56,7 @@ describe('ChatController', function() {
         getConversationSpy = sandbox.spy(chatController, '_getConversation');
         initFayeSpy = sandbox.stub(chatController, '_initFaye', function(conversation) {
             chatController._fayeClient = {disconnect: function(){}};
-            return $.Deferred().resolve(conversation);
+            return Promise.resolve(conversation);
         });
         initMessagingBusSpy = sandbox.spy(chatController, '_initMessagingBus');
         manageUnreadSpy = sandbox.spy(chatController, '_manageUnread');
@@ -70,6 +74,8 @@ describe('ChatController', function() {
 
         chatController.destroy();
         conversations.reset();
+
+        endpoint.reset();
     });
 
     describe('#getWidget', function() {
