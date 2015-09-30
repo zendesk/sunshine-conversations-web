@@ -17,7 +17,12 @@ module.exports = Marionette.ItemView.extend({
     ui: {
         name: '[data-ui-name]',
         message: '[data-ui-message]',
-        avatar: '[data-ui-avatar]'
+        avatar: '[data-ui-avatar]',
+        action: '.sk-action'
+    },
+
+    events: {
+        'mouseup @ui.action': 'onActionMouseup'
     },
 
     behaviors: {
@@ -80,5 +85,10 @@ module.exports = Marionette.ItemView.extend({
         return _.defaults(data, {
             actions: []
         });
+    },
+
+    // Actions were remaining focused on mouseup, causing strange coloration until blurred
+    onActionMouseup: function(e) {
+        $(e.target).blur();
     }
 });
