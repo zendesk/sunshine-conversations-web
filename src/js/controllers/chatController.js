@@ -43,8 +43,11 @@ module.exports = ViewController.extend({
         if (!!this.view && !!this.chatInputController && !this.isOpened) {
             this.isOpened = true;
             this.view.open();
-            this.chatInputController.focus();
             this.conversationView.positionLogo();
+
+            if (!this.isMobileDevice()) {
+                this.chatInputController.focus();
+            }
         }
     },
 
