@@ -405,6 +405,9 @@ module.exports = ViewController.extend({
         if (this.unread !== unreadMessages.length) {
             this.conversation.set('unread', unreadMessages.length);
         }
+        if (unreadMessages.length>0){
+            this.open();
+        }
     },
 
     clearUnread: function() {

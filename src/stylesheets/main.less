@@ -5,7 +5,7 @@
 #sk-container {
     position: fixed;
     bottom: 0;
-    right: 10px;
+    right: 0px;
     margin-bottom: -1px;
     box-shadow: 0 0 24px rgba(0,0,0,0.15);
     border: 1px solid rgba(0,0,0,0.15);
@@ -13,7 +13,6 @@
     font-weight: 400;
     font-size: 13px;
     line-height: 1.4;
-    border-radius: 10px 10px 0 0;
     text-rendering: optimizeLegibility;
     color: #333;
     .translate(0, 90%);
@@ -33,19 +32,25 @@
         width: @widget-width;
         height: @widget-height;
         position: relative;
-        border-radius: 10px 10px 0 0;
     }
 
+    &.sk-appear {
+        &, #sk-wrapper {
+            height: 100%;                
+        }
+    }
+
+  
+    &.sk-close {
+        &, #sk-wrapper {display:none;             
+        }
+    }
     @media (max-width: @screen-sm-min) {
         right: 0px;
         border-radius: 0;
         width: 100%;
 
-        &.sk-appear {
-            &, #sk-wrapper {
-                height: 100%;                
-            }
-        }
+      
 
         #sk-wrapper {
             width: 100%;

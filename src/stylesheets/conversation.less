@@ -1,16 +1,14 @@
 [data-region-main] {
-    @media (max-width:@screen-sm-min) {
-        height: @main-region-height-mobile;
-    }
+     height: @main-region-height-mobile;
+    
     #sk-conversation {
         padding: @conversation-padding 18px 0 13px;
         height: @conversation-height;
         overflow-y: scroll;
         overflow-x: hidden;
 
-        @media (max-width:@screen-sm-min) {
             height: @conversation-height-mobile;
-        }
+        
 
         /* WebKit hack */
         &:not(*:root) {
