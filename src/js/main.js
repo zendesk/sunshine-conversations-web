@@ -33,13 +33,13 @@ var RuleCollection = Backbone.Collection.extend({
 });
 
 /**
- * Contains all SupportKit API classes and functions.
- * @name SupportKit
+ * Contains all Smooch API classes and functions.
+ * @name Smooch
  * @namespace
  *
- * Contains all SupportKit API classes and functions.
+ * Contains all Smooch API classes and functions.
  */
-var SupportKit = function() {
+var Smooch = function() {
     bindAll(this);
     this._widgetRendered = false;
 
@@ -49,7 +49,7 @@ var SupportKit = function() {
     this._ruleCollection = new RuleCollection();
 };
 
-_.extend(SupportKit.prototype, Backbone.Events, {
+_.extend(Smooch.prototype, Backbone.Events, {
     VERSION: '1.0.0',
 
     defaultText: {
@@ -78,8 +78,8 @@ _.extend(SupportKit.prototype, Backbone.Events, {
 
         if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
             var link = $('<a>')
-                .attr('href', 'https://supportkit.io?utm_source=widget')
-                .text('In app messaging by supportkit');
+                .attr('href', 'https://smooch.io?utm_source=widget')
+                .text('In app messaging by smooch');
 
             $(function() {
                 $('body').append(link);
@@ -92,7 +92,7 @@ _.extend(SupportKit.prototype, Backbone.Events, {
         // TODO: alternatively load fallback CSS that doesn't use
         // unsupported things like transforms
         if (!$.support.cssProperty('transform')) {
-            return Promise.reject(new Error('SupportKit is not supported on this browser. ' +
+            return Promise.reject(new Error('Smooch is not supported on this browser. ' +
                     'Missing capability: css-transform'));
         }
 
@@ -196,7 +196,7 @@ _.extend(SupportKit.prototype, Backbone.Events, {
             }).bind(this))
             .catch(function(err) {
                 var message = err && (err.message || err.statusText);
-                console.error('SupportKit init error: ', message);
+                console.error('Smooch init error: ', message);
             });
     },
 
@@ -359,4 +359,4 @@ _.extend(SupportKit.prototype, Backbone.Events, {
     }
 });
 
-module.exports = global.SupportKit = new SupportKit();
+module.exports = global.Smooch = new Smooch();

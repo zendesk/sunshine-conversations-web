@@ -88,15 +88,15 @@ module.exports = function(grunt) {
                 banner: '<%= banner %>'
             },
             dist: {
-                src: 'dist/supportkit.js',
-                dest: 'dist/supportkit.min.js'
+                src: 'dist/smooch.js',
+                dest: 'dist/smooch.min.js'
             }
         },
 
         replace: {
             dist: {
-                src: 'dist/supportkit.js',
-                dest: 'dist/supportkit.js',
+                src: 'dist/smooch.js',
+                dest: 'dist/smooch.js',
                 replacements: [{
                     from: /var ROOT_URL = '.*';/,
                     to: 'var ROOT_URL = "<%= config.ROOT_URL %>";'
@@ -145,13 +145,13 @@ module.exports = function(grunt) {
         browserify: {
             dist: {
                 files: {
-                    'dist/supportkit.js': ['src/js/main.js'],
+                    'dist/smooch.js': ['src/js/main.js'],
                 }
             },
             options: {
                 browserifyOptions: {
                     debug: true,
-                    standalone: 'SupportKit'
+                    standalone: 'Smooch'
                 }
             }
         },
@@ -166,8 +166,8 @@ module.exports = function(grunt) {
             js: {
                 // Files to be uploaded.
                 upload: [{
-                    src: 'dist/supportkit.min.js',
-                    dest: 'supportkit.min.js'
+                    src: 'dist/smooch.min.js',
+                    dest: 'smooch.min.js'
                 }]
             },
             images: {
@@ -201,7 +201,7 @@ module.exports = function(grunt) {
               method:         'delete'
             },
             files: [
-              { dest: '/supportkit.min.js' }
+              { dest: '/smooch.min.js' }
             ],
           },
         },
@@ -212,9 +212,9 @@ module.exports = function(grunt) {
                 bump: false,
                 commit: true,
                 push: false,
-                remote: 'https://github.com/supportkit/supportkit-js.git',
+                remote: 'https://github.com/smooch/smooch-js.git',
                 github: {
-                    repo: 'supportkit/supportkit-js', //put your user/repo here
+                    repo: 'smooch/smooch-js', //put your user/repo here
                     accessTokenVar: 'GITHUB_ACCESS_TOKEN',
                     releaseNotes: 'release_notes'
                 }
@@ -258,8 +258,8 @@ module.exports = function(grunt) {
             addDist: {
                 cmd: function() {
                     return [
-                        'git add --force dist/supportkit.js',
-                        'git add --force dist/supportkit.min.js'
+                        'git add --force dist/smooch.js',
+                        'git add --force dist/smooch.min.js'
                     ].join(' && ');
                 }
             }
@@ -352,7 +352,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('setMinMode', function() {
-        grunt.config.set('config.WIDGET_CODE', 'supportkit.min.js');
+        grunt.config.set('config.WIDGET_CODE', 'smooch.min.js');
     });
 
     grunt.registerTask('build', ['clean', 'browserify', 'uglify']);

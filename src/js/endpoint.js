@@ -1,4 +1,4 @@
-var ROOT_URL = 'https://sdk.supportkit.io';
+var ROOT_URL = 'https://api.smooch.io';
 module.exports.rootUrl = ROOT_URL;
 
 // State params set by main
