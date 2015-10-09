@@ -70,7 +70,7 @@ Initializes the SupportKit widget in the web page using the specified options. I
 | userId | Yes | - | User's id |
 | properties | Yes | - | An object with all properties you want to set on your user |
 | emailCaptureEnabled | Yes | `false` | Enables prompt for email after the first user's message. You can retrieve that email in Slack using `/sk !profile`. We are aware of this limitation and are working on improving it. |
-
+| customText | Yes | See the example below | Strings used in the widget UI. You can use these to either customize the text or translate it. |
 
 ```javascript
 var skPromise = SupportKit.init({
@@ -84,6 +84,19 @@ var skPromise = SupportKit.init({
     // Additional properties
     properties: {
         'anything': 'whatever_you_want'    
+    },
+    emailCaptureEnabled: false,
+    customText: {
+        headerText: 'How can we help?',
+        inputPlaceholder: 'Type a message...',
+        sendButtonText: 'Send',
+        introText: 'This is the beginning of your conversation.<br/> Ask us anything!',
+        settingsText: 'You can leave us your email so that we can get back to you this way.',
+        settingsReadOnlyText: 'We\'ll get back to you at this email address if we missed you.',
+        settingsInputPlaceholder: 'Your email address',
+        settingsSaveButtonText: 'Save',
+        settingsHeaderText: 'Email Settings',
+        settingsNotificationText: 'In case we\'re slow to respond you can <a href="#" data-ui-settings-link>leave us your email</a>.'
     }
 });
 
