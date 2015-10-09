@@ -60,8 +60,9 @@ SupportKit.init({appToken: 'your_app_token'});
 Initializes the SupportKit widget in the web page using the specified options. It returns a promise that will resolve when the widget is ready.
 
 ##### Options
+
 | Option | Optional? | Default value | Description |
-| --- | --- | --- |
+| --- | --- | --- | --- |
 | appToken | No | - | Your app token |
 | givenName | Yes | - | User's given name |
 | surname | Yes | - | User's surname |
@@ -70,7 +71,7 @@ Initializes the SupportKit widget in the web page using the specified options. I
 | properties | Yes | - | An object with all properties you want to set on your user |
 | emailCaptureEnabled | Yes | `false` | Enables prompt for email after the first user's message. You can retrieve that email in Slack using `/sk !profile`. We are aware of this limitation and are working on improving it. |
 
-##### Example
+
 ```javascript
 var skPromise = SupportKit.init({
     appToken: 'your_app_token',
