@@ -1,5 +1,6 @@
-{   
+{
     "ROOT_URL": "https://sdk.supportkit.io",
+    "API_URL": "https://api.supportkit.io/v1",
     "APP_TOKEN": "3ea7dnnifzriurbnqkux3043o",
     "JWT": "",
     "USER_ID": "",

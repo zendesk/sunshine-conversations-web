@@ -34,7 +34,7 @@ function json(response) {
 }
 
 module.exports.call = function call(options) {
-    var url = urljoin(endpoint.rootUrl, '/api/', options.url);
+    var url = urljoin(endpoint.rootUrl, options.url);
     var data = options.data;
     var method = options.method;
 
@@ -42,9 +42,7 @@ module.exports.call = function call(options) {
         data = JSON.parse(data);
     }
 
-    data = _.extend({}, data, {
-        appUserId: endpoint.appUserId
-    });
+    data = _.extend({}, data);
 
     var fetchOptions = {
         method: method

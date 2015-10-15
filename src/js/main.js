@@ -4,7 +4,6 @@ require('./bootstrap');
 var Backbone = require('backbone');
 var _ = require('underscore');
 var $ = require('jquery');
-var cookie = require('cookie');
 var uuid = require('uuid');
 var urljoin = require('url-join');
 var bindAll = require('lodash.bindall');
@@ -166,15 +165,19 @@ _.extend(SupportKit.prototype, Backbone.Events, {
         }
 
         return api.call({
-            url: 'appboot',
+            url: '/api/appboot',
             method: 'POST',
             data: data
         })
             .then(_(function(res) {
-                this.user.set(res.appUser);
+
+                this.user.set(_.extend({
+                    conversation: {}
+                }, res.appUser));
+
                 endpoint.appUserId = this.user.id;
 
-                this._eventCollection.url = urljoin('appusers', this.user.id, 'event');
+                this._eventCollection.url = urljoin(this.user.url(), 'event');
 
                 // this._events overrides some internals for event bindings in Backbone
                 this._eventCollection.reset(res.events, {
@@ -276,7 +279,7 @@ _.extend(SupportKit.prototype, Backbone.Events, {
 
         if (!hasEvent) {
             api.call({
-                url: 'event',
+                url: '/api/event',
                 method: 'PUT',
                 data: {
                     name: eventName
@@ -312,7 +315,7 @@ _.extend(SupportKit.prototype, Backbone.Events, {
 
     _renderWidget: function() {
         this._chatController = new ChatController({
-            user: this.user,
+            model: this.user,
             readOnlyEmail: this.options.readOnlyEmail,
             emailCaptureEnabled: this.options.emailCaptureEnabled,
             uiText: this.options.uiText

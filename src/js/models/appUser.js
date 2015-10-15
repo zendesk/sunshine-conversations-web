@@ -3,6 +3,10 @@
 
 var _ = require('underscore');
 var Backbone = require('backbone-associations');
+var urljoin = require('urljoin');
+
+var Conversation = require('./conversation');
+
 
 var AppUser = module.exports = Backbone.AssociatedModel.extend({
     idAttribute: '_id',
@@ -12,21 +16,39 @@ var AppUser = module.exports = Backbone.AssociatedModel.extend({
     },
 
     parse: function(data) {
-        return _.isObject(data) ? data : {
-            _id: data
-        };
+        return data.appUser;
     },
 
     url: function() {
-        return 'appusers/' + this.id;
+        return 'v1/appusers/' + this.id;
     },
 
     defaults: function() {
         return {
             properties: {},
+            conversation: {},
             conversationStarted: false
         };
     },
+
+    relations: [
+        {
+            type: Backbone.One,
+            key: 'conversation',
+            relatedModel: function() {
+                var model = this;
+                return Conversation.extend({
+                    isNew: function() {
+                        return !model.get('conversationStarted');
+                    },
+
+                    url: function() {
+                        return urljoin(model.url(), '/conversation/');
+                    }
+                });
+            }
+        }
+    ],
 
     isDirty: function(attributes) {
         attributes || (attributes = {});
