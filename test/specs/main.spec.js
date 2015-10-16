@@ -243,7 +243,7 @@ describe('Main', function() {
         });
     });
 
-    describe.only('#updateUser', function() {
+    describe('#updateUser', function() {
 
         // check if `save` actually calls the server or not
         var syncSpy;
