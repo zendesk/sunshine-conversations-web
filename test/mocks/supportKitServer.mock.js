@@ -44,33 +44,33 @@ module.exports = BaseServerMock.extend({
             }
         ],
         [
-            'POST', /\/api\/appusers\/([a-z0-9]+)\/event/, function(xhr) {
+            'POST', /\/v1\/appusers\/([a-z0-9]+)\/event/, function(xhr) {
                 xhr.respond(201, {
                     'Content-Type': 'application/json'
                 }, _.isString(xhr.requestBody) ? xhr.requestBody : JSON.stringify(xhr.requestBody));
             }
         ],
         [
-            'PUT', /\/api\/appusers\/([a-z0-9]+)/, function(xhr /*, id*/ ) {
+            'PUT', /\/v1\/appusers\/([a-z0-9]+)/, function(xhr /*, id*/ ) {
                 xhr.respond(200, {
                     'Content-Type': 'application/json'
                 }, _.isString(xhr.requestBody) ? xhr.requestBody : JSON.stringify(xhr.requestBody));
             }
         ],
         [
-            'GET', /\/api\/conversations/, [200, {
+            'GET', /\/v1\/appusers\/([a-z0-9]+)\/conversation/, [200, {
                 'Content-Type': 'application/json'
             }, JSON.stringify(_(conversationStore).values())]
         ],
         [
-            'POST', /\/api\/conversations/, [200, {
+            'POST', /\/v1\/appusers\/([a-z0-9]+)\/conversation/, [200, {
                 'Content-Type': 'application/json'
             }, JSON.stringify({
                 _id: '123123'
             })]
         ],
         [
-            'POST', /\/api\/conversations\/([a-z0-9]+)\/messages/, function(xhr) {
+            'POST', /\/v1\/appusers\/([a-z0-9]+)\/conversation\/messages/, function(xhr) {
                 xhr.respond(201, {
                     'Content-Type': 'application/json'
                 }, _.isString(xhr.requestBody) ? xhr.requestBody : JSON.stringify(xhr.requestBody));

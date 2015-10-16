@@ -133,7 +133,7 @@ describe('Main', function() {
             return SupportKit.init({
                 appToken: appToken
             }).then(function() {
-                apiSpy.args[0][0].url.should.eql('appboot');
+                apiSpy.args[0][0].url.should.eql('/api/appboot');
                 apiSpy.args[0][0].method.should.eql('POST');
                 apiSpy.args[0][0].data.deviceInfo.platform.should.eq('web');
             });
@@ -243,7 +243,7 @@ describe('Main', function() {
         });
     });
 
-    describe('#updateUser', function() {
+    describe.only('#updateUser', function() {
 
         // check if `save` actually calls the server or not
         var syncSpy;
@@ -348,7 +348,7 @@ describe('Main', function() {
 
                 SupportKit.track('new-event');
 
-                apiSpy.args[0][0].url.should.eq('event');
+                apiSpy.args[0][0].url.should.eq('/api/event');
                 apiSpy.args[0][0].method.should.eq('PUT');
                 apiSpy.args[0][0].data.name.should.eq('new-event');
             });

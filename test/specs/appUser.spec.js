@@ -31,9 +31,11 @@ describe('AppUser', function() {
                 var surname = 'Name';
 
                 var user = new AppUser({
-                    email: email,
-                    givenName: givenName,
-                    surname: surname
+                    appUser: {
+                        email: email,
+                        givenName: givenName,
+                        surname: surname
+                    }
                 }, {
                     parse: true
                 });
@@ -42,19 +44,6 @@ describe('AppUser', function() {
                 user.get('givenName').should.equal(givenName);
                 user.get('surname').should.equal(surname);
 
-            });
-        });
-
-        describe('with id', function() {
-            it('should map the id in the attributes', function() {
-                var id = '12345';
-
-                var user = new AppUser(id, {
-                    parse: true
-                });
-
-                user.id.should.equals(id);
-                user.get('_id').should.equals(id);
             });
         });
     });
@@ -71,8 +60,6 @@ describe('AppUser', function() {
                 givenName: givenName,
                 surname: surname,
                 id: id
-            }, {
-                parse: true
             });
 
             user.isDirty().should.be.true;
@@ -89,8 +76,6 @@ describe('AppUser', function() {
                 givenName: givenName,
                 surname: surname,
                 _id: id
-            }, {
-                parse: true
             });
 
             sandbox.stub(user, 'save', function(attributes, options) {
@@ -112,8 +97,8 @@ describe('AppUser', function() {
             var surname = 'Name';
             var id = '12345';
             var properties = {
-                    TEST: true
-                };
+                TEST: true
+            };
 
             var user = new AppUser({
                 email: email,
@@ -121,8 +106,6 @@ describe('AppUser', function() {
                 surname: surname,
                 properties: properties,
                 _id: id
-            }, {
-                parse: true
             });
 
             sandbox.stub(user, 'save', function(attributes, options) {
@@ -157,17 +140,17 @@ describe('AppUser', function() {
             var surname = 'Name';
             var id = '12345';
             var properties = {
-                    TEST: true
-                };
+                TEST: true
+            };
 
             var user = new AppUser({
-                email: email,
-                givenName: givenName,
-                surname: surname,
-                properties: properties,
-                _id: id
-            }, {
-                parse: true
+                appUser: {
+                    email: email,
+                    givenName: givenName,
+                    surname: surname,
+                    properties: properties,
+                    _id: id
+                }
             });
 
             // force isDirty to be false at start
@@ -187,8 +170,8 @@ describe('AppUser', function() {
             var surname = 'Name';
             var id = '12345';
             var properties = {
-                    TEST: true
-                };
+                TEST: true
+            };
 
             var user = new AppUser({
                 email: email,
@@ -196,8 +179,6 @@ describe('AppUser', function() {
                 surname: surname,
                 properties: properties,
                 _id: id
-            }, {
-                parse: true
             });
 
             // force isDirty to be false at start

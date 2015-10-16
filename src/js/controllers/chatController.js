@@ -1,7 +1,6 @@
 /* global Promise:false */
 'use strict';
 
-var $ = require('jquery');
 var bindAll = require('lodash.bindall');
 var _ = require('underscore');
 var ViewController = require('view-controller');
@@ -9,8 +8,6 @@ var ViewController = require('view-controller');
 var endpoint = require('../endpoint');
 var vent = require('../vent');
 var faye = require('../faye');
-
-var Conversation = require('../models/conversation');
 
 var ChatView = require('../views/chatView');
 var HeaderView = require('../views/headerView');

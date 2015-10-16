@@ -53,6 +53,10 @@ var AppUser = module.exports = Backbone.AssociatedModel.extend({
     isDirty: function(attributes) {
         attributes || (attributes = {});
 
+        if (_.isEmpty(attributes)) {
+            return false;
+        }
+
         var comparableAttributes = _.extend({}, this.attributes, attributes);
 
         return !this._lastPropertyValues || _.some(AppUser.EDITABLE_PROPERTIES, function(property) {

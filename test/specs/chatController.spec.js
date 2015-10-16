@@ -1,8 +1,6 @@
 /* global Promise:false */
 var sinon = require('sinon');
 var ChatController = require('../../src/js/controllers/chatController');
-var Conversations = require('../../src/js/collections/conversations');
-var Conversation = require('../../src/js/models/conversation');
 var vent = require('../../src/js/vent');
 var endpoint = require('../../src/js/endpoint');
 var AppUser = require('../../src/js/models/appUser');
@@ -13,7 +11,6 @@ describe('ChatController', function() {
     var scenario;
     var sandbox;
     var chatController;
-    var conversations;
     var user;
     var getConversationSpy;
     var initFayeSpy;
@@ -35,11 +32,11 @@ describe('ChatController', function() {
     });
 
     beforeEach(function(done) {
-        conversations = new Conversations();
         user = new AppUser({
             givenName: 'test',
             surname: 'user',
-            _id: '12345'
+            _id: '12345',
+            conversation: {}
         });
 
         endpoint.appUserId = user.id;
@@ -49,13 +46,14 @@ describe('ChatController', function() {
         });
 
         chatController = new ChatController({
-            collection: conversations,
-            user: user
+            model: user
         });
 
         getConversationSpy = sandbox.spy(chatController, '_getConversation');
         initFayeSpy = sandbox.stub(chatController, '_initFaye', function(conversation) {
-            chatController._fayeClient = {disconnect: function(){}};
+            chatController._fayeClient = {
+                disconnect: function() {}
+            };
             return Promise.resolve(conversation);
         });
         initMessagingBusSpy = sandbox.spy(chatController, '_initMessagingBus');
@@ -73,7 +71,6 @@ describe('ChatController', function() {
         sandbox.restore();
 
         chatController.destroy();
-        conversations.reset();
 
         endpoint.reset();
     });
@@ -89,34 +86,13 @@ describe('ChatController', function() {
         });
     });
 
-    describe('#sendMessage on existing conversation', function() {
+    describe('#sendMessage', function() {
         var message = 'Hey!';
         var messages;
         var initialLength;
 
         it('should add a message to the conversation', function(done) {
-            messages = chatController.conversation.get('messages');
-            initialLength = messages.length;
-
-            chatController.sendMessage(message).then(function() {
-                messages.length.should.equals(initialLength + 1);
-                messages.last().get('text').should.equals(message);
-                done();
-            });
-        });
-    });
-
-    describe('#sendMessage on new conversation', function() {
-        var message = 'Hey!';
-        var messages;
-        var initialLength;
-
-        beforeEach(function() {
-            chatController.conversation = new Conversation();
-        });
-
-        it('should add a message to the conversation', function(done) {
-            messages = chatController.conversation.get('messages');
+            messages = chatController.model.get('conversation').get('messages');
             initialLength = messages.length;
 
             chatController.sendMessage(message).then(function() {
@@ -135,7 +111,7 @@ describe('ChatController', function() {
                 text: 'Hey!'
             };
 
-            var messages = chatController.conversation.get('messages');
+            var messages = chatController.model.get('conversation').get('messages');
             var initialLength = messages.length;
             chatController._receiveMessage(message);
             messages.length.should.equals(initialLength + 1);

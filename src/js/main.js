@@ -190,7 +190,6 @@ _.extend(SupportKit.prototype, Backbone.Events, {
                 });
 
                 return this.user.save(_.pick(this.options, AppUser.EDITABLE_PROPERTIES), {
-                    parse: true,
                     wait: true
                 });
             }).bind(this))
@@ -249,7 +248,6 @@ _.extend(SupportKit.prototype, Backbone.Events, {
 
         return new Promise(function(resolve, reject) {
             user.save(userInfo, {
-                parse: true,
                 wait: true
             }).then(function() {
                 resolve(user);
