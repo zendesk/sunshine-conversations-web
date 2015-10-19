@@ -1,4 +1,3 @@
-/* global Promise:false */
 'use strict';
 
 var _ = require('underscore');
@@ -52,10 +51,6 @@ var AppUser = module.exports = Backbone.AssociatedModel.extend({
 
     isDirty: function(attributes) {
         attributes || (attributes = {});
-
-        if (_.isEmpty(attributes)) {
-            return false;
-        }
 
         var comparableAttributes = _.extend({}, this.attributes, attributes);
 
