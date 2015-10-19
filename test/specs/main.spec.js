@@ -1,4 +1,3 @@
-/* global Promise:false */
 'use strict';
 
 var sinon = require('sinon');

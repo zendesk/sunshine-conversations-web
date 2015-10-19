@@ -52,9 +52,14 @@ module.exports = BaseServerMock.extend({
         ],
         [
             'PUT', /\/v1\/appusers\/([a-z0-9]+)/, function(xhr /*, id*/ ) {
+                var requestBody = _.isString(xhr.requestBody) ? JSON.parse(xhr.requestBody) : xhr.requestBody;
+                var body = {
+                    appUser: requestBody
+                };
+
                 xhr.respond(200, {
                     'Content-Type': 'application/json'
-                }, _.isString(xhr.requestBody) ? xhr.requestBody : JSON.stringify(xhr.requestBody));
+                }, JSON.stringify(body));
             }
         ],
         [

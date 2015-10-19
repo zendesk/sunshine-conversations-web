@@ -248,7 +248,8 @@ _.extend(SupportKit.prototype, Backbone.Events, {
 
         return new Promise(function(resolve, reject) {
             user.save(userInfo, {
-                wait: true
+                wait: true,
+                parse: true
             }).then(function() {
                 resolve(user);
             }).catch(reject);

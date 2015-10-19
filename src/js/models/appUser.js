@@ -3,9 +3,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone-associations');
 var urljoin = require('urljoin');
-
 var Conversation = require('./conversation');
-
 
 var AppUser = module.exports = Backbone.AssociatedModel.extend({
     idAttribute: '_id',
@@ -65,7 +63,6 @@ var AppUser = module.exports = Backbone.AssociatedModel.extend({
 
         var success = options && options.success;
         return new Promise(function(resolve) {
-
             if (this.isDirty(attributes)) {
                 options.success = _.bind(function(model, response, options) {
                     this._lastPropertyValues = this.pick(AppUser.EDITABLE_PROPERTIES);
