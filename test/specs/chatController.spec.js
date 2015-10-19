@@ -1,4 +1,3 @@
-/* global Promise:false */
 var sinon = require('sinon');
 var ChatController = require('../../src/js/controllers/chatController');
 var vent = require('../../src/js/vent');
@@ -113,9 +112,10 @@ describe('ChatController', function() {
 
             var messages = chatController.model.get('conversation').get('messages');
             var initialLength = messages.length;
-            chatController._receiveMessage(message);
-            messages.length.should.equals(initialLength + 1);
-            messages.last().get('text').should.equals(message.text);
+            chatController._receiveMessage(message).then(function(){
+              messages.length.should.equals(initialLength + 1);
+              messages.last().get('text').should.equals(message.text);
+            });
         });
 
     });
