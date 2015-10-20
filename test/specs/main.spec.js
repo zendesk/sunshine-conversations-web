@@ -2,6 +2,7 @@
 
 var sinon = require('sinon');
 var Backbone = require('backbone');
+var urljoin = require('urljoin');
 
 var ClientScenario = require('../scenarios/clientScenario');
 var usersData = require('../data/users');
@@ -307,115 +308,20 @@ describe('Main', function() {
         });
     });
 
-    describe('#_rulesContainEvent', function() {
-        it('should contain "in-rule" event', function() {
-            SupportKit._rulesContainEvent('in-rule-in-event').should.be.true;
-            SupportKit._rulesContainEvent('in-rule-not-event').should.be.true;
-        });
-
-        it('should not contain "not-in-rule" event', function() {
-            SupportKit._rulesContainEvent('not-rule-in-event').should.be.false;
-        });
-    });
-
-    describe('#_hasEvent', function() {
-        it('should contain "in-rule" and "not-in-rule" events', function() {
-            SupportKit._hasEvent('in-rule-in-event').should.be.true;
-            SupportKit._hasEvent('not-rule-in-event').should.be.true;
-        });
-
-        it('should not contain "not-in-event" event', function() {
-            SupportKit._hasEvent('in-rule-not-event').should.be.false;
-        });
-    });
-
     describe('#track', function() {
         var api = require('../../src/js/utils/api');
-        var eventCreateSpy;
         var apiSpy;
 
         beforeEach(function() {
-            eventCreateSpy = sandbox.spy(SupportKit._eventCollection, 'create');
             apiSpy = sandbox.spy(api, 'call');
         });
 
-        describe('tracking a new event', function() {
+        it('should call /v1/appusers/:id/event', function() {
+            SupportKit.track('new-event');
 
-            it('should call /api/event', function() {
-                SupportKit._hasEvent('new-event').should.be.false;
-                SupportKit._rulesContainEvent('new-event').should.be.false;
-
-                SupportKit.track('new-event');
-
-                apiSpy.args[0][0].url.should.eq('/api/event');
-                apiSpy.args[0][0].method.should.eq('PUT');
-                apiSpy.args[0][0].data.name.should.eq('new-event');
-            });
-        });
-
-        describe('tracking an existing event in rules', function() {
-
-            it('should create an event through the collection', function() {
-                SupportKit._rulesContainEvent('in-rule-not-event').should.be.true;
-                SupportKit._hasEvent('in-rule-not-event').should.be.false;
-
-                SupportKit.track('in-rule-not-event');
-
-
-                SupportKit._rulesContainEvent('in-rule-in-event').should.be.true;
-                SupportKit._hasEvent('in-rule-in-event').should.be.true;
-
-                SupportKit.track('in-rule-in-event');
-
-                eventCreateSpy.should.have.been.calledTwice;
-            });
-        });
-
-        describe('tracking an existing event not in rules', function() {
-            it('should do nothing if already in events and not in rules', function() {
-                SupportKit._rulesContainEvent('not-rule-in-event').should.be.false;
-                SupportKit._hasEvent('not-rule-in-event').should.be.true;
-
-                SupportKit.track('not-rule-in-event');
-
-                eventCreateSpy.should.not.have.been.called;
-                apiSpy.should.not.have.been.called;
-            });
-        });
-
-
-        describe('skt-appboot', function() {
-
-            it('should do nothing if not in rules', function() {
-                SupportKit._rulesContainEvent('skt-appboot').should.be.false;
-                SupportKit._hasEvent('skt-appboot').should.be.true;
-
-                SupportKit.track('skt-appboot');
-
-                eventCreateSpy.should.not.have.been.called;
-                apiSpy.should.not.have.been.called;
-            });
-
-
-            describe('in rules', function() {
-                beforeEach(function() {
-                    SupportKit._ruleCollection.add({
-                        '_id': '558c455fa2d213d0581f0a0b',
-                        'events': ['skt-appboot']
-                    }, {
-                        parse: true
-                    });
-                });
-
-                it('should create an event through the collection', function() {
-                    SupportKit._rulesContainEvent('skt-appboot').should.be.true;
-                    SupportKit._hasEvent('skt-appboot').should.be.true;
-
-                    SupportKit.track('skt-appboot');
-
-                    eventCreateSpy.should.have.been.calledOnce;
-                });
-            });
+            apiSpy.args[0][0].url.should.eq(urljoin(SupportKit.user.url(), 'event'));
+            apiSpy.args[0][0].method.should.eq('POST');
+            apiSpy.args[0][0].data.name.should.eq('new-event');
         });
     });
 });

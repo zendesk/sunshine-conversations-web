@@ -45,9 +45,9 @@ module.exports = BaseServerMock.extend({
         ],
         [
             'POST', /\/v1\/appusers\/([a-z0-9]+)\/event/, function(xhr) {
-                xhr.respond(201, {
+                xhr.respond(204, {
                     'Content-Type': 'application/json'
-                }, _.isString(xhr.requestBody) ? xhr.requestBody : JSON.stringify(xhr.requestBody));
+                }, undefined);
             }
         ],
         [
@@ -80,13 +80,6 @@ module.exports = BaseServerMock.extend({
                     'Content-Type': 'application/json'
                 }, _.isString(xhr.requestBody) ? xhr.requestBody : JSON.stringify(xhr.requestBody));
             }
-        ],
-        [
-            'PUT', /\/api\/event/, function(xhr) {
-                xhr.respond(200, {
-                    'Content-Type': 'application/json'
-                }, JSON.stringify({}));
-            }
-        ],
+        ]
     ]
 });

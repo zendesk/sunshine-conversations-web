@@ -8,10 +8,6 @@ var uuid = require('uuid');
 var urljoin = require('url-join');
 var bindAll = require('lodash.bindall');
 
-/*jshint -W079 */
-var Event = require('./models/event');
-/*jshint +W079 */
-var Rule = require('./models/rule');
 var AppUser = require('./models/appUser');
 var ChatController = require('./controllers/chatController');
 var endpoint = require('./endpoint');
@@ -21,15 +17,6 @@ var SK_STORAGE = 'sk_deviceid';
 
 // appends the compile stylesheet to the HEAD
 require('../stylesheets/main.less');
-
-
-var EventCollection = Backbone.Collection.extend({
-    model: Event
-});
-
-var RuleCollection = Backbone.Collection.extend({
-    model: Rule
-});
 
 /**
  * Contains all SupportKit API classes and functions.
@@ -43,9 +30,6 @@ var SupportKit = function() {
     this._widgetRendered = false;
 
     this.user = new AppUser();
-
-    this._eventCollection = new EventCollection();
-    this._ruleCollection = new RuleCollection();
 };
 
 _.extend(SupportKit.prototype, Backbone.Events, {
@@ -177,18 +161,6 @@ _.extend(SupportKit.prototype, Backbone.Events, {
 
                 endpoint.appUserId = this.user.id;
 
-                this._eventCollection.url = urljoin(this.user.url(), 'event');
-
-                // this._events overrides some internals for event bindings in Backbone
-                this._eventCollection.reset(res.events, {
-                    parse: true
-                });
-
-                // for consistency, this will use the collection suffix too.
-                this._ruleCollection.reset(res.rules, {
-                    parse: true
-                });
-
                 return this.user.save(_.pick(this.options, AppUser.EDITABLE_PROPERTIES), {
                     wait: true
                 });
@@ -199,6 +171,8 @@ _.extend(SupportKit.prototype, Backbone.Events, {
             .catch(function(err) {
                 var message = err && (err.message || err.statusText);
                 console.error('SupportKit init error: ', message);
+                // rethrow error to be handled outside
+                throw err;
             });
     },
 
@@ -259,51 +233,27 @@ _.extend(SupportKit.prototype, Backbone.Events, {
     track: function(eventName) {
         this._checkReady();
 
-        var rulesContainEvent = this._rulesContainEvent(eventName);
-
-        if (rulesContainEvent) {
-            this._eventCollection.create({
-                name: eventName,
-                user: this.user
-            }, {
-                success: _.bind(this._checkConversationState, this)
-            });
-        } else {
-            this._ensureEventExists(eventName);
-        }
-    },
-
-    _ensureEventExists: function(eventName) {
-        var hasEvent = this._hasEvent(eventName);
-
-        if (!hasEvent) {
-            api.call({
-                url: '/api/event',
-                method: 'PUT',
-                data: {
-                    name: eventName
-                }
-            }).then(_.bind(function() {
-                this._eventCollection.add({
-                    name: eventName,
-                    user: this.user
-                });
-            }, this));
-        }
-    },
-
-    _rulesContainEvent: function(eventName) {
-        return !!this._ruleCollection.find(function(rule) {
-            return !!rule.get('events').findWhere({
+        return api.call({
+            url: urljoin(this.user.url(), 'event'),
+            method: 'POST',
+            data: {
                 name: eventName
+            }
+        }).then(function() {
+            // sanitize the returned value
+            return eventName;
+        })
+            .catch(function(err) {
+                // these errors can be safely ignored :
+                // 400 : rule already triggered
+                // 404 : event doesn't trigger any rule
+                if (!_.contains([400, 404], err.response.status)) {
+                    console.error('SupportKit track error: ', err.message);
+                    // rethrow error to be handled outside
+                    throw err;
+                }
             });
-        });
-    },
 
-    _hasEvent: function(eventName) {
-        return eventName === 'skt-appboot' || !!this._eventCollection.findWhere({
-            name: eventName
-        });
     },
 
     _checkConversationState: function() {
@@ -343,8 +293,6 @@ _.extend(SupportKit.prototype, Backbone.Events, {
 
     _cleanState: function() {
         this.user.clear();
-        this._ruleCollection.reset();
-        this._eventCollection.reset();
 
         if (this._widgetRendered) {
             this._chatController.destroy();
