@@ -252,6 +252,8 @@ _.extend(SupportKit.prototype, Backbone.Events, {
                     // rethrow error to be handled outside
                     throw err;
                 }
+
+                return eventName;
             });
 
     },

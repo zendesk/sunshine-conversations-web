@@ -30,6 +30,7 @@ module.exports = ViewController.extend({
     initialize: function() {
         bindAll(this);
         this.isOpened = false;
+        this.fayeConnected = false;
         this.uiText = this.getOption('uiText') || {};
     },
 
@@ -63,38 +64,52 @@ module.exports = ViewController.extend({
 
     sendMessage: function(text) {
         var self = this;
-        return this._getConversation()
-            .then(this._initFaye)
-            .then(function(conversation) {
-                // update the user before sending the message to ensure properties are correct
-                return self.model._save({}, {
-                    wait: true
-                }).then(_.constant(conversation));
-            })
-            .then(function(conversation) {
-                return new Promise(function(resolve, reject) {
-                    conversation.get('messages').create({
-                        authorId: endpoint.appUserId,
-                        text: text,
-                        role: 'appUser'
-                    }, {
-                        success: resolve,
-                        error: reject
-                    });
-                }).then(function(message) {
-                    var appUserMessages = conversation.get('messages').filter(function(message) {
-                        return message.get('authorId') === endpoint.appUserId;
-                    });
+        return self.model._save({}, {
+            wait: true
+        }).then(function() {
+            return self.model.get('conversation');
+        }).then(function(conversation) {
+            return new Promise(function(resolve, reject) {
+                conversation.get('messages').create({
+                    text: text,
+                    role: 'appUser'
+                }, {
+                    success: function(message, resp, callbackOpts) {
+                        conversation.set(_.omit(['messages'], resp.conversation));
+                        conversation.get('messages').add(resp.conversation.messages, {
+                            merge: true
+                        });
 
-                    if (self.getOption('emailCaptureEnabled') &&
-                        appUserMessages.length === 1 &&
-                        !self.model.get('email')) {
-                        self._showEmailNotification();
-                    }
+                        self.model.set({
+                            'conversationStarted': true
+                        });
 
-                    return message;
+                        self._initFaye(conversation).then(function() {
+                            _.defer(function() {
+                                conversation.fetch().then(function(){
+                                    console.log(arguments);
+                                });
+                            });
+
+                            resolve(message);
+                        });
+                    },
+                    error: reject
                 });
+            }).then(function(message) {
+                var appUserMessages = conversation.get('messages').filter(function(message) {
+                    return message.get('role') === 'appUser';
+                });
+
+                if (self.getOption('emailCaptureEnabled') &&
+                    appUserMessages.length === 1 &&
+                    !self.model.get('email')) {
+                    self._showEmailNotification();
+                }
+
+                return message;
             });
+        });
 
     },
 
@@ -135,34 +150,26 @@ module.exports = ViewController.extend({
     },
 
     _receiveMessage: function(message) {
-        return this._getConversation().then(function(conversation) {
-
-            // we actually need to extract the appMakers first
-            // since the message rendering is done on message add event
-            // and some UI stuff is relying on the appMakers collection
-            if (!conversation.get('appMakers').get(message.authorId)) {
-                conversation.get('appMakers').add({
-                    id: message.authorId
-                });
-            }
-
-            conversation.get('messages').add(message);
-        });
-    },
-
-    _getConversation: function() {
-        var conversation = this.model.get('conversation');
-
-        return this.model.get('conversationStarted') ?
-            conversation.fetch().then(_.constant(conversation)) :
-            Promise.resolve(conversation);
+        return Promise.resolve(this.model.get('conversation').get('messages').add(message));
     },
 
     _initFaye: function(conversation) {
-        if (!conversation.isNew()) {
-            return faye.init(conversation.id).then(function(client) {
-                this._fayeClient = client;
-                return conversation;
+        if (!this.fayeConnected) {
+            var promise;
+
+            if (conversation.isNew() && this.model.get('conversationStarted')) {
+                promise = conversation.fetch();
+            } else {
+                promise = Promise.resolve();
+            }
+
+            return promise.then(function() {
+                return faye.init(conversation.id).then(function(data) {
+                    this._fayeSubscription = data.subscription;
+                    this.fayeConnected = true;
+
+                    return conversation;
+                }.bind(this));
             }.bind(this));
         }
 
@@ -170,15 +177,13 @@ module.exports = ViewController.extend({
     },
 
     _initConversation: function() {
-        return this._getConversation()
-            .then(this._initFaye)
-            .then(_.bind(function(conversation) {
-                if (conversation.isNew()) {
-                    this.listenTo(this.model, 'change:conversationStarted', this.onConversationStarted);
-                }
+        var conversation = this.model.get('conversation');
 
-                return conversation;
-            }, this));
+        return this.model.get('conversationStarted') ?
+            conversation.fetch()
+                .then(_.constant(conversation))
+                .then(this._initFaye) :
+            Promise.resolve(conversation);
     },
 
     _initMessagingBus: function(conversation) {
@@ -251,11 +256,7 @@ module.exports = ViewController.extend({
 
     _renderConversation: function() {
         this.conversationView = new ConversationView({
-            model: this.model.get('conversation'),
             collection: this.model.get('conversation').get('messages'),
-            childViewOptions: {
-                conversation: this.model.get('conversation')
-            },
             introText: this.uiText.introText
         });
 
@@ -294,13 +295,6 @@ module.exports = ViewController.extend({
         this._renderChatHeader();
         this._renderConversation();
         this._renderConversationInput();
-    },
-
-    onConversationStarted: function(model, conversationStarted) {
-        if (conversationStarted) {
-            this.stopListening(this.user, 'change:conversationStarted', this.onConversationStarted);
-            this._initConversation();
-        }
     },
 
     getWidget: function() {
@@ -349,11 +343,7 @@ module.exports = ViewController.extend({
         var latestReadTs = this._getLatestReadTime();
         var unreadMessages = this.model.get('conversation').get('messages').chain()
             .filter(function(message) {
-                // Filter out own messages
-                return !this.model.get('conversation').get('appUsers').get(message.get('authorId'));
-            }.bind(this))
-            .filter(function(message) {
-                return Math.floor(message.get('received')) > latestReadTs;
+                return message.get('role') !== 'appUser' && Math.floor(message.get('received')) > latestReadTs;
             })
             .value();
 
@@ -391,8 +381,8 @@ module.exports = ViewController.extend({
     },
 
     onDestroy: function() {
-        if (this._fayeClient) {
-            this._fayeClient.disconnect();
+        if (this._fayeSubscription) {
+            this._fayeSubscription.cancel();
         }
 
         ViewController.prototype.onDestroy.call(this);

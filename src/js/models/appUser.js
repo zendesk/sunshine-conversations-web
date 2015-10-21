@@ -35,10 +35,6 @@ var AppUser = module.exports = Backbone.AssociatedModel.extend({
             relatedModel: function() {
                 var model = this;
                 return Conversation.extend({
-                    isNew: function() {
-                        return !model.get('conversationStarted');
-                    },
-
                     url: function() {
                         return urljoin(model.url(), '/conversation/');
                     }

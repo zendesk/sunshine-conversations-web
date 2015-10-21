@@ -11,7 +11,6 @@ describe('ChatController', function() {
     var sandbox;
     var chatController;
     var user;
-    var getConversationSpy;
     var initFayeSpy;
     var initMessagingBusSpy;
     var manageUnreadSpy;
@@ -48,7 +47,6 @@ describe('ChatController', function() {
             model: user
         });
 
-        getConversationSpy = sandbox.spy(chatController, '_getConversation');
         initFayeSpy = sandbox.stub(chatController, '_initFaye', function(conversation) {
             chatController._fayeClient = {
                 disconnect: function() {}
@@ -76,8 +74,7 @@ describe('ChatController', function() {
 
     describe('#getWidget', function() {
         it('should trigger the init chain', function() {
-            getConversationSpy.should.have.been.calledOnce;
-            initFayeSpy.should.have.been.calledOnce;
+            initFayeSpy.should.not.have.been.called;
             initMessagingBusSpy.should.have.been.calledOnce;
             manageUnreadSpy.should.have.been.calledOnce;
             renderWidgetSpy.should.have.been.calledOnce;
