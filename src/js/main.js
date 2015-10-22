@@ -230,31 +230,37 @@ _.extend(SupportKit.prototype, Backbone.Events, {
         });
     },
 
-    track: function(eventName) {
+    track: function(eventName, userProps) {
         this._checkReady();
+        var data = {
+            name: eventName
+        };
+
+        if (userProps) {
+            data.appUser = userProps;
+        }
 
         return api.call({
-            url: urljoin(this.user.url(), 'event'),
+            url: urljoin(this.user.url(), 'events'),
             method: 'POST',
-            data: {
-                name: eventName
+            data: data
+        }).then(function(response) {
+            if (response.conversationUpdated) {
+                this.user.get('conversation').fetch();
             }
-        }).then(function() {
-            // sanitize the returned value
-            return eventName;
-        })
-            .catch(function(err) {
-                // these errors can be safely ignored :
-                // 400 : rule already triggered
-                // 404 : event doesn't trigger any rule
-                if (!_.contains([400, 404], err.response.status)) {
-                    console.error('SupportKit track error: ', err.message);
-                    // rethrow error to be handled outside
-                    throw err;
-                }
+            return response;
+        }.bind(this)).catch(function(err) {
+            // these errors can be safely ignored :
+            // 400 : rule already triggered
+            // 404 : event doesn't trigger any rule
+            if (!_.contains([400, 404], err.response.status)) {
+                console.error('SupportKit track error: ', err.message);
+                // rethrow error to be handled outside
+                throw err;
+            }
 
-                return eventName;
-            });
+            return eventName;
+        });
 
     },
 

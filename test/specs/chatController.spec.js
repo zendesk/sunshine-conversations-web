@@ -95,7 +95,7 @@ describe('ChatController', function() {
                 messages.length.should.equals(initialLength + 1);
                 messages.last().get('text').should.equals(message);
                 done();
-            });
+            }).catch(done);
         });
     });
 
