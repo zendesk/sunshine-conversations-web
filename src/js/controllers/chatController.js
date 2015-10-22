@@ -1,4 +1,3 @@
-/* global Promise:false */
 'use strict';
 
 var bindAll = require('lodash.bindall');
@@ -74,7 +73,7 @@ module.exports = ViewController.extend({
                     text: text,
                     role: 'appUser'
                 }, {
-                    success: function(message, resp, callbackOpts) {
+                    success: function(message, resp) {
                         conversation.set(_.omit(['messages'], resp.conversation));
                         conversation.get('messages').add(resp.conversation.messages, {
                             merge: true
