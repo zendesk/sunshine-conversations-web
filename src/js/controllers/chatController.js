@@ -84,12 +84,6 @@ module.exports = ViewController.extend({
                         });
 
                         self._initFaye(conversation).then(function() {
-                            _.defer(function() {
-                                conversation.fetch().then(function(){
-                                    console.log(arguments);
-                                });
-                            });
-
                             resolve(message);
                         });
                     },
@@ -157,6 +151,7 @@ module.exports = ViewController.extend({
             var promise;
 
             if (conversation.isNew() && this.model.get('conversationStarted')) {
+                // need to fetch it to get the conversation id
                 promise = conversation.fetch();
             } else {
                 promise = Promise.resolve();
@@ -166,6 +161,12 @@ module.exports = ViewController.extend({
                 return faye.init(conversation.id).then(function(data) {
                     this._fayeSubscription = data.subscription;
                     this.fayeConnected = true;
+
+                    _.defer(function() {
+                        // fetch the conversation right after
+                        // connecting faye to make sure nothing was missed
+                        conversation.fetch();
+                    });
 
                     return conversation;
                 }.bind(this));

@@ -5,7 +5,7 @@ var Backbone = require('backbone');
 var urljoin = require('urljoin');
 
 var ClientScenario = require('../scenarios/clientScenario');
-var usersData = require('../data/users');
+var userData = require('../data/user');
 var endpoint = require('../../src/js/endpoint');
 var api = require('../../src/js/utils/api');
 
@@ -157,7 +157,7 @@ describe('Main', function() {
             SupportKit._cleanState();
 
             return SupportKit.login().then(function() {
-                endpoint.appUserId.should.equal(usersData[1]._id);
+                endpoint.appUserId.should.equal(userData.appUser._id);
             });
 
         });

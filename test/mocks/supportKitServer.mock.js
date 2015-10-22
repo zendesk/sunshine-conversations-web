@@ -3,7 +3,7 @@
 var _ = require('underscore');
 var BaseServerMock = require('./baseServerMock');
 
-var conversationStore = require('../data/conversations');
+var conversationData = require('../data/conversation');
 var appData = require('../data/app');
 
 module.exports = BaseServerMock.extend({
@@ -44,10 +44,12 @@ module.exports = BaseServerMock.extend({
             }
         ],
         [
-            'POST', /\/v1\/appusers\/([a-z0-9]+)\/event/, function(xhr) {
-                xhr.respond(204, {
+            'POST', /\/v1\/appusers\/([a-z0-9]+)\/events/, function(xhr) {
+                xhr.respond(200, {
                     'Content-Type': 'application/json'
-                }, undefined);
+                }, JSON.stringify({
+                    conversationUpdated: false
+                }));
             }
         ],
         [
@@ -63,22 +65,30 @@ module.exports = BaseServerMock.extend({
             }
         ],
         [
-            'GET', /\/v1\/appusers\/([a-z0-9]+)\/conversation/, [200, {
-                'Content-Type': 'application/json'
-            }, JSON.stringify(_(conversationStore).values())]
-        ],
-        [
-            'POST', /\/v1\/appusers\/([a-z0-9]+)\/conversation/, [200, {
-                'Content-Type': 'application/json'
-            }, JSON.stringify({
-                _id: '123123'
-            })]
+            'GET', /\/v1\/appusers\/([a-z0-9]+)\/conversation/, function(xhr /*, id*/ ) {
+                xhr.respond(200, {
+                    'Content-Type': 'application/json'
+                }, JSON.stringify(conversationData));
+            }
         ],
         [
             'POST', /\/v1\/appusers\/([a-z0-9]+)\/conversation\/messages/, function(xhr) {
-                xhr.respond(201, {
+                var message = _.isString(xhr.requestBody) ? JSON.parse(xhr.requestBody) : xhr.requestBody;
+                message._id = _.uniqueId();
+                var conversation = _.extend({}, conversationData, {
+                    messages: [
+                        message
+                    ]
+                });
+
+                var body = {
+                    conversation: conversation,
+                    message: message
+                };
+
+                xhr.respond(200, {
                     'Content-Type': 'application/json'
-                }, _.isString(xhr.requestBody) ? xhr.requestBody : JSON.stringify(xhr.requestBody));
+                }, JSON.stringify(body));
             }
         ]
     ]

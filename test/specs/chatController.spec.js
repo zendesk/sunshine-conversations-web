@@ -92,8 +92,8 @@ describe('ChatController', function() {
             initialLength = messages.length;
 
             chatController.sendMessage(message).then(function() {
-                messages.length.should.equals(initialLength + 1);
-                messages.last().get('text').should.equals(message);
+                chatController.model.get('conversation').get('messages').length.should.equals(initialLength + 1);
+                chatController.model.get('conversation').get('messages').last().get('text').should.equals(message);
                 done();
             }).catch(done);
         });
