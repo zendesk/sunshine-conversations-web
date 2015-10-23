@@ -2,7 +2,7 @@
 
 SupportKit is now Smooch!
 
-To reflect this transition, we bumped up the major version to 2.0. We introduced a lot of breaking changes in the internals of the library to let it hit our brand new public API.
+With Smooch, the internals of the SDK have changed. It is now using our [public API](http://docs.supportkit.io/rest/) and as such we've bumped the major version to 2.0.
 
 ## CDN
 
