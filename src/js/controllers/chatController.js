@@ -143,7 +143,9 @@ module.exports = ViewController.extend({
     },
 
     _receiveMessage: function(message) {
-        return Promise.resolve(this.model.get('conversation').get('messages').add(message));
+        return Promise.resolve(this.model.get('conversation').get('messages').add(message, {
+            merge: true
+        }));
     },
 
     _initFaye: function(conversation) {
@@ -329,7 +331,7 @@ module.exports = ViewController.extend({
             latestReadTs = parseInt(localStorage.getItem(key) || 0);
         }
         catch (e) {
-            latestReadTs = 0;
+        latestReadTs = 0;
         }
         return latestReadTs;
     },
