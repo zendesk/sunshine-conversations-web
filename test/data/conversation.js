@@ -1,8 +1,10 @@
+var user = require('./user');
+
 module.exports = {
-    'c877f1a8b19423adf50d9ff7': {
+    conversation: {
         _id: 'c877f1a8b19423adf50d9ff7',
         appMakers: [],
-        appUsers: ['1abaf66378a7340ce0652e6d'],
+        appUsers: [user.appUser._id],
         messages: []
     }
 };

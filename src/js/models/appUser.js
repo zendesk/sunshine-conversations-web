@@ -1,8 +1,9 @@
-/* global Promise:false */
 'use strict';
 
 var _ = require('underscore');
 var Backbone = require('backbone-associations');
+var urljoin = require('urljoin');
+var Conversation = require('./conversation');
 
 var AppUser = module.exports = Backbone.AssociatedModel.extend({
     idAttribute: '_id',
@@ -12,21 +13,35 @@ var AppUser = module.exports = Backbone.AssociatedModel.extend({
     },
 
     parse: function(data) {
-        return _.isObject(data) ? data : {
-            _id: data
-        };
+        return data.appUser;
     },
 
     url: function() {
-        return 'appusers/' + this.id;
+        return 'v1/appusers/' + encodeURIComponent(this.get('userId') || this.id);
     },
 
     defaults: function() {
         return {
             properties: {},
+            conversation: {},
             conversationStarted: false
         };
     },
+
+    relations: [
+        {
+            type: Backbone.One,
+            key: 'conversation',
+            relatedModel: function() {
+                var model = this;
+                return Conversation.extend({
+                    url: function() {
+                        return urljoin(model.url(), '/conversation/');
+                    }
+                });
+            }
+        }
+    ],
 
     isDirty: function(attributes) {
         attributes || (attributes = {});
@@ -44,7 +59,6 @@ var AppUser = module.exports = Backbone.AssociatedModel.extend({
 
         var success = options && options.success;
         return new Promise(function(resolve) {
-
             if (this.isDirty(attributes)) {
                 options.success = _.bind(function(model, response, options) {
                     this._lastPropertyValues = this.pick(AppUser.EDITABLE_PROPERTIES);
