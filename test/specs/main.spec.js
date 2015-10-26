@@ -296,7 +296,7 @@ describe('Main', function() {
         it('should call /v1/appusers/:id/event', function() {
             Smooch.track('new-event');
 
-            apiSpy.args[0][0].url.should.eq(urljoin(SupportKit.user.url(), 'events'));
+            apiSpy.args[0][0].url.should.eq(urljoin(Smooch.user.url(), 'events'));
             apiSpy.args[0][0].method.should.eq('POST');
             apiSpy.args[0][0].data.name.should.eq('new-event');
         });
