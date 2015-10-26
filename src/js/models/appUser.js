@@ -17,7 +17,7 @@ var AppUser = module.exports = Backbone.AssociatedModel.extend({
     },
 
     url: function() {
-        return 'v1/appusers/' + this.id;
+        return 'v1/appusers/' + (this.get('userId') || this.id);
     },
 
     defaults: function() {
