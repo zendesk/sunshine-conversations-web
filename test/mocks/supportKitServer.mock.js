@@ -44,7 +44,7 @@ module.exports = BaseServerMock.extend({
             }
         ],
         [
-            'POST', /\/v1\/appusers\/([a-z0-9]+)\/events/, function(xhr) {
+            'POST', /\/v1\/appusers\/([a-z0-9_\-%]+)\/events/, function(xhr) {
                 xhr.respond(200, {
                     'Content-Type': 'application/json'
                 }, JSON.stringify({
@@ -53,7 +53,7 @@ module.exports = BaseServerMock.extend({
             }
         ],
         [
-            'PUT', /\/v1\/appusers\/([a-z0-9]+)/, function(xhr /*, id*/ ) {
+            'PUT', /\/v1\/appusers\/([a-z0-9_\-%]+)/, function(xhr /*, id*/ ) {
                 var requestBody = _.isString(xhr.requestBody) ? JSON.parse(xhr.requestBody) : xhr.requestBody;
                 var body = {
                     appUser: requestBody
@@ -65,14 +65,14 @@ module.exports = BaseServerMock.extend({
             }
         ],
         [
-            'GET', /\/v1\/appusers\/([a-z0-9]+)\/conversation/, function(xhr /*, id*/ ) {
+            'GET', /\/v1\/appusers\/([a-z0-9_\-%]+)\/conversation/, function(xhr /*, id*/ ) {
                 xhr.respond(200, {
                     'Content-Type': 'application/json'
                 }, JSON.stringify(conversationData));
             }
         ],
         [
-            'POST', /\/v1\/appusers\/([a-z0-9]+)\/conversation\/messages/, function(xhr) {
+            'POST', /\/v1\/appusers\/([a-z0-9_\-%]+)\/conversation\/messages/, function(xhr) {
                 var message = _.isString(xhr.requestBody) ? JSON.parse(xhr.requestBody) : xhr.requestBody;
                 message._id = _.uniqueId();
                 var conversation = _.extend({}, conversationData, {
