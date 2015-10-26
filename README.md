@@ -157,7 +157,7 @@ Smooch.destroy();
 Sends a message on the user's behalf
 
 ```javascript
-Smooch.message('hello');
+Smooch.sendMessage('hello');
 ```
 
 #### updateUser(user)
