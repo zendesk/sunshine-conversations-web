@@ -133,9 +133,9 @@ describe('Main', function() {
             return SupportKit.init({
                 appToken: appToken
             }).then(function() {
-                apiSpy.args[0][0].url.should.eql('/api/appboot');
+                apiSpy.args[0][0].url.should.eql('v1/init');
                 apiSpy.args[0][0].method.should.eql('POST');
-                apiSpy.args[0][0].data.deviceInfo.platform.should.eq('web');
+                apiSpy.args[0][0].data.device.platform.should.eq('web');
             });
         });
     });

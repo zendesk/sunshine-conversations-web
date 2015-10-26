@@ -126,16 +126,18 @@ _.extend(SupportKit.prototype, Backbone.Events, {
         this._cleanState();
 
         var data = {
-            deviceId: this.getDeviceId(),
-            deviceInfo: {
-                URL: document.location.host,
-                userAgent: navigator.userAgent,
-                referrer: document.referrer,
-                browserLanguage: navigator.language,
-                currentUrl: document.location.href,
-                sdkVersion: this.VERSION,
-                currentTitle: document.title,
-                platform: 'web'
+            device: {
+                id: this.getDeviceId(),
+                platform: 'web',
+                info: {
+                    sdkVersion: this.VERSION,
+                    URL: document.location.host,
+                    userAgent: navigator.userAgent,
+                    referrer: document.referrer,
+                    browserLanguage: navigator.language,
+                    currentUrl: document.location.href,
+                    currentTitle: document.title
+                }
             }
         };
 
@@ -149,12 +151,11 @@ _.extend(SupportKit.prototype, Backbone.Events, {
         }
 
         return api.call({
-            url: '/api/appboot',
+            url: 'v1/init',
             method: 'POST',
             data: data
         })
             .then(_(function(res) {
-
                 this.user.set(_.extend({
                     conversation: {}
                 }, res.appUser));

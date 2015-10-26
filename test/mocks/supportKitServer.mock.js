@@ -21,7 +21,7 @@ module.exports = BaseServerMock.extend({
             'GET', /\/faye.*/, [200, {}, '']
         ],
         [
-            'POST', /\/api\/appboot/, function(xhr) {
+            'POST', /\/v1\/init/, function(xhr) {
                 var body = JSON.parse(xhr.requestBody);
 
                 var data = _.extend({
