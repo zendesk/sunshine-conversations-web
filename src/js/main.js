@@ -113,6 +113,8 @@ _.extend(Smooch.prototype, Backbone.Events, {
             return Promise.reject(new Error('init method requires an appToken'));
         }
 
+        endpoint.sdkVersion = this.VERSION;
+
         return this.login(options.userId, options.jwt);
     },
 

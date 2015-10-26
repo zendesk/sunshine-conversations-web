@@ -60,7 +60,8 @@ module.exports.call = function call(options) {
 
     var headers = {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-smooch-sdk': 'web/' + endpoint.sdkVersion
     };
 
     if (endpoint.appToken) {
