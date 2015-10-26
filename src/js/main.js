@@ -251,16 +251,9 @@ _.extend(SupportKit.prototype, Backbone.Events, {
             }
             return response;
         }.bind(this)).catch(function(err) {
-            // these errors can be safely ignored :
-            // 400 : rule already triggered
-            // 404 : event doesn't trigger any rule
-            if (!_.contains([400, 404], err.response.status)) {
-                console.error('SupportKit track error: ', err.message);
-                // rethrow error to be handled outside
-                throw err;
-            }
-
-            return eventName;
+            console.error('SupportKit track error: ', err.message);
+            // rethrow error to be handled outside
+            throw err;
         });
 
     },
