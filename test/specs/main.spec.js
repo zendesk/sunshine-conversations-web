@@ -64,13 +64,11 @@ describe('Main', function() {
         var appToken = 'thisisanapptoken';
         var jwt = 'thisisajwt';
         var apiSpy;
-        var trackSpy;
         var initSpy;
         var readySpy;
         var loginSpy;
 
         beforeEach(function() {
-            trackSpy = sandbox.spy(SupportKit, 'track');
             apiSpy = sandbox.spy(api, 'call');
             initSpy = sandbox.spy();
             readySpy = sandbox.spy();
@@ -88,7 +86,6 @@ describe('Main', function() {
             });
 
             return initPromise.then(initSpy).then(function() {
-                trackSpy.should.have.been.calledWith('skt-appboot');
                 loginSpy.should.have.been.calledOnce;
                 initSpy.should.have.been.calledOnce;
             });
@@ -127,7 +124,7 @@ describe('Main', function() {
             });
         });
 
-        it('should post platform device info to appboot', function() {
+        it('should post platform device info to init', function() {
             SupportKit.destroy();
 
             return SupportKit.init({
@@ -177,26 +174,6 @@ describe('Main', function() {
                 endpoint.jwt.should.equal(newJwt);
             });
 
-        });
-
-        it('should not trigger skt-appboot again', function() {
-            SupportKit.destroy();
-            SupportKit.appbootedOnce = false;
-
-            var trackSpy = sandbox.spy(SupportKit, 'track');
-
-            return SupportKit.init({
-                appToken: 'appToken'
-            })
-                .then(function() {
-                    trackSpy.should.have.been.calledWith('skt-appboot');
-                    SupportKit.appbootedOnce.should.be.true;
-
-                    return SupportKit.login('user_id');
-                })
-                .then(function() {
-                    trackSpy.should.have.been.calledOnce;
-                });
         });
     });
 
