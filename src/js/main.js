@@ -4,15 +4,10 @@ require('./bootstrap');
 var Backbone = require('backbone');
 var _ = require('underscore');
 var $ = require('jquery');
-var cookie = require('cookie');
 var uuid = require('uuid');
 var urljoin = require('url-join');
 var bindAll = require('lodash.bindall');
 
-/*jshint -W079 */
-var Event = require('./models/event');
-/*jshint +W079 */
-var Rule = require('./models/rule');
 var AppUser = require('./models/appUser');
 var ChatController = require('./controllers/chatController');
 var endpoint = require('./endpoint');
@@ -22,15 +17,6 @@ var SK_STORAGE = 'sk_deviceid';
 
 // appends the compile stylesheet to the HEAD
 require('../stylesheets/main.less');
-
-
-var EventCollection = Backbone.Collection.extend({
-    model: Event
-});
-
-var RuleCollection = Backbone.Collection.extend({
-    model: Rule
-});
 
 /**
  * Contains all Smooch API classes and functions.
@@ -44,9 +30,6 @@ var Smooch = function() {
     this._widgetRendered = false;
 
     this.user = new AppUser();
-
-    this._eventCollection = new EventCollection();
-    this._ruleCollection = new RuleCollection();
 };
 
 _.extend(Smooch.prototype, Backbone.Events, {
@@ -143,16 +126,18 @@ _.extend(Smooch.prototype, Backbone.Events, {
         this._cleanState();
 
         var data = {
-            deviceId: this.getDeviceId(),
-            deviceInfo: {
-                URL: document.location.host,
-                userAgent: navigator.userAgent,
-                referrer: document.referrer,
-                browserLanguage: navigator.language,
-                currentUrl: document.location.href,
-                sdkVersion: this.VERSION,
-                currentTitle: document.title,
-                platform: 'web'
+            device: {
+                id: this.getDeviceId(),
+                platform: 'web',
+                info: {
+                    sdkVersion: this.VERSION,
+                    URL: document.location.host,
+                    userAgent: navigator.userAgent,
+                    referrer: document.referrer,
+                    browserLanguage: navigator.language,
+                    currentUrl: document.location.href,
+                    currentTitle: document.title
+                }
             }
         };
 
@@ -166,28 +151,18 @@ _.extend(Smooch.prototype, Backbone.Events, {
         }
 
         return api.call({
-            url: 'appboot',
+            url: 'v1/init',
             method: 'POST',
             data: data
         })
             .then(_(function(res) {
-                this.user.set(res.appUser);
+                this.user.set(_.extend({
+                    conversation: {}
+                }, res.appUser));
+
                 endpoint.appUserId = this.user.id;
 
-                this._eventCollection.url = urljoin('appusers', this.user.id, 'event');
-
-                // this._events overrides some internals for event bindings in Backbone
-                this._eventCollection.reset(res.events, {
-                    parse: true
-                });
-
-                // for consistency, this will use the collection suffix too.
-                this._ruleCollection.reset(res.rules, {
-                    parse: true
-                });
-
                 return this.user.save(_.pick(this.options, AppUser.EDITABLE_PROPERTIES), {
-                    parse: true,
                     wait: true
                 });
             }).bind(this))
@@ -197,6 +172,8 @@ _.extend(Smooch.prototype, Backbone.Events, {
             .catch(function(err) {
                 var message = err && (err.message || err.statusText);
                 console.error('Smooch init error: ', message);
+                // rethrow error to be handled outside
+                throw err;
             });
     },
 
@@ -246,62 +223,39 @@ _.extend(Smooch.prototype, Backbone.Events, {
 
         return new Promise(function(resolve, reject) {
             user.save(userInfo, {
-                parse: true,
-                wait: true
+                wait: true,
+                parse: true
             }).then(function() {
                 resolve(user);
             }).catch(reject);
         });
     },
 
-    track: function(eventName) {
+    track: function(eventName, userProps) {
         this._checkReady();
-
-        var rulesContainEvent = this._rulesContainEvent(eventName);
-
-        if (rulesContainEvent) {
-            this._eventCollection.create({
-                name: eventName,
-                user: this.user
-            }, {
-                success: _.bind(this._checkConversationState, this)
-            });
-        } else {
-            this._ensureEventExists(eventName);
-        }
-    },
-
-    _ensureEventExists: function(eventName) {
-        var hasEvent = this._hasEvent(eventName);
-
-        if (!hasEvent) {
-            api.call({
-                url: 'event',
-                method: 'PUT',
-                data: {
-                    name: eventName
-                }
-            }).then(_.bind(function() {
-                this._eventCollection.add({
-                    name: eventName,
-                    user: this.user
-                });
-            }, this));
-        }
-    },
-
-    _rulesContainEvent: function(eventName) {
-        return !!this._ruleCollection.find(function(rule) {
-            return !!rule.get('events').findWhere({
-                name: eventName
-            });
-        });
-    },
-
-    _hasEvent: function(eventName) {
-        return eventName === 'skt-appboot' || !!this._eventCollection.findWhere({
+        var data = {
             name: eventName
+        };
+
+        if (userProps) {
+            data.appUser = userProps;
+        }
+
+        return api.call({
+            url: urljoin(this.user.url(), 'events'),
+            method: 'POST',
+            data: data
+        }).then(function(response) {
+            if (response.conversationUpdated) {
+                this.user.get('conversation').fetch();
+            }
+            return response;
+        }.bind(this)).catch(function(err) {
+            console.error('SupportKit track error: ', err.message);
+            // rethrow error to be handled outside
+            throw err;
         });
+
     },
 
     _checkConversationState: function() {
@@ -312,7 +266,7 @@ _.extend(Smooch.prototype, Backbone.Events, {
 
     _renderWidget: function() {
         this._chatController = new ChatController({
-            user: this.user,
+            model: this.user,
             readOnlyEmail: this.options.readOnlyEmail,
             emailCaptureEnabled: this.options.emailCaptureEnabled,
             uiText: this.options.uiText
@@ -327,13 +281,6 @@ _.extend(Smooch.prototype, Backbone.Events, {
             }).chain().bind(this).delay();
 
             this.ready = true;
-
-            if (!this.appbootedOnce) {
-                // skt-appboot event should only happen on page load, not on login/logout
-                this.track('skt-appboot');
-                this.appbootedOnce = true;
-            }
-
             this.trigger('ready');
             return;
         }.bind(this));
@@ -341,8 +288,6 @@ _.extend(Smooch.prototype, Backbone.Events, {
 
     _cleanState: function() {
         this.user.clear();
-        this._ruleCollection.reset();
-        this._eventCollection.reset();
 
         if (this._widgetRendered) {
             this._chatController.destroy();

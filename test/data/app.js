@@ -1,6 +1,5 @@
-var users = require('./users');
-
-var user = users[1];
+var user = require('./user');
+var _ = require('underscore');
 
 module.exports = {
     'settings': {
@@ -8,7 +7,7 @@ module.exports = {
         'pushEnabled': false
     },
     'appUserId': 1,
-    'appUser': user,
+    'appUser': _.extend({}, user.appUser),
     'conversationStarted': true,
     'rules': [
         {

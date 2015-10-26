@@ -1,11 +1,11 @@
-/* global Promise:false */
 'use strict';
 
 var sinon = require('sinon');
 var Backbone = require('backbone');
+var urljoin = require('urljoin');
 
 var ClientScenario = require('../scenarios/clientScenario');
-var usersData = require('../data/users');
+var userData = require('../data/user');
 var endpoint = require('../../src/js/endpoint');
 var api = require('../../src/js/utils/api');
 
@@ -64,13 +64,11 @@ describe('Main', function() {
         var appToken = 'thisisanapptoken';
         var jwt = 'thisisajwt';
         var apiSpy;
-        var trackSpy;
         var initSpy;
         var readySpy;
         var loginSpy;
 
         beforeEach(function() {
-            trackSpy = sandbox.spy(Smooch, 'track');
             apiSpy = sandbox.spy(api, 'call');
             initSpy = sandbox.spy();
             readySpy = sandbox.spy();
@@ -88,7 +86,6 @@ describe('Main', function() {
             });
 
             return initPromise.then(initSpy).then(function() {
-                trackSpy.should.have.been.calledWith('skt-appboot');
                 loginSpy.should.have.been.calledOnce;
                 initSpy.should.have.been.calledOnce;
             });
@@ -127,15 +124,15 @@ describe('Main', function() {
             });
         });
 
-        it('should post platform device info to appboot', function() {
+        it('should post platform device info to init', function() {
             Smooch.destroy();
 
             return Smooch.init({
                 appToken: appToken
             }).then(function() {
-                apiSpy.args[0][0].url.should.eql('appboot');
+                apiSpy.args[0][0].url.should.eql('v1/init');
                 apiSpy.args[0][0].method.should.eql('POST');
-                apiSpy.args[0][0].data.deviceInfo.platform.should.eq('web');
+                apiSpy.args[0][0].data.device.platform.should.eq('web');
             });
         });
     });
@@ -157,7 +154,7 @@ describe('Main', function() {
             Smooch._cleanState();
 
             return Smooch.login().then(function() {
-                endpoint.appUserId.should.equal(usersData[1]._id);
+                endpoint.appUserId.should.equal(userData.appUser._id);
             });
 
         });
@@ -177,26 +174,6 @@ describe('Main', function() {
                 endpoint.jwt.should.equal(newJwt);
             });
 
-        });
-
-        it('should not trigger skt-appboot again', function() {
-            Smooch.destroy();
-            Smooch.appbootedOnce = false;
-
-            var trackSpy = sandbox.spy(Smooch, 'track');
-
-            return Smooch.init({
-                appToken: 'appToken'
-            })
-                .then(function() {
-                    trackSpy.should.have.been.calledWith('skt-appboot');
-                    Smooch.appbootedOnce.should.be.true;
-
-                    return Smooch.login('user_id');
-                })
-                .then(function() {
-                    trackSpy.should.have.been.calledOnce;
-                });
         });
     });
 
@@ -308,115 +285,20 @@ describe('Main', function() {
         });
     });
 
-    describe('#_rulesContainEvent', function() {
-        it('should contain "in-rule" event', function() {
-            Smooch._rulesContainEvent('in-rule-in-event').should.be.true;
-            Smooch._rulesContainEvent('in-rule-not-event').should.be.true;
-        });
-
-        it('should not contain "not-in-rule" event', function() {
-            Smooch._rulesContainEvent('not-rule-in-event').should.be.false;
-        });
-    });
-
-    describe('#_hasEvent', function() {
-        it('should contain "in-rule" and "not-in-rule" events', function() {
-            Smooch._hasEvent('in-rule-in-event').should.be.true;
-            Smooch._hasEvent('not-rule-in-event').should.be.true;
-        });
-
-        it('should not contain "not-in-event" event', function() {
-            Smooch._hasEvent('in-rule-not-event').should.be.false;
-        });
-    });
-
     describe('#track', function() {
         var api = require('../../src/js/utils/api');
-        var eventCreateSpy;
         var apiSpy;
 
         beforeEach(function() {
-            eventCreateSpy = sandbox.spy(Smooch._eventCollection, 'create');
             apiSpy = sandbox.spy(api, 'call');
         });
 
-        describe('tracking a new event', function() {
+        it('should call /v1/appusers/:id/event', function() {
+            Smooch.track('new-event');
 
-            it('should call /api/event', function() {
-                Smooch._hasEvent('new-event').should.be.false;
-                Smooch._rulesContainEvent('new-event').should.be.false;
-
-                Smooch.track('new-event');
-
-                apiSpy.args[0][0].url.should.eq('event');
-                apiSpy.args[0][0].method.should.eq('PUT');
-                apiSpy.args[0][0].data.name.should.eq('new-event');
-            });
-        });
-
-        describe('tracking an existing event in rules', function() {
-
-            it('should create an event through the collection', function() {
-                Smooch._rulesContainEvent('in-rule-not-event').should.be.true;
-                Smooch._hasEvent('in-rule-not-event').should.be.false;
-
-                Smooch.track('in-rule-not-event');
-
-
-                Smooch._rulesContainEvent('in-rule-in-event').should.be.true;
-                Smooch._hasEvent('in-rule-in-event').should.be.true;
-
-                Smooch.track('in-rule-in-event');
-
-                eventCreateSpy.should.have.been.calledTwice;
-            });
-        });
-
-        describe('tracking an existing event not in rules', function() {
-            it('should do nothing if already in events and not in rules', function() {
-                Smooch._rulesContainEvent('not-rule-in-event').should.be.false;
-                Smooch._hasEvent('not-rule-in-event').should.be.true;
-
-                Smooch.track('not-rule-in-event');
-
-                eventCreateSpy.should.not.have.been.called;
-                apiSpy.should.not.have.been.called;
-            });
-        });
-
-
-        describe('skt-appboot', function() {
-
-            it('should do nothing if not in rules', function() {
-                Smooch._rulesContainEvent('skt-appboot').should.be.false;
-                Smooch._hasEvent('skt-appboot').should.be.true;
-
-                Smooch.track('skt-appboot');
-
-                eventCreateSpy.should.not.have.been.called;
-                apiSpy.should.not.have.been.called;
-            });
-
-
-            describe('in rules', function() {
-                beforeEach(function() {
-                    Smooch._ruleCollection.add({
-                        '_id': '558c455fa2d213d0581f0a0b',
-                        'events': ['skt-appboot']
-                    }, {
-                        parse: true
-                    });
-                });
-
-                it('should create an event through the collection', function() {
-                    Smooch._rulesContainEvent('skt-appboot').should.be.true;
-                    Smooch._hasEvent('skt-appboot').should.be.true;
-
-                    Smooch.track('skt-appboot');
-
-                    eventCreateSpy.should.have.been.calledOnce;
-                });
-            });
+            apiSpy.args[0][0].url.should.eq(urljoin(SupportKit.user.url(), 'events'));
+            apiSpy.args[0][0].method.should.eq('POST');
+            apiSpy.args[0][0].data.name.should.eq('new-event');
         });
     });
 });

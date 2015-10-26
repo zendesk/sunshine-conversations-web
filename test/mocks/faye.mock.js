@@ -1,21 +1,19 @@
 'use strict';
 
 var BaseMock = require('./baseMock');
-var faye = require('faye');
+var faye = require('../../src/js/faye');
 var sinon = require('sinon');
-
-var $ = require('jquery');
 
 require('sinon-as-promised');
 
 module.exports = BaseMock.extend({
-    target: faye.Client.prototype,
+    target: faye,
     methods: {
-        addExtension: sinon.stub(),
-        connect: sinon.stub(),
-        subscribe: function() {
-            return $.Deferred().resolve({
-                disconnect: function(){}
+        init: function() {
+            return Promise.resolve({
+                subscription: {
+                    cancel: function() {}
+                }
             });
         }
     }
