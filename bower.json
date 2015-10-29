@@ -1,22 +1,19 @@
 {
-  "name": "supportkit",
+  "name": "smooch",
   "version": "1.0.0",
   "authors": [
-    "Andrew Lavers <andrew@supportkit.io>",
-    "Marc-Antoine Lemieux <marc@supportkit.io>",
-    "Julian Garritano <julian@supportkit.io>"
+    "Andrew Lavers <andrew@smooch.io>",
+    "Marc-Antoine Lemieux <marc@smooch.io>",
+    "Julian Garritano <julian@smooch.io>"
   ],
-  "description": "SupportKit Javascript SDK",
-  "main": "dist/supportkit.min.js",
+  "description": "Smooch Javascript SDK",
+  "main": "dist/smooch.min.js",
   "keywords": [
-    "supportkit",
+    "smooch",
     "javascript",
     "sdk"
   ],
-  "license": "http://supportkit.io/terms.html",
-  "homepage": "http://supportkit.io",
-  "private": false,
-  "dependencies": {
-    "jquery": "~1.11.0"
-  }
+  "license": "http://smooch.io/terms.html",
+  "homepage": "http://smooch.io",
+  "private": false
 }

@@ -14,8 +14,8 @@ deployment:
     branch: master
     commands:
       - echo "//registry.npmjs.org/:_authToken=$NPM_AUTH" > ~/.npmrc
-      - git config --global user.email "hello@supportkit.io"
-      - git config --global user.name "SupportKit"
+      - git config --global user.email "hello@smooch.io"
+      - git config --global user.name "Smooch"
       - grunt publish
       - grunt deploy
 

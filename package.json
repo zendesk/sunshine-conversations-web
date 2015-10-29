@@ -1,22 +1,22 @@
 {
-  "name": "supportkit",
+  "name": "smooch",
   "analyze": false,
   "version": "1.0.0",
   "keywords": [
-    "supportkit",
+    "smooch",
     "javascript",
     "sdk"
   ],
   "author": {
     "name": "Andrew Lavers",
-    "org": "SupportKit"
+    "org": "Smooch"
   },
   "scripts": {
     "test": "grunt test:unit"
   },
   "main": "src/js/main.js",
-  "homepage": "http://supportkit.io",
-  "license": "http://supportkit.io/terms.html",
+  "homepage": "http://smooch.io",
+  "license": "http://smooch.io/terms.html",
   "dependencies": {
     "backbone": "1.2.1",
     "backbone-associations": "^0.6.2",

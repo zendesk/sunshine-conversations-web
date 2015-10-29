@@ -14,7 +14,7 @@ var SK_STORAGE = 'sk_deviceid';
 describe('Main', function() {
     var scenario;
     var sandbox;
-    var SupportKit;
+    var Smooch;
 
     before(function() {
         scenario = new ClientScenario();
@@ -27,12 +27,12 @@ describe('Main', function() {
 
     beforeEach(function() {
         sandbox = sinon.sandbox.create();
-        SupportKit = require('../../src/js/main.js');
+        Smooch = require('../../src/js/main.js');
 
-        return SupportKit.init({
+        return Smooch.init({
             appToken: 'thisisanapptoken'
         }).then(function() {
-            sandbox.stub(SupportKit.user, 'save', function(attributes, options) {
+            sandbox.stub(Smooch.user, 'save', function(attributes, options) {
                 return this._save(attributes, options);
             });
         });
@@ -40,8 +40,8 @@ describe('Main', function() {
     });
 
     afterEach(function() {
-        SupportKit.destroy();
-        delete global.SupportKit;
+        Smooch.destroy();
+        delete global.Smooch;
         sandbox.restore();
     });
 
@@ -49,7 +49,7 @@ describe('Main', function() {
         // those tests are using the expect form since undefined
         // cannot be tested with the should syntax
         it('should publish a global', function() {
-            global.SupportKit.should.exist;
+            global.Smooch.should.exist;
         });
 
         it('should not publish dependencies in global context', function() {
@@ -72,16 +72,16 @@ describe('Main', function() {
             apiSpy = sandbox.spy(api, 'call');
             initSpy = sandbox.spy();
             readySpy = sandbox.spy();
-            loginSpy = sandbox.spy(SupportKit, 'login');
+            loginSpy = sandbox.spy(Smooch, 'login');
         });
 
         it('should trigger ready, track appboot, login the user and resolve the promise', function() {
-            SupportKit.destroy();
-            SupportKit.appbootedOnce = false;
+            Smooch.destroy();
+            Smooch.appbootedOnce = false;
 
-            SupportKit.once('ready', readySpy);
+            Smooch.once('ready', readySpy);
 
-            var initPromise = SupportKit.init({
+            var initPromise = Smooch.init({
                 appToken: appToken
             });
 
@@ -92,9 +92,9 @@ describe('Main', function() {
         });
 
         it('it should store the deviceId in local storage', function() {
-            SupportKit.destroy();
+            Smooch.destroy();
 
-            return SupportKit.init({
+            return Smooch.init({
                 appToken: appToken,
                 userId: userId
             }).then(function() {
@@ -103,9 +103,9 @@ describe('Main', function() {
         });
 
         it('should populate endpoint with supplied appToken and jwt', function() {
-            SupportKit.destroy();
+            Smooch.destroy();
 
-            return SupportKit.init({
+            return Smooch.init({
                 appToken: appToken,
                 jwt: jwt
             }).then(function() {
@@ -115,9 +115,9 @@ describe('Main', function() {
         });
 
         it('should not populate endpoint jwt if unspecified', function() {
-            SupportKit.destroy();
+            Smooch.destroy();
 
-            return SupportKit.init({
+            return Smooch.init({
                 appToken: appToken
             }).then(function() {
                 expect(endpoint.jwt).to.not.exist;
@@ -125,9 +125,9 @@ describe('Main', function() {
         });
 
         it('should post platform device info to init', function() {
-            SupportKit.destroy();
+            Smooch.destroy();
 
-            return SupportKit.init({
+            return Smooch.init({
                 appToken: appToken
             }).then(function() {
                 apiSpy.args[0][0].url.should.eql('v1/init');
@@ -141,19 +141,19 @@ describe('Main', function() {
         var cleanSpy;
 
         beforeEach(function() {
-            cleanSpy = sandbox.spy(SupportKit, '_cleanState');
+            cleanSpy = sandbox.spy(Smooch, '_cleanState');
         });
 
         it('should cleanState', function() {
-            return SupportKit.login('some_user_id').then(function() {
+            return Smooch.login('some_user_id').then(function() {
                 cleanSpy.should.have.been.calledOnce;
             });
         });
 
         it('should receive a user even if no user id provided', function() {
-            SupportKit._cleanState();
+            Smooch._cleanState();
 
-            return SupportKit.login().then(function() {
+            return Smooch.login().then(function() {
                 endpoint.appUserId.should.equal(userData.appUser._id);
             });
 
@@ -166,7 +166,7 @@ describe('Main', function() {
             var newUserId = 'new_user_id';
             var newJwt = 'new_jwt';
 
-            return SupportKit.login(newUserId, newJwt).then(function() {
+            return Smooch.login(newUserId, newJwt).then(function() {
                 newUserId.should.not.equal(oldUserId);
                 newJwt.should.not.equal(oldJwt);
 
@@ -180,19 +180,19 @@ describe('Main', function() {
     describe('#logout', function() {
         var loginStub;
         beforeEach(function() {
-            loginStub = sandbox.stub(SupportKit, 'login').returns(Promise.resolve());
+            loginStub = sandbox.stub(Smooch, 'login').returns(Promise.resolve());
         });
 
         it('should call login with no user id if ready', function() {
-            SupportKit.true = false;
-            SupportKit.logout().then(function() {
+            Smooch.true = false;
+            Smooch.logout().then(function() {
                 loginStub.should.have.been.calledWithExactly();
             });
         });
 
         it('should do nothing if not ready', function() {
-            SupportKit.ready = false;
-            SupportKit.logout().then(function() {
+            Smooch.ready = false;
+            Smooch.logout().then(function() {
                 loginStub.should.not.have.been.called();
             });
         });
@@ -201,7 +201,7 @@ describe('Main', function() {
     describe('#destroy', function() {
         beforeEach(function() {
             localStorage.setItem(SK_STORAGE, 'test');
-            SupportKit.destroy();
+            Smooch.destroy();
         });
 
         afterEach(function() {
@@ -230,7 +230,7 @@ describe('Main', function() {
 
         it('should fail the promise if called with bad parameters (empty, in this case)', function() {
             var failed;
-            return SupportKit.updateUser()
+            return Smooch.updateUser()
                 .catch(function() {
                     failed = true;
                 })
@@ -240,7 +240,7 @@ describe('Main', function() {
         });
 
         it('should not call save if the user has not changed', function() {
-            return SupportKit.updateUser({
+            return Smooch.updateUser({
                 givenName: 'GIVEN_NAME',
                 surname: 'SURNAME',
                 properties: {
@@ -249,7 +249,7 @@ describe('Main', function() {
             }).then(function() {
                 syncSpy.should.be.calledOnce;
 
-                return SupportKit.updateUser({
+                return Smooch.updateUser({
                     givenName: 'GIVEN_NAME',
                     surname: 'SURNAME',
                     properties: {
@@ -277,7 +277,7 @@ describe('Main', function() {
         });
 
         it('should clear endpoint values but keep the app token', function() {
-            SupportKit._cleanState();
+            Smooch._cleanState();
 
             expect(endpoint.appToken).to.exist;
             expect(endpoint.jwt).to.not.exist;
@@ -294,9 +294,9 @@ describe('Main', function() {
         });
 
         it('should call /v1/appusers/:id/event', function() {
-            SupportKit.track('new-event');
+            Smooch.track('new-event');
 
-            apiSpy.args[0][0].url.should.eq(urljoin(SupportKit.user.url(), 'events'));
+            apiSpy.args[0][0].url.should.eq(urljoin(Smooch.user.url(), 'events'));
             apiSpy.args[0][0].method.should.eq('POST');
             apiSpy.args[0][0].data.name.should.eq('new-event');
         });
