@@ -49,7 +49,6 @@ module.exports = BaseMock.extend({
 
     _stubbedFetch: function(url, options) {
         var route = this._findMatchingRoute(url, options.method);
-
         var response = route[2];
 
         var xhrMock = new XHRMock(options.body);

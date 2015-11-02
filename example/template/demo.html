@@ -7,9 +7,9 @@
     <title>Conversation Demo</title>
     <script src="../dist/WIDGET_CODE"></script>
     <script>
-        /* global SupportKit: false */
+        /* global Smooch: false */
 
-        window.SupportKitOptions = {
+        window.SmoochOptions = {
             appToken: 'APP_TOKEN',
             givenName: 'GIVEN_NAME',
             surname: 'SURNAME',
@@ -22,7 +22,7 @@
             emailCaptureEnabled: true
         };
 
-        SupportKit.init(SupportKitOptions);
+        Smooch.init(SmoochOptions);
     </script>
 
     <style type="text/css">
@@ -155,25 +155,25 @@
             var openButton = document.getElementById('open');
             var closeButton = document.getElementById('close');
 
-            if(window.SupportKitOptions.userId) {
-                userIdInput.value = window.SupportKitOptions.userId;
+            if(window.SmoochOptions.userId) {
+                userIdInput.value = window.SmoochOptions.userId;
             }
 
-            if(window.SupportKitOptions.jwt) {
-                jwtInput.value = window.SupportKitOptions.jwt;
+            if(window.SmoochOptions.jwt) {
+                jwtInput.value = window.SmoochOptions.jwt;
             }
 
 
 
             formMain.addEventListener('submit', function(e) {
                 e.preventDefault();
-                SupportKit.login(userIdInput.value, jwtInput.value);
+                Smooch.login(userIdInput.value, jwtInput.value);
             });
 
             formTrack.addEventListener('submit', function(e) {
                 e.preventDefault();
                 if(trackEventInput.value) {
-                    SupportKit.track(trackEventInput.value);
+                    Smooch.track(trackEventInput.value);
                 }
             });
 
@@ -182,7 +182,7 @@
                 if(updateUserInput.value) {
                     try {
                         var value = JSON.parse(updateUserInput.value);
-                        SupportKit.updateUser(value);
+                        Smooch.updateUser(value);
                     } catch(err) {
                         alert('Bad json')
                     }
@@ -192,39 +192,39 @@
             formMessage.addEventListener('submit', function(e) {
                 e.preventDefault();
                 if(messageInput.value) {
-                    SupportKit.sendMessage(messageInput.value);
+                    Smooch.sendMessage(messageInput.value);
                     messageInput.value = '';
                 }
             });
 
             signOutButton.addEventListener('click', function() {
-                SupportKit.logout();
+                Smooch.logout();
             });
 
             resetButton.addEventListener('click', function() {
                 localStorage.removeItem('sk_deviceid');
-                SupportKit.logout();
+                Smooch.logout();
             });
 
             initButton.addEventListener('click', function() {
-                if (!SupportKit.ready) {
-                    SupportKit.init(window.SupportKitOptions);
+                if (!Smooch.ready) {
+                    Smooch.init(window.SmoochOptions);
                 }
             });
 
             destroyButton.addEventListener('click', function() {
-                SupportKit.destroy();
+                Smooch.destroy();
             });
 
             openButton.addEventListener('click', function() {
-                if (SupportKit.ready) {
-                    SupportKit.open();
+                if (Smooch.ready) {
+                    Smooch.open();
                 }
             });
 
             closeButton.addEventListener('click', function() {
-                if (SupportKit.ready) {
-                    SupportKit.close();
+                if (Smooch.ready) {
+                    Smooch.close();
                 }
             });
 

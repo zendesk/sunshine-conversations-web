@@ -1,6 +1,7 @@
 'use strict';
 
 var Faye = require('faye');
+var _ = require('underscore');
 var endpoint = require('./endpoint');
 var vent = require('./vent');
 
@@ -9,7 +10,7 @@ module.exports.init = function(conversationId) {
     faye.addExtension({
         outgoing: function(message, callback) {
             if (message.channel === '/meta/subscribe') {
-                if(endpoint.jwt) {
+                if (endpoint.jwt) {
                     message.jwt = endpoint.jwt;
                 } else {
                     message.appUserId = endpoint.appUserId;
@@ -22,7 +23,12 @@ module.exports.init = function(conversationId) {
         }
     });
 
-    return faye.subscribe('/conversations/' + conversationId, function(message) {
+    var subscription = faye.subscribe('/conversations/' + conversationId, function(message) {
         vent.trigger('receive:message', message);
     });
+
+
+    return subscription.then(_.constant({
+        subscription: subscription
+    }));
 };

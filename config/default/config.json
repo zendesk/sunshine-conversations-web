@@ -1,10 +1,10 @@
-{   
-    "ROOT_URL": "https://sdk.supportkit.io",
+{
+    "ROOT_URL": "https://api.smooch.io",
     "APP_TOKEN": "3ea7dnnifzriurbnqkux3043o",
     "JWT": "",
     "USER_ID": "",
     "GIVEN_NAME": "DEFAULT_NAME",
     "SURNAME": "DEFAULT_SURNAME",
     "EMAIL": "DEFAULT@EMAIL.COM",
-    "WIDGET_CODE": "supportkit.js"
+    "WIDGET_CODE": "smooch.js"
 }

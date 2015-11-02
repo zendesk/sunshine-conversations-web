@@ -1,9 +1,9 @@
 module.exports = {
-    1: {
+    appUser: {
         _id: 1,
         givenName: 'Testing',
         surname: 'Guy',
-        email: 'testing@supportkit.io',
+        email: 'testing@smooch.io',
         conversationStarted: true,
         properties: {}
     }
