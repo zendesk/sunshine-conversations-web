@@ -174,10 +174,7 @@ module.exports = function(grunt) {
                 upload: [
                     {
                         src: 'src/images/**',
-                        dest: 'images/',
-                        options: {
-                            gzip: true
-                        }
+                        dest: 'images/'
                     }
                 ]
             }
@@ -201,7 +198,9 @@ module.exports = function(grunt) {
               method:         'delete'
             },
             files: [
-              { dest: '/smooch.min.js' }
+              { dest: '/smooch.min.js' },
+              { dest: '/images/logo_webwidget.png' },
+              { dest: '/images/logo_webwidget_2x.png' }
             ],
           },
         },
