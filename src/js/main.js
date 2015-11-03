@@ -5,7 +5,7 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 var $ = require('jquery');
 var uuid = require('uuid');
-var urljoin = require('url-join');
+var urljoin = require('urljoin');
 var bindAll = require('lodash.bindall');
 
 var AppUser = require('./models/appUser');
