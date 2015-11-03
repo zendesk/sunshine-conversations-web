@@ -7,6 +7,7 @@ var ViewController = require('view-controller');
 var endpoint = require('../endpoint');
 var vent = require('../vent');
 var faye = require('../faye');
+var storage = require('../utils/localStorage');
 
 var ChatView = require('../views/chatView');
 var HeaderView = require('../views/headerView');
@@ -328,17 +329,17 @@ module.exports = ViewController.extend({
         var key = this._getLatestReadTimeKey();
         var latestReadTs;
         try {
-            latestReadTs = parseInt(localStorage.getItem(key) || 0);
+            latestReadTs = parseInt(storage.getItem(key) || 0);
         }
         catch (e) {
-        latestReadTs = 0;
+            latestReadTs = 0;
         }
         return latestReadTs;
     },
 
     _setLatestReadTime: function(ts) {
         var key = this._getLatestReadTimeKey();
-        localStorage.setItem(key, ts);
+        storage.setItem(key, ts);
     },
 
     _updateUnread: function() {
@@ -356,7 +357,7 @@ module.exports = ViewController.extend({
 
     clearUnread: function() {
         var key = this._getLatestReadTimeKey();
-        localStorage.removeItem(key);
+        storage.removeItem(key);
     },
 
     resetUnread: function() {

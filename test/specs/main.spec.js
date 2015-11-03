@@ -8,6 +8,7 @@ var ClientScenario = require('../scenarios/clientScenario');
 var userData = require('../data/user');
 var endpoint = require('../../src/js/endpoint');
 var api = require('../../src/js/utils/api');
+var storage = require('../../src/js/utils/localStorage');
 
 var SK_STORAGE = 'sk_deviceid';
 
@@ -98,7 +99,7 @@ describe('Main', function() {
                 appToken: appToken,
                 userId: userId
             }).then(function() {
-                localStorage.getItem(SK_STORAGE).should.exist;
+                storage.getItem(SK_STORAGE).should.exist;
             });
         });
 
@@ -200,16 +201,16 @@ describe('Main', function() {
 
     describe('#destroy', function() {
         beforeEach(function() {
-            localStorage.setItem(SK_STORAGE, 'test');
+            storage.setItem(SK_STORAGE, 'test');
             Smooch.destroy();
         });
 
         afterEach(function() {
-            localStorage.setItem(SK_STORAGE, undefined);
+            storage.setItem(SK_STORAGE, undefined);
         });
 
         it('should not remove the device id from local storage', function() {
-            expect(localStorage.getItem(SK_STORAGE)).to.exist;
+            expect(storage.getItem(SK_STORAGE)).to.exist;
 
         });
 
@@ -265,15 +266,15 @@ describe('Main', function() {
     describe('#_cleanState', function() {
 
         beforeEach(function() {
-            localStorage.setItem(SK_STORAGE, 'test');
+            storage.setItem(SK_STORAGE, 'test');
         });
 
         afterEach(function() {
-            localStorage.setItem(SK_STORAGE, undefined);
+            storage.setItem(SK_STORAGE, undefined);
         });
 
         it('should not remove the device id from local storage', function() {
-            expect(localStorage.getItem(SK_STORAGE)).to.exist;
+            expect(storage.getItem(SK_STORAGE)).to.exist;
         });
 
         it('should clear endpoint values but keep the app token', function() {

@@ -5,13 +5,14 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 var $ = require('jquery');
 var uuid = require('uuid');
-var urljoin = require('url-join');
+var urljoin = require('urljoin');
 var bindAll = require('lodash.bindall');
 
 var AppUser = require('./models/appUser');
 var ChatController = require('./controllers/chatController');
 var endpoint = require('./endpoint');
 var api = require('./utils/api');
+var storage = require('./utils/localStorage');
 
 var SK_STORAGE = 'sk_deviceid';
 
@@ -187,10 +188,10 @@ _.extend(Smooch.prototype, Backbone.Events, {
         var deviceId;
 
         // get device ID first from local storage, then cookie. Otherwise generate new one
-        deviceId = localStorage.getItem(SK_STORAGE) ||
+        deviceId = storage.getItem(SK_STORAGE) ||
             uuid.v4().replace(/-/g, '');
 
-        localStorage.setItem(SK_STORAGE, deviceId);
+        storage.setItem(SK_STORAGE, deviceId);
 
         return deviceId;
     },
