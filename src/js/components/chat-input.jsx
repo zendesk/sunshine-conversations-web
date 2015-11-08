@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-
-import { messageAdded } from '../actions/conversation-actions';
+import { sendMessage } from '../services/conversation-service';
 
 export class ChatInputComponent extends Component {
     constructor() {
@@ -27,10 +25,7 @@ export class ChatInputComponent extends Component {
         const text = this.state.text;
         this.setState({text: ''});
 
-        this.props.actions.messageAdded({
-          text: text,
-          role: 'appUser'
-        });
+        sendMessage(text);
     }
 
     render() {
@@ -49,8 +44,4 @@ export const ChatInput = connect((state) => {
   return {
     ui: state.ui
   };
-}, (dispatch) => {
-  return {
-    actions: bindActionCreators({ messageAdded }, dispatch)
-  }
 })(ChatInputComponent)

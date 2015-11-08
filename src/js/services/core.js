@@ -1,3 +1,3 @@
-import { Smooch } from 'smooch-core/src/smooch';
+import Smooch from 'smooch-core';
 
-export const SmoochCore = Smooch;
+export const core = new Smooch();
