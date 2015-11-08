@@ -8,15 +8,28 @@ class HeaderComponent extends Component {
     constructor(props) {
         super(props);
         this.actions = this.props.actions;
+
+        this.showSettings = this.showSettings.bind(this);
+        this.hideSettings = this.hideSettings.bind(this);
+    }
+
+    showSettings(e) {
+        e.stopPropagation();
+        this.actions.showSettings();
+    }
+
+    hideSettings(e) {
+        e.stopPropagation();
+        this.actions.hideSettings();
     }
 
     render() {
         const settingsButton = this.props.appState.settingsEnabled && !this.props.appState.settingsVisible  ? (
-            <div id="sk-notification-badge" onClick={this.actions.showSettings}><i className="fa fa-gear"></i></div>
+            <div id="sk-notification-badge" onClick={this.showSettings}><i className="fa fa-gear"></i></div>
             ) : '';
 
         const backButton = this.props.appState.settingsEnabled && this.props.appState.settingsVisible ? (
-            <div className="sk-back-handle" onClick={this.actions.hideSettings}><i className="fa fa-arrow-left"></i></div>
+            <div className="sk-back-handle" onClick={this.hideSettings}><i className="fa fa-arrow-left"></i></div>
             ) : '';
 
         const closeHandle = this.props.appState.widgetOpened ? (

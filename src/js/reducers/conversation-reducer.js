@@ -1,12 +1,12 @@
-import { MESSAGE_RECEIVED, MESSAGES_CLEARED } from '../actions/conversation-actions';
+import { MESSAGE_ADDED, MESSAGES_CLEARED } from '../actions/conversation-actions';
 
 const INITIAL_STATE = {
     messages: []
 };
 
-export function AppReducer(state = INITIAL_STATE, action) {
+export function ConversationReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
-        case MESSAGE_RECEIVED:
+        case MESSAGE_ADDED:
             return Object.assign({}, state, {
                 messages: [...state.messages, action.message]
             });

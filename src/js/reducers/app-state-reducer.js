@@ -4,7 +4,7 @@ const INITIAL_STATE = {
     settingsVisible: false,
     settingsNotificationVisible: false,
     widgetOpened: false,
-    settingsEnabled: false
+    settingsEnabled: true
 };
 
 export function AppStateReducer(state = INITIAL_STATE, action) {
@@ -20,7 +20,8 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
 
         case TOGGLE_WIDGET:
             return Object.assign({}, state, {
-                widgetOpened: !state.widgetOpened
+                widgetOpened: !state.widgetOpened,
+                settingsVisible: state.settingsVisible && !state.widgetOpened
             });
 
         case OPEN_WIDGET:

@@ -10,11 +10,13 @@ import { Widget } from './components/widget.jsx';
 function renderWidget() {
     const el = document.createElement('div');
     el.setAttribute('id', 'sk-holder');
+    el.className = 'sk-noanimation';
 
     render(<Provider store={store}><Widget /></Provider>, el);
 
     document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(el);
+        el.className = '';
     });
 
     return el;

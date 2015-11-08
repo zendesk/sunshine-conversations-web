@@ -8,6 +8,11 @@
 
   -webkit-animation-fill-mode: forwards;
           animation-fill-mode: forwards;
+          
+  .sk-noanimation & {
+    -webkit-animation: none;
+            animation: none;
+  }
 }
 .sk-appear #sk-handle {
   -webkit-transform: rotate(270deg);
@@ -66,6 +71,11 @@
 
   -webkit-animation-fill-mode: forwards;
           animation-fill-mode: forwards;
+
+  .sk-noanimation & {
+    -webkit-animation: none;
+            animation: none;
+  }
 }
 @-webkit-keyframes sk-close-frames {
   0% {
