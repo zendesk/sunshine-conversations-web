@@ -77,6 +77,8 @@
     "matchdep": "^0.3.0",
     "mocha": "^2.2.5",
     "phantomjs": "^1.9.17",
+    "redux-devtools": "^2.1.5",
+    "redux-logger": "^2.0.4",
     "semver": "^4.3.6",
     "sinon": "^1.14.1",
     "sinon-as-promised": "^4.0.0",

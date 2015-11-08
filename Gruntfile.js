@@ -68,18 +68,11 @@ module.exports = function(grunt) {
 
         watch: {
             dev: {
-                files: ['src/js/**/*.js', '*.html', 'src/templates/*.tpl', 'src/stylesheets/*.less', 'config/config.json', 'example/template/*'],
+                files: ['src/js/**/*.js', 'src/js/**/*.jsx', '*.html', 'src/stylesheets/*.less', 'config/config.json', 'example/template/*'],
                 tasks: ['devbuild'],
                 options: {
                     spawn: false,
                 }
-            },
-            min: {
-                files: ['src/js/**/*.js', '*.html', 'src/templates/*.tpl', 'src/stylesheets/*.less', 'config/config.json', 'example/template/*'],
-                tasks: ['devbuild:min'],
-                options: {
-                    spawn: false,
-                },
             }
         },
 
