@@ -22,7 +22,11 @@ function status(response) {
     if (response.status >= 200 && response.status < 300) {
         return response;
     }
-    throw new Error(response.statusText);
+
+    var error = new Error(response.statusText);
+    error.response = response;
+
+    throw error;
 }
 
 function json(response) {
@@ -34,7 +38,7 @@ function json(response) {
 }
 
 module.exports.call = function call(options) {
-    var url = urljoin(endpoint.rootUrl, '/api/', options.url);
+    var url = urljoin(endpoint.rootUrl, options.url);
     var data = options.data;
     var method = options.method;
 
@@ -42,9 +46,7 @@ module.exports.call = function call(options) {
         data = JSON.parse(data);
     }
 
-    data = _.extend({}, data, {
-        appUserId: endpoint.appUserId
-    });
+    data = _.extend({}, data);
 
     var fetchOptions = {
         method: method
@@ -58,7 +60,8 @@ module.exports.call = function call(options) {
 
     var headers = {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-smooch-sdk': 'web/' + endpoint.sdkVersion
     };
 
     if (endpoint.appToken) {

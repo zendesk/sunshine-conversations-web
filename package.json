@@ -1,37 +1,35 @@
 {
-  "name": "supportkit",
+  "name": "smooch",
   "analyze": false,
-  "version": "1.0.0",
+  "version": "2.0.1",
   "keywords": [
-    "supportkit",
+    "smooch",
     "javascript",
     "sdk"
   ],
   "author": {
     "name": "Andrew Lavers",
-    "org": "SupportKit"
+    "org": "Smooch"
   },
   "scripts": {
     "test": "grunt test:unit"
   },
   "main": "src/js/main.js",
-  "homepage": "http://supportkit.io",
-  "license": "http://supportkit.io/terms.html",
+  "homepage": "http://smooch.io",
+  "license": "http://smooch.io/terms.html",
   "dependencies": {
     "backbone": "1.2.1",
     "backbone-associations": "^0.6.2",
     "backbone.marionette": "^2.4.2",
     "backbone.stickit": "^0.9.2",
-    "cookie": "^0.1.2",
     "es6-promise": "^3.0.2",
-    "faye": "^1.1.1",
+    "faye": "^1.1.2",
     "jquery": "^1.11.3",
     "jstify": "^0.7.0",
     "lodash.bindall": "^3.1.0",
     "marionette.behaviors": "0.0.13",
     "node-lessify": "0.0.10",
     "underscore": "1.8.3",
-    "url-join": "0.0.1",
     "urljoin": "^0.1.5",
     "uuid": "^2.0.1",
     "view-controller": "1.0.4",

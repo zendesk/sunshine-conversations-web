@@ -3,7 +3,7 @@
 var _ = require('underscore');
 var BaseServerMock = require('./baseServerMock');
 
-var conversationStore = require('../data/conversations');
+var conversationData = require('../data/conversation');
 var appData = require('../data/app');
 
 module.exports = BaseServerMock.extend({
@@ -21,7 +21,7 @@ module.exports = BaseServerMock.extend({
             'GET', /\/faye.*/, [200, {}, '']
         ],
         [
-            'POST', /\/api\/appboot/, function(xhr) {
+            'POST', /\/v1\/init/, function(xhr) {
                 var body = JSON.parse(xhr.requestBody);
 
                 var data = _.extend({
@@ -44,44 +44,52 @@ module.exports = BaseServerMock.extend({
             }
         ],
         [
-            'POST', /\/api\/appusers\/([a-z0-9]+)\/event/, function(xhr) {
-                xhr.respond(201, {
-                    'Content-Type': 'application/json'
-                }, _.isString(xhr.requestBody) ? xhr.requestBody : JSON.stringify(xhr.requestBody));
-            }
-        ],
-        [
-            'PUT', /\/api\/appusers\/([a-z0-9]+)/, function(xhr /*, id*/ ) {
+            'POST', /\/v1\/appusers\/([a-z0-9_\-%]+)\/events/, function(xhr) {
                 xhr.respond(200, {
                     'Content-Type': 'application/json'
-                }, _.isString(xhr.requestBody) ? xhr.requestBody : JSON.stringify(xhr.requestBody));
+                }, JSON.stringify({
+                    conversationUpdated: false
+                }));
             }
         ],
         [
-            'GET', /\/api\/conversations/, [200, {
-                'Content-Type': 'application/json'
-            }, JSON.stringify(_(conversationStore).values())]
-        ],
-        [
-            'POST', /\/api\/conversations/, [200, {
-                'Content-Type': 'application/json'
-            }, JSON.stringify({
-                _id: '123123'
-            })]
-        ],
-        [
-            'POST', /\/api\/conversations\/([a-z0-9]+)\/messages/, function(xhr) {
-                xhr.respond(201, {
-                    'Content-Type': 'application/json'
-                }, _.isString(xhr.requestBody) ? xhr.requestBody : JSON.stringify(xhr.requestBody));
-            }
-        ],
-        [
-            'PUT', /\/api\/event/, function(xhr) {
+            'PUT', /\/v1\/appusers\/([a-z0-9_\-%]+)/, function(xhr /*, id*/ ) {
+                var requestBody = _.isString(xhr.requestBody) ? JSON.parse(xhr.requestBody) : xhr.requestBody;
+                var body = {
+                    appUser: requestBody
+                };
+
                 xhr.respond(200, {
                     'Content-Type': 'application/json'
-                }, JSON.stringify({}));
+                }, JSON.stringify(body));
             }
         ],
+        [
+            'GET', /\/v1\/appusers\/([a-z0-9_\-%]+)\/conversation/, function(xhr /*, id*/ ) {
+                xhr.respond(200, {
+                    'Content-Type': 'application/json'
+                }, JSON.stringify(conversationData));
+            }
+        ],
+        [
+            'POST', /\/v1\/appusers\/([a-z0-9_\-%]+)\/conversation\/messages/, function(xhr) {
+                var message = _.isString(xhr.requestBody) ? JSON.parse(xhr.requestBody) : xhr.requestBody;
+                message._id = _.uniqueId();
+                var conversation = _.extend({}, conversationData, {
+                    messages: [
+                        message
+                    ]
+                });
+
+                var body = {
+                    conversation: conversation,
+                    message: message
+                };
+
+                xhr.respond(200, {
+                    'Content-Type': 'application/json'
+                }, JSON.stringify(body));
+            }
+        ]
     ]
 });

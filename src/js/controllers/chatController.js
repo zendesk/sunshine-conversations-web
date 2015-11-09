@@ -1,7 +1,5 @@
-/* global Promise:false */
 'use strict';
 
-var $ = require('jquery');
 var bindAll = require('lodash.bindall');
 var _ = require('underscore');
 var ViewController = require('view-controller');
@@ -9,9 +7,7 @@ var ViewController = require('view-controller');
 var endpoint = require('../endpoint');
 var vent = require('../vent');
 var faye = require('../faye');
-
-var Conversation = require('../models/conversation');
-var Conversations = require('../collections/conversations');
+var storage = require('../utils/localStorage');
 
 var ChatView = require('../views/chatView');
 var HeaderView = require('../views/headerView');
@@ -34,9 +30,8 @@ module.exports = ViewController.extend({
     initialize: function() {
         bindAll(this);
         this.isOpened = false;
-        this.user = this.getOption('user');
+        this.fayeConnected = false;
         this.uiText = this.getOption('uiText') || {};
-        this.collection = new Conversations();
     },
 
     open: function() {
@@ -69,45 +64,47 @@ module.exports = ViewController.extend({
 
     sendMessage: function(text) {
         var self = this;
-        return new Promise(function(resolve, reject) {
-            if (self.conversation.isNew()) {
-                self.conversation = self.collection.create(self.conversation, {
-                    success: resolve,
-                    error: reject
-                });
-            } else {
-                resolve(self.conversation);
-            }
-        })
-            .then(this._initFaye)
-            .then(function(conversation) {
-                // update the user before sending the message to ensure properties are correct
-                return self.user._save({}, {
-                    wait: true
-                }).then(_.constant(conversation));
-            }).then(function(conversation) {
+        return self.model._save({}, {
+            wait: true
+        }).then(function() {
+            return self.model.get('conversation');
+        }).then(function(conversation) {
             return new Promise(function(resolve, reject) {
                 conversation.get('messages').create({
-                    authorId: endpoint.appUserId,
-                    text: text
+                    text: text,
+                    role: 'appUser'
                 }, {
-                    success: resolve,
+                    success: function(message, resp) {
+                        conversation.set(_.omit(['messages'], resp.conversation));
+                        conversation.get('messages').add(resp.conversation.messages, {
+                            merge: true
+                        });
+
+                        self.model.set({
+                            'conversationStarted': true
+                        });
+
+                        self._initFaye(conversation).then(function() {
+                            resolve(message);
+                        });
+                    },
                     error: reject
                 });
-            });
-        }).then(function(message) {
-            var appUserMessages = self.conversation.get('messages').filter(function(message) {
-                return message.get('authorId') === endpoint.appUserId;
-            });
+            }).then(function(message) {
+                var appUserMessages = conversation.get('messages').filter(function(message) {
+                    return message.get('role') === 'appUser';
+                });
 
-            if (self.getOption('emailCaptureEnabled') &&
-                appUserMessages.length === 1 &&
-                !self.user.get('email')) {
-                self._showEmailNotification();
-            }
+                if (self.getOption('emailCaptureEnabled') &&
+                    appUserMessages.length === 1 &&
+                    !self.model.get('email')) {
+                    self._showEmailNotification();
+                }
 
-            return message;
+                return message;
+            });
         });
+
     },
 
     scrollToBottom: function() {
@@ -147,56 +144,35 @@ module.exports = ViewController.extend({
     },
 
     _receiveMessage: function(message) {
-        if (!!this.conversation) {
-
-            // we actually need to extract the appMakers first
-            // since the message rendering is done on message add event
-            // and some UI stuff is relying on the appMakers collection
-            if (!this.conversation.get('appMakers').get(message.authorId)) {
-                this.conversation.get('appMakers').add({
-                    id: message.authorId
-                });
-            }
-
-            this.conversation.get('messages').add(message);
-        }
-    },
-
-    _getConversation: function() {
-        if (this.conversation) {
-            // we created an empty collection, but a remote one was created
-            // we need to swap them without unbinding everything
-            if (this.conversation.isNew() && this.collection.length > 0) {
-                var remoteConversation = this.collection.at(0).toJSON();
-
-                // if we have local messages, merge them.
-                this.conversation.get('messages').forEach(function(message) {
-                    remoteConversation.messages.push(message.toJSON());
-                });
-
-
-                this.conversation.set(remoteConversation);
-                this.collection.shift();
-                this.collection.unshift(this.conversation);
-            }
-        } else {
-            if (this.collection.length > 0) {
-                this.conversation = this.collection.at(0);
-            } else {
-                this.conversation = new Conversation({
-                    appUserId: endpoint.appUserId
-                });
-            }
-        }
-
-        return Promise.resolve(this.conversation);
+        return Promise.resolve(this.model.get('conversation').get('messages').add(message, {
+            merge: true
+        }));
     },
 
     _initFaye: function(conversation) {
-        if (!conversation.isNew()) {
-            return faye.init(conversation.id).then(function(client) {
-                this._fayeClient = client;
-                return conversation;
+        if (!this.fayeConnected) {
+            var promise;
+
+            if (conversation.isNew() && this.model.get('conversationStarted')) {
+                // need to fetch it to get the conversation id
+                promise = conversation.fetch();
+            } else {
+                promise = Promise.resolve();
+            }
+
+            return promise.then(function() {
+                return faye.init(conversation.id).then(function(data) {
+                    this._fayeSubscription = data.subscription;
+                    this.fayeConnected = true;
+
+                    _.defer(function() {
+                        // fetch the conversation right after
+                        // connecting faye to make sure nothing was missed
+                        conversation.fetch();
+                    });
+
+                    return conversation;
+                }.bind(this));
             }.bind(this));
         }
 
@@ -204,24 +180,13 @@ module.exports = ViewController.extend({
     },
 
     _initConversation: function() {
-        var promise;
+        var conversation = this.model.get('conversation');
 
-        if (this.collection.length > 0 && !this.collection.at(0).isNew()) {
-            promise = this._getConversation();
-        } else {
-            promise = this.collection.fetch()
-                .then(this._getConversation)
-                .then(this._initFaye)
-                .then(_.bind(function(conversation) {
-                    if (conversation.isNew()) {
-                        this.listenTo(this.user, 'change:conversationStarted', this.onConversationStarted);
-                    }
-
-                    return conversation;
-                }, this));
-        }
-
-        return promise;
+        return this.model.get('conversationStarted') ?
+            conversation.fetch()
+                .then(_.constant(conversation))
+                .then(this._initFaye) :
+            Promise.resolve(conversation);
     },
 
     _initMessagingBus: function(conversation) {
@@ -237,7 +202,7 @@ module.exports = ViewController.extend({
 
     _renderChatHeader: function() {
         var headerView = new HeaderView({
-            model: this.model,
+            model: this.model.get('conversation'),
             headerText: this.uiText.headerText,
             emailCaptureEnabled: this.getOption('emailCaptureEnabled')
         });
@@ -271,7 +236,7 @@ module.exports = ViewController.extend({
 
     _renderSettingsView: function() {
         var settingsController = new SettingsController({
-            model: this.user,
+            model: this.model,
             viewOptions: {
                 emailCaptureEnabled: this.getOption('emailCaptureEnabled'),
                 readOnlyEmail: this.getOption('readOnlyEmail'),
@@ -294,11 +259,7 @@ module.exports = ViewController.extend({
 
     _renderConversation: function() {
         this.conversationView = new ConversationView({
-            model: this.model,
-            collection: this.model.get('messages'),
-            childViewOptions: {
-                conversation: this.model
-            },
+            collection: this.model.get('conversation').get('messages'),
             introText: this.uiText.introText
         });
 
@@ -319,8 +280,8 @@ module.exports = ViewController.extend({
 
     _renderConversationInput: function() {
         this.chatInputController = new ChatInputController({
-            model: this.model,
-            collection: this.model.get('messages'),
+            model: this.model.get('conversation'),
+            collection: this.model.get('conversation').get('messages'),
             viewOptions: {
                 inputPlaceholder: this.uiText.inputPlaceholder,
                 sendButtonText: this.uiText.sendButtonText
@@ -333,26 +294,17 @@ module.exports = ViewController.extend({
         this.getView().footer.show(this.chatInputController.getView());
     },
 
-    _renderWidget: function(conversation) {
-        this.model = conversation;
-
+    _renderWidget: function() {
         this._renderChatHeader();
         this._renderConversation();
         this._renderConversationInput();
-    },
-
-    onConversationStarted: function(model, conversationStarted) {
-        if (conversationStarted) {
-            this.stopListening(this.user, 'change:conversationStarted', this.onConversationStarted);
-            this._initConversation();
-        }
     },
 
     getWidget: function() {
         var view = this.getView();
 
         if (view.isRendered) {
-            return $.Deferred().resolve(view);
+            return Promise.resolve(view);
         }
 
         // this a workaround for rendering layout views and fixing regions
@@ -377,7 +329,7 @@ module.exports = ViewController.extend({
         var key = this._getLatestReadTimeKey();
         var latestReadTs;
         try {
-            latestReadTs = parseInt(localStorage.getItem(key) || 0);
+            latestReadTs = parseInt(storage.getItem(key) || 0);
         }
         catch (e) {
             latestReadTs = 0;
@@ -387,34 +339,30 @@ module.exports = ViewController.extend({
 
     _setLatestReadTime: function(ts) {
         var key = this._getLatestReadTimeKey();
-        localStorage.setItem(key, ts);
+        storage.setItem(key, ts);
     },
 
     _updateUnread: function() {
         var latestReadTs = this._getLatestReadTime();
-        var unreadMessages = this.conversation.get('messages').chain()
+        var unreadMessages = this.model.get('conversation').get('messages').chain()
             .filter(function(message) {
-                // Filter out own messages
-                return !this.conversation.get('appUsers').get(message.get('authorId'));
-            }.bind(this))
-            .filter(function(message) {
-                return Math.floor(message.get('received')) > latestReadTs;
+                return message.get('role') !== 'appUser' && Math.floor(message.get('received')) > latestReadTs;
             })
             .value();
 
         if (this.unread !== unreadMessages.length) {
-            this.conversation.set('unread', unreadMessages.length);
+            this.model.get('conversation').set('unread', unreadMessages.length);
         }
     },
 
     clearUnread: function() {
         var key = this._getLatestReadTimeKey();
-        localStorage.removeItem(key);
+        storage.removeItem(key);
     },
 
     resetUnread: function() {
         var latestReadTs = 0;
-        var latestMessage = this.conversation.get('messages').max(function(message) {
+        var latestMessage = this.model.get('conversation').get('messages').max(function(message) {
             return message.get('received');
         });
 
@@ -436,8 +384,8 @@ module.exports = ViewController.extend({
     },
 
     onDestroy: function() {
-        if (this._fayeClient) {
-            this._fayeClient.disconnect();
+        if (this._fayeSubscription) {
+            this._fayeSubscription.cancel();
         }
 
         ViewController.prototype.onDestroy.call(this);

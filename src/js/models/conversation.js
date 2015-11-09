@@ -1,15 +1,17 @@
 'use strict';
 
 var Backbone = require('backbone-associations');
-var urljoin = require('url-join');
+var urljoin = require('urljoin');
 
-var AppMaker = require('./appMaker');
-var AppUser = require('./appUser');
+var IdModel = require('./idModel');
 var Messages = require('../collections/messages');
 
 module.exports = Backbone.AssociatedModel.extend({
     idAttribute: '_id',
-    urlRoot: 'conversations/',
+
+    parse: function(data) {
+        return data.conversation;
+    },
 
     defaults: function() {
         return {
@@ -36,12 +38,12 @@ module.exports = Backbone.AssociatedModel.extend({
         {
             type: Backbone.Many,
             key: 'appMakers',
-            relatedModel: AppMaker
+            relatedModel: IdModel
         },
         {
             type: Backbone.Many,
             key: 'appUsers',
-            relatedModel: AppUser
+            relatedModel: IdModel
         }
     ]
 });
