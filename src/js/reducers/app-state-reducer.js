@@ -1,10 +1,11 @@
-import { ENABLE_SETTINGS, DISABLE_SETTINGS, TOGGLE_WIDGET, OPEN_WIDGET, CLOSE_WIDGET, SHOW_SETTINGS, HIDE_SETTINGS, SHOW_SETTINGS_NOTIFICATION, HIDE_SETTINGS_NOTIFICATION } from '../actions/app-state-actions';
+import { ENABLE_SETTINGS, DISABLE_SETTINGS, TOGGLE_WIDGET, OPEN_WIDGET, CLOSE_WIDGET, SHOW_SETTINGS, HIDE_SETTINGS, SHOW_SETTINGS_NOTIFICATION, HIDE_SETTINGS_NOTIFICATION, SET_SERVER_URL } from '../actions/app-state-actions';
 
 const INITIAL_STATE = {
     settingsVisible: false,
     settingsNotificationVisible: false,
     widgetOpened: false,
-    settingsEnabled: true
+    settingsEnabled: true,
+    serverURL: 'https://api.smooch.io/'
 };
 
 export function AppStateReducer(state = INITIAL_STATE, action) {
@@ -47,6 +48,10 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
         case HIDE_SETTINGS_NOTIFICATION:
             return Object.assign({}, state, {
                 settingsNotificationVisible: false
+            });
+        case SET_SERVER_URL:
+            return Object.assign({}, state, {
+                serverURL: action.url
             });
         default:
             return state;

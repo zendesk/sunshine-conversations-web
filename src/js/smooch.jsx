@@ -7,7 +7,8 @@ import uuid from 'uuid';
 import { store } from './stores/app-store';
 import { Widget } from './components/widget.jsx';
 
-import { setAuth, resetAuth, setUser, resetUser } from './actions/auth-actions';
+import { setAuth, resetAuth } from './actions/auth-actions';
+import { setUser, resetUser } from './actions/user-actions';
 import { setConversation } from './actions/conversation-actions';
 import { openWidget, closeWidget } from './actions/app-state-actions';
 
@@ -65,6 +66,7 @@ export class Smooch {
                 appToken: this.appToken
             }));
 
+            // TODO : add more info on the device
             return login({
                 userId: userId,
                 device: {

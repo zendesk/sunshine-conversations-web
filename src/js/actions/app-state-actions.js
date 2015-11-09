@@ -5,6 +5,7 @@ export const SHOW_SETTINGS = 'SHOW_SETTINGS';
 export const HIDE_SETTINGS = 'HIDE_SETTINGS';
 export const SHOW_SETTINGS_NOTIFICATION = 'SHOW_SETTINGS_NOTIFICATION';
 export const HIDE_SETTINGS_NOTIFICATION = 'HIDE_SETTINGS_NOTIFICATION';
+export const SET_SERVER_URL = 'SET_SERVER_URL';
 
 export function toggleWidget() {
   return {
@@ -45,5 +46,12 @@ export function showSettingsNotification() {
 export function hideSettingsNotification() {
   return {
     type: HIDE_SETTINGS_NOTIFICATION
+  };
+}
+
+export function setServerURL(url) {
+  return {
+    type: SET_SERVER_URL,
+    url: url
   };
 }

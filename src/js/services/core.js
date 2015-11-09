@@ -1,3 +1,7 @@
 import Smooch from 'smooch-core';
+import { store } from '../stores/app-store';
+import urljoin from 'urljoin';
 
-export const core = new Smooch();
+export function core() {
+    return new Smooch(urljoin(store.getState().appState.serverURL, 'v1'));
+}

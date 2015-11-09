@@ -3,15 +3,14 @@ import { connect } from 'react-redux';
 
 import { Header } from './header.jsx';
 import { Conversation } from './conversation.jsx';
+import { Settings } from './settings.jsx';
 import { EmailNotification } from './notification.jsx';
 import { ChatInput } from './chat-input.jsx';
 
 class WidgetComponent extends Component {
 
     render() {
-        const mainComponent = this.props.appState.settingsVisible ? '' : (
-            <Conversation />
-        );
+        const mainComponent = this.props.appState.settingsVisible ? <Settings /> : <Conversation />;
         const footer = this.props.appState.settingsVisible ? '' : (
             <ChatInput />
         );

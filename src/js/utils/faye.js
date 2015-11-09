@@ -1,20 +1,25 @@
 import { Client } from 'faye';
-import _ from 'underscore';
 import urljoin from 'urljoin';
 
-import AppStore from '../stores/AppStore';
-import ConversationActions from '../actions/ConversationActions';
+import { store } from '../stores/app-store';
+import { messageAdded } from '../actions/conversation-actions';
 
 export function initFaye(conversationId) {
-    var faye = new Client(urljoin(AppStore.rootUrl, '/faye'));
+    const state = store.getState();
+
+    var faye = new Client(urljoin(state.appState.serverURL, 'faye'));
+    
     faye.addExtension({
         outgoing: (message, callback) => {
             if (message.channel === '/meta/subscribe') {
-                message.appToken = AppStore.appToken;
-                message.appUserId = AppStore.appUserId;
+                message.appUserId = state.user._id;
 
-                if (AppStore.jwt) {
-                    message.jwt = AppStore.jwt;
+                if (state.auth.appToken) {
+                    message.appToken = state.auth.appToken;
+                }
+
+                if (state.auth.jwt) {
+                    message.jwt = state.auth.jwt;
                 }
             }
 
@@ -22,9 +27,9 @@ export function initFaye(conversationId) {
         }
     });
 
-    return faye.subscribe('/conversations/' + conversationId, function(message) {
-        ConversationActions.addMessage({
+    return faye.subscribe('/conversations/' + state.conversation._id, (message) => {
+        store.dispatch(addMessage({
             message: message
-        });
+        }));
     });
 }

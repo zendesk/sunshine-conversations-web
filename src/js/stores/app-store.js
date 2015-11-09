@@ -5,13 +5,15 @@ import { ConversationReducer } from '../reducers/conversation-reducer';
 import { UIReducer } from '../reducers/ui-reducer';
 import { AppStateReducer } from '../reducers/app-state-reducer';
 import { AuthReducer } from '../reducers/auth-reducer';
+import { UserReducer } from '../reducers/user-reducer';
 
 
 const reducer = combineReducers({
   conversation: ConversationReducer,
   ui: UIReducer,
   appState: AppStateReducer,
-  auth: AuthReducer
+  auth: AuthReducer,
+  user: UserReducer
 });
 
 export const store = compose(createStoreWithMiddleware)(reducer);

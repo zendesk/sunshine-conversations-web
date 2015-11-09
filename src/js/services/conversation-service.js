@@ -10,14 +10,20 @@ export function sendMessage(text) {
 
     store.dispatch(messageAdded(message));
 
-    const authState = store.getState().auth;
+    const auth = store.getState().auth;
+    const user = store.getState().user;
 
     // TODO :  reconcile sent message with data returned by the server
-    return core.conversations.sendMessage(authState.user._id, message, authState.auth).catch((e) => console.log(e));
+    return core().conversations.sendMessage(user._id, message, auth).catch((e) => console.log(e));
 }
 
 export function getConversation() {
-    const authState = store.getState().auth;
+    const auth = store.getState().auth;
+    const user = store.getState().user;
 
-    return core.conversations.get(authState.user._id, authState.auth).catch((e) => console.log(e));
+    return core().conversations.get(user._id, auth).catch((e) => console.log(e));
+}
+
+export function connectFaye() {
+    const conversation = store.getState().conversation;
 }

@@ -1,20 +1,13 @@
-import { SET_AUTH, RESET_AUTH, SET_USER, RESET_USER } from '../actions/auth-actions';
+import { SET_AUTH, RESET_AUTH } from '../actions/auth-actions';
 
-const INITIAL_STATE = {
-    auth: {},
-    user: {}
-};
+const INITIAL_STATE = {};
 
 export function AuthReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case SET_AUTH:
-            return Object.assign({}, state, { auth: action.props})
+            return Object.assign({}, state, action.props)
         case RESET_AUTH:
-            return Object.assign({}, state, { auth: INITIAL_STATE.auth})
-        case SET_USER:
-            return Object.assign({}, state, { user: action.user})
-        case RESET_USER:
-            return Object.assign({}, state, { user: INITIAL_STATE.user})
+            return INITIAL_STATE;
         default:
             return state;
     }
