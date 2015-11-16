@@ -254,7 +254,7 @@ _.extend(Smooch.prototype, Backbone.Events, {
             }
             return response;
         }.bind(this)).catch(function(err) {
-            console.error('SupportKit track error: ', err.message);
+            console.error('Smooch track error: ', err.message);
             // rethrow error to be handled outside
             throw err;
         });
