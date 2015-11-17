@@ -29,7 +29,7 @@
     "react-dom": "^0.14.2",
     "react-redux": "^4.0.0",
     "redux": "^3.0.4",
-    "smooch-core": "0.0.5",
+    "smooch-core": "0.0.7",
     "urljoin": "^0.1.5",
     "uuid": "^2.0.1"
   },

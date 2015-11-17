@@ -3,7 +3,7 @@ import { core } from './core';
 
 export function immediateUpdate(props) {
     const state = store.getState();
-    return core().appUsers.update(state.user._id, props, state.auth).catch((e) => console.log(e));
+    return core().appUsers.update(state.user._id, props).catch((e) => console.log(e));
 }
 
 export function update(props) {

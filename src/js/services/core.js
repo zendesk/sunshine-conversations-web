@@ -3,5 +3,6 @@ import { store } from '../stores/app-store';
 import urljoin from 'urljoin';
 
 export function core() {
-    return new Smooch(urljoin(store.getState().appState.serverURL, 'v1'));
+    const auth = store.getState().auth;
+    return new Smooch(auth, urljoin(store.getState().appState.serverURL, 'v1'));
 }

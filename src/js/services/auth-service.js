@@ -4,6 +4,5 @@ import { core } from './core';
 import { setUser } from '../actions/user-actions';
 
 export function login(props) {
-    const auth = store.getState().auth;
-    return core().appUsers.init(props, auth).catch((e) => console.log(e));
+    return core().appUsers.init(props).catch((e) => console.log(e));
 }
