@@ -23,9 +23,10 @@ export class ChatInputComponent extends Component {
     sendMessage(e) {
         e.preventDefault();
         const text = this.state.text;
-        this.setState({text: ''});
-
-        sendMessage(text);
+        if(!!text.trim()) {
+          this.setState({text: ''});
+          sendMessage(text);
+        }
     }
 
     render() {
