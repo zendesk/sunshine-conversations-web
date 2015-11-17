@@ -13,7 +13,7 @@ import { setConversation } from './actions/conversation-actions';
 import { openWidget, closeWidget } from './actions/app-state-actions';
 
 import { login } from './services/auth-service';
-import { getConversation, sendMessage } from './services/conversation-service';
+import { getConversation, sendMessage, connectFaye, disconnectFaye } from './services/conversation-service';
 
 import { storage } from './utils/storage';
 
@@ -29,7 +29,7 @@ function renderWidget() {
         el.className = '';
     }
 
-    if (document.readyState == "complete" || document.readyState == "loaded") {
+    if (document.readyState == 'complete' || document.readyState == 'loaded' || document.readyState == 'interactive') {
         appendWidget();
     } else {
         document.addEventListener('DOMContentLoaded', () => {
@@ -60,7 +60,7 @@ export class Smooch {
     }
 
     login(userId, jwt) {
-        return Promise.resolve().then(()=> {
+        return Promise.resolve().then(() => {
             store.dispatch(setAuth({
                 jwt: jwt,
                 appToken: this.appToken
@@ -77,13 +77,14 @@ export class Smooch {
         }).then((loginResponse) => {
             store.dispatch(setUser(loginResponse.appUser));
 
-            if(loginResponse.appUser.conversationStarted) {
+            if (loginResponse.appUser.conversationStarted) {
                 return getConversation().then((conversationResponse) => {
                     store.dispatch(setConversation(conversationResponse.conversation));
+                    return connectFaye();
                 });
             }
         }).then(() => {
-            if(!this._el) {
+            if (!this._el) {
                 this._el = renderWidget();
             }
 
@@ -94,6 +95,7 @@ export class Smooch {
     logout() {
         store.dispatch(resetAuth());
         store.dispatch(resetUser());
+        disconnectFaye();
 
         return this.login();
     }
@@ -111,8 +113,9 @@ export class Smooch {
     }
 
     destroy() {
-      document.body.removeChild(this._el);
-      delete this._el;
+        disconnectFaye();
+        document.body.removeChild(this._el);
+        delete this._el;
     }
 
     open() {

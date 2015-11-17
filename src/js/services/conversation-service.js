@@ -1,6 +1,8 @@
 import { store } from '../stores/app-store';
 import { messageAdded } from '../actions/conversation-actions';
+import { setFayeSubscription, unsetFayeSubscription } from '../actions/faye-actions';
 import { core } from './core';
+import { initFaye } from '../utils/faye';
 
 export function sendMessage(text) {
     const message = {
@@ -25,5 +27,16 @@ export function getConversation() {
 }
 
 export function connectFaye() {
-    const conversation = store.getState().conversation;
+    const subscription = initFaye();
+    store.dispatch(setFayeSubscription(subscription));
+
+    return subscription;
+}
+
+export function disconnectFaye() {
+    const subscription = store.getState().faye.subscription;
+    if (subscription) {
+        subscription.cancel();
+        store.dispatch(unsetFayeSubscription());
+    }
 }

@@ -24,6 +24,8 @@ class SettingsComponent extends Component {
     save(e) {
         e.preventDefault();
 
+        // TODO : add validation
+
         immediateUpdate({
             email: this.state.email
         }).then((response) => {

@@ -4,32 +4,32 @@ import urljoin from 'urljoin';
 import { store } from '../stores/app-store';
 import { messageAdded } from '../actions/conversation-actions';
 
-export function initFaye(conversationId) {
+export function initFaye() {
     const state = store.getState();
 
-    var faye = new Client(urljoin(state.appState.serverURL, 'faye'));
-    
-    faye.addExtension({
-        outgoing: (message, callback) => {
-            if (message.channel === '/meta/subscribe') {
-                message.appUserId = state.user._id;
+    if (!state.faye.subscription) {
+        var faye = new Client(urljoin(state.appState.serverURL, 'faye'));
 
-                if (state.auth.appToken) {
-                    message.appToken = state.auth.appToken;
+        faye.addExtension({
+            outgoing: (message, callback) => {
+                if (message.channel === '/meta/subscribe') {
+                    message.appUserId = state.user._id;
+
+                    if (state.auth.appToken) {
+                        message.appToken = state.auth.appToken;
+                    }
+
+                    if (state.auth.jwt) {
+                        message.jwt = state.auth.jwt;
+                    }
                 }
 
-                if (state.auth.jwt) {
-                    message.jwt = state.auth.jwt;
-                }
+                callback(message);
             }
+        });
 
-            callback(message);
-        }
-    });
-
-    return faye.subscribe('/conversations/' + state.conversation._id, (message) => {
-        store.dispatch(addMessage({
-            message: message
-        }));
-    });
+        return faye.subscribe('/conversations/' + state.conversation._id, (message) => {
+            store.dispatch(messageAdded(message));
+        });
+    }
 }

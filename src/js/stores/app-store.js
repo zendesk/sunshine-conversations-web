@@ -6,6 +6,7 @@ import { UIReducer } from '../reducers/ui-reducer';
 import { AppStateReducer } from '../reducers/app-state-reducer';
 import { AuthReducer } from '../reducers/auth-reducer';
 import { UserReducer } from '../reducers/user-reducer';
+import { FayeReducer } from '../reducers/faye-reducer';
 
 
 const reducer = combineReducers({
@@ -13,7 +14,8 @@ const reducer = combineReducers({
   ui: UIReducer,
   appState: AppStateReducer,
   auth: AuthReducer,
-  user: UserReducer
+  user: UserReducer,
+  faye: FayeReducer
 });
 
 export const store = compose(createStoreWithMiddleware)(reducer);
