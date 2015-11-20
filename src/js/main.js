@@ -34,7 +34,7 @@ var Smooch = function() {
 };
 
 _.extend(Smooch.prototype, Backbone.Events, {
-    VERSION: '2.0.0',
+    VERSION: '2.0.5',
 
     defaultText: {
         headerText: 'How can we help?',
@@ -225,7 +225,7 @@ _.extend(Smooch.prototype, Backbone.Events, {
         var user = this.user;
 
         return new Promise(function(resolve, reject) {
-            user.save(userInfo, {
+            user.save(_.pick(userInfo, AppUser.EDITABLE_PROPERTIES), {
                 wait: true,
                 parse: true
             }).then(function() {
@@ -254,7 +254,7 @@ _.extend(Smooch.prototype, Backbone.Events, {
             }
             return response;
         }.bind(this)).catch(function(err) {
-            console.error('SupportKit track error: ', err.message);
+            console.error('Smooch track error: ', err.message);
             // rethrow error to be handled outside
             throw err;
         });
