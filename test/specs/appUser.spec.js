@@ -29,12 +29,14 @@ describe('AppUser', function() {
                 var email = 'some@email.com';
                 var givenName = 'Some';
                 var surname = 'Name';
+                var signedUpAt = new Date();
 
                 var user = new AppUser({
                     appUser: {
                         email: email,
                         givenName: givenName,
-                        surname: surname
+                        surname: surname,
+                        signedUpAt: signedUpAt
                     }
                 }, {
                     parse: true
@@ -43,7 +45,8 @@ describe('AppUser', function() {
                 user.get('email').should.equal(email);
                 user.get('givenName').should.equal(givenName);
                 user.get('surname').should.equal(surname);
-
+                (typeof user.get('signedUpAt')).should.equal('object');
+                user.get('signedUpAt').getTime().should.equal(signedUpAt.getTime());
             });
         });
     });
