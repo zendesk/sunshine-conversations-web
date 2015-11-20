@@ -34,7 +34,7 @@ var Smooch = function() {
 };
 
 _.extend(Smooch.prototype, Backbone.Events, {
-    VERSION: '2.0.4',
+    VERSION: '2.0.5',
 
     defaultText: {
         headerText: 'How can we help?',
