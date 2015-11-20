@@ -136,6 +136,35 @@ describe('Main', function() {
                 apiSpy.args[0][0].data.device.platform.should.eq('web');
             });
         });
+
+        it('should accept user properties via init', function() {
+            Smooch.destroy();
+            var email = 'some@email.com';
+            var givenName = 'Some';
+            var surname = 'Name';
+            var signedUpAt = new Date();
+            var properties = {
+                favoriteFood: 'prizza',
+                isAwesome: true,
+                level: 9001
+            };
+
+            return Smooch.init({
+                appToken: appToken,
+                email: email,
+                givenName: givenName,
+                surname: surname,
+                signedUpAt: signedUpAt,
+                properties: properties
+            }).then(function() {
+                Smooch.user.get('email').should.equal(email);
+                Smooch.user.get('givenName').should.equal(givenName);
+                Smooch.user.get('surname').should.equal(surname);
+                (typeof Smooch.user.get('signedUpAt')).should.equal('object');
+                Smooch.user.get('signedUpAt').getTime().should.equal(signedUpAt.getTime());
+                Smooch.user.get('properties').should.deep.equal(properties);
+            });
+        });
     });
 
     describe('#login', function() {
