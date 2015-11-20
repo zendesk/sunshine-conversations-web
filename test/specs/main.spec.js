@@ -137,7 +137,7 @@ describe('Main', function() {
             });
         });
 
-        it('should accept user properties via init', function() {
+        it('should pass user props to login', function() {
             Smooch.destroy();
             var email = 'some@email.com';
             var givenName = 'Some';
@@ -157,6 +157,14 @@ describe('Main', function() {
                 signedUpAt: signedUpAt,
                 properties: properties
             }).then(function() {
+                loginSpy.args[0][2].should.deep.equal({
+                    email: email,
+                    givenName: givenName,
+                    surname: surname,
+                    signedUpAt: signedUpAt,
+                    properties: properties
+                });
+
                 Smooch.user.get('email').should.equal(email);
                 Smooch.user.get('givenName').should.equal(givenName);
                 Smooch.user.get('surname').should.equal(surname);
@@ -203,7 +211,36 @@ describe('Main', function() {
                 endpoint.userId.should.equal(newUserId);
                 endpoint.jwt.should.equal(newJwt);
             });
+        });
 
+        it('should user props on login', function() {
+            var email = 'some@email.com';
+            var givenName = 'Some';
+            var surname = 'Name';
+            var signedUpAt = new Date();
+            var properties = {
+                favoriteFood: 'prizza',
+                isAwesome: true,
+                level: 9001
+            };
+            
+            var newUserId = 'new_user_id';
+            var newJwt = 'new_jwt';
+
+            return Smooch.login(newUserId, newJwt, {
+                email: email,
+                givenName: givenName,
+                surname: surname,
+                signedUpAt: signedUpAt,
+                properties: properties
+            }).then(function() {
+                Smooch.user.get('email').should.equal(email);
+                Smooch.user.get('givenName').should.equal(givenName);
+                Smooch.user.get('surname').should.equal(surname);
+                (typeof Smooch.user.get('signedUpAt')).should.equal('object');
+                Smooch.user.get('signedUpAt').getTime().should.equal(signedUpAt.getTime());
+                Smooch.user.get('properties').should.deep.equal(properties);
+            });
         });
     });
 
