@@ -225,7 +225,7 @@ _.extend(Smooch.prototype, Backbone.Events, {
         var user = this.user;
 
         return new Promise(function(resolve, reject) {
-            user.save(userInfo, {
+            user.save(_.pick(userInfo, AppUser.EDITABLE_PROPERTIES), {
                 wait: true,
                 parse: true
             }).then(function() {
