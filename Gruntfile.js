@@ -290,7 +290,7 @@ module.exports = function(grunt) {
     grunt.registerTask('versionBump', function() {
         var semver = require('semver');
         var VERSION_REGEXP = /(\bversion[\'\"]?\s*[:=]\s*[\'\"])([\da-z\.-]+)([\'\"])/i;
-        var files = ['package.json', 'bower.json', 'src/js/main.js'];
+        var files = ['package.json', 'bower.json'];
         var fullVersion = grunt.option('version');
         var versionType = grunt.option('versionType');
         var globalVersion;
