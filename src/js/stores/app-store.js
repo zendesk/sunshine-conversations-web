@@ -8,7 +8,6 @@ import { AuthReducer } from '../reducers/auth-reducer';
 import { UserReducer } from '../reducers/user-reducer';
 import { FayeReducer } from '../reducers/faye-reducer';
 
-
 const reducer = combineReducers({
   conversation: ConversationReducer,
   ui: UIReducer,

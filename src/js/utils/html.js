@@ -1,4 +1,3 @@
-
 export function createMarkup(html) {
     return {
         __html: html
@@ -15,6 +14,6 @@ export function autolink(text, options) {
         return key + '="' + value + '"';
     }).join(' ');
 
-    return text.replace(pattern, '$1<a '+ linkAttributes +' href=\'$2\'>$2</a>');
+    return text.replace(pattern, '$1<a ' + linkAttributes + ' href=\'$2\'>$2</a>');
 
 }

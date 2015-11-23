@@ -1,7 +1,6 @@
 node_modules
 bower_components
 *.log
-build
 tmp
 dist/
 grunt-aws.json
@@ -9,6 +8,7 @@ grunt-maxcdn.json
 *.sublime-workspace
 junit
 config/*
+!config/build
 !config/default
 !config/default/*.json
 example/*
