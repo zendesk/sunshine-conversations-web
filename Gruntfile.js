@@ -2,8 +2,6 @@
 
 /* global process:false */
 
-var _ = require('underscore');
-
 module.exports = function(grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
@@ -251,7 +249,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('build', ['clean', 'exec:build']);
-    grunt.registerTask('dev', ['build', 'concurrent:dev']);
+    grunt.registerTask('dev', ['concurrent:dev']);
 
     grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig', 's3:js', 'maxcdn']);
     grunt.registerTask('test', ['karma:unit']);
