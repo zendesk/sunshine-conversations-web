@@ -2,7 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var StatsPlugin = require('stats-webpack-plugin');
-var loadersByExtension = require('./config/build/loadersByExtension');
+var loadersByExtension = require('./webpack/lib/loadersByExtension');
 
 module.exports = function(options) {
     var entry = {
@@ -28,9 +28,7 @@ module.exports = function(options) {
     var cssLoader = options.minimize ? 'css-loader?insertAt=top' : 'css-loader?insertAt=top&localIdentName=[path][name]---[local]---[hash:base64:5]';
     var stylesheetLoaders = {
         'css': cssLoader,
-        'less': [cssLoader, 'less-loader'],
-        'styl': [cssLoader, 'stylus-loader'],
-        'scss|sass': [cssLoader, 'sass-loader']
+        'less': [cssLoader, 'less-loader']
     };
     var additionalLoaders = [
         {
@@ -52,7 +50,7 @@ module.exports = function(options) {
         'http://localhost:2992/_assets/' :
         '/_assets/';
     var output = {
-        path: path.join(__dirname, 'build', 'public'),
+        path: path.join(__dirname, 'dist', 'public'),
         publicPath: publicPath,
         filename: '[name].js' + (options.longTermCaching ? '?[chunkhash]' : ''),
         chunkFilename: (options.devServer ? '[id].js' : '[name].js') + (options.longTermCaching ? '?[chunkhash]' : ''),
