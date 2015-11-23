@@ -6,9 +6,6 @@ var _ = require('underscore');
 
 module.exports = function(grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
-    grunt.registerTask('runlog', function() {
-        grunt.log.write('http://localhost:8282/example/demo.html');
-    });
 
     grunt.registerTask('awsconfig', function() {
         var awsConfig;
@@ -66,89 +63,6 @@ module.exports = function(grunt) {
             }
         },
 
-        watch: {
-            dev: {
-                files: ['src/js/**/*.js', 'src/js/**/*.jsx', '*.html', 'src/stylesheets/*.less', 'config/config.json', 'example/template/*'],
-                tasks: ['devbuild'],
-                options: {
-                    spawn: false,
-                }
-            }
-        },
-
-        uglify: {
-            options: {
-                banner: '<%= banner %>'
-            },
-            dist: {
-                src: 'dist/smooch.js',
-                dest: 'dist/smooch.min.js'
-            }
-        },
-
-        replace: {
-            dist: {
-                src: 'dist/smooch.js',
-                dest: 'dist/smooch.js',
-                replacements: [{
-                    from: /var ROOT_URL = '.*';/,
-                    to: 'var ROOT_URL = "<%= config.ROOT_URL %>";'
-                }]
-            },
-            demo: {
-                src: 'example/template/demo.html',
-                dest: 'example/demo.html',
-                replacements: [{
-                    from: /APP_TOKEN/,
-                    to: '<%= config.APP_TOKEN %>'
-                }, {
-                    from: /GIVEN_NAME/,
-                    to: '<%= config.GIVEN_NAME %>'
-                }, {
-                    from: /JWT/,
-                    to: '<%= config.JWT %>'
-                }, {
-                    from: /USER_ID/,
-                    to: '<%= config.USER_ID %>'
-                }, {
-                    from: /SURNAME/,
-                    to: '<%= config.SURNAME %>'
-                }, {
-                    from: /EMAIL/,
-                    to: '<%= config.EMAIL %>'
-                }, {
-                    from: /WIDGET_CODE/,
-                    to: '<%= config.WIDGET_CODE %>'
-                }]
-            }
-        },
-
-        'http-server': {
-            'dev': {
-                root: '.',
-                port: 8282,
-                host: '127.0.0.1',
-                showDir: true,
-                autoIndex: true,
-                ext: 'html',
-                runInBackground: false
-            }
-        },
-
-        browserify: {
-            dist: {
-                files: {
-                    'dist/smooch.js': ['src/js/main.js'],
-                }
-            },
-            options: {
-                browserifyOptions: {
-                    debug: true,
-                    standalone: 'Smooch'
-                }
-            }
-        },
-
         s3: {
             options: {
                 key: '<%= aws.key %>',
@@ -159,7 +73,7 @@ module.exports = function(grunt) {
             js: {
                 // Files to be uploaded.
                 upload: [{
-                    src: 'dist/smooch.min.js',
+                    src: 'dist/public/smooch.js',
                     dest: 'smooch.min.js'
                 }]
             },
@@ -177,26 +91,27 @@ module.exports = function(grunt) {
         },
 
         concurrent: {
-            dev: ['http-server', 'watch:dev'],
-            min: ['http-server', 'watch:min'],
+            dev: ['exec:hotDevServer', 'exec:devServer'],
             options: {
                 logConcurrentOutput: true
             }
         },
 
         maxcdn: {
-          purgeCache: {
-            options: {
-              companyAlias:   '<%= maxcdn.options.companyAlias %>',
-              consumerKey:    '<%= maxcdn.options.consumerKey %>',
-              consumerSecret: '<%= maxcdn.options.consumerSecret %>',
-              zone_id:        '<%= maxcdn.options.zoneId %>',
-              method:         'delete'
-            },
-            files: [
-              { dest: '/smooch.min.js' }
-            ],
-          },
+            purgeCache: {
+                options: {
+                    companyAlias: '<%= maxcdn.options.companyAlias %>',
+                    consumerKey: '<%= maxcdn.options.consumerKey %>',
+                    consumerSecret: '<%= maxcdn.options.consumerSecret %>',
+                    zone_id: '<%= maxcdn.options.zoneId %>',
+                    method: 'delete'
+                },
+                files: [
+                    {
+                        dest: '/smooch.min.js'
+                    }
+                ]
+            }
         },
 
         release: {
@@ -255,12 +170,18 @@ module.exports = function(grunt) {
                         'git add --force dist/smooch.min.js'
                     ].join(' && ');
                 }
-            }
-        },
-
-        gitinfo: {
-            commands: {
-                'status.porcelain': ['status', '--porcelain']
+            },
+            clean: {
+                cmd: 'rm -rf dist/'
+            },
+            build: {
+                cmd: 'npm run build'
+            },
+            hotDevServer: {
+                cmd: 'npm run hot-dev-server'
+            },
+            devServer: {
+                cmd: 'npm run start-dev'
             }
         }
     });
@@ -329,34 +250,13 @@ module.exports = function(grunt) {
         grunt.task.run('branchCheck', 'publish:prepare', 'publish:release', 'publish:cleanup');
     });
 
-    grunt.registerTask('loadConfig', 'Loads config from config folder (uses default if none present', function() {
-        var defaultConfig = grunt.file.readJSON('config/default/config.json');
-        var config = {};
+    grunt.registerTask('build', ['clean', 'exec:build']);
+    grunt.registerTask('dev', ['build', 'concurrent:dev']);
 
-        try {
-            config = grunt.file.readJSON('config/config.json');
-        }
-        catch (err) {
-            grunt.log.warn('You might want to create a config with your app token at config/config.json');
-        }
-
-        var merged = _.extend(defaultConfig, config);
-        grunt.config.set('config', merged);
-    });
-
-    grunt.registerTask('setMinMode', function() {
-        grunt.config.set('config.WIDGET_CODE', 'smooch.min.js');
-    });
-
-    grunt.registerTask('build', ['clean', 'browserify', 'uglify']);
-    grunt.registerTask('devbuild', ['clean', 'browserify', 'loadConfig', 'replace']);
-    grunt.registerTask('devbuild:min', ['clean', 'browserify', 'loadConfig', 'setMinMode', 'replace', 'uglify']);
-    grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig','s3:js', 'maxcdn']);
-    grunt.registerTask('run', ['runlog', 'devbuild', 'concurrent:dev']);
-    grunt.registerTask('run:min', ['runlog', 'devbuild:min', 'concurrent:min']);
+    grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig', 's3:js', 'maxcdn']);
     grunt.registerTask('test', ['karma:unit']);
     grunt.registerTask('test:ci', ['karma:ci']);
-    grunt.registerTask('default', ['run']);
+    grunt.registerTask('default', ['dev']);
 
     grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist']);
     grunt.registerTask('publish:release', ['release']);

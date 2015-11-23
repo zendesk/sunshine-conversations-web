@@ -14,3 +14,4 @@ config/*
 example/*
 !example/template
 !example/template/*.html
+npm-debug*
