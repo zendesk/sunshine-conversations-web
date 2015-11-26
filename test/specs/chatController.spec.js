@@ -97,6 +97,16 @@ describe('ChatController', function() {
                 done();
             }).catch(done);
         });
+
+        it('should trigger message:sent', function(done) {
+            messageSentSpy = sandbox.spy();
+            chatController.once('message:sent', messageSentSpy);
+
+            chatController.sendMessage(message).then(function() {
+                messageSentSpy.should.have.been.calledOnce;
+                done();
+            }).catch(done);
+        });
     });
 
     describe('#_receiveMessage', function() {
@@ -109,9 +119,23 @@ describe('ChatController', function() {
 
             var messages = chatController.model.get('conversation').get('messages');
             var initialLength = messages.length;
-            chatController._receiveMessage(message).then(function(){
-              messages.length.should.equals(initialLength + 1);
-              messages.last().get('text').should.equals(message.text);
+            chatController._receiveMessage(message).then(function() {
+                messages.length.should.equals(initialLength + 1);
+                messages.last().get('text').should.equals(message.text);
+            });
+        });
+
+        it('should trigger message:received', function() {
+            messageReceivedSpy = sandbox.spy();
+            chatController.once('message:received', messageReceivedSpy);
+
+            var message = {
+                authorId: 1,
+                text: 'Hey!'
+            };
+
+            chatController._receiveMessage(message).then(function() {
+                messageReceivedSpy.should.have.been.calledOnce;
             });
         });
 

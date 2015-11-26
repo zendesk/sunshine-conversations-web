@@ -75,6 +75,7 @@ module.exports = ViewController.extend({
                     role: 'appUser'
                 }, {
                     success: function(message, resp) {
+                        self.trigger('message:sent', message.toJSON());
                         conversation.set(_.omit(['messages'], resp.conversation));
                         conversation.get('messages').add(resp.conversation.messages, {
                             merge: true
@@ -144,6 +145,7 @@ module.exports = ViewController.extend({
     },
 
     _receiveMessage: function(message) {
+        this.trigger('message:received', message);
         return Promise.resolve(this.model.get('conversation').get('messages').add(message, {
             merge: true
         }));
@@ -246,7 +248,6 @@ module.exports = ViewController.extend({
                 settingsSaveButtonText: this.uiText.settingsSaveButtonText
             }
         });
-
 
         this.listenToOnce(settingsController, 'settings:close', this._hideSettings);
 

@@ -89,6 +89,7 @@ describe('Main', function() {
             return initPromise.then(initSpy).then(function() {
                 loginSpy.should.have.been.calledOnce;
                 initSpy.should.have.been.calledOnce;
+                readySpy.should.have.been.calledOnce;
             });
         });
 
@@ -223,7 +224,7 @@ describe('Main', function() {
                 isAwesome: true,
                 level: 9001
             };
-            
+
             var newUserId = 'new_user_id';
             var newJwt = 'new_jwt';
 
