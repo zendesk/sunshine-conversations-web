@@ -181,6 +181,9 @@ _.extend(Smooch.prototype, Backbone.Events, {
             .then(_(function() {
                 return this._renderWidget();
             }).bind(this))
+            .then(_(function() {
+                return this._subscribeToEvents();
+            }).bind(this))
             .catch(function(err) {
                 var message = err && (err.message || err.statusText);
                 console.error('Smooch init error: ', message);
@@ -296,6 +299,16 @@ _.extend(Smooch.prototype, Backbone.Events, {
             this.trigger('ready');
             return;
         }.bind(this));
+    },
+
+    _subscribeToEvents: function() {
+        this.listenTo(this._chatController, 'message:received', _(function(message) {
+            this.trigger('message:received', message);
+        }).bind(this));
+
+        this.listenTo(this._chatController, 'message:sent', _(function(message) {
+            this.trigger('message:sent', message);
+        }).bind(this));
     },
 
     _cleanState: function() {

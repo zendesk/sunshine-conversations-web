@@ -203,12 +203,28 @@ Smooch.init(...);
 
 #### destroy
 ```
-// This event triggers when init completes successfully... Be sure to bind before calling init!
+// This event triggers when the widget is destroyed.
 Smooch.on('destroy', function(){
     console.log('the widget is destroyed!');
 });
 
 Smooch.destroy();
+```
+
+#### message:received
+```
+// This event triggers when the user receives a message
+Smooch.on('message:received', function(message) {
+    console.log('the user received a message', message);
+});
+```
+
+#### message:sent
+```
+// This event triggers when the user sends a message
+Smooch.on('message:sent', function(message) {
+    console.log('the user sent a message', message);
+});
 ```
 
 ## How to contribute
