@@ -302,11 +302,11 @@ _.extend(Smooch.prototype, Backbone.Events, {
     },
 
     _subscribeToEvents: function() {
-        this._chatController.on('message:received', _(function(message) {
+        this.listenTo(this._chatController, 'message:received', _(function(message) {
             this.trigger('message:received', message);
         }).bind(this));
 
-        this._chatController.on('message:sent', _(function(message) {
+        this.listenTo(this._chatController, 'message:sent', _(function(message) {
             this.trigger('message:sent', message);
         }).bind(this));
     },
