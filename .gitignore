@@ -14,4 +14,3 @@ config/*
 example/*
 !example/template
 !example/template/*.html
-.DS_Store
