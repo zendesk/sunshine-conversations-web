@@ -77,10 +77,6 @@ module.exports = function(options) {
         /node_modules[\\\/]redux[\\\/]/
     ];
 
-    var noParse = [
-        ///node_modules\/sinon\//
-    ];
-
     var plugins = [
         new webpack.DefinePlugin({
             VERSION: JSON.stringify(VERSION)
@@ -150,8 +146,7 @@ module.exports = function(options) {
         output: output,
         target: 'web',
         module: {
-            loaders: [loadersByExtension(loaders)].concat(loadersByExtension(stylesheetLoaders)).concat(additionalLoaders),
-            noParse: noParse
+            loaders: [loadersByExtension(loaders)].concat(loadersByExtension(stylesheetLoaders)).concat(additionalLoaders)
         },
         devtool: options.devtool,
         debug: options.debug,
