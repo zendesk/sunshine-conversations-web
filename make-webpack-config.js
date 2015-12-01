@@ -1,19 +1,25 @@
 var path = require('path');
+var fs = require('fs');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var StatsPlugin = require('stats-webpack-plugin');
 var loadersByExtension = require('./webpack/lib/loadersByExtension');
 
 module.exports = function(options) {
+    var VERSION = require('./package.json').version;
+    var PACKAGE_NAME = require('./package.json').name;
+    var LICENSE = fs.readFileSync('LICENSE', 'utf8');
+
     var entry = {
         smooch: './src/js/main'
     };
+
     var loaders = {
         'jsx': options.hotComponents ? ['react-hot-loader', 'babel-loader'] : 'babel-loader',
-        'js': {
-            loader: 'babel-loader',
-            include: path.join(__dirname, 'src/js')
-        },
+        //'js': {
+        //    loader: 'babel-loader',
+        //    include: path.join(__dirname, 'src/js')
+        //},
         'json': 'json-loader',
         'tpl': 'ejs-loader',
         'coffee': 'coffee-redux-loader',
@@ -59,8 +65,10 @@ module.exports = function(options) {
         publicPath: publicPath,
         filename: '[name].js' + (options.longTermCaching ? '?[chunkhash]' : ''),
         chunkFilename: (options.devServer ? '[id].js' : '[name].js') + (options.longTermCaching ? '?[chunkhash]' : ''),
-        sourceMapFilename: 'debugging/[file].map',
-        libraryTarget: undefined,
+        sourceMapFilename: '[file].map',
+        library: 'Smooch',
+        libraryTarget: 'umd',
+        umdNamedDefine: true,
         pathinfo: options.debug
     };
 
@@ -75,7 +83,7 @@ module.exports = function(options) {
 
     var plugins = [
         new webpack.DefinePlugin({
-            VERSION: JSON.stringify(require('./package.json').version)
+            VERSION: JSON.stringify(VERSION)
         }),
 
         new webpack.ProvidePlugin({
@@ -129,7 +137,11 @@ module.exports = function(options) {
                 NODE_ENV: JSON.stringify('production')
             }
         }),
-        new webpack.NoErrorsPlugin()
+        new webpack.NoErrorsPlugin(),
+
+        new webpack.BannerPlugin(PACKAGE_NAME + ' ' + VERSION + ' \n' + LICENSE, {
+            entryOnly: true
+        })
         );
     }
 
