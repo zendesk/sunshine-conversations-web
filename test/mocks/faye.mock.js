@@ -3,6 +3,7 @@
 var BaseMock = require('./baseMock');
 var faye = require('../../src/js/faye');
 var sinon = require('sinon');
+sinon.behavior = require('sinon/lib/sinon/behavior.js');
 
 require('sinon-as-promised');
 

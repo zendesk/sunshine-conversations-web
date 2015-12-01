@@ -33,7 +33,7 @@ module.exports = function(options) {
     };
     var additionalLoaders = [
         {
-            test: /\.js/,
+            test: /\.js$/,
             loader: 'imports?define=>false'
         },
         {
@@ -67,6 +67,10 @@ module.exports = function(options) {
     var excludeFromStats = [
         /node_modules[\\\/]react[\\\/]/,
         /node_modules[\\\/]redux[\\\/]/
+    ];
+
+    var noParse = [
+        ///node_modules\/sinon\//
     ];
 
     var plugins = [
@@ -134,7 +138,8 @@ module.exports = function(options) {
         output: output,
         target: 'web',
         module: {
-            loaders: [loadersByExtension(loaders)].concat(loadersByExtension(stylesheetLoaders)).concat(additionalLoaders)
+            loaders: [loadersByExtension(loaders)].concat(loadersByExtension(stylesheetLoaders)).concat(additionalLoaders),
+            noParse: noParse
         },
         devtool: options.devtool,
         debug: options.debug,

@@ -5,9 +5,11 @@ module.exports = function(config) {
     var testReportsPath = process.env.CIRCLE_TEST_REPORTS || '.';
     var _ = require('underscore');
 
-    var webpackConfig = require('./webpack-test.config');
-
-    console.log(webpackConfig)
+    var webpackConfig = _.omit(require('./webpack-test.config'), [
+        'entry',
+        'output',
+        'devServer'
+    ]);
 
     config.set({
 
@@ -17,10 +19,10 @@ module.exports = function(config) {
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['mocha', 'browserify', 'sinon-chai', 'phantomjs-shim'],
+        frameworks: ['mocha', 'sinon-chai', 'phantomjs-shim'],
 
         // list of files / patterns to load in the browser
-        files: ['test/bootstrap.js', './src/js/bootstrap.js', 'test/specs/**/*.spec.js'],
+        files: ['test/specs/**/*.spec.js'],
 
 
         // list of files to exclude
@@ -30,9 +32,7 @@ module.exports = function(config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            'test/bootstrap.js': ['webpack', 'sourcemap'],
-            './src/js/bootstrap.js': ['webpack', 'sourcemap'],
-            'test/specs/*.spec.js': ['webpack', 'sourcemap']
+            'test/specs/**/*.spec.js': ['webpack', 'sourcemap']
         },
 
 
@@ -74,10 +74,7 @@ module.exports = function(config) {
         // if true, Karma captures browsers, runs the tests and exits
         singleRun: true,
 
-        webpack: _.omit(webpackConfig, [
-            'entry',
-            'output'
-        ]),
+        webpack: webpackConfig,
 
         webpackMiddleware: {
             // webpack-dev-middleware configuration

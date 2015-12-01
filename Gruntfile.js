@@ -181,8 +181,7 @@ module.exports = function(grunt) {
         },
 
         concurrent: {
-            dev: ['http-server', 'watch:dev'],
-            min: ['http-server', 'watch:min'],
+            dev: ['exec:hotDevServer', 'exec:devServer'],
             options: {
                 logConcurrentOutput: true
             }
@@ -261,6 +260,18 @@ module.exports = function(grunt) {
                         'git add --force dist/smooch.min.js'
                     ].join(' && ');
                 }
+            },
+            clean: {
+                cmd: 'rm -rf dist/'
+            },
+            build: {
+                cmd: 'npm run build'
+            },
+            hotDevServer: {
+                cmd: 'npm run hot-dev-server'
+            },
+            devServer: {
+                cmd: 'npm run start-dev'
             }
         },
 
@@ -354,15 +365,14 @@ module.exports = function(grunt) {
         grunt.config.set('config.WIDGET_CODE', 'smooch.min.js');
     });
 
-    grunt.registerTask('build', ['clean', 'browserify', 'uglify']);
-    grunt.registerTask('devbuild', ['clean', 'browserify', 'loadConfig', 'replace']);
-    grunt.registerTask('devbuild:min', ['clean', 'browserify', 'loadConfig', 'setMinMode', 'replace', 'uglify']);
-    grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig','s3:js', 'maxcdn']);
-    grunt.registerTask('run', ['runlog', 'devbuild', 'concurrent:dev']);
-    grunt.registerTask('run:min', ['runlog', 'devbuild:min', 'concurrent:min']);
+
+    grunt.registerTask('build', ['clean', 'exec:build']);
+    grunt.registerTask('dev', ['concurrent:dev']);
+
+    grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig', 's3:js', 'maxcdn']);
     grunt.registerTask('test', ['karma:unit']);
     grunt.registerTask('test:ci', ['karma:ci']);
-    grunt.registerTask('default', ['run']);
+    grunt.registerTask('default', ['dev']);
 
     grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist']);
     grunt.registerTask('publish:release', ['release']);
