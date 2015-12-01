@@ -1,3 +1,6 @@
+machine:
+  node:
+    version: 4.2.2
 test:
     override:
         - grunt test:ci
