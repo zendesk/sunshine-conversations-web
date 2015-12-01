@@ -19,7 +19,7 @@
     "start-dev": "node lib/server-development",
     "start": "node lib/server-production"
   },
-  "main": "src/js/main.js",
+  "main": "dist/smooch.js",
   "homepage": "http://smooch.io",
   "license": "http://smooch.io/terms.html",
   "dependencies": {
@@ -80,12 +80,13 @@
     "karma-sinon-chai": "^0.3.0",
     "karma-sourcemap-loader": "^0.3.6",
     "karma-webpack": "^1.7.0",
+    "less": "^2.5.3",
     "less-loader": "^2.2.2",
     "matchdep": "^0.3.0",
     "mocha": "^2.2.5",
     "phantomjs": "^1.9.17",
     "semver": "^4.3.6",
-    "sinon": "github:sinonjs/sinon",
+    "sinon": "github:sinonjs/sinon#72a0f98d61b7c33ff6b4bcfaa6cabf33d6de32f7",
     "sinon-as-promised": "^4.0.0",
     "sinon-chai": "^2.7.0",
     "sinon-stub-promise": "^0.1.0",
