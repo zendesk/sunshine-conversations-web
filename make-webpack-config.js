@@ -16,10 +16,10 @@ module.exports = function(options) {
 
     var loaders = {
         'jsx': options.hotComponents ? ['react-hot-loader', 'babel-loader'] : 'babel-loader',
-        //'js': {
-        //    loader: 'babel-loader',
-        //    include: path.join(__dirname, 'src/js')
-        //},
+        'js': {
+            loader: 'babel-loader',
+            include: path.join(__dirname, 'src/js')
+        },
         'json': 'json-loader',
         'tpl': 'ejs-loader',
         'coffee': 'coffee-redux-loader',
