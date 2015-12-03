@@ -27,7 +27,6 @@ module.exports = BaseServerMock.extend({
                 var data = _.extend({
                     appUserId: _.uniqueId()
                 }, appData);
-
                 _.extend(data.appUser, {
                     _id: data.appUserId
                 });

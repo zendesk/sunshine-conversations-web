@@ -130,13 +130,19 @@ Closes the conversation widget
 Smooch.close();
 ```
 
-#### login(userId [, jwt])
+#### login(userId [, jwt] [, attributes])
 Logs a user in the widget, retrieving the conversation that user already had on other browsers and/or devices. This will destroy and reinitialize the widget with the user's data. Note that you don't need to call this after `init`, it's already done internally. This returns a promise that resolves when the widget is ready again.
 ```
 Smooch.login('some-id');
 
 // in case you are using the jwt authentication
 Smooch.login('some-id', 'some-jwt');
+
+// in case you want to update user attributes at the same time
+Smooch.login('some-id', { email: 'my@new-email.com'});
+
+// in case you want to update user attributes at the same time and use jwt
+Smooch.login('some-id', 'some-jwt', { email: 'my@new-email.com'});
 
 ```
 
@@ -176,7 +182,7 @@ Smooch.updateUser({
 ```
 
 #### track(eventName)
-Tracks an event for the current user. 
+Tracks an event for the current user.
 
 ```javascript
 Smooch.track('item-in-cart');
@@ -197,12 +203,28 @@ Smooch.init(...);
 
 #### destroy
 ```
-// This event triggers when init completes successfully... Be sure to bind before calling init!
+// This event triggers when the widget is destroyed.
 Smooch.on('destroy', function(){
     console.log('the widget is destroyed!');
 });
 
 Smooch.destroy();
+```
+
+#### message:received
+```
+// This event triggers when the user receives a message
+Smooch.on('message:received', function(message) {
+    console.log('the user received a message', message);
+});
+```
+
+#### message:sent
+```
+// This event triggers when the user sends a message
+Smooch.on('message:sent', function(message) {
+    console.log('the user sent a message', message);
+});
 ```
 
 ## How to contribute

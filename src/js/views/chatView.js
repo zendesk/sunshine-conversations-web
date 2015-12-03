@@ -13,10 +13,6 @@ module.exports = Marionette.LayoutView.extend({
         'focus @ui.wrapper': 'focus'
     },
 
-    modelEvents: {
-        'change': 'open'
-    },
-
     ui: {
         wrapper: '#sk-wrapper'
     },

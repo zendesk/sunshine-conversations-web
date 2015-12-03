@@ -14,6 +14,8 @@ var endpoint = require('./endpoint');
 var api = require('./utils/api');
 var storage = require('./utils/localStorage');
 
+var packageInfo = require('../../package.json');
+
 var SK_STORAGE = 'sk_deviceid';
 
 // appends the compile stylesheet to the HEAD
@@ -34,7 +36,7 @@ var Smooch = function() {
 };
 
 _.extend(Smooch.prototype, Backbone.Events, {
-    VERSION: '2.0.0',
+    VERSION: packageInfo.version,
 
     defaultText: {
         headerText: 'How can we help?',
@@ -80,19 +82,10 @@ _.extend(Smooch.prototype, Backbone.Events, {
                     'Missing capability: css-transform'));
         }
 
-
         this.ready = false;
-        options = options || {};
 
-        // if the email was passed at init, it can't be changed through the web widget UI
-        var readOnlyEmail = !_.isEmpty(options.email);
-        var emailCaptureEnabled = options.emailCaptureEnabled && !readOnlyEmail;
-        var uiText = _.extend({}, this.defaultText, options.customText);
-
-        this.options = _.defaults(options, {
-            emailCaptureEnabled: emailCaptureEnabled,
-            readOnlyEmail: readOnlyEmail,
-            uiText: uiText
+        this.options = _.defaults(options || {}, {
+            uiText: _.extend({}, this.defaultText, options.customText)
         });
 
         if (typeof options === 'string') {
@@ -116,10 +109,17 @@ _.extend(Smooch.prototype, Backbone.Events, {
 
         endpoint.sdkVersion = this.VERSION;
 
-        return this.login(options.userId, options.jwt);
+        return this.login(options.userId, options.jwt, _.pick(options, AppUser.EDITABLE_PROPERTIES));
     },
 
-    login: function(userId, jwt) {
+    login: function(userId, jwt, attributes) {
+        if (arguments.length === 2 && _.isObject(jwt)) {
+            attributes = jwt;
+            jwt = undefined;
+        } else if (arguments.length < 3) {
+            attributes = {};
+        }
+
         // clear unread for anonymous
         if (!this.user.isNew() && userId && !this.user.get('userId')) {
             // the previous user had no userId and it's switching to one with an id
@@ -153,6 +153,15 @@ _.extend(Smooch.prototype, Backbone.Events, {
             endpoint.jwt = jwt;
         }
 
+        // if the email was passed at init, it can't be changed through the web widget UI
+        var readOnlyEmail = !_.isEmpty(attributes.email);
+        var emailCaptureEnabled = this.options.emailCaptureEnabled && !readOnlyEmail;
+
+        _.extend(this.options, {
+            readOnlyEmail: readOnlyEmail,
+            emailCaptureEnabled: emailCaptureEnabled
+        });
+
         return api.call({
             url: 'v1/init',
             method: 'POST',
@@ -165,12 +174,15 @@ _.extend(Smooch.prototype, Backbone.Events, {
 
                 endpoint.appUserId = this.user.id;
 
-                return this.user.save(_.pick(this.options, AppUser.EDITABLE_PROPERTIES), {
+                return this.user.save(_.pick(attributes, AppUser.EDITABLE_PROPERTIES), {
                     wait: true
                 });
             }).bind(this))
             .then(_(function() {
                 return this._renderWidget();
+            }).bind(this))
+            .then(_(function() {
+                return this._subscribeToEvents();
             }).bind(this))
             .catch(function(err) {
                 var message = err && (err.message || err.statusText);
@@ -225,7 +237,7 @@ _.extend(Smooch.prototype, Backbone.Events, {
         var user = this.user;
 
         return new Promise(function(resolve, reject) {
-            user.save(userInfo, {
+            user.save(_.pick(userInfo, AppUser.EDITABLE_PROPERTIES), {
                 wait: true,
                 parse: true
             }).then(function() {
@@ -254,7 +266,7 @@ _.extend(Smooch.prototype, Backbone.Events, {
             }
             return response;
         }.bind(this)).catch(function(err) {
-            console.error('SupportKit track error: ', err.message);
+            console.error('Smooch track error: ', err.message);
             // rethrow error to be handled outside
             throw err;
         });
@@ -287,6 +299,16 @@ _.extend(Smooch.prototype, Backbone.Events, {
             this.trigger('ready');
             return;
         }.bind(this));
+    },
+
+    _subscribeToEvents: function() {
+        this.listenTo(this._chatController, 'message:received', _(function(message) {
+            this.trigger('message:received', message);
+        }).bind(this));
+
+        this.listenTo(this._chatController, 'message:sent', _(function(message) {
+            this.trigger('message:sent', message);
+        }).bind(this));
     },
 
     _cleanState: function() {
