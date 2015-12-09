@@ -47,12 +47,7 @@ module.exports = function(options) {
             loader: 'expose?Smooch'
         }
     ];
-    var alias = {
 
-    };
-    var aliasLoader = {
-
-    };
     var externals = [];
     var modulesDirectories = ['web_modules', 'node_modules'];
     var extensions = ['', '.web.js', '.js', '.jsx'];
@@ -73,8 +68,7 @@ module.exports = function(options) {
     };
 
     var excludeFromStats = [
-        /node_modules[\\\/]react[\\\/]/,
-        /node_modules[\\\/]redux[\\\/]/
+        /node_modules[\\\/]/,
     ];
 
     var plugins = [
@@ -151,15 +145,13 @@ module.exports = function(options) {
         devtool: options.devtool,
         debug: options.debug,
         resolveLoader: {
-            root: path.join(__dirname, 'node_modules'),
-            alias: aliasLoader
+            root: path.join(__dirname, 'node_modules')
         },
         externals: externals,
         resolve: {
             root: root,
             modulesDirectories: modulesDirectories,
-            extensions: extensions,
-            alias: alias
+            extensions: extensions
         },
         plugins: plugins,
         devServer: {
