@@ -1,4 +1,5 @@
 'use strict';
+require('../bootstrap');
 
 var sinon = require('sinon');
 var Backbone = require('backbone');

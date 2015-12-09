@@ -1,3 +1,5 @@
+require('../bootstrap');
+
 var sinon = require('sinon');
 var ChatController = require('../../src/js/controllers/chatController');
 var vent = require('../../src/js/vent');

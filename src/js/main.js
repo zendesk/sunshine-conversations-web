@@ -14,8 +14,6 @@ var endpoint = require('./endpoint');
 var api = require('./utils/api');
 var storage = require('./utils/localStorage');
 
-var packageInfo = require('../../package.json');
-
 var SK_STORAGE = 'sk_deviceid';
 
 // appends the compile stylesheet to the HEAD
@@ -36,7 +34,7 @@ var Smooch = function() {
 };
 
 _.extend(Smooch.prototype, Backbone.Events, {
-    VERSION: packageInfo.version,
+    VERSION: VERSION,
 
     defaultText: {
         headerText: 'How can we help?',

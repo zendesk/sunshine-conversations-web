@@ -1,3 +1,5 @@
+require('../bootstrap');
+
 var sinon = require('sinon');
 var _ = require('underscore');
 var AppUser = require('../../src/js/models/appUser');
