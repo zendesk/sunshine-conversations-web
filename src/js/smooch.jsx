@@ -53,6 +53,9 @@ function getDeviceId() {
 
 
 export class Smooch {
+    static get VERSION() {
+        return VERSION;
+    }
     constructor() {}
 
     init(props) {

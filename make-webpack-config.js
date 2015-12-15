@@ -73,11 +73,11 @@ module.exports = function(options) {
     var plugins = [
         new webpack.DefinePlugin({
             VERSION: JSON.stringify(VERSION)
-        })
+        }),
         new webpack.PrefetchPlugin('react'),
         new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment')
     ];
-    
+
 
     if (!options.test) {
         plugins.push(new StatsPlugin('stats.json', {
