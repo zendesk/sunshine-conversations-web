@@ -13,6 +13,7 @@ import { setConversation } from './actions/conversation-actions';
 import { openWidget, closeWidget } from './actions/app-state-actions';
 
 import { login } from './services/auth-service';
+import { trackEvent, update as updateUser } from './services/user-service';
 import { getConversation, sendMessage, connectFaye, disconnectFaye } from './services/conversation-service';
 
 import { storage } from './utils/storage';
@@ -76,8 +77,9 @@ export class Smooch {
             });
         }).then((loginResponse) => {
             store.dispatch(setUser(loginResponse.appUser));
+            const user = store.getState().user;
 
-            if (loginResponse.appUser.conversationStarted) {
+            if (user.conversationStarted) {
                 return getConversation().then((conversationResponse) => {
                     store.dispatch(setConversation(conversationResponse.conversation));
                     return connectFaye();
@@ -100,8 +102,8 @@ export class Smooch {
         return this.login();
     }
 
-    track() {
-        return Promise.resolve()
+    track(eventName, userProps) {
+        return trackEvent(eventName, userProps);
     }
 
     sendMessage(text) {
@@ -109,7 +111,7 @@ export class Smooch {
     }
 
     updateUser(props) {
-        return Promise.resolve()
+        return updateUser(props);
     }
 
     destroy() {
