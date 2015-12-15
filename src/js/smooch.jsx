@@ -56,14 +56,16 @@ export class Smooch {
     get VERSION() {
         return VERSION;
     }
-    constructor() {}
 
     init(props) {
         this.appToken = props.appToken;
+
+        // TODO : accept user attributes
         return this.login(props.userId);
     }
 
     login(userId, jwt) {
+        // TODO : accept user attributes
         return Promise.resolve().then(() => {
             store.dispatch(setAuth({
                 jwt: jwt,
@@ -115,14 +117,27 @@ export class Smooch {
     }
 
     track(eventName, userProps) {
-        return trackEvent(eventName, userProps);
+        return trackEvent(eventName, userProps).then((response) => {
+            if (response.conversationUpdated) {
+                return getConversation().then((conversationResponse) => {
+                    store.dispatch(setConversation(conversationResponse.conversation));
+                    return connectFaye();
+                }).then(() => {
+                    return response;
+                });
+            }
+
+            return response;
+        });
     }
 
     sendMessage(text) {
+        // TODO : connect faye first
         return sendMessage(text)
     }
 
     updateUser(props) {
+        // TODO : check if conversation started on server response
         return updateUser(props);
     }
 

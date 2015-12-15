@@ -21,15 +21,10 @@ module.exports = function(options) {
             include: path.join(__dirname, 'src/js')
         },
         'json': 'json-loader',
-        'coffee': 'coffee-redux-loader',
-        'json5': 'json5-loader',
         'txt': 'raw-loader',
         'png|jpg|jpeg|gif|svg': 'url-loader?limit=10000',
         'woff|woff2': 'url-loader?limit=100000',
-        'ttf|eot': 'file-loader',
-        'wav|mp3': 'file-loader',
-        'html': 'html-loader',
-        'md|markdown': ['html-loader', 'markdown-loader']
+        'ttf|eot': 'file-loader'
     };
     var cssLoader = options.minimize ? 'css-loader?insertAt=top' : 'css-loader?insertAt=top&localIdentName=[path][name]---[local]---[hash:base64:5]';
     var stylesheetLoaders = {
@@ -48,7 +43,7 @@ module.exports = function(options) {
     ];
 
     var externals = [];
-    var modulesDirectories = ['web_modules', 'node_modules'];
+    var modulesDirectories = ['node_modules', 'src'];
     var extensions = ['', '.web.js', '.js', '.jsx'];
     var root = path.join(__dirname, 'src');
     var publicPath = options.devServer ?
@@ -84,10 +79,6 @@ module.exports = function(options) {
             chunkModules: true,
             exclude: excludeFromStats
         }));
-    }
-
-    if (options.commonsChunk) {
-        plugins.push(new webpack.optimize.CommonsChunkPlugin('commons', 'commons.js' + (options.longTermCaching ? '?[chunkhash]' : '')));
     }
 
     Object.keys(stylesheetLoaders).forEach(function(ext) {

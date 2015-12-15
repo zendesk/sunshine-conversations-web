@@ -74,8 +74,8 @@ export class ConversationComponent extends Component {
                     <div className="sk-logo" ref="logo">
                         <a href="https://smooch.io/?utm_source=widget" target="_blank">
                             In-App Messaging by
-                            <img className="sk-image" src="https://cdn.smooch.io/images/logo_webwidget.png" alt="SupportKit" />
-                            <img className="sk-image-retina" src="https://cdn.smooch.io/images/logo_webwidget_2x.png" alt="SupportKit" />
+                            <img className="sk-image" src={require('images/logo_webwidget.png')} alt="Smooch" />
+                            <img className="sk-image-retina" src={require('images/logo_webwidget_2x.png')} alt="Smooch" />
                         </a>
                     </div>
             </div>

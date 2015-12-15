@@ -55,6 +55,7 @@
     "expose-loader": "^0.7.1",
     "express": "^4.13.3",
     "extract-text-webpack-plugin": "^0.9.1",
+    "file-loader": "^0.8.5",
     "grunt": "^0.4.5",
     "grunt-cloudfront": "^0.2.1",
     "grunt-concurrent": "^1.0.0",
@@ -94,6 +95,7 @@
     "sinon-stub-promise": "^0.1.0",
     "stats-webpack-plugin": "^0.2.2",
     "style-loader": "^0.13.0",
+    "url-loader": "^0.5.7",
     "webpack": "^1.12.9",
     "webpack-cli": "^1.0.0",
     "webpack-dev-server": "^1.14.0"
