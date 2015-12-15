@@ -16,8 +16,11 @@ class WidgetComponent extends Component {
         );
         const notification = this.props.appState.settingsNotificationVisible ? <EmailNotification /> : '';
 
+        let className = typeof this.props.appState.widgetOpened === "undefined" ? '' :
+            this.props.appState.widgetOpened ? 'sk-appear' : 'sk-close'
+
         return (
-            <div id="sk-container" className={this.props.appState.widgetOpened ? 'sk-appear' : 'sk-close'}>
+            <div id="sk-container" className={className}>
                 <div id="sk-wrapper">
                     <Header />
                     { notification }

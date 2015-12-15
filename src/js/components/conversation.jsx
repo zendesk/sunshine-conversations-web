@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 
 import { createMarkup, autolink } from '../utils/html';
@@ -49,19 +50,18 @@ export class Message extends Component {
 
 export class ConversationComponent extends Component {
     _scrollToBottom() {
-        let container = this.refs.container;
+        let container = findDOMNode(this);
         let logo = this.refs.logo;
-
         let scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight;
         container.scrollTop = scrollTop;
     }
 
     componentDidMount() {
-        this._scrollToBottom();
+        setTimeout(this._scrollToBottom.bind(this));
     }
 
     componentDidUpdate() {
-        this._scrollToBottom();
+        setTimeout(this._scrollToBottom.bind(this));
     }
 
     render() {

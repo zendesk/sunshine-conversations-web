@@ -1,17 +1,17 @@
 @import "bootstrap/mixins.less";
 @import "mixins.less";
-@import "animations.less";
 
 #sk-holder {
 
     @import "bootstrap/variables.less";
     @import "font-awesome.less";
     @import "variables.less";
+    @import "animations.less";
     @import "reset.less";
 
     #sk-container {
         position: fixed;
-        bottom: 0;
+        bottom: @widget-close-bottom;
         right: 10px;
         margin-bottom: -1px;
         box-shadow: 0 0 24px rgba(0,0,0,0.15);
@@ -23,7 +23,7 @@
         border-radius: 10px 10px 0 0;
         text-rendering: optimizeLegibility;
         color: #333;
-        .translate(0, 90%);
+        // .translate(0, 90%);
         z-index: 2147483647;
 
         text-rendering: optimizeLegibility;

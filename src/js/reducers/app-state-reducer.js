@@ -3,7 +3,7 @@ import { ENABLE_SETTINGS, DISABLE_SETTINGS, TOGGLE_WIDGET, OPEN_WIDGET, CLOSE_WI
 const INITIAL_STATE = {
     settingsVisible: false,
     settingsNotificationVisible: false,
-    widgetOpened: false,
+    widgetOpened: undefined,
     settingsEnabled: true,
     serverURL: 'https://api.smooch.io/'
 };

@@ -9,6 +9,8 @@
 @header-padding: 6px;
 @footer-height: 45px;
 
+@widget-close-bottom: -@widget-height + @header-height + 2 *@header-padding;
+
 @conversation-padding: 18px;
 @conversation-height: calc(@widget-height - (@header-height + 2 * @header-padding) - @footer-height - @conversation-padding);
 @conversation-height-mobile: ~"calc(100%  - @{conversation-padding})";

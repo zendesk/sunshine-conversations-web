@@ -1,6 +1,12 @@
+&.sk-noanimation {
+  .sk-appear, .sk-close {
+    -webkit-animation: none;
+            animation: none;
+  }
+}
+
 .sk-appear {
-  -webkit-transform: translateY(90%);
-          transform: translateY(90%);
+  bottom: 0;
   -webkit-animation: sk-appear-frames .4s cubic-bezier(.62, .28, .23, .99);
           animation: sk-appear-frames .4s cubic-bezier(.62, .28, .23, .99);
   -webkit-animation-delay: .0s;
@@ -8,11 +14,8 @@
 
   -webkit-animation-fill-mode: forwards;
           animation-fill-mode: forwards;
-          
-  .sk-noanimation & {
-    -webkit-animation: none;
-            animation: none;
-  }
+
+
 }
 .sk-appear #sk-handle {
   -webkit-transform: rotate(270deg);
@@ -26,23 +29,20 @@
           animation-fill-mode: forwards;
 }
 
-
-
-
 @-webkit-keyframes sk-appear-frames {
   0% {
-    -webkit-transform: translateY(90%);
+    bottom: @widget-close-bottom;
   }
   100% {
-    -webkit-transform: translateY(0%);
+    bottom: 0;
   }
 }
 @keyframes sk-appear-frames {
   0% {
-    transform: translateY(90%);
+    bottom: @widget-close-bottom;
   }
   100% {
-    transform: translateY(0%);
+    bottom: 0;
   }
 }
 @-webkit-keyframes sk-rotate-frames {
@@ -62,8 +62,7 @@
   }
 }
 .sk-close {
-  -webkit-transform: translateY(10%);
-          transform: translateY(10%);
+  bottom: @widget-close-bottom;
   -webkit-animation: sk-close-frames .4s cubic-bezier(.62, .28, .23, .99);
           animation: sk-close-frames .4s cubic-bezier(.62, .28, .23, .99);
   -webkit-animation-delay: .0s;
@@ -71,26 +70,21 @@
 
   -webkit-animation-fill-mode: forwards;
           animation-fill-mode: forwards;
-
-  .sk-noanimation & {
-    -webkit-animation: none;
-            animation: none;
-  }
 }
 @-webkit-keyframes sk-close-frames {
   0% {
-    -webkit-transform: translateY(0%);
+    bottom: 0;
   }
   100% {
-    -webkit-transform: translateY(90%);
+    bottom: @widget-close-bottom;
   }
 }
 @keyframes sk-close-frames {
   0% {
-    transform: translateY(0%);
+    bottom: 0;
   }
   100% {
-    transform: translateY(90%);
+    bottom: @widget-close-bottom;
   }
 }
 .sk-close #sk-handle {

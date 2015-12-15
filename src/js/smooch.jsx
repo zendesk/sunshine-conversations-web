@@ -27,7 +27,7 @@ function renderWidget() {
 
     const appendWidget = () => {
         document.body.appendChild(el);
-        el.className = '';
+        setTimeout(() => el.className = '', 200);
     }
 
     if (document.readyState == 'complete' || document.readyState == 'loaded' || document.readyState == 'interactive') {
@@ -53,7 +53,7 @@ function getDeviceId() {
 
 
 export class Smooch {
-    static get VERSION() {
+    get VERSION() {
         return VERSION;
     }
     constructor() {}
@@ -75,7 +75,16 @@ export class Smooch {
                 userId: userId,
                 device: {
                     platform: 'web',
-                    id: getDeviceId()
+                    id: getDeviceId(),
+                    info: {
+                        sdkVersion: VERSION,
+                        URL: document.location.host,
+                        userAgent: navigator.userAgent,
+                        referrer: document.referrer,
+                        browserLanguage: navigator.language,
+                        currentUrl: document.location.href,
+                        currentTitle: document.title
+                    }
                 }
             });
         }).then((loginResponse) => {
