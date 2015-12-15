@@ -1,3 +1,5 @@
+require('../bootstrap');
+
 var sinon = require('sinon');
 var ChatController = require('../../src/js/controllers/chatController');
 var vent = require('../../src/js/vent');
@@ -87,21 +89,28 @@ describe('ChatController', function() {
         var messages;
         var initialLength;
 
-        it('should add a message to the conversation', function(done) {
+        it('should add a message to the conversation', function() {
             messages = chatController.model.get('conversation').get('messages');
             initialLength = messages.length;
 
-            chatController.sendMessage(message).then(function() {
+            return chatController.sendMessage(message).then(function() {
                 chatController.model.get('conversation').get('messages').length.should.equals(initialLength + 1);
                 chatController.model.get('conversation').get('messages').last().get('text').should.equals(message);
-                done();
-            }).catch(done);
+            });
+        });
+
+        it('should trigger message:sent', function() {
+            messageSentSpy = sandbox.spy();
+            chatController.once('message:sent', messageSentSpy);
+
+            return chatController.sendMessage(message).then(function() {
+                messageSentSpy.should.have.been.calledOnce;
+            });
         });
     });
 
     describe('#_receiveMessage', function() {
         it('should add a message to the conversation', function() {
-
             var message = {
                 authorId: 1,
                 text: 'Hey!'
@@ -109,9 +118,23 @@ describe('ChatController', function() {
 
             var messages = chatController.model.get('conversation').get('messages');
             var initialLength = messages.length;
-            chatController._receiveMessage(message).then(function(){
-              messages.length.should.equals(initialLength + 1);
-              messages.last().get('text').should.equals(message.text);
+            return chatController._receiveMessage(message).then(function() {
+                messages.length.should.equals(initialLength + 1);
+                messages.last().get('text').should.equals(message.text);
+            });
+        });
+
+        it('should trigger message:received', function() {
+            messageReceivedSpy = sandbox.spy();
+            chatController.once('message:received', messageReceivedSpy);
+
+            var message = {
+                authorId: 1,
+                text: 'Hey!'
+            };
+
+            return chatController._receiveMessage(message).then(function() {
+                messageReceivedSpy.should.have.been.calledOnce;
             });
         });
 

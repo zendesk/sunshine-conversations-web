@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 module.exports = [
     require('./make-webpack-config')({
         longTermCaching: true,
@@ -9,3 +10,9 @@ module.exports = [
         minimize: true
     })
 ];
+=======
+module.exports = require('./make-webpack-config')({
+    minimize: true,
+    devtool: 'source-map'
+});
+>>>>>>> integration

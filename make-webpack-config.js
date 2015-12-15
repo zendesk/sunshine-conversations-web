@@ -1,13 +1,19 @@
 var path = require('path');
+var fs = require('fs');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var StatsPlugin = require('stats-webpack-plugin');
 var loadersByExtension = require('./webpack/lib/loadersByExtension');
 
 module.exports = function(options) {
+    var VERSION = require('./package.json').version;
+    var PACKAGE_NAME = require('./package.json').name;
+    var LICENSE = fs.readFileSync('LICENSE', 'utf8');
+
     var entry = {
         smooch: './src/js/main'
     };
+
     var loaders = {
         'jsx': options.hotComponents ? ['react-hot-loader', 'babel-loader'] : 'babel-loader',
         'js': {
@@ -32,16 +38,15 @@ module.exports = function(options) {
     };
     var additionalLoaders = [
         {
+            test: /\.js$/,
+            loader: 'imports?define=>false'
+        },
+        {
             test: /src\/js\/main/,
             loader: 'expose?Smooch'
         }
     ];
-    var alias = {
 
-    };
-    var aliasLoader = {
-
-    };
     var externals = [];
     var modulesDirectories = ['web_modules', 'node_modules'];
     var extensions = ['', '.web.js', '.js', '.jsx'];
@@ -50,28 +55,36 @@ module.exports = function(options) {
         'http://localhost:2992/_assets/' :
         '/_assets/';
     var output = {
-        path: path.join(__dirname, 'dist', 'public'),
+        path: path.join(__dirname, 'dist'),
         publicPath: publicPath,
         filename: '[name].js' + (options.longTermCaching ? '?[chunkhash]' : ''),
         chunkFilename: (options.devServer ? '[id].js' : '[name].js') + (options.longTermCaching ? '?[chunkhash]' : ''),
-        sourceMapFilename: 'debugging/[file].map',
-        libraryTarget: undefined,
+        sourceMapFilename: '[file].map',
+        library: 'Smooch',
+        libraryTarget: 'umd',
+        umdNamedDefine: true,
         pathinfo: options.debug
     };
 
     var excludeFromStats = [
-        /node_modules[\\\/]react[\\\/]/,
-        /node_modules[\\\/]redux[\\\/]/
+        /node_modules[\\\/]/,
     ];
 
     var plugins = [
+        new webpack.DefinePlugin({
+            VERSION: JSON.stringify(VERSION)
+        })
         new webpack.PrefetchPlugin('react'),
         new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment')
     ];
-    plugins.push(new StatsPlugin(path.join('..', 'stats.json'), {
-        chunkModules: true,
-        exclude: excludeFromStats
-    }));
+    
+
+    if (!options.test) {
+        plugins.push(new StatsPlugin('stats.json', {
+            chunkModules: true,
+            exclude: excludeFromStats
+        }));
+    }
 
     if (options.commonsChunk) {
         plugins.push(new webpack.optimize.CommonsChunkPlugin('commons', 'commons.js' + (options.longTermCaching ? '?[chunkhash]' : '')));
@@ -109,7 +122,11 @@ module.exports = function(options) {
                 NODE_ENV: JSON.stringify('production')
             }
         }),
-        new webpack.NoErrorsPlugin()
+        new webpack.NoErrorsPlugin(),
+
+        new webpack.BannerPlugin(PACKAGE_NAME + ' ' + VERSION + ' \n' + LICENSE, {
+            entryOnly: true
+        })
         );
     }
 
@@ -123,15 +140,13 @@ module.exports = function(options) {
         devtool: options.devtool,
         debug: options.debug,
         resolveLoader: {
-            root: path.join(__dirname, 'node_modules'),
-            alias: aliasLoader
+            root: path.join(__dirname, 'node_modules')
         },
         externals: externals,
         resolve: {
             root: root,
             modulesDirectories: modulesDirectories,
-            extensions: extensions,
-            alias: alias
+            extensions: extensions
         },
         plugins: plugins,
         devServer: {

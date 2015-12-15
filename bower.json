@@ -1,13 +1,13 @@
 {
   "name": "smooch",
-  "version": "2.0.0",
+  "version": "2.0.8",
   "authors": [
     "Andrew Lavers <andrew@smooch.io>",
     "Marc-Antoine Lemieux <marc@smooch.io>",
     "Julian Garritano <julian@smooch.io>"
   ],
   "description": "Smooch Javascript SDK",
-  "main": "dist/smooch.min.js",
+  "main": "dist/smooch.js",
   "keywords": [
     "smooch",
     "javascript",

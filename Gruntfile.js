@@ -4,7 +4,6 @@
 
 module.exports = function(grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
-
     grunt.registerTask('awsconfig', function() {
         var awsConfig;
         try {
@@ -44,8 +43,6 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         license: grunt.file.read('LICENSE'),
         globalVersion: '<%= pkg.version %>',
-        banner: '/*! \n\t<%= pkg.name %> <%= globalVersion %> \n\t<%= license %> \n*/\n',
-        // Task configuration
         clean: ['dist/*'],
         karma: {
             unit: {
@@ -71,18 +68,18 @@ module.exports = function(grunt) {
             js: {
                 // Files to be uploaded.
                 upload: [{
-                    src: 'dist/public/smooch.js',
+                    src: 'dist/smooch.js',
                     dest: 'smooch.min.js'
+                },{
+                    src: 'dist/smooch.js.map',
+                    dest: 'smooch.js.map'
                 }]
             },
             images: {
                 upload: [
                     {
                         src: 'src/images/**',
-                        dest: 'images/',
-                        options: {
-                            gzip: true
-                        }
+                        dest: 'images/'
                     }
                 ]
             }
@@ -120,7 +117,7 @@ module.exports = function(grunt) {
                 push: false,
                 remote: 'https://github.com/smooch/smooch-js.git',
                 github: {
-                    repo: 'smooch/smooch-js', //put your user/repo here
+                    repo: 'smooch/smooch-js',
                     accessTokenVar: 'GITHUB_ACCESS_TOKEN',
                     releaseNotes: 'release_notes'
                 }
@@ -181,6 +178,12 @@ module.exports = function(grunt) {
             devServer: {
                 cmd: 'npm run start-dev'
             }
+        },
+
+        gitinfo: {
+            commands: {
+                'status.porcelain': ['status', '--porcelain']
+            }
         }
     });
 
@@ -203,7 +206,7 @@ module.exports = function(grunt) {
     grunt.registerTask('versionBump', function() {
         var semver = require('semver');
         var VERSION_REGEXP = /(\bversion[\'\"]?\s*[:=]\s*[\'\"])([\da-z\.-]+)([\'\"])/i;
-        var files = ['package.json', 'bower.json', 'src/js/main.js'];
+        var files = ['package.json', 'bower.json'];
         var fullVersion = grunt.option('version');
         var versionType = grunt.option('versionType');
         var globalVersion;
@@ -247,6 +250,10 @@ module.exports = function(grunt) {
 
         grunt.task.run('branchCheck', 'publish:prepare', 'publish:release', 'publish:cleanup');
     });
+
+    grunt.registerTask('build', ['clean', 'exec:build']);
+    grunt.registerTask('dev', ['concurrent:dev']);
+
 
     grunt.registerTask('build', ['clean', 'exec:build']);
     grunt.registerTask('dev', ['concurrent:dev']);

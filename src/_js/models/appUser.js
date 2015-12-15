@@ -13,7 +13,9 @@ var AppUser = module.exports = Backbone.AssociatedModel.extend({
     },
 
     parse: function(data) {
-        return data.appUser;
+        var appUser = data.appUser;
+        appUser.signedUpAt = new Date(data.appUser.signedUpAt);
+        return appUser;
     },
 
     url: function() {
@@ -82,6 +84,7 @@ var AppUser = module.exports = Backbone.AssociatedModel.extend({
         'givenName',
         'surname',
         'email',
+        'signedUpAt',
         'properties'
     ]
 });
