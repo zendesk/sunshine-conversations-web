@@ -13,8 +13,8 @@
   },
   "scripts": {
     "test": "grunt test:unit",
-    "dev-server": "webpack-dev-server --config webpack-dev-server.config.js --progress --colors --port 2992 --inline",
-    "hot-dev-server": "webpack-dev-server --config webpack-hot-dev-server.config.js --hot --progress --colors --port 2992 --inline",
+    "dev-server": "webpack-dev-server --config webpack-dev-server.config.js --colors --port 2992 --inline --quiet --no-info",
+    "hot-dev-server": "webpack-dev-server --config webpack-hot-dev-server.config.js --hot --colors --port 2992 --inline --quiet --no-info",
     "build": "webpack --config webpack-production.config.js --progress --profile --colors",
     "start-dev": "node lib/server-development",
     "start": "node lib/server-production"

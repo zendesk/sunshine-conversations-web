@@ -113,10 +113,7 @@ module.exports = function(options) {
                 warnings: false
             }
         }),
-        new webpack.optimize.DedupePlugin()
-        );
-
-        plugins.push(
+        new webpack.optimize.DedupePlugin(),
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: JSON.stringify('production')
