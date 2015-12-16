@@ -44,19 +44,6 @@ module.exports = function(grunt) {
         license: grunt.file.read('LICENSE'),
         globalVersion: '<%= pkg.version %>',
         clean: ['dist/*'],
-        karma: {
-            unit: {
-                configFile: 'karma.conf.js',
-                singleRun: false,
-                browsers: ['PhantomJS', 'Chrome'],
-                reporters: ['progress']
-            },
-            ci: {
-                configFile: 'karma.conf.js',
-                singleRun: true,
-                browsers: ['PhantomJS']
-            }
-        },
 
         s3: {
             options: {
@@ -74,14 +61,6 @@ module.exports = function(grunt) {
                     src: 'dist/smooch.js.map',
                     dest: 'smooch.js.map'
                 }]
-            },
-            images: {
-                upload: [
-                    {
-                        src: 'src/images/**',
-                        dest: 'images/'
-                    }
-                ]
             }
         },
 
@@ -259,8 +238,6 @@ module.exports = function(grunt) {
     grunt.registerTask('dev', ['concurrent:dev']);
 
     grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig', 's3:js', 'maxcdn']);
-    grunt.registerTask('test', ['karma:unit']);
-    grunt.registerTask('test:ci', ['karma:ci']);
     grunt.registerTask('default', ['dev']);
 
     grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist']);
@@ -268,6 +245,4 @@ module.exports = function(grunt) {
     grunt.registerTask('publish:cleanup', ['exec:cleanRelease', 'exec:push']);
 
     grunt.registerTask('branchCheck', 'Checks that you are publishing from Master branch with no working changes', ['gitinfo', 'checkBranchStatus']);
-
-    grunt.registerTask('cdnify', ['awsconfig', 's3:images']);
 };
