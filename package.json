@@ -12,7 +12,8 @@
     "org": "Smooch"
   },
   "scripts": {
-    "test": "grunt test:unit",
+    "test": "karma start karma.conf.js --no-single-run --reporters progress --browsers PhantomJS,Chrome",
+    "test:ci": "karma start karma.conf.js --single-run --reporters junit --browsers PhantomJS",
     "dev-server": "webpack-dev-server --config webpack-dev-server.config.js --colors --port 2992 --inline  --no-info",
     "hot-dev-server": "webpack-dev-server --config webpack-hot-dev-server.config.js --hot --colors --port 2992 --inline --no-info",
     "build": "webpack --config webpack-production.config.js --progress --profile --colors",
@@ -47,6 +48,7 @@
     "babel": "^6.1.18",
     "babel-core": "^6.2.1",
     "babel-loader": "^6.2.0",
+    "babel-polyfill": "^6.3.14",
     "body-parser": "^1.14.1",
     "chai": "^2.3.0",
     "chai-as-promised": "^5.0.0",

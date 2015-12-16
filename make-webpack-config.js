@@ -18,7 +18,7 @@ module.exports = function(options) {
         'jsx': options.hotComponents ? ['react-hot-loader', 'babel-loader'] : 'babel-loader',
         'js': {
             loader: 'babel-loader',
-            include: path.join(__dirname, 'src/js')
+            include: [path.join(__dirname, 'src/js'), path.join(__dirname, 'test')]
         },
         'json': 'json-loader',
         'txt': 'raw-loader',
@@ -41,14 +41,22 @@ module.exports = function(options) {
             loader: 'expose?Smooch'
         }
     ];
+    var alias = {};
+
+    if (options.test) {
+        Object.assign(alias, {
+            bootstrapTest: __dirname + '/test/bootstrap'
+        });
+    }
 
     var externals = [];
-    var modulesDirectories = ['node_modules', 'src'];
+    var modulesDirectories = ['node_modules', 'src', 'src/js'];
     var extensions = ['', '.web.js', '.js', '.jsx'];
     var root = path.join(__dirname, 'src');
     var publicPath = options.devServer ?
         'http://localhost:2992/_assets/' :
         '/_assets/';
+
     var output = {
         path: path.join(__dirname, 'dist'),
         publicPath: publicPath,
@@ -74,7 +82,12 @@ module.exports = function(options) {
     ];
 
 
-    if (!options.test) {
+    if (options.test) {
+        additionalLoaders.push({
+            test: /\.spec\.js$/,
+            loader: 'imports?bootstrapTest'
+        });
+    } else {
         plugins.push(new StatsPlugin('stats.json', {
             chunkModules: true,
             exclude: excludeFromStats
@@ -134,7 +147,8 @@ module.exports = function(options) {
         resolve: {
             root: root,
             modulesDirectories: modulesDirectories,
-            extensions: extensions
+            extensions: extensions,
+            alias: alias
         },
         plugins: plugins,
         devServer: {
