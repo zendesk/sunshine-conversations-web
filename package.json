@@ -13,6 +13,7 @@
   },
   "scripts": {
     "test": "karma start karma.conf.js --no-single-run --reporters progress --browsers PhantomJS,Chrome",
+    "test:phantom": "karma start karma.conf.js --no-single-run --reporters progress --browsers PhantomJS",
     "test:ci": "karma start karma.conf.js --single-run --reporters junit --browsers PhantomJS",
     "dev-server": "webpack-dev-server --config webpack-dev-server.config.js --colors --port 2992 --inline  --no-info",
     "hot-dev-server": "webpack-dev-server --config webpack-hot-dev-server.config.js --hot --colors --port 2992 --inline --no-info",

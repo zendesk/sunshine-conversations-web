@@ -45,7 +45,8 @@ module.exports = function(options) {
 
     if (options.test) {
         Object.assign(alias, {
-            bootstrapTest: __dirname + '/test/bootstrap'
+            test: __dirname + '/test',
+            bootstrapTest: 'test/bootstrap'
         });
     }
 

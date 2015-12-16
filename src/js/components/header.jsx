@@ -24,25 +24,28 @@ export class HeaderComponent extends Component {
     }
 
     render() {
-        const settingsButton = this.props.appState.settingsEnabled && !this.props.appState.settingsVisible  ? (
+        let { settingsEnabled, settingsVisible, widgetOpened } = this.props.appState;
+        let { settingsHeaderText, headerText } = this.props.ui.text;
+
+        const settingsButton = widgetOpened && settingsEnabled && !settingsVisible  ? (
             <div id="sk-notification-badge" onClick={this.showSettings}><i className="fa fa-gear"></i></div>
             ) : '';
 
-        const backButton = this.props.appState.settingsEnabled && this.props.appState.settingsVisible ? (
+        const backButton = widgetOpened &&  settingsEnabled && settingsVisible ? (
             <div className="sk-back-handle" onClick={this.hideSettings}><i className="fa fa-arrow-left"></i></div>
             ) : '';
 
-        const closeHandle = this.props.appState.widgetOpened ? (
+        const closeHandle = widgetOpened ? (
           <div className="sk-close-handle sk-close-hidden"><i className="fa fa-times"></i></div>
         ) : (
           <div className="sk-show-handle sk-appear-hidden"><i className="fa fa-arrow-up"></i></div>
         );
 
         return (
-            <div id={ this.props.appState.settingsVisible ? 'sk-settings-header' : 'sk-header'} onClick={this.actions.toggleWidget}>
+            <div id={ settingsVisible ? 'sk-settings-header' : 'sk-header'} onClick={this.actions.toggleWidget}>
                 { settingsButton }
                 { backButton }
-                { this.props.appState.settingsVisible ? this.props.ui.text.settingsHeaderText : this.props.ui.text.headerText }
+                { settingsVisible ? settingsHeaderText : headerText }
                 { closeHandle }
             </div>
         );
