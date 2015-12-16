@@ -18,4 +18,14 @@ describe('autolink', () => {
 
         transformedValue.should.eq(expectedValue);
     });
+
+    it('should add attributes to the tag', ()=> {
+        let value = 'Check out http://some-url.com!';
+        let options = {target: '_blank'};
+        let expectedValue = 'Check out <a target="_blank" href="http://some-url.com">http://some-url.com</a>!';
+
+        let transformedValue = autolink(value, options);
+
+        transformedValue.should.eq(expectedValue);
+    });
 });
