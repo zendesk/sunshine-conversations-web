@@ -12,8 +12,8 @@
     "org": "Smooch"
   },
   "scripts": {
-    "test": "karma start karma.conf.js --no-single-run --reporters progress --browsers PhantomJS,Chrome",
-    "test:phantom": "karma start karma.conf.js --no-single-run --reporters progress --browsers PhantomJS",
+    "test": "karma start karma.conf.js --no-single-run --reporters spec --browsers PhantomJS,Chrome",
+    "test:phantom": "karma start karma.conf.js --no-single-run --reporters spec --browsers PhantomJS",
     "test:ci": "karma start karma.conf.js --single-run --reporters junit --browsers PhantomJS",
     "dev-server": "webpack-dev-server --config webpack-dev-server.config.js --colors --port 2992 --inline  --no-info",
     "hot-dev-server": "webpack-dev-server --config webpack-hot-dev-server.config.js --hot --colors --port 2992 --inline --no-info",
@@ -80,6 +80,7 @@
     "karma-phantomjs-shim": "^1.0.0",
     "karma-sinon-chai": "^0.3.0",
     "karma-sourcemap-loader": "^0.3.6",
+    "karma-spec-reporter-2": "^0.2.0",
     "karma-webpack": "^1.7.0",
     "less": "^2.5.3",
     "less-loader": "^2.2.2",

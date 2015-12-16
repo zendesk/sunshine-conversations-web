@@ -82,5 +82,6 @@ module.exports = function(config) {
             // i. e.
             noInfo: true
         },
+        specReporter: {}
     });
 };

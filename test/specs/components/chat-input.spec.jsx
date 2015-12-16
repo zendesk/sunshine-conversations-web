@@ -1,0 +1,80 @@
+import sinon from 'sinon';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import TestUtils from 'react-addons-test-utils';
+
+import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId } from 'test/utils/react';
+
+import { ChatInputComponent } from 'components/chat-input.jsx';
+
+const conversationService = require('services/conversation-service');
+
+const sandbox = sinon.sandbox.create();
+
+const props = {
+    ui: {
+        text: {
+            inputPlaceholder: 'Placeholder',
+            sendButtonText: 'Button'
+        }
+    }
+};
+
+describe('ChatInput', () => {
+    var component;
+    var componentNode;
+
+    var onChangeSpy;
+    var sendMessageSpy;
+    var setStateSpy;
+
+    var serviceSendMessageStub;
+
+
+    beforeEach(() => {
+        onChangeSpy = sandbox.spy(ChatInputComponent.prototype, 'onChange');
+        sendMessageSpy = sandbox.spy(ChatInputComponent.prototype, 'sendMessage');
+        setStateSpy = sandbox.spy(ChatInputComponent.prototype, 'setState');
+
+        serviceSendMessageStub = sandbox.stub(conversationService, 'sendMessage');
+
+        component = TestUtils.renderIntoDocument(<ChatInputComponent {...props} />);
+        componentNode = ReactDOM.findDOMNode(component);
+
+    });
+
+    afterEach(() => {
+        sandbox.restore();
+    });
+
+    it('should use the ui text', () => {
+        component.refs.input.placeholder.should.eq(props.ui.text.inputPlaceholder);
+        component.refs.button.textContent.should.eq(props.ui.text.sendButtonText);
+    });
+
+    it('should call onChange when input triggers change', () => {
+        TestUtils.Simulate.change(component.refs.input);
+        onChangeSpy.should.have.been.calledOnce;
+    });
+
+    it('should change state when calling onChange', () => {
+        component.state.text.should.eq('');
+
+        component.onChange({
+            target: {
+                value: 'some text'
+            }
+        });
+
+        setStateSpy.should.have.been.calledWith({
+            text: 'some text'
+        });
+
+        component.state.text.should.eq('some text');
+    });
+
+    it('should call sendMessage when clicking the button', () => {
+        TestUtils.Simulate.click(component.refs.button);
+        sendMessageSpy.should.have.been.calledOnce;
+    });
+});

@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { sendMessage } from '../services/conversation-service';
 
 export class ChatInputComponent extends Component {
-    constructor() {
-        super();
+    constructor(...args) {
+        super(...args);
 
         this.state = {
           text: ''
@@ -33,8 +33,8 @@ export class ChatInputComponent extends Component {
         return (
             <div id="sk-footer">
                 <form onSubmit={ this.sendMessage }>
-                    <input placeholder={ this.props.ui.text.inputPlaceholder } className="input message-input" onChange={this.onChange} value={this.state.text}></input>
-                    <a href="#" className="send" onClick={ this.sendMessage }>{ this.props.ui.text.sendButtonText }</a>
+                    <input ref="input" placeholder={ this.props.ui.text.inputPlaceholder } className="input message-input" onChange={this.onChange} value={this.state.text}></input>
+                    <a ref="button" href="#" className="send" onClick={ this.sendMessage }>{ this.props.ui.text.sendButtonText }</a>
                 </form>
             </div>
         );
