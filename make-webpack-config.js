@@ -11,7 +11,7 @@ module.exports = function(options) {
     var LICENSE = fs.readFileSync('LICENSE', 'utf8');
 
     var entry = {
-        smooch: './src/js/main'
+        smooch: ['babel-polyfill', './src/js/main']
     };
 
     var loaders = {
@@ -85,6 +85,10 @@ module.exports = function(options) {
     if (options.test) {
         additionalLoaders.push({
             test: /\.spec\.js$/,
+            loader: 'imports?bootstrapTest'
+        });
+        additionalLoaders.push({
+            test: /\.spec\.jsx$/,
             loader: 'imports?bootstrapTest'
         });
     } else {

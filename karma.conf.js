@@ -22,7 +22,7 @@ module.exports = function(config) {
         frameworks: ['mocha', 'sinon-chai', 'phantomjs-shim'],
 
         // list of files / patterns to load in the browser
-        files: ['test/specs/**/*.spec.js'],
+        files: ['test/specs/**/*.spec.js', 'test/specs/**/*.spec.jsx'],
 
 
         // list of files to exclude
@@ -32,7 +32,8 @@ module.exports = function(config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            'test/specs/**/*.spec.js': ['webpack', 'sourcemap']
+            'test/specs/**/*.spec.js': ['webpack', 'sourcemap'],
+            'test/specs/**/*.spec.jsx': ['webpack', 'sourcemap']
         },
 
 

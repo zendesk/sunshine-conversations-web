@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { toggleWidget, showSettings, hideSettings } from '../actions/app-state-actions'
 
 
-class HeaderComponent extends Component {
+export class HeaderComponent extends Component {
     constructor(props) {
         super(props);
         this.actions = this.props.actions;
