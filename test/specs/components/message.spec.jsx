@@ -5,7 +5,7 @@ import TestUtils from 'react-addons-test-utils';
 
 import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId } from 'test/utils/react';
 
-import { Message } from 'components/conversation.jsx';
+import { MessageComponent } from 'components/message.jsx';
 
 const sandbox = sinon.sandbox.create();
 
@@ -15,7 +15,7 @@ const defaultProps = {
     actions: []
 };
 
-describe('ChatInput', () => {
+describe('Message', () => {
     var component;
     var componentNode;
 
@@ -27,7 +27,7 @@ describe('ChatInput', () => {
         const props = Object.assign({}, defaultProps);
 
         beforeEach(() => {
-            component = TestUtils.renderIntoDocument(<Message {...props} />);
+            component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
             componentNode = ReactDOM.findDOMNode(component);
         });
 
@@ -65,7 +65,7 @@ describe('ChatInput', () => {
             });
 
             beforeEach(() => {
-                component = TestUtils.renderIntoDocument(<Message {...props} />);
+                component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
                 componentNode = ReactDOM.findDOMNode(component);
             });
 
@@ -114,7 +114,7 @@ describe('ChatInput', () => {
             });
 
             beforeEach(() => {
-                component = TestUtils.renderIntoDocument(<Message {...props} />);
+                component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
                 componentNode = ReactDOM.findDOMNode(component);
             });
 

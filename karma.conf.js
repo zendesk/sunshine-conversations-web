@@ -22,7 +22,10 @@ module.exports = function(config) {
         frameworks: ['mocha', 'sinon-chai', 'phantomjs-shim'],
 
         // list of files / patterns to load in the browser
-        files: ['test/specs/**/*.spec.js', 'test/specs/**/*.spec.jsx'],
+        files: [
+            'test/specs/**/*.spec.js',
+            'test/specs/**/*.spec.jsx'
+        ],
 
 
         // list of files to exclude
