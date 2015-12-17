@@ -52,29 +52,70 @@ describe('ChatInput', () => {
         component.refs.button.textContent.should.eq(props.ui.text.sendButtonText);
     });
 
-    it('should call onChange when input triggers change', () => {
-        TestUtils.Simulate.change(component.refs.input);
-        onChangeSpy.should.have.been.calledOnce;
-    });
-
-    it('should change state when calling onChange', () => {
-        component.state.text.should.eq('');
-
-        component.onChange({
-            target: {
-                value: 'some text'
-            }
+    describe('change input', () => {
+        it('should call onChange when input triggers change', () => {
+            TestUtils.Simulate.change(component.refs.input);
+            onChangeSpy.should.have.been.calledOnce;
         });
 
-        setStateSpy.should.have.been.calledWith({
-            text: 'some text'
-        });
+        it('should change state when calling onChange', () => {
+            component.state.text.should.eq('');
 
-        component.state.text.should.eq('some text');
+            component.onChange({
+                target: {
+                    value: 'some text'
+                }
+            });
+
+            setStateSpy.should.have.been.calledWith({
+                text: 'some text'
+            });
+
+            component.state.text.should.eq('some text');
+        });
     });
 
-    it('should call sendMessage when clicking the button', () => {
-        TestUtils.Simulate.click(component.refs.button);
-        sendMessageSpy.should.have.been.calledOnce;
+    describe('press button', () => {
+
+        it('should call sendMessage when clicking the button', () => {
+            TestUtils.Simulate.click(component.refs.button);
+            sendMessageSpy.should.have.been.calledOnce;
+        });
+
+        it('should prevent default event behavior', () => {
+            let event = {
+                preventDefault: sandbox.stub()
+            };
+            component.sendMessage(event);
+
+            event.preventDefault.should.have.been.calledOnce;
+        });
+
+        for (value of ['', '      ']) {
+            it('should do nothing if the current state is blank', () => {
+                component.state.text = value;
+                component.sendMessage({
+                    preventDefault: sandbox.stub()
+                });
+
+                setStateSpy.should.not.have.been.called;
+                serviceSendMessageStub.should.not.have.been.called;
+            });
+        }
+
+        it('should reset state and call conversation service if state not blank', () => {
+            component.state.text = 'this is a value!';
+            component.sendMessage({
+                preventDefault: sandbox.stub()
+            });
+
+            setStateSpy.should.have.been.calledWith({
+                text: ''
+            });
+
+            component.state.text.should.eq('');
+
+            serviceSendMessageStub.should.have.been.calledWith('this is a value!');
+        });
     });
 });
