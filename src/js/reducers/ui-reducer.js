@@ -20,7 +20,7 @@ export function UIReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case UPDATE_UI_TEXT:
             return Object.assign({}, state, {
-                text: Object.assign(state.text, action.text)
+                text: Object.assign({}, state.text, action.text)
             });
 
         case RESET_UI:
