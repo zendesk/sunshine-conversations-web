@@ -11,7 +11,10 @@ function setItem(key, value) {
 }
 
 function getItem(key) {
-    return localStorage.getItem(key) || memoryStorage[key];
+    let value = localStorage.getItem(key) || memoryStorage[key];
+
+    // per localStorage spec, it returns null when not found
+    return value || null;
 }
 
 function removeItem(key) {
