@@ -7,7 +7,7 @@ import { Settings } from './settings.jsx';
 import { EmailNotification } from './notification.jsx';
 import { ChatInput } from './chat-input.jsx';
 
-class WidgetComponent extends Component {
+export class WidgetComponent extends Component {
 
     render() {
         const mainComponent = this.props.appState.settingsVisible ? <Settings /> : <Conversation />;

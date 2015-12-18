@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { immediateUpdate } from '../services/user-service';
 import { setUser } from '../actions/user-actions';
 
-class SettingsComponent extends Component {
+export class SettingsComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {

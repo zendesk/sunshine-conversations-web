@@ -91,7 +91,7 @@ describe('ChatInput', () => {
             event.preventDefault.should.have.been.calledOnce;
         });
 
-        for (value of ['', '      ']) {
+        for (let value of ['', '      ']) {
             it('should do nothing if the current state is blank', () => {
                 component.state.text = value;
                 component.sendMessage({

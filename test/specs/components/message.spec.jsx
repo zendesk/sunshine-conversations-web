@@ -56,7 +56,7 @@ describe('Message', () => {
         });
     });
 
-    for (role of ['appMaker', 'whisper']) {
+    for (let role of ['appMaker', 'whisper']) {
         describe(`${role} without actions`, () => {
             const props = Object.assign({}, defaultProps, {
                 role: role,

@@ -39,11 +39,9 @@ describe('Conversation', () => {
     var component;
     var componentNode;
 
-    var messageComponentStub;
-
     beforeEach(() => {
         // mock it, we don't care about the rendering of those, they are covered in separate tests
-        messageComponentStub = mockComponent(sandbox, MessageComponent, 'div', {
+        mockComponent(sandbox, MessageComponent, 'div', {
             className: 'mockedMessage'
         });
 
