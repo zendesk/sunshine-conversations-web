@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-
+import _ from 'underscore';
 import uuid from 'uuid';
 
 import { store } from 'stores/app-store';
@@ -51,6 +51,14 @@ function getDeviceId() {
     return deviceId;
 }
 
+const EDITABLE_PROPERTIES = [
+    'givenName',
+    'surname',
+    'email',
+    'signedUpAt',
+    'properties'
+];
+
 
 export class Smooch {
     get VERSION() {
@@ -61,10 +69,19 @@ export class Smooch {
         this.appToken = props.appToken;
 
         // TODO : accept user attributes
-        return this.login(props.userId);
+        return this.login(props.userId, props.jwt, props);
     }
 
-    login(userId, jwt) {
+    login(userId = '', jwt, attributes) {
+        if (arguments.length === 2 && typeof jwt === 'object') {
+            attributes = jwt;
+            jwt = undefined;
+        } else if (arguments.length < 3) {
+            attributes = {};
+        }
+
+        attributes = _.pick(attributes, EDITABLE_PROPERTIES);
+
         // TODO : accept user attributes
         return Promise.resolve().then(() => {
             store.dispatch(setAuth({
