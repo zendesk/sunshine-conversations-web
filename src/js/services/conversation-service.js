@@ -1,8 +1,8 @@
-import { store } from '../stores/app-store';
-import { messageAdded } from '../actions/conversation-actions';
-import { setFayeSubscription, unsetFayeSubscription } from '../actions/faye-actions';
-import { core } from './core';
-import { initFaye } from '../utils/faye';
+import { store } from 'stores/app-store';
+import { messageAdded } from 'actions/conversation-actions';
+import { setFayeSubscription, unsetFayeSubscription } from 'actions/faye-actions';
+import { core } from 'services/core';
+import { initFaye } from 'utils/faye';
 
 export function sendMessage(text) {
     const message = {

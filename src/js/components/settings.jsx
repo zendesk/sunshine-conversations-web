@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { immediateUpdate } from '../services/user-service';
-import { setUser } from '../actions/user-actions';
+import { immediateUpdate } from 'services/user-service';
+import { setUser } from 'actions/user-actions';
 
 export class SettingsComponent extends Component {
     constructor(props) {

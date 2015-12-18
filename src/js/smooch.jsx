@@ -4,19 +4,19 @@ import { Provider } from 'react-redux';
 
 import uuid from 'uuid';
 
-import { store } from './stores/app-store';
-import { Widget } from './components/widget.jsx';
+import { store } from 'stores/app-store';
+import { Widget } from 'components/widget.jsx';
 
-import { setAuth, resetAuth } from './actions/auth-actions';
-import { setUser, resetUser } from './actions/user-actions';
-import { setConversation } from './actions/conversation-actions';
-import { openWidget, closeWidget } from './actions/app-state-actions';
+import { setAuth, resetAuth } from 'actions/auth-actions';
+import { setUser, resetUser } from 'actions/user-actions';
+import { setConversation } from 'actions/conversation-actions';
+import { openWidget, closeWidget } from 'actions/app-state-actions';
 
-import { login } from './services/auth-service';
-import { trackEvent, update as updateUser } from './services/user-service';
-import { getConversation, sendMessage, connectFaye, disconnectFaye } from './services/conversation-service';
+import { login } from 'services/auth-service';
+import { trackEvent, update as updateUser } from 'services/user-service';
+import { getConversation, sendMessage, connectFaye, disconnectFaye } from 'services/conversation-service';
 
-import { storage } from './utils/storage';
+import { storage } from 'utils/storage';
 
 function renderWidget() {
     const el = document.createElement('div');

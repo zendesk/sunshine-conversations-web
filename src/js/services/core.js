@@ -1,5 +1,5 @@
 import Smooch from 'smooch-core';
-import { store } from '../stores/app-store';
+import { store } from 'stores/app-store';
 import urljoin from 'urljoin';
 
 export function core() {

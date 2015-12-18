@@ -166,6 +166,7 @@ describe('Widget', () => {
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedNotification').length.should.eq(0);
             });
         });
+        
         describe('visible', () => {
             const props = Object.assign({}, defaultProps, {
                 appState: {

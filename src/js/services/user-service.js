@@ -1,5 +1,5 @@
-import { store } from '../stores/app-store';
-import { core } from './core';
+import { store } from 'stores/app-store';
+import { core } from 'services/core';
 
 export function immediateUpdate(props) {
     const user = store.getState().user;

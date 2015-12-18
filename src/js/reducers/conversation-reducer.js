@@ -1,4 +1,4 @@
-import { MESSAGE_ADDED, MESSAGES_CLEARED, SET_CONVERSATION } from '../actions/conversation-actions';
+import { MESSAGE_ADDED, MESSAGES_CLEARED, SET_CONVERSATION } from 'actions/conversation-actions';
 
 const INITIAL_STATE = {
     messages: []

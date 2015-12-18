@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { hideSettingsNotification } from '../actions/app-state-actions';
+import { hideSettingsNotification } from 'actions/app-state-actions';
 
 export class EmailNotificationComponent extends Component {
   componentDidMount() {

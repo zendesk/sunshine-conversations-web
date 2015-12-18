@@ -1,8 +1,8 @@
 import { Client } from 'faye';
 import urljoin from 'urljoin';
 
-import { store } from '../stores/app-store';
-import { messageAdded } from '../actions/conversation-actions';
+import { store } from 'stores/app-store';
+import { messageAdded } from 'actions/conversation-actions';
 
 export function initFaye() {
     const state = store.getState();

@@ -1,4 +1,4 @@
-import { SET_AUTH, RESET_AUTH } from '../actions/auth-actions';
+import { SET_AUTH, RESET_AUTH } from 'actions/auth-actions';
 
 const INITIAL_STATE = {};
 

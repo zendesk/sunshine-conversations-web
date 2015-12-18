@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { toggleWidget, showSettings, hideSettings } from '../actions/app-state-actions'
+import { toggleWidget, showSettings, hideSettings } from 'actions/app-state-actions'
 
 
 export class HeaderComponent extends Component {

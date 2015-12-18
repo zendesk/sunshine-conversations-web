@@ -1,4 +1,4 @@
-import { SET_FAYE_SUBSCRIPTION, UNSET_FAYE_SUBSCRIPTION } from '../actions/faye-actions';
+import { SET_FAYE_SUBSCRIPTION, UNSET_FAYE_SUBSCRIPTION } from 'actions/faye-actions';
 
 const INITIAL_STATE = {};
 

@@ -1,7 +1,7 @@
-import { store } from '../stores/app-store';
-import { core } from './core';
+import { store } from 'stores/app-store';
+import { core } from 'services/core';
 
-import { setUser } from '../actions/user-actions';
+import { setUser } from 'actions/user-actions';
 
 export function login(props) {
     return core().appUsers.init(props).catch((e) => console.log(e));

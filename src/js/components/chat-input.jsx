@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { sendMessage } from '../services/conversation-service';
+import { sendMessage } from 'services/conversation-service';
 
 export class ChatInputComponent extends Component {
     constructor(...args) {

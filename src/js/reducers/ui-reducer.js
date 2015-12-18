@@ -1,4 +1,4 @@
-import { UPDATE_UI_TEXT, RESET_UI } from '../actions/ui-actions';
+import { UPDATE_UI_TEXT, RESET_UI } from 'actions/ui-actions';
 
 const INITIAL_STATE = {
     text: {

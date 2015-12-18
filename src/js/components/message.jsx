@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 
-import { createMarkup, autolink } from '../utils/html';
+import { createMarkup, autolink } from 'utils/html';
 
 export class MessageComponent extends Component {
     render() {

@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 
-import { createMarkup } from '../utils/html';
+import { createMarkup } from 'utils/html';
 
-import { MessageComponent } from './message.jsx';
+import { MessageComponent } from 'components/message.jsx';
 
 export class ConversationComponent extends Component {
     _scrollToBottom() {
