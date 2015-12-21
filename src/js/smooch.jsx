@@ -13,7 +13,7 @@ import { setConversation } from 'actions/conversation-actions';
 import { openWidget, closeWidget } from 'actions/app-state-actions';
 
 import { login } from 'services/auth-service';
-import { trackEvent, update as updateUser } from 'services/user-service';
+import { trackEvent, update as updateUser, immediateUpdate as immediateUpdateUser } from 'services/user-service';
 import { getConversation, sendMessage, connectFaye, disconnectFaye } from 'services/conversation-service';
 
 import { storage } from 'utils/storage';
@@ -51,7 +51,7 @@ function getDeviceId() {
     return deviceId;
 }
 
-const EDITABLE_PROPERTIES = [
+export const EDITABLE_PROPERTIES = [
     'givenName',
     'surname',
     'email',
@@ -69,7 +69,7 @@ export class Smooch {
         this.appToken = props.appToken;
 
         // TODO : accept user attributes
-        return this.login(props.userId, props.jwt, props);
+        return this.login(props.userId, props.jwt, _.pick(props, EDITABLE_PROPERTIES));
     }
 
     login(userId = '', jwt, attributes) {
@@ -89,7 +89,6 @@ export class Smooch {
                 appToken: this.appToken
             }));
 
-            // TODO : add more info on the device
             return login({
                 userId: userId,
                 device: {
@@ -108,14 +107,17 @@ export class Smooch {
             });
         }).then((loginResponse) => {
             store.dispatch(setUser(loginResponse.appUser));
-            const user = store.getState().user;
+            return immediateUpdateUser(attributes).then((updateUserResponse) => {
+                store.dispatch(setUser(updateUserResponse.appUser));
+                const user = store.getState().user;
 
-            if (user.conversationStarted) {
-                return getConversation().then((conversationResponse) => {
-                    store.dispatch(setConversation(conversationResponse.conversation));
-                    return connectFaye();
-                });
-            }
+                if (user.conversationStarted) {
+                    return getConversation().then((conversationResponse) => {
+                        store.dispatch(setConversation(conversationResponse.conversation));
+                        return connectFaye();
+                    });
+                }
+            });
         }).then(() => {
             if (!this._el) {
                 this._el = renderWidget();

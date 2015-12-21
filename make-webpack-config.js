@@ -18,7 +18,8 @@ module.exports = function(options) {
         'jsx': options.hotComponents ? ['react-hot-loader', 'babel-loader'] : 'babel-loader',
         'js': {
             loader: 'babel-loader',
-            include: [path.join(__dirname, 'src/js'), path.join(__dirname, 'test')]
+            include: [path.join(__dirname, 'src/js'), path.join(__dirname, 'test')],
+            exclude: [/node_modules/, ],
         },
         'json': 'json-loader',
         'txt': 'raw-loader',
