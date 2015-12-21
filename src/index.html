@@ -206,9 +206,7 @@
             });
 
             initButton.addEventListener('click', function() {
-                if (!Smooch.ready) {
-                    Smooch.init(window.SmoochOptions);
-                }
+              Smooch.init(window.SmoochOptions);
             });
 
             destroyButton.addEventListener('click', function() {
@@ -216,15 +214,11 @@
             });
 
             openButton.addEventListener('click', function() {
-                if (Smooch.ready) {
-                    Smooch.open();
-                }
+              Smooch.open();
             });
 
             closeButton.addEventListener('click', function() {
-                if (Smooch.ready) {
-                    Smooch.close();
-                }
+              Smooch.close();
             });
 
         }, false);

@@ -1,4 +1,5 @@
 import { UPDATE_UI_TEXT, RESET_UI } from 'actions/ui-actions';
+import { RESET } from 'actions/common-actions';
 
 const INITIAL_STATE = {
     text: {
@@ -18,6 +19,8 @@ const INITIAL_STATE = {
 
 export function UIReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
+        case RESET:
+            return Object.assign({}, INITIAL_STATE);
         case UPDATE_UI_TEXT:
             return Object.assign({}, state, {
                 text: Object.assign({}, state.text, action.text)

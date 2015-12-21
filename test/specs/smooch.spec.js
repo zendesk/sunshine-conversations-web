@@ -1,5 +1,4 @@
 import sinon from 'sinon';
-import rewrite from 'rewire';
 import { Smooch } from 'smooch.jsx';
 import * as authService from 'services/auth-service';
 import * as conversationService from 'services/conversation-service';
@@ -56,6 +55,9 @@ describe('Smooch', () => {
     var sendMessageStub;
     var connectFayeStub;
     var disconnectFayeStub;
+    var resetConversationStub;
+    var resetUserStub;
+    var resetAuthStub;
     var updateUserStub;
     var immediateUpdateUserStub;
     var trackEventStub;
@@ -71,7 +73,9 @@ describe('Smooch', () => {
 
     beforeEach(() => {
         smooch = new Smooch();
+        smooch._el = 'el';
         sandbox.stub(document.body, 'appendChild');
+        sandbox.stub(document.body, 'removeChild');
         sandbox.stub(document, 'addEventListener', (eventName, cb) => {
             if (eventName === 'DOMContentLoaded') {
                 cb();
@@ -259,11 +263,44 @@ describe('Smooch', () => {
     });
 
     describe('Logout', () => {
+        beforeEach(() => {
+            mockedStore = mockStore(sandbox, defaultState);
+            disconnectFayeStub = sandbox.stub(conversationService, 'disconnectFaye');
+        });
 
+        it('should reset the user', () => {
+            smooch.logout();
+            mockedStore.dispatch.firstCall.should.have.been.calledWith({
+                type: 'RESET_AUTH'
+            });
+
+            mockedStore.dispatch.secondCall.should.have.been.calledWith({
+                type: 'RESET_USER'
+            });
+
+
+            mockedStore.dispatch.thirdCall.should.have.been.calledWith({
+                type: 'RESET_CONVERSATION'
+            });
+
+            disconnectFayeStub.should.have.been.calledOnce;
+        });
     });
 
     describe('Destroy', () => {
+        beforeEach(() => {
+            mockedStore = mockStore(sandbox, defaultState);
+            disconnectFayeStub = sandbox.stub(conversationService, 'disconnectFaye');
+        });
 
+        it('should reset store state and remove el', () => {
+            smooch.destroy();
+            mockedStore.dispatch.should.have.been.calledWith({
+                type: 'RESET'
+            });
+
+            document.body.removeChild.should.have.been.calledOnce;
+        });
     });
 
     describe('Open', () => {

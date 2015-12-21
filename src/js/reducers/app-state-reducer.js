@@ -1,4 +1,5 @@
 import { ENABLE_SETTINGS, DISABLE_SETTINGS, TOGGLE_WIDGET, OPEN_WIDGET, CLOSE_WIDGET, SHOW_SETTINGS, HIDE_SETTINGS, SHOW_SETTINGS_NOTIFICATION, HIDE_SETTINGS_NOTIFICATION, SET_SERVER_URL } from 'actions/app-state-actions';
+import { RESET } from 'actions/common-actions';
 
 const INITIAL_STATE = {
     settingsVisible: false,
@@ -10,14 +11,18 @@ const INITIAL_STATE = {
 
 export function AppStateReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
+        case RESET:
+            return Object.assign({}, INITIAL_STATE);
+
         case ENABLE_SETTINGS:
             return Object.assign({}, state, {
                 settingsEnabled: true
-            })
+            });
+
         case DISABLE_SETTINGS:
             return Object.assign({}, state, {
                 settingsEnabled: false
-            })
+            });
 
         case TOGGLE_WIDGET:
             return Object.assign({}, state, {

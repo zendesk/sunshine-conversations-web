@@ -9,8 +9,9 @@ import { Widget } from 'components/widget.jsx';
 
 import { setAuth, resetAuth } from 'actions/auth-actions';
 import { setUser, resetUser } from 'actions/user-actions';
-import { setConversation } from 'actions/conversation-actions';
+import { setConversation, resetConversation } from 'actions/conversation-actions';
 import { openWidget, closeWidget } from 'actions/app-state-actions';
+import { reset } from 'actions/common-actions';
 
 import { login } from 'services/auth-service';
 import { trackEvent, update as updateUser, immediateUpdate as immediateUpdateUser } from 'services/user-service';
@@ -130,6 +131,7 @@ export class Smooch {
     logout() {
         store.dispatch(resetAuth());
         store.dispatch(resetUser());
+        store.dispatch(resetConversation());
         disconnectFaye();
 
         return this.login();
@@ -141,8 +143,8 @@ export class Smooch {
                 return getConversation().then((conversationResponse) => {
                     store.dispatch(setConversation(conversationResponse.conversation));
                     return connectFaye();
-                }).then(() => {
                     return response;
+                }).then(() => {
                 });
             }
 
@@ -162,7 +164,10 @@ export class Smooch {
 
     destroy() {
         disconnectFaye();
+        store.dispatch(reset());
+
         document.body.removeChild(this._el);
+        delete this.appToken;
         delete this._el;
     }
 
