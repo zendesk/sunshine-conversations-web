@@ -255,11 +255,88 @@ describe('Smooch', () => {
     });
 
     describe('Send message', () => {
+        beforeEach(() => {
+            mockedStore = mockStore(sandbox, defaultState);
+
+            immediateUpdateUserStub = sandbox.stub(userService, 'immediateUpdate');
+            immediateUpdateUserStub.resolves({});
+
+            connectFayeStub = sandbox.stub(conversationService, 'connectFaye');
+            connectFayeStub.resolves({});
+
+            sendMessageStub = sandbox.stub(conversationService, 'sendMessage');
+            sendMessageStub.resolves({});
+        });
+
+        it('should update the user, connect to faye and send the message', () => {
+            return smooch.sendMessage('here is my message').then(() => {
+                immediateUpdateUserStub.should.have.been.calledOnce;
+                connectFayeStub.should.have.been.calledOnce;
+
+                sendMessageStub.should.have.been.calledWith('here is my message');
+            });
+        });
 
     });
 
     describe('Update user', () => {
+        beforeEach(() => {
+            mockedStore = mockStore(sandbox, defaultState);
 
+            updateUserStub = sandbox.stub(userService, 'update');
+
+            getConversationStub = sandbox.stub(conversationService, 'getConversation');
+            getConversationStub.resolves({});
+
+            connectFayeStub = sandbox.stub(conversationService, 'connectFaye');
+            connectFayeStub.resolves({});
+        });
+
+        describe('conversation started', () => {
+            beforeEach(() => {
+                updateUserStub.resolves({
+                    appUser: {
+                        conversationStarted: true
+                    }
+                });
+            });
+
+            it('should get the conversation and connect faye', () => {
+                return smooch.updateUser({
+                    email: 'update@me.com'
+                }).then(() => {
+                    updateUserStub.should.have.been.calledWith({
+                        email: 'update@me.com'
+                    });
+
+                    getConversationStub.should.have.been.calledOnce;
+                    connectFayeStub.should.have.been.calledOnce;
+                });
+            });
+        });
+
+        describe('conversation not started', () => {
+            beforeEach(() => {
+                updateUserStub.resolves({
+                    appUser: {
+                        conversationStarted: false
+                    }
+                });
+            });
+
+            it('should not get the conversation and connect faye', () => {
+                return smooch.updateUser({
+                    email: 'update@me.com'
+                }).then(() => {
+                    updateUserStub.should.have.been.calledWith({
+                        email: 'update@me.com'
+                    });
+
+                    getConversationStub.should.not.have.been.calledOnce;
+                    connectFayeStub.should.not.have.been.calledOnce;
+                });
+            });
+        });
     });
 
     describe('Logout', () => {

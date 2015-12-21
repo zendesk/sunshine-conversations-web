@@ -143,8 +143,8 @@ export class Smooch {
                 return getConversation().then((conversationResponse) => {
                     store.dispatch(setConversation(conversationResponse.conversation));
                     return connectFaye();
-                    return response;
                 }).then(() => {
+                    return response;
                 });
             }
 
@@ -153,13 +153,27 @@ export class Smooch {
     }
 
     sendMessage(text) {
-        // TODO : connect faye first
-        return sendMessage(text)
+        return connectFaye().then(() => {
+            return immediateUpdateUser(store.getState().user).then(() => {
+                return sendMessage(text);
+            });
+        });
     }
 
     updateUser(props) {
         // TODO : check if conversation started on server response
-        return updateUser(props);
+        return updateUser(props).then((response) => {
+            if (response.appUser.conversationStarted) {
+                return getConversation().then((conversationResponse) => {
+                    store.dispatch(setConversation(conversationResponse.conversation));
+                    return connectFaye();
+                }).then(() => {
+                    return response;
+                });
+            }
+
+            return response;
+        });;
     }
 
     destroy() {
