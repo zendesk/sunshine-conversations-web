@@ -4,5 +4,8 @@ import { core } from 'services/core';
 import { setUser } from 'actions/user-actions';
 
 export function login(props) {
-    return core().appUsers.init(props).catch((e) => console.log(e));
+    return core().appUsers.init(props).catch((e) => {
+        console.log(e)
+        throw e;
+    });
 }
