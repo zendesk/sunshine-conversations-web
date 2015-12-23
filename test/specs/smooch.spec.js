@@ -197,16 +197,8 @@ describe('Smooch', () => {
     });
 
     describe('Track event', () => {
-        const state = Object.assign({}, defaultState);
-
         beforeEach(() => {
-            getConversationStub = sandbox.stub(conversationService, 'getConversation');
-            getConversationStub.resolves({});
-
-            connectFayeStub = sandbox.stub(conversationService, 'connectFaye');
-            connectFayeStub.resolves({});
-
-            mockedStore = mockStore(sandbox, state);
+            mockedStore = mockStore(sandbox, defaultState);
         });
 
         describe('conversation updated', () => {
@@ -225,8 +217,6 @@ describe('Smooch', () => {
 
                 return smooch.track('some-event', props).then(() => {
                     trackEventStub.should.have.been.calledWith('some-event', props);
-                    getConversationStub.should.have.been.calledOnce;
-                    connectFayeStub.should.have.been.calledOnce;
                 });
             });
         });
@@ -247,8 +237,6 @@ describe('Smooch', () => {
 
                 return smooch.track('some-event', props).then(() => {
                     trackEventStub.should.have.been.calledWith('some-event', props);
-                    getConversationStub.should.not.have.been.calledOnce;
-                    connectFayeStub.should.not.have.been.calledOnce;
                 });
             });
         });
@@ -258,21 +246,12 @@ describe('Smooch', () => {
         beforeEach(() => {
             mockedStore = mockStore(sandbox, defaultState);
 
-            immediateUpdateUserStub = sandbox.stub(userService, 'immediateUpdate');
-            immediateUpdateUserStub.resolves({});
-
-            connectFayeStub = sandbox.stub(conversationService, 'connectFaye');
-            connectFayeStub.resolves({});
-
             sendMessageStub = sandbox.stub(conversationService, 'sendMessage');
             sendMessageStub.resolves({});
         });
 
-        it('should update the user, connect to faye and send the message', () => {
+        it('should call the conversation service', () => {
             return smooch.sendMessage('here is my message').then(() => {
-                immediateUpdateUserStub.should.have.been.calledOnce;
-                connectFayeStub.should.have.been.calledOnce;
-
                 sendMessageStub.should.have.been.calledWith('here is my message');
             });
         });

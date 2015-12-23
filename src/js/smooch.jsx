@@ -108,15 +108,10 @@ export class Smooch {
             });
         }).then((loginResponse) => {
             store.dispatch(setUser(loginResponse.appUser));
-            return immediateUpdateUser(attributes).then((updateUserResponse) => {
-                store.dispatch(setUser(updateUserResponse.appUser));
+            return immediateUpdateUser(attributes).then(() => {
                 const user = store.getState().user;
-
                 if (user.conversationStarted) {
-                    return getConversation().then((conversationResponse) => {
-                        store.dispatch(setConversation(conversationResponse.conversation));
-                        return connectFaye();
-                    });
+                    return getConversation().then(connectFaye);
                 }
             });
         }).then(() => {
@@ -138,30 +133,14 @@ export class Smooch {
     }
 
     track(eventName, userProps) {
-        return trackEvent(eventName, userProps).then((response) => {
-            if (response.conversationUpdated) {
-                return getConversation().then((conversationResponse) => {
-                    store.dispatch(setConversation(conversationResponse.conversation));
-                    return connectFaye();
-                }).then(() => {
-                    return response;
-                });
-            }
-
-            return response;
-        });
+        return trackEvent(eventName, userProps);
     }
 
     sendMessage(text) {
-        return connectFaye().then(() => {
-            return immediateUpdateUser(store.getState().user).then(() => {
-                return sendMessage(text);
-            });
-        });
+        return sendMessage(text);
     }
 
     updateUser(props) {
-        // TODO : check if conversation started on server response
         return updateUser(props).then((response) => {
             if (response.appUser.conversationStarted) {
                 return getConversation().then((conversationResponse) => {

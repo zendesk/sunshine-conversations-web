@@ -1,13 +1,17 @@
 import { store } from 'stores/app-store';
 import { core } from 'services/core';
 import { setUser } from 'actions/user-actions';
+import { getConversation, connectFaye } from 'services/conversation-service';
 
 export function immediateUpdate(props) {
     const user = store.getState().user;
     return core().appUsers.update(user._id, props).then((response) => {
-        store.dispatch(setUser(props.appUser));
+        store.dispatch(setUser(response.appUser));
         return response;
-    }).catch((e) => console.log(e));
+    }).catch((e) => {
+        console.log(e)
+        throw e;
+    });
 }
 
 export function update(props) {
@@ -18,5 +22,18 @@ export function update(props) {
 
 export function trackEvent(eventName, userProps) {
     const user = store.getState().user;
-    return core().appUsers.trackEvent(user._id, eventName, userProps).catch((e) => console.log(e));
+    return core().appUsers.trackEvent(user._id, eventName, userProps).then((response) => {
+        if (response.conversationUpdated) {
+            return getConversation()
+                .then(connectFaye)
+                .then(() => {
+                    return response;
+                });
+        }
+
+        return response;
+    }).catch((e) => {
+        console.log(e)
+        throw e;
+    });
 }

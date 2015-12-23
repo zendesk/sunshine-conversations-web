@@ -1,32 +1,68 @@
 import { store } from 'stores/app-store';
-import { messageAdded } from 'actions/conversation-actions';
+import { messageAdded, setConversation } from 'actions/conversation-actions';
 import { setFayeSubscription, unsetFayeSubscription } from 'actions/faye-actions';
 import { core } from 'services/core';
+import { immediateUpdate } from 'services/user-service';
 import { initFaye } from 'utils/faye';
 
 export function sendMessage(text) {
-    const message = {
-        text: text,
-        role: 'appUser'
+    var sendFn = () => {
+        const message = {
+            text: text,
+            role: 'appUser'
+        };
+
+        store.dispatch(messageAdded(message));
+
+        const user = store.getState().user;
+
+        // TODO :  reconcile sent message with data returned by the server
+        return core().conversations.sendMessage(user._id, message).catch((e) => {
+            console.log(e)
+            throw e;
+        });
     };
 
-    store.dispatch(messageAdded(message));
+    var promise = immediateUpdate(store.getState().user);
 
-    const user = store.getState().user;
+    if (store.getState().user.conversationStarted) {
+        return promise
+            .then(() => {
+                const fayeSubscription = store.getState().faye.subscription;
+                if (!fayeSubscription) {
+                    return getConversation()
+                        .then(connectFaye)
+                }
+            })
+            .then(sendFn);
+    }
 
-    // TODO :  reconcile sent message with data returned by the server
-    return core().conversations.sendMessage(user._id, message).catch((e) => console.log(e));
+    // if it's not started, send the message first to create the conversation,
+    // then get it and connect faye
+    return promise
+        .then(sendFn)
+        .then(getConversation)
+        .then(connectFaye);
 }
 
 export function getConversation() {
     const user = store.getState().user;
-
-    return core().conversations.get(user._id).catch((e) => console.log(e));
+    return core().conversations.get(user._id).then((response) => {
+        store.dispatch(setConversation(response.conversation));
+        return response;
+    }).catch((e) => {
+        console.log(e)
+        throw e;
+    });
 }
 
 export function connectFaye() {
-    const subscription = initFaye();
-    store.dispatch(setFayeSubscription(subscription));
+    let subscription = store.getState().faye.subscription;
+    if (!subscription) {
+        subscription = initFaye();
+        store.dispatch(setFayeSubscription(subscription));
+        return subscription.then(getConversation);
+    }
 
     return subscription;
 }
