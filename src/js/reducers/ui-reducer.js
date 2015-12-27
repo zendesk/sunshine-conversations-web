@@ -12,7 +12,7 @@ const INITIAL_STATE = {
         settingsInputPlaceholder: 'Your email address',
         settingsSaveButtonText: 'Save',
         settingsHeaderText: 'Email Settings',
-        settingsNotificationText: 'In case we\'re slow to respond you can <a href="#" data-ui-settings-link>leave us your email</a>.'
+        settingsNotificationText: 'In case we\'re slow to respond you can <a href data-ui-settings-link>leave us your email</a>.'
     }
 };
 

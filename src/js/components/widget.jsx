@@ -11,10 +11,7 @@ export class WidgetComponent extends Component {
 
     render() {
         const mainComponent = this.props.appState.settingsVisible ? <Settings /> : <Conversation />;
-        const footer = this.props.appState.settingsVisible ? '' : (
-            <ChatInput />
-        );
-        const notification = this.props.appState.settingsNotificationVisible ? <EmailNotification /> : '';
+        const footer = this.props.appState.settingsVisible ? null : <ChatInput />;
 
         let className = typeof this.props.appState.widgetOpened === "undefined" ? '' :
             this.props.appState.widgetOpened ? 'sk-appear' : 'sk-close'
@@ -23,12 +20,12 @@ export class WidgetComponent extends Component {
             <div id="sk-container" className={className}>
                 <div id="sk-wrapper">
                     <Header />
-                    { notification }
+                    <EmailNotification />
                     { mainComponent }
                     { footer }
                 </div>
             </div>
-        )
+        );
     }
 }
 
