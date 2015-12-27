@@ -19,7 +19,7 @@ module.exports = function(options) {
         'js': {
             loader: 'babel-loader',
             include: [path.join(__dirname, 'src/js'), path.join(__dirname, 'test')],
-            exclude: [/node_modules/, ],
+            exclude: [/node_modules/,],
         },
         'json': 'json-loader',
         'txt': 'raw-loader',
@@ -135,6 +135,14 @@ module.exports = function(options) {
             entryOnly: true
         })
         );
+    } else {
+        plugins.push(
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: JSON.stringify('development')
+            }
+        })
+        )
     }
 
     return {

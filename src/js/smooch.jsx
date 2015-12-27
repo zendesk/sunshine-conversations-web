@@ -1,11 +1,9 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { Provider } from 'react-redux';
 import _ from 'underscore';
 import uuid from 'uuid';
 
 import { store } from 'stores/app-store';
-import { Widget } from 'components/widget.jsx';
 
 import { setAuth, resetAuth } from 'actions/auth-actions';
 import { setUser, resetUser } from 'actions/user-actions';
@@ -24,7 +22,8 @@ function renderWidget() {
     el.setAttribute('id', 'sk-holder');
     el.className = 'sk-noanimation';
 
-    render(<Provider store={store}><Widget /></Provider>, el);
+    const Root = (process.env.NODE_ENV  === 'production' ? require('./root-prod') : require('./root-dev')).Root;
+    render(<Root store={ store } />, el);
 
     const appendWidget = () => {
         document.body.appendChild(el);
