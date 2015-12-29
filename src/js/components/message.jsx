@@ -35,7 +35,7 @@ export class MessageComponent extends Component {
         });
 
         return (
-        <div className={'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row')}>
+            <div className={'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row')}>
                 { avatar }
                 <div className="sk-msg-wrapper">
                     <div className="sk-from">{ isAppUser ? '' : this.props.name }</div>

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Header } from 'components/header.jsx';
 import { Conversation } from 'components/conversation.jsx';
 import { Settings } from 'components/settings.jsx';
-import { EmailNotification } from 'components/notification.jsx';
+import { Notification } from 'components/notification.jsx';
 import { ChatInput } from 'components/chat-input.jsx';
 
 export class WidgetComponent extends Component {
@@ -20,7 +20,7 @@ export class WidgetComponent extends Component {
             <div id="sk-container" className={className}>
                 <div id="sk-wrapper">
                     <Header />
-                    <EmailNotification />
+                    <Notification />
                     { mainComponent }
                     { footer }
                 </div>

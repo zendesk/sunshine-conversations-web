@@ -8,12 +8,15 @@ import { createMarkup } from 'utils/html';
 
 import { hideSettingsNotification, showSettings } from 'actions/app-state-actions';
 
-export class EmailNotificationComponent extends Component {
+export class NotificationComponent extends Component {
   bindHandler() {
     if (this.props.appState.settingsNotificationVisible) {
       let node = findDOMNode(this);
       let linkNode = node.querySelector('[data-ui-settings-link]');
-      linkNode.onclick = this.onLinkClick.bind(this);
+      
+      if (linkNode) {
+        linkNode.onclick = this.onLinkClick.bind(this);
+      }
     }
   }
 
@@ -57,7 +60,7 @@ export class EmailNotificationComponent extends Component {
   }
 }
 
-export const EmailNotification = connect((state) => {
+export const Notification = connect((state) => {
     return {
       ui: state.ui,
       appState: state.appState
@@ -66,4 +69,4 @@ export const EmailNotification = connect((state) => {
     return {
       actions: bindActionCreators({ hideSettingsNotification, showSettings }, dispatch)
     };
-})(EmailNotificationComponent);
+})(NotificationComponent);

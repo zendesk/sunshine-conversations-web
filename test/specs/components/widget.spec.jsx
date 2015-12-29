@@ -11,7 +11,7 @@ import { HeaderComponent } from 'components/header.jsx';
 import { SettingsComponent } from 'components/settings.jsx';
 import { ConversationComponent } from 'components/conversation.jsx';
 import { ChatInputComponent } from 'components/chat-input.jsx';
-import { EmailNotificationComponent } from 'components/notification.jsx';
+import { NotificationComponent } from 'components/notification.jsx';
 import { WidgetComponent } from 'components/widget.jsx';
 
 const sandbox = sinon.sandbox.create();
@@ -22,8 +22,7 @@ const defaultProps = {
     },
     appState: {
         widgetOpened: false,
-        settingsVisible: false,
-        settingsNotificationVisible: false
+        settingsVisible: false
     }
 };
 
@@ -41,14 +40,13 @@ describe('Widget', () => {
         mockComponent(sandbox, ChatInputComponent, 'div', {
             className: 'mockedInput'
         });
-
         mockComponent(sandbox, SettingsComponent, 'div', {
             className: 'mockedSettings'
         });
         mockComponent(sandbox, ConversationComponent, 'div', {
             className: 'mockedConversation'
         });
-        mockComponent(sandbox, EmailNotificationComponent, 'div', {
+        mockComponent(sandbox, NotificationComponent, 'div', {
             className: 'mockedNotification'
         });
     });
@@ -115,6 +113,10 @@ describe('Widget', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedInput').length.should.eq(1);
         });
 
+        it('should render the notification', () => {
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedNotification').length.should.eq(1);
+        });
+
     });
 
 
@@ -145,45 +147,9 @@ describe('Widget', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedInput').length.should.eq(0);
         });
 
-    });
-
-    describe('notification', () => {
-        describe('non visible', () => {
-            const props = Object.assign({}, defaultProps, {
-                appState: {
-                    widgetOpened: true,
-                    settingsNotificationVisible: false
-                }
-            });
-            store = getMockedStore(sandbox, props);
-
-            beforeEach(() => {
-                component = TestUtils.renderIntoDocument(<Provider store={store}><WidgetComponent {...props} /></Provider>);
-                componentNode = ReactDOM.findDOMNode(component);
-            });
-
-            it('should not have a notification', () => {
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedNotification').length.should.eq(0);
-            });
+        it('should render the notification', () => {
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedNotification').length.should.eq(1);
         });
-        
-        describe('visible', () => {
-            const props = Object.assign({}, defaultProps, {
-                appState: {
-                    widgetOpened: true,
-                    settingsNotificationVisible: true
-                }
-            });
-            store = getMockedStore(sandbox, props);
 
-            beforeEach(() => {
-                component = TestUtils.renderIntoDocument(<Provider store={store}><WidgetComponent {...props} /></Provider>);
-                componentNode = ReactDOM.findDOMNode(component);
-            });
-
-            it('should have a notification', () => {
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedNotification').length.should.eq(1);
-            });
-        });
     });
 });
