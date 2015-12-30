@@ -7,6 +7,12 @@ export function scryRenderedDOMComponentsWithId(tree, id) {
     });
 }
 
+export function scryRenderedDOMComponentsWithAttribute(tree, attr, value = '') {
+    return TestUtils.findAllInRenderedTree(tree, function(inst) {
+        return TestUtils.isDOMComponent(inst) && inst.getAttribute(attr) === value;
+    });
+}
+
 export function findRenderedDOMComponentsWithId(tree, id) {
     let components = scryRenderedDOMComponentsWithId(tree, id);
     return components.length > 0 ? components[0] : undefined;

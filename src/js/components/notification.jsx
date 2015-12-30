@@ -13,7 +13,6 @@ export class NotificationComponent extends Component {
     if (this.props.appState.settingsNotificationVisible) {
       let node = findDOMNode(this);
       let linkNode = node.querySelector('[data-ui-settings-link]');
-      
       if (linkNode) {
         linkNode.onclick = this.onLinkClick.bind(this);
       }
