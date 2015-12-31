@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import { immediateUpdate } from 'services/user-service';
-import { setUser } from 'actions/user-actions';
+import { hideSettings } from 'actions/app-state-actions';
 
 export class SettingsComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: this.props.user.email
+            email: this.props.user.email,
+            hasError: false
         };
 
         this.onChange = this.onChange.bind(this);
@@ -24,31 +26,43 @@ export class SettingsComponent extends Component {
     save(e) {
         e.preventDefault();
 
-        // TODO : add validation
+        // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
+        const regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
-        immediateUpdate({
-            email: this.state.email
-        }).then((response) => {
-            this.props.dispatch(setUser(response.appUser));
-        });
+        const email = this.state.email;
+
+        var isValid = regex.test(email);
+
+        if (isValid) {
+            immediateUpdate({
+                email: email
+            }).then(() => {
+                this.props.actions.hideSettings();
+            });
+        } else {
+            this.setState({
+                hasError: true
+            });
+        }
     }
 
     render() {
+        let hasError = this.state.hasError;
+
         return (
             <div id="sk-settings">
                 <div className="settings-wrapper">
-                    <p>
+                    <p ref="description">
                         { this.props.ui.readOnlyEmail ? this.props.ui.text.settingsReadOnlyText : this.props.ui.text.settingsText }
                     </p>
                     <form onSubmit={this.save}>
-                        <div className="input-group">
+                        <div className={hasError ? "input-group has-error" : "input-group"}>
                             <i className="fa fa-envelope-o before-icon"></i>
-                            <input type="text" placeholder={this.props.ui.text.settingsInputPlaceholder} className="input email-input" onChange={this.onChange} value={this.state.email} />
+                            <input disabled={this.props.ui.readOnlyEmail} ref="input" type="text" placeholder={ this.props.ui.text.settingsInputPlaceholder } className="input email-input" onChange={ this.onChange } value={this.state.email} />
                         </div>
 
                         <div className="input-group">
-                            <button type="button" className="btn btn-sk-primary" onClick={ this.save }>{ this.props.ui.text.settingsSaveButtonText }</button>
-                            <span className="form-message"></span>
+                            <button ref="button" disabled={hasError} type="button" className="btn btn-sk-primary" onClick={ this.save }>{ this.props.ui.text.settingsSaveButtonText }</button>
                         </div>
                     </form>
                 </div>
@@ -62,4 +76,8 @@ export const Settings = connect((state) => {
         ui: state.ui,
         user: state.user
     }
+}, (dispatch) => {
+    return {
+      actions: bindActionCreators({ hideSettings }, dispatch)
+    };
 })(SettingsComponent);
