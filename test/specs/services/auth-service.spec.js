@@ -17,7 +17,6 @@ describe('Auth service', () => {
         coreStub = sandbox.stub(coreService, 'core', () => {
             return coreMock;
         });
-
         coreMock.appUsers.init.resolves();
     });
 

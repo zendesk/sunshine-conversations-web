@@ -1,5 +1,5 @@
 export function getMock(sinon) {
-    return {
+    var mock = {
         appUsers: {
             init: sinon.stub(),
             update: sinon.stub(),
@@ -9,5 +9,7 @@ export function getMock(sinon) {
             sendMessage: sinon.stub(),
             get: sinon.stub()
         }
-    }
+    };
+
+    return mock;
 }
