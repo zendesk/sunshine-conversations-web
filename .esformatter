@@ -5,7 +5,7 @@
     "AssignmentExpression": 1,
     "BinaryExpression": 1,
     "ConditionalExpression": 1,
-    "CallExpression": 0,
+    "CallExpression": 1,
     "CatchClause": 1,
     "ConditionalExpression": 1,
     "DoWhileStatement": 1,
@@ -17,14 +17,13 @@
     "MemberExpression": 1,
     "MultipleVariableDeclaration": 1,
     "ObjectExpression": 1,
-    "ReturnStatement": 0,
+    "ReturnStatement": 1,
     "SwitchCase": 1,
     "SwitchStatement": 1,
     "TopLevelFunctionBlock": 1,
     "TryStatement": 1,
     "WhileStatement": 1
   },
-
 
   "lineBreak": {
     "value": "\n",
@@ -303,11 +302,34 @@
   "plugins": [
     "esformatter-quotes",
     "esformatter-braces",
-    "esformatter-var-each",
-    "esformatter-dot-notation"
+    "esformatter-dot-notation",
+    "esformatter-jsx"
   ],
   "quotes": {
     "type": "single",
     "avoidEscape": false
-  }
+  },
+  "jsx": {
+      // keep the node attributes on the same line as the open tag. Default is true.
+      // Setting this to false will put each one of the attributes on a single line
+      "attrsOnSameLineAsTag": false,
+       // how many attributes should the node have before having to put each
+       // attribute in a new line. Default 1
+      "maxAttrsOnTag": 3,
+      // if the attributes are going to be put each one on its own line, then keep the first
+      // on the same line as the open tag
+      "firstAttributeOnSameLine": true,
+      // default to one space. Make it empty if you don't like spaces between JSXExpressionContainers
+      "spaceInJSXExpressionContainers": " ",
+      // align the attributes with the first attribute (if the first attribute was kept on the same line as on the open tag)
+      "alignWithFirstAttribute": true,
+      "htmlOptions": { // same as the ones passed to js-beautifier.html
+        "brace_style": "collapse",
+        "indent_char": " ",
+        "indent_size": 4,
+        "max_preserve_newlines": 2,
+        "preserve_newlines": true
+        //wrap_line_length: 250
+      }
+    }
 }

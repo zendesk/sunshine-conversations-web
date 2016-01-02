@@ -60,7 +60,9 @@ describe('Widget', () => {
         store = getMockedStore(sandbox, props);
 
         beforeEach(() => {
-            component = TestUtils.renderIntoDocument(<Provider store={store}><WidgetComponent {...props} /></Provider>);
+            component = TestUtils.renderIntoDocument(<Provider store={ store }>
+                                                         <WidgetComponent {...props} />
+                                                     </Provider>);
             componentNode = ReactDOM.findDOMNode(component);
         });
 
@@ -78,7 +80,9 @@ describe('Widget', () => {
         store = getMockedStore(sandbox, props);
 
         beforeEach(() => {
-            component = TestUtils.renderIntoDocument(<Provider store={store}><WidgetComponent {...props} /></Provider>);
+            component = TestUtils.renderIntoDocument(<Provider store={ store }>
+                                                         <WidgetComponent {...props} />
+                                                     </Provider>);
             componentNode = ReactDOM.findDOMNode(component);
         });
 
@@ -96,7 +100,9 @@ describe('Widget', () => {
         store = getMockedStore(sandbox, props);
 
         beforeEach(() => {
-            component = TestUtils.renderIntoDocument(<Provider store={store}><WidgetComponent {...props} /></Provider>);
+            component = TestUtils.renderIntoDocument(<Provider store={ store }>
+                                                         <WidgetComponent {...props} />
+                                                     </Provider>);
             componentNode = ReactDOM.findDOMNode(component);
         });
 
@@ -130,7 +136,9 @@ describe('Widget', () => {
         store = getMockedStore(sandbox, props);
 
         beforeEach(() => {
-            component = TestUtils.renderIntoDocument(<Provider store={store}><WidgetComponent {...props} /></Provider>);
+            component = TestUtils.renderIntoDocument(<Provider store={ store }>
+                                                         <WidgetComponent {...props} />
+                                                     </Provider>);
             componentNode = ReactDOM.findDOMNode(component);
         });
 

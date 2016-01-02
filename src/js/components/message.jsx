@@ -8,14 +8,16 @@ export class MessageComponent extends Component {
     render() {
         const actions = this.props.actions.map((action) => {
             return (
-            <div key={ action._id } className="sk-action">
-                    <a className="btn btn-sk-primary" href={ action.uri } target="_blank">{action.text}</a>
+                <div key={ action._id } className="sk-action">
+                    <a className="btn btn-sk-primary" href={ action.uri } target="_blank">
+                        { action.text }
+                    </a>
                 </div>
-            );
+                );
         });
 
         const isAppUser = this.props.role === 'appUser';
-        let avatar = isAppUser ? '' : (
+        let avatar = isAppUser ? null : (
             <img className="sk-msg-avatar" src={ this.props.avatarUrl } />
             );
 
@@ -25,20 +27,21 @@ export class MessageComponent extends Component {
             }
 
             return (
-            <span key={index}>
-                    <span dangerouslySetInnerHTML={createMarkup(autolink(item, {
-                target: '_blank'
-            }))}></span>
-                    <br/>
+                <span key={ index }><span dangerouslySetInnerHTML={ createMarkup(autolink(item, {
+                                                        target: '_blank'
+                                                    })) }></span>
+                <br/>
                 </span>
-            );
+                );
         });
 
         return (
-            <div className={'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row')}>
+            <div className={ 'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row') }>
                 { avatar }
                 <div className="sk-msg-wrapper">
-                    <div className="sk-from">{ isAppUser ? '' : this.props.name }</div>
+                    <div className="sk-from">
+                        { isAppUser ? '' : this.props.name }
+                    </div>
                     <div className="sk-msg">
                         { text }
                         { actions }
@@ -46,6 +49,6 @@ export class MessageComponent extends Component {
                 </div>
                 <div className="sk-clear"></div>
             </div>
-        );
+            );
     }
 }

@@ -7,7 +7,7 @@ export class ChatInputComponent extends Component {
         super(...args);
 
         this.state = {
-          text: ''
+            text: ''
         };
 
         this.onChange = this.onChange.bind(this);
@@ -15,17 +15,19 @@ export class ChatInputComponent extends Component {
     }
 
     onChange(e) {
-      this.setState({
-        text: e.target.value
-      });
+        this.setState({
+            text: e.target.value
+        });
     }
 
     sendMessage(e) {
         e.preventDefault();
         const text = this.state.text;
-        if(!!text.trim()) {
-          this.setState({text: ''});
-          sendMessage(text);
+        if (!!text.trim()) {
+            this.setState({
+                text: ''
+            });
+            sendMessage(text);
         }
     }
 
@@ -33,16 +35,25 @@ export class ChatInputComponent extends Component {
         return (
             <div id="sk-footer">
                 <form onSubmit={ this.sendMessage }>
-                    <input ref="input" placeholder={ this.props.ui.text.inputPlaceholder } className="input message-input" onChange={this.onChange} value={this.state.text}></input>
-                    <a ref="button" href="#" className="send" onClick={ this.sendMessage }>{ this.props.ui.text.sendButtonText }</a>
+                    <input ref="input"
+                           placeholder={ this.props.ui.text.inputPlaceholder }
+                           className="input message-input"
+                           onChange={ this.onChange }
+                           value={ this.state.text }></input>
+                    <a ref="button"
+                       href="#"
+                       className="send"
+                       onClick={ this.sendMessage }>
+                        { this.props.ui.text.sendButtonText }
+                    </a>
                 </form>
             </div>
-        );
+            );
     }
 }
 
 export const ChatInput = connect((state) => {
-  return {
-    ui: state.ui
-  };
+    return {
+        ui: state.ui
+    };
 })(ChatInputComponent)

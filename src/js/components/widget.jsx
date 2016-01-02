@@ -13,11 +13,11 @@ export class WidgetComponent extends Component {
         const mainComponent = this.props.appState.settingsVisible ? <Settings /> : <Conversation />;
         const footer = this.props.appState.settingsVisible ? null : <ChatInput />;
 
-        let className = typeof this.props.appState.widgetOpened === "undefined" ? '' :
+        let className = typeof this.props.appState.widgetOpened === 'undefined' ? '' :
             this.props.appState.widgetOpened ? 'sk-appear' : 'sk-close'
 
         return (
-            <div id="sk-container" className={className}>
+            <div id="sk-container" className={ className }>
                 <div id="sk-wrapper">
                     <Header />
                     <Notification />
@@ -25,12 +25,12 @@ export class WidgetComponent extends Component {
                     { footer }
                 </div>
             </div>
-        );
+            );
     }
 }
 
 export const Widget = connect((state) => {
     return {
-      appState: state.appState
-    } 
+        appState: state.appState
+    }
 })(WidgetComponent);

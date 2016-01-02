@@ -23,21 +23,17 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const messages = this.props.conversation.messages.map((message) => <MessageComponent key={message._id} {...message} />);
+        const messages = this.props.conversation.messages.map((message) => <MessageComponent key={ message._id } {...message} />);
 
         return (
             <div id="sk-conversation" ref="container">
-                <div ref="intro" className="sk-intro" dangerouslySetInnerHTML={createMarkup(this.props.ui.text.introText)}></div>
+                <div ref="intro" className="sk-intro" dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.introText) }></div>
                 { messages }
                 <div className="sk-logo" ref="logo">
-                    <a href="https://smooch.io/?utm_source=widget" target="_blank">
-                        In-App Messaging by
-                        <img className="sk-image" src={require('images/logo_webwidget.png')} alt="Smooch" />
-                        <img className="sk-image-retina" src={require('images/logo_webwidget_2x.png')} alt="Smooch" />
-                    </a>
+                    <a href="https://smooch.io/?utm_source=widget" target="_blank">In-App Messaging by <img className="sk-image" src={ require('images/logo_webwidget.png') } alt="Smooch" /> <img className="sk-image-retina" src={ require('images/logo_webwidget_2x.png') } alt="Smooch" /></a>
                 </div>
             </div>
-        );
+            );
     }
 }
 

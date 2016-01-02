@@ -37,7 +37,7 @@ describe('Header', () => {
     });
 
     [true, false].forEach((settingsEnabled) => {
-        describe(`widget is closed with settings ${settingsEnabled ? 'enabled': 'disabled'}`, () => {
+        describe(`widget is closed with settings ${settingsEnabled ? 'enabled' : 'disabled'}`, () => {
             const props = Object.assign({}, defaultProps, {
                 appState: {
                     widgetOpened: false,

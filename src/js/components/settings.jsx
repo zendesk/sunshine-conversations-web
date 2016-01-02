@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { immediateUpdate } from 'services/user-service';
-import { hideSettings } from 'actions/app-state-actions';
+import { hideSettings } from 'actions/app-state-actions';
 
 export class SettingsComponent extends Component {
     constructor(props) {
@@ -18,9 +18,10 @@ export class SettingsComponent extends Component {
     }
 
     onChange(e) {
-      this.setState({
-        email: e.target.value
-      });
+        this.setState({
+            email: e.target.value,
+            hasError: false
+        });
     }
 
     save(e) {
@@ -34,14 +35,16 @@ export class SettingsComponent extends Component {
         var isValid = regex.test(email);
 
         if (isValid) {
-            immediateUpdate({
+            return immediateUpdate({
                 email: email
             }).then(() => {
                 this.props.actions.hideSettings();
             });
         } else {
-            this.setState({
-                hasError: true
+            return Promise.resolve().then(() => {
+                this.setState({
+                    hasError: true
+                });
             });
         }
     }
@@ -55,19 +58,30 @@ export class SettingsComponent extends Component {
                     <p ref="description">
                         { this.props.ui.readOnlyEmail ? this.props.ui.text.settingsReadOnlyText : this.props.ui.text.settingsText }
                     </p>
-                    <form onSubmit={this.save}>
-                        <div className={hasError ? "input-group has-error" : "input-group"}>
+                    <form onSubmit={ this.save }>
+                        <div className={ hasError ? 'input-group has-error' : 'input-group' }>
                             <i className="fa fa-envelope-o before-icon"></i>
-                            <input disabled={this.props.ui.readOnlyEmail} ref="input" type="text" placeholder={ this.props.ui.text.settingsInputPlaceholder } className="input email-input" onChange={ this.onChange } value={this.state.email} />
+                            <input disabled={ this.props.ui.readOnlyEmail }
+                                   ref="input"
+                                   type="text"
+                                   placeholder={ this.props.ui.text.settingsInputPlaceholder }
+                                   className="input email-input"
+                                   onChange={ this.onChange }
+                                   defaultValue={ this.state.email } />
                         </div>
-
                         <div className="input-group">
-                            <button ref="button" disabled={hasError} type="button" className="btn btn-sk-primary" onClick={ this.save }>{ this.props.ui.text.settingsSaveButtonText }</button>
+                            <button ref="button"
+                                    disabled={ hasError }
+                                    type="button"
+                                    className="btn btn-sk-primary"
+                                    onClick={ this.save }>
+                                { this.props.ui.text.settingsSaveButtonText }
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
-        );
+            );
     }
 }
 
@@ -78,6 +92,8 @@ export const Settings = connect((state) => {
     }
 }, (dispatch) => {
     return {
-      actions: bindActionCreators({ hideSettings }, dispatch)
+        actions: bindActionCreators({
+            hideSettings
+        }, dispatch)
     };
 })(SettingsComponent);

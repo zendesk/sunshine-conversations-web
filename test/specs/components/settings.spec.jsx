@@ -6,6 +6,7 @@ import TestUtils from 'react-addons-test-utils';
 import { scryRenderedDOMComponentsWithAttribute } from 'test/utils/react';
 
 import { SettingsComponent } from 'components/settings.jsx';
+import * as userService from 'services/user-service';
 
 const sandbox = sinon.sandbox.create();
 const defaultProps = {
@@ -32,6 +33,11 @@ describe('Settings', () => {
     var component;
     var componentNode;
 
+    beforeEach(() => {
+        sandbox.stub(userService, 'immediateUpdate');
+        userService.immediateUpdate.resolves();
+    });
+
     afterEach(() => {
         sandbox.restore();
     });
@@ -50,6 +56,10 @@ describe('Settings', () => {
 
         it('should render the read-only text', () => {
             component.refs.description.textContent.should.eq(props.ui.text.settingsReadOnlyText);
+        });
+
+        it('should put user email in input', () => {
+            component.refs.input.value.should.eq(props.user.email);
         });
 
         it('should disable the input', () => {
@@ -74,6 +84,10 @@ describe('Settings', () => {
             component.refs.description.textContent.should.eq(props.ui.text.settingsText);
         });
 
+        it('should put user email in input', () => {
+            component.refs.input.value.should.eq(props.user.email);
+        });
+
         it('should enable the input', () => {
             component.refs.input.disabled.should.be.false;
         });
@@ -82,5 +96,119 @@ describe('Settings', () => {
             component.refs.button.disabled.should.be.false;
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'has-error').length.should.be.eq(0)
         });
+    });
+
+    describe('Input', () => {
+        var props = Object.assign({}, defaultProps);
+
+        beforeEach(() => {
+            sandbox.stub(SettingsComponent.prototype, 'onChange');
+            component = TestUtils.renderIntoDocument(<SettingsComponent {...props} />);
+        });
+
+        it('should call onChange', () => {
+            let node = component.refs.input;
+            node.value = 'other@email.com';
+            TestUtils.Simulate.change(node);
+            SettingsComponent.prototype.onChange.args[0][0].target.value.should.eq('other@email.com');
+        });
+
+
+    });
+
+    describe('Save button', () => {
+        var props = Object.assign({}, defaultProps, {
+            user: {
+                email: 'some@email.com'
+            }
+        });
+
+        beforeEach(() => {
+            sandbox.stub(SettingsComponent.prototype, 'save');
+            component = TestUtils.renderIntoDocument(<SettingsComponent {...props} />);
+            componentNode = ReactDOM.findDOMNode(component);
+        });
+
+        it('should call save', () => {
+            TestUtils.Simulate.click(component.refs.button);
+            SettingsComponent.prototype.save.should.have.been.calledOnce;
+        });
+    });
+
+    describe('Save', () => {
+        var props = Object.assign({}, defaultProps, {
+            user: {
+                email: 'some@email.com'
+            }
+        });
+
+        var event;
+
+        beforeEach(() => {
+            Object.assign(props, {
+                actions: {
+                    hideSettings: sandbox.stub()
+                }
+            });
+
+            component = TestUtils.renderIntoDocument(<SettingsComponent {...props} />);
+            sandbox.spy(component, 'setState');
+            event = {
+                preventDefault: sandbox.stub()
+            };
+        });
+
+        it('should prevent button default behavior', () => {
+            return component.save(event).then(() => {
+                event.preventDefault.should.have.been.calledOnce;
+            });
+        });
+
+        describe('valid email', () => {
+            it('should call immediateUpdate and hideSettings', () => {
+                return component.save(event).then(() => {
+                    userService.immediateUpdate.should.have.been.calledOnce;
+                });
+
+            });
+        });
+
+        describe('invalid email', () => {
+
+            beforeEach(() => {
+                component.setState({
+                    email: 'invalid email value'
+                });
+            });
+
+
+            it('should update state with error', () => {
+                return component.save(event).then(() => {
+                    component.setState.should.have.been.calledWith({
+                        hasError: true
+                    });
+                });
+            });
+        });
+
+
+        describe('empty email', () => {
+
+            beforeEach(() => {
+                component.setState({
+                    email: ''
+                });
+            });
+
+
+            it('should update state with error', () => {
+                return component.save(event).then(() => {
+                    component.setState.should.have.been.calledWith({
+                        hasError: true
+                    });
+                });
+            });
+        });
+
     });
 });
