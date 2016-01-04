@@ -5,12 +5,18 @@ import { getConversation, connectFaye } from 'services/conversation-service';
 
 export function immediateUpdate(props) {
     const user = store.getState().user;
-    return core().appUsers.update(user._id, props).then((response) => {
+
+    // TODO : compute isDirty flag 
+    let isDirty = true;
+
+    return isDirty ? core().appUsers.update(user._id, props).then((response) => {
         store.dispatch(setUser(response.appUser));
         return response;
     }).catch((e) => {
         console.log(e)
         throw e;
+    }) : Promise.resolve({
+        user: user
     });
 }
 

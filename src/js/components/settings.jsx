@@ -79,7 +79,7 @@ export class SettingsComponent extends Component {
                                    placeholder={ this.props.ui.text.settingsInputPlaceholder }
                                    className="input email-input"
                                    onChange={ this.onChange }
-                                   defaultValue={ this.state.email } />
+                                   defaultValue={ this.props.user.email } />
                         </div>
                         { button }
                     </form>

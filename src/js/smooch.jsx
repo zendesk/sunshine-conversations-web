@@ -8,7 +8,7 @@ import { store } from 'stores/app-store';
 import { setAuth, resetAuth } from 'actions/auth-actions';
 import { setUser, resetUser } from 'actions/user-actions';
 import { setConversation, resetConversation } from 'actions/conversation-actions';
-import { openWidget, closeWidget, showSettingsNotification, enableSettings, disableSettings, setEmailReadonly, unsetEmailReadonly } from 'actions/app-state-actions';
+import { openWidget, closeWidget, showSettingsNotification, enableSettings, disableSettings, hideSettings, setEmailReadonly, unsetEmailReadonly } from 'actions/app-state-actions';
 import { reset } from 'actions/common-actions';
 
 import { login } from 'services/auth-service';
