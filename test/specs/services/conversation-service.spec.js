@@ -176,4 +176,8 @@ describe('Conversation service', () => {
             });
         });
     });
+
+    describe('sendMessage', () => {
+        // TODO
+    });
 });
