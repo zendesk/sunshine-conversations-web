@@ -8,8 +8,8 @@ import { store } from 'stores/app-store';
 import { setAuth, resetAuth } from 'actions/auth-actions';
 import { setUser, resetUser } from 'actions/user-actions';
 import { setConversation, resetConversation } from 'actions/conversation-actions';
-import { openWidget, closeWidget, showSettingsNotification } from 'actions/app-state-actions';
-import { reset } from 'actions/common-actions';
+import { openWidget, closeWidget, showSettingsNotification, enableSettings, disableSettings, setEmailReadonly, unsetEmailReadonly } from 'actions/app-state-actions';
+import { reset } from 'actions/common-actions';
 
 import { login } from 'services/auth-service';
 import { trackEvent, update as updateUser, immediateUpdate as immediateUpdateUser } from 'services/user-service';
@@ -22,7 +22,7 @@ function renderWidget() {
     el.setAttribute('id', 'sk-holder');
     el.className = 'sk-noanimation';
 
-    const Root = (process.env.NODE_ENV  === 'production' ? require('./root-prod') : require('./root-dev')).Root;
+    const Root = (process.env.NODE_ENV === 'production' ? require('./root-prod') : require('./root-dev')).Root;
     render(<Root store={ store } />, el);
 
     const appendWidget = () => {
@@ -68,7 +68,12 @@ export class Smooch {
     init(props) {
         this.appToken = props.appToken;
 
-        // TODO : accept user attributes
+        if (props.emailCaptureEnabled) {
+            store.dispatch(enableSettings());
+        } else {
+            store.dispatch(disableSettings());
+        }
+
         return this.login(props.userId, props.jwt, _.pick(props, EDITABLE_PROPERTIES));
     }
 
@@ -82,7 +87,12 @@ export class Smooch {
 
         attributes = _.pick(attributes, EDITABLE_PROPERTIES);
 
-        // TODO : accept user attributes
+        if (store.getState().appState.settingsEnabled && attributes.email) {
+            store.dispatch(setEmailReadonly());
+        } else {
+            store.dispatch(unsetEmailReadonly());
+        }
+
         return Promise.resolve().then(() => {
             store.dispatch(setAuth({
                 jwt: jwt,

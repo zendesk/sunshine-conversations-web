@@ -52,16 +52,28 @@ export class SettingsComponent extends Component {
     render() {
         let hasError = this.state.hasError;
 
+        let button = this.props.appState.readOnlyEmail ? null : (
+            <div className="input-group">
+                <button ref="button"
+                        disabled={ hasError }
+                        type="button"
+                        className="btn btn-sk-primary"
+                        onClick={ this.save }>
+                    { this.props.ui.text.settingsSaveButtonText }
+                </button>
+            </div>
+            );
+
         return (
             <div id="sk-settings">
                 <div className="settings-wrapper">
                     <p ref="description">
-                        { this.props.ui.readOnlyEmail ? this.props.ui.text.settingsReadOnlyText : this.props.ui.text.settingsText }
+                        { this.props.appState.readOnlyEmail ? this.props.ui.text.settingsReadOnlyText : this.props.ui.text.settingsText }
                     </p>
                     <form onSubmit={ this.save }>
                         <div className={ hasError ? 'input-group has-error' : 'input-group' }>
                             <i className="fa fa-envelope-o before-icon"></i>
-                            <input disabled={ this.props.ui.readOnlyEmail }
+                            <input disabled={ this.props.appState.readOnlyEmail }
                                    ref="input"
                                    type="text"
                                    placeholder={ this.props.ui.text.settingsInputPlaceholder }
@@ -69,15 +81,7 @@ export class SettingsComponent extends Component {
                                    onChange={ this.onChange }
                                    defaultValue={ this.state.email } />
                         </div>
-                        <div className="input-group">
-                            <button ref="button"
-                                    disabled={ hasError }
-                                    type="button"
-                                    className="btn btn-sk-primary"
-                                    onClick={ this.save }>
-                                { this.props.ui.text.settingsSaveButtonText }
-                            </button>
-                        </div>
+                        { button }
                     </form>
                 </div>
             </div>
@@ -88,6 +92,7 @@ export class SettingsComponent extends Component {
 export const Settings = connect((state) => {
     return {
         ui: state.ui,
+        appState: state.appState,
         user: state.user
     }
 }, (dispatch) => {

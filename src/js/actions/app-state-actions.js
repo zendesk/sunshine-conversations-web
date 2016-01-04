@@ -1,11 +1,15 @@
 export const TOGGLE_WIDGET = 'TOGGLE_WIDGET';
 export const OPEN_WIDGET = 'OPEN_WIDGET';
 export const CLOSE_WIDGET = 'CLOSE_WIDGET';
+export const ENABLE_SETTINGS = 'ENABLE_SETTINGS';
+export const DISABLE_SETTINGS = 'DISABLE_SETTINGS';
 export const SHOW_SETTINGS = 'SHOW_SETTINGS';
 export const HIDE_SETTINGS = 'HIDE_SETTINGS';
 export const SHOW_SETTINGS_NOTIFICATION = 'SHOW_SETTINGS_NOTIFICATION';
 export const HIDE_SETTINGS_NOTIFICATION = 'HIDE_SETTINGS_NOTIFICATION';
 export const SET_SERVER_URL = 'SET_SERVER_URL';
+export const SET_EMAIL_READONLY = 'SET_EMAIL_READONLY';
+export const UNSET_EMAIL_READONLY = 'UNSET_EMAIL_READONLY';
 
 export function toggleWidget() {
   return {
@@ -35,6 +39,30 @@ export function hideSettings() {
   return {
     type: HIDE_SETTINGS
   };
+}
+
+export function enableSettings() {
+  return {
+    type: ENABLE_SETTINGS
+  };
+}
+
+export function disableSettings() {
+  return {
+    type: DISABLE_SETTINGS
+  };
+}
+
+export function setEmailReadonly() {
+  return {
+    type: SET_EMAIL_READONLY
+  }
+}
+
+export function unsetEmailReadonly() {
+  return {
+    type: UNSET_EMAIL_READONLY
+  }
 }
 
 export function showSettingsNotification() {

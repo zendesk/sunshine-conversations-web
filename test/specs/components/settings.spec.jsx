@@ -11,10 +11,10 @@ import * as userService from 'services/user-service';
 const sandbox = sinon.sandbox.create();
 const defaultProps = {
     appState: {
-        settingsNotificationVisible: false
+        settingsNotificationVisible: false,
+        readOnlyEmail: false
     },
     ui: {
-        readOnlyEmail: false,
         text: {
             settingsReadOnlyText: 'This is readonly',
             settingsText: 'This is settings',
@@ -44,7 +44,7 @@ describe('Settings', () => {
 
     describe('Email read-only', () => {
         var props = Object.assign({}, defaultProps, {
-            ui: Object.assign({}, defaultProps.ui, {
+            appState: Object.assign({}, defaultProps.appState, {
                 readOnlyEmail: true
             })
         });
@@ -67,7 +67,7 @@ describe('Settings', () => {
         });
 
         it('should not have errors', () => {
-            component.refs.button.disabled.should.be.false;
+            expect(component.refs.button).to.not.exist;
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'has-error').length.should.be.eq(0)
         });
     });
