@@ -2,10 +2,7 @@ import sinon from 'sinon';
 import { getMock } from 'test/mocks/core';
 import { getMockedStore } from 'test/utils/redux';
 import * as coreService from 'services/core';
-import * as appStore from 'stores/app-store';
-
-import { immediateUpdate, update, trackEvent } from 'services/user-service';
-
+import * as userService from 'services/user-service';
 
 const AppStore = require('stores/app-store');
 
@@ -72,7 +69,7 @@ describe('User service', () => {
                 email: 'some@email.com'
             };
 
-            return immediateUpdate(props).then((response) => {
+            return userService.immediateUpdate(props).then((response) => {
                 coreMock.appUsers.update.should.have.been.calledWith('1', {
                     email: 'some@email.com'
                 });

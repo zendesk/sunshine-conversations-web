@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "aws-sdk": "^2.1.35",
-    "babel": "^6.1.18",
+    "babel": "^6.3.26",
     "babel-core": "^6.2.1",
     "babel-loader": "^6.2.0",
     "babel-polyfill": "^6.3.14",
