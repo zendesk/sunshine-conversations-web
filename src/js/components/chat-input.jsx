@@ -11,7 +11,7 @@ export class ChatInputComponent extends Component {
         };
 
         this.onChange = this.onChange.bind(this);
-        this.sendMessage = this.sendMessage.bind(this);
+        this.onSendMessage = this.onSendMessage.bind(this);
     }
 
     onChange(e) {
@@ -20,10 +20,10 @@ export class ChatInputComponent extends Component {
         });
     }
 
-    sendMessage(e) {
+    onSendMessage(e) {
         e.preventDefault();
         const text = this.state.text;
-        if (!!text.trim()) {
+        if (text.trim()) {
             this.setState({
                 text: ''
             });
@@ -34,7 +34,7 @@ export class ChatInputComponent extends Component {
     render() {
         return (
             <div id="sk-footer">
-                <form onSubmit={ this.sendMessage }>
+                <form onSubmit={ this.onSendMessage }>
                     <input ref="input"
                            placeholder={ this.props.ui.text.inputPlaceholder }
                            className="input message-input"
@@ -43,7 +43,7 @@ export class ChatInputComponent extends Component {
                     <a ref="button"
                        href="#"
                        className="send"
-                       onClick={ this.sendMessage }>
+                       onClick={ this.onSendMessage }>
                         { this.props.ui.text.sendButtonText }
                     </a>
                 </form>

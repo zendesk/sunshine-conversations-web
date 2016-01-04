@@ -2,7 +2,7 @@ import { Client } from 'faye';
 import urljoin from 'urljoin';
 
 import { store } from 'stores/app-store';
-import { messageAdded } from 'actions/conversation-actions';
+import { addMessage } from 'actions/conversation-actions';
 
 export function initFaye() {
     const state = store.getState();
@@ -29,7 +29,7 @@ export function initFaye() {
         });
 
         return faye.subscribe('/conversations/' + state.conversation._id, (message) => {
-            store.dispatch(messageAdded(message));
+            store.dispatch(addMessage(message));
         });
     }
 }

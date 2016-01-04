@@ -1,4 +1,4 @@
-import { MESSAGE_ADDED, MESSAGES_CLEARED, SET_CONVERSATION, RESET_CONVERSATION } from 'actions/conversation-actions';
+import { ADD_MESSAGE, MESSAGES_CLEARED, SET_CONVERSATION, RESET_CONVERSATION } from 'actions/conversation-actions';
 import { RESET } from 'actions/common-actions';
 
 const INITIAL_STATE = {
@@ -12,7 +12,7 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             return Object.assign({}, INITIAL_STATE);
         case SET_CONVERSATION:
             return Object.assign({}, action.conversation);
-        case MESSAGE_ADDED:
+        case ADD_MESSAGE:
             return Object.assign({}, state, {
                 messages: [...state.messages, action.message]
             });

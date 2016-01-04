@@ -25,7 +25,7 @@ describe('ChatInput', () => {
     var componentNode;
 
     var onChangeSpy;
-    var sendMessageSpy;
+    var onSendMessageSpy;
     var setStateSpy;
 
     var serviceSendMessageStub;
@@ -33,7 +33,7 @@ describe('ChatInput', () => {
 
     beforeEach(() => {
         onChangeSpy = sandbox.spy(ChatInputComponent.prototype, 'onChange');
-        sendMessageSpy = sandbox.spy(ChatInputComponent.prototype, 'sendMessage');
+        onSendMessageSpy = sandbox.spy(ChatInputComponent.prototype, 'onSendMessage');
         setStateSpy = sandbox.spy(ChatInputComponent.prototype, 'setState');
 
         serviceSendMessageStub = sandbox.stub(conversationService, 'sendMessage');
@@ -79,14 +79,14 @@ describe('ChatInput', () => {
 
         it('should call sendMessage when clicking the button', () => {
             TestUtils.Simulate.click(component.refs.button);
-            sendMessageSpy.should.have.been.calledOnce;
+            onSendMessageSpy.should.have.been.calledOnce;
         });
 
         it('should prevent default event behavior', () => {
             let event = {
                 preventDefault: sandbox.stub()
             };
-            component.sendMessage(event);
+            component.onSendMessage(event);
 
             event.preventDefault.should.have.been.calledOnce;
         });
@@ -94,7 +94,7 @@ describe('ChatInput', () => {
         for (let value of ['', '      ']) {
             it('should do nothing if the current state is blank', () => {
                 component.state.text = value;
-                component.sendMessage({
+                component.onSendMessage({
                     preventDefault: sandbox.stub()
                 });
 
@@ -105,7 +105,7 @@ describe('ChatInput', () => {
 
         it('should reset state and call conversation service if state not blank', () => {
             component.state.text = 'this is a value!';
-            component.sendMessage({
+            component.onSendMessage({
                 preventDefault: sandbox.stub()
             });
 

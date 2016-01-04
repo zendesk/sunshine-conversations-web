@@ -3,9 +3,9 @@ import { storage } from 'utils/storage';
 
 describe('Storage', () => {
     beforeEach(() => {
-        localStorage.clear();
+        global.localStorage.clear();
     });
-    
+
     describe('with localStorage', () => {
         it('should add item to localStorage', () => {
             storage.setItem('item', 'value');
@@ -28,13 +28,22 @@ describe('Storage', () => {
     describe('without localStorage', () => {
         const sandbox = sinon.sandbox.create();
 
-        beforeEach(() => {
-            sandbox.stub(localStorage, 'setItem');
-            localStorage.setItem.throws();
+        // Chrome doesn't like stubbing localStorage...
+        // We're doing it the monkey way.
+        const setItem = localStorage.setItem;
+
+        before(() => {
+            localStorage.setItem = () => {
+                throw new Error();
+            };
         });
 
         afterEach(() => {
             sandbox.restore();
+        });
+
+        after(() => {
+            localStorage.setItem = setItem;
         });
 
         it('should add item to storage', () => {

@@ -1,5 +1,5 @@
 import { store } from 'stores/app-store';
-import { messageAdded, setConversation } from 'actions/conversation-actions';
+import { addMessage, setConversation } from 'actions/conversation-actions';
 import { setFayeSubscription, unsetFayeSubscription } from 'actions/faye-actions';
 import { core } from 'services/core';
 import { immediateUpdate } from 'services/user-service';
@@ -12,7 +12,7 @@ export function sendMessage(text) {
             role: 'appUser'
         };
 
-        store.dispatch(messageAdded(message));
+        store.dispatch(addMessage(message));
 
         const user = store.getState().user;
 
