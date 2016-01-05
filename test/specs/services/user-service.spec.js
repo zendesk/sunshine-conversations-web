@@ -92,4 +92,105 @@ describe('User service', () => {
             });
         });
     });
+
+    describe('update', () => {
+        beforeEach(() => {
+            sandbox.useFakeTimers();
+        });
+
+        afterEach(() => {
+            // advance the clock to reset the throttling stuff
+            sandbox.clock.tick(50000);
+        });
+
+        it('should call immediateUpdate', () => {
+            let props = {
+                email: 'email'
+            };
+
+            let promise = userService.update(props);
+            sandbox.clock.tick(1);
+            promise.then(() => {
+                coreMock.appUsers.update.should.have.been.calledWith('1', props);
+            });
+        });
+
+        it('should be throttled for 5 sec', () => {
+            let props = {
+                email: 'email'
+            };
+
+            let promise = userService.update(props);
+            sandbox.clock.tick(1);
+            promise.then(() => {
+                coreMock.appUsers.update.should.have.been.calledWith('1', props);
+                coreMock.appUsers.update.reset();
+            });
+
+            let throttledPromise = userService.update(props);
+            sandbox.clock.tick(4998);
+            throttledPromise.then(() => {
+                coreMock.appUsers.update.should.not.have.been.called;
+            });
+
+            let unthrottledPromise = userService.update(props);
+            sandbox.clock.tick(1);
+            unthrottledPromise.then(() => {
+                coreMock.appUsers.update.should.have.been.calledWith('1', props);
+            });
+        });
+
+
+        it('should merge props when throttling and reset for the next call', () => {
+            let promise = userService.update({
+                email: 'this@email.com'
+            });
+
+            // needs to tick one for the internal promise mechanism to work
+            sandbox.clock.tick(1);
+            promise.then(() => {
+                coreMock.appUsers.update.should.have.been.calledWith('1', {
+                    email: 'this@email.com'
+                });
+            });
+
+            let throttledPromise = userService.update({
+                givenName: 'Example'
+            });
+
+            // move just under 5000 ms
+            sandbox.clock.tick(4998);
+
+            throttledPromise.then(() => {
+                coreMock.appUsers.update.should.not.have.been.called;
+            });
+
+            let unthrottledPromise = userService.update({
+                email: 'another@email.com'
+            });
+
+            // move up to 5000
+            sandbox.clock.tick(1);
+
+            unthrottledPromise.then(() => {
+                coreMock.appUsers.update.should.have.been.calledWith('1', {
+                    givenName: 'Example',
+                    email: 'another@email.com'
+                });
+            });
+
+            // move to an unthrottled timeframe
+            sandbox.clock.tick(20000);
+
+            unthrottledPromise = userService.update({
+                email: 'yetanother@email.com'
+            });
+            sandbox.clock.tick(1);
+            unthrottledPromise.then(() => {
+                coreMock.appUsers.update.should.have.been.calledWith('1', {
+                    email: 'yetanother@email.com'
+                });
+            });
+        });
+    });
 });

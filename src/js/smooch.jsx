@@ -28,7 +28,7 @@ function renderWidget() {
     const appendWidget = () => {
         document.body.appendChild(el);
         setTimeout(() => el.className = '', 200);
-    }
+    };
 
     if (document.readyState == 'complete' || document.readyState == 'loaded' || document.readyState == 'interactive') {
         appendWidget();
