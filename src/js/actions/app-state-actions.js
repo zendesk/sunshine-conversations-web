@@ -12,74 +12,74 @@ export const SET_EMAIL_READONLY = 'SET_EMAIL_READONLY';
 export const UNSET_EMAIL_READONLY = 'UNSET_EMAIL_READONLY';
 
 export function toggleWidget() {
-  return {
-    type: TOGGLE_WIDGET
-  };
+    return {
+        type: TOGGLE_WIDGET
+    };
 }
 
 export function openWidget() {
-  return {
-    type: OPEN_WIDGET
-  };
+    return {
+        type: OPEN_WIDGET
+    };
 }
 
 export function closeWidget() {
-  return {
-    type: CLOSE_WIDGET
-  };
+    return {
+        type: CLOSE_WIDGET
+    };
 }
 
 export function showSettings() {
-  return {
-    type: SHOW_SETTINGS
-  };
+    return {
+        type: SHOW_SETTINGS
+    };
 }
 
 export function hideSettings() {
-  return {
-    type: HIDE_SETTINGS
-  };
+    return {
+        type: HIDE_SETTINGS
+    };
 }
 
 export function enableSettings() {
-  return {
-    type: ENABLE_SETTINGS
-  };
+    return {
+        type: ENABLE_SETTINGS
+    };
 }
 
 export function disableSettings() {
-  return {
-    type: DISABLE_SETTINGS
-  };
+    return {
+        type: DISABLE_SETTINGS
+    };
 }
 
 export function setEmailReadonly() {
-  return {
-    type: SET_EMAIL_READONLY
-  }
+    return {
+        type: SET_EMAIL_READONLY
+    }
 }
 
 export function unsetEmailReadonly() {
-  return {
-    type: UNSET_EMAIL_READONLY
-  }
+    return {
+        type: UNSET_EMAIL_READONLY
+    }
 }
 
 export function showSettingsNotification() {
-  return {
-    type: SHOW_SETTINGS_NOTIFICATION
-  };
+    return {
+        type: SHOW_SETTINGS_NOTIFICATION
+    };
 }
 
 export function hideSettingsNotification() {
-  return {
-    type: HIDE_SETTINGS_NOTIFICATION
-  };
+    return {
+        type: HIDE_SETTINGS_NOTIFICATION
+    };
 }
 
 export function setServerURL(url) {
-  return {
-    type: SET_SERVER_URL,
-    url: url
-  };
+    return {
+        type: SET_SERVER_URL,
+        url: url
+    };
 }
