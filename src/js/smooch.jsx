@@ -11,7 +11,7 @@ import { openWidget, closeWidget, showSettingsNotification, enableSettings, disa
 import { reset } from 'actions/common-actions';
 
 import { login } from 'services/auth-service';
-import { trackEvent, update as updateUser, immediateUpdate as immediateUpdateUser } from 'services/user-service';
+import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, immediateUpdate as immediateUpdateUser } from 'services/user-service';
 import { getConversation, sendMessage, connectFaye, disconnectFaye } from 'services/conversation-service';
 
 import { storage } from 'utils/storage';
@@ -50,15 +50,6 @@ function getDeviceId() {
 
     return deviceId;
 }
-
-export const EDITABLE_PROPERTIES = [
-    'givenName',
-    'surname',
-    'email',
-    'signedUpAt',
-    'properties'
-];
-
 
 export class Smooch {
     get VERSION() {
