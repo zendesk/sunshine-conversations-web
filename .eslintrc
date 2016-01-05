@@ -27,7 +27,8 @@
         "mocha": true
     },
     "globals": {
-        "expect": true
+        "expect": true,
+        "VERSION": true
     },
     "ecmaFeatures": {
         "jsx": true

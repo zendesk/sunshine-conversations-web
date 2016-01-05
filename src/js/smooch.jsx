@@ -1,6 +1,5 @@
 import React from 'react';
 import { render } from 'react-dom';
-import _ from 'underscore';
 import uuid from 'uuid';
 
 import { store } from 'stores/app-store';
@@ -16,6 +15,7 @@ import { trackEvent, update as updateUser, immediateUpdate as immediateUpdateUse
 import { getConversation, sendMessage, connectFaye, disconnectFaye } from 'services/conversation-service';
 
 import { storage } from 'utils/storage';
+import { pick } from 'utils/functions';
 
 function renderWidget() {
     const el = document.createElement('div');
@@ -74,7 +74,7 @@ export class Smooch {
             store.dispatch(disableSettings());
         }
 
-        return this.login(props.userId, props.jwt, _.pick(props, EDITABLE_PROPERTIES));
+        return this.login(props.userId, props.jwt, pick(props, EDITABLE_PROPERTIES));
     }
 
     login(userId = '', jwt, attributes) {
@@ -85,7 +85,7 @@ export class Smooch {
             attributes = {};
         }
 
-        attributes = _.pick(attributes, EDITABLE_PROPERTIES);
+        attributes = pick(attributes, EDITABLE_PROPERTIES);
 
         if (store.getState().appState.settingsEnabled && attributes.email) {
             store.dispatch(setEmailReadonly());
@@ -161,7 +161,7 @@ export class Smooch {
             }
 
             return response;
-        });;
+        });
     }
 
     destroy() {

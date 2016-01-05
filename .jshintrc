@@ -134,7 +134,8 @@
         "alert",
         "module",
         "Promise",
-        "global"
+        "global",
+        "VERSION"
     ],
     "maxparams"     : 30,
     "maxdepth"      : 5,
