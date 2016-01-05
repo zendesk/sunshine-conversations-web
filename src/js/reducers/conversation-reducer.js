@@ -16,11 +16,6 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             return Object.assign({}, state, {
                 messages: [...state.messages, action.message]
             });
-
-        case MESSAGES_CLEARED:
-            return Object.assign({}, {
-                messages: []
-            });
         default:
             return state;
     }

@@ -3,6 +3,7 @@ import urljoin from 'urljoin';
 
 import { store } from 'stores/app-store';
 import { addMessage } from 'actions/conversation-actions';
+import { updateReadTimestamp } from 'services/conversation-service';
 
 export function initFaye() {
     const state = store.getState();
@@ -29,6 +30,7 @@ export function initFaye() {
         });
 
         return faye.subscribe('/conversations/' + state.conversation._id, (message) => {
+            updateReadTimestamp(message.received);
             store.dispatch(addMessage(message));
         });
     }

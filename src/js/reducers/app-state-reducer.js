@@ -1,4 +1,4 @@
-import { ENABLE_SETTINGS, DISABLE_SETTINGS, TOGGLE_WIDGET, OPEN_WIDGET, CLOSE_WIDGET, SHOW_SETTINGS, HIDE_SETTINGS, SHOW_SETTINGS_NOTIFICATION, HIDE_SETTINGS_NOTIFICATION, SET_SERVER_URL, SET_EMAIL_READONLY, UNSET_EMAIL_READONLY } from 'actions/app-state-actions';
+import { ENABLE_SETTINGS, DISABLE_SETTINGS, TOGGLE_WIDGET, OPEN_WIDGET, CLOSE_WIDGET, SHOW_SETTINGS, HIDE_SETTINGS, SHOW_SETTINGS_NOTIFICATION, HIDE_SETTINGS_NOTIFICATION, SET_SERVER_URL, SET_EMAIL_READONLY, UNSET_EMAIL_READONLY, UPDATE_READ_TIMESTAMP } from 'actions/app-state-actions';
 import { RESET } from 'actions/common-actions';
 
 const INITIAL_STATE = {
@@ -7,7 +7,8 @@ const INITIAL_STATE = {
     widgetOpened: undefined,
     settingsEnabled: true,
     readOnlyEmail: false,
-    serverURL: 'https://api.smooch.io/'
+    serverURL: 'https://api.smooch.io/',
+    messageReadTimestamp: 0
 };
 
 export function AppStateReducer(state = INITIAL_STATE, action) {
@@ -68,6 +69,10 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
         case SET_SERVER_URL:
             return Object.assign({}, state, {
                 serverURL: action.url
+            });
+        case UPDATE_READ_TIMESTAMP:
+            return Object.assign({}, state, {
+                messageReadTimestamp: action.timestamp
             });
         default:
             return state;

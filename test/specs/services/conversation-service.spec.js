@@ -43,7 +43,9 @@ describe('Conversation service', () => {
     beforeEach(() => {
         coreMock = getMock(sandbox);
         coreMock.conversations.get.resolves({
-            conversation: 'mocked conversation payload'
+            conversation: {
+                messages: []
+            }
         });
 
         coreStub = sandbox.stub(coreService, 'core', () => {
@@ -52,7 +54,11 @@ describe('Conversation service', () => {
 
         fayeSubscriptionMock = {
             then: sandbox.spy((cb) => {
-                return cb('mocked subscription payload');
+                return cb({
+                    conversation: {
+                        messages: []
+                    }
+                });
             }),
             cancel: sandbox.stub()
         };
@@ -79,11 +85,15 @@ describe('Conversation service', () => {
                 coreMock.conversations.get.should.have.been.calledWith('1');
 
                 response.should.deep.eq({
-                    conversation: 'mocked conversation payload'
+                    conversation: {
+                        messages: []
+                    }
                 });
                 mockedStore.dispatch.should.have.been.calledWith({
                     type: 'SET_CONVERSATION',
-                    conversation: 'mocked conversation payload'
+                    conversation: {
+                        messages: []
+                    }
                 });
             });
         });
@@ -111,7 +121,9 @@ describe('Conversation service', () => {
                     });
                     coreMock.conversations.get.should.have.been.calledOnce;
                     payload.should.deep.eq({
-                        conversation: 'mocked conversation payload'
+                        conversation: {
+                            messages: []
+                        }
                     });
                 });
             });
@@ -131,7 +143,11 @@ describe('Conversation service', () => {
                     utilsFaye.initFaye.should.not.have.been.calledOnce;
                     coreMock.conversations.get.should.not.have.been.called;
                     mockedStore.dispatch.should.not.have.been.called;
-                    payload.should.eq('mocked subscription payload');
+                    payload.should.deep.eq({
+                        conversation: {
+                            messages: []
+                        }
+                    });
                 });
             });
         });
@@ -140,7 +156,11 @@ describe('Conversation service', () => {
     describe('disconnectFaye', () => {
         beforeEach(() => {
             sandbox.stub(conversationService, 'getConversation');
-            conversationService.getConversation.resolves('mocked conversation payload');
+            conversationService.getConversation.resolves({
+                conversation: {
+                    messages: []
+                }
+            });
         });
 
         describe('without subscription active', () => {

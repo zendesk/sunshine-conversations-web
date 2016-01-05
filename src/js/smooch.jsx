@@ -7,12 +7,12 @@ import { store } from 'stores/app-store';
 import { setAuth, resetAuth } from 'actions/auth-actions';
 import { setUser, resetUser } from 'actions/user-actions';
 import { setConversation, resetConversation } from 'actions/conversation-actions';
-import { openWidget, closeWidget, showSettingsNotification, enableSettings, disableSettings, hideSettings, setEmailReadonly, unsetEmailReadonly } from 'actions/app-state-actions';
+import { openWidget, closeWidget, showSettingsNotification, enableSettings, disableSettings, hideSettings, setEmailReadonly, unsetEmailReadonly, updateReadTimestamp } from 'actions/app-state-actions';
 import { reset } from 'actions/common-actions';
 
 import { login } from 'services/auth-service';
 import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, immediateUpdate as immediateUpdateUser } from 'services/user-service';
-import { getConversation, sendMessage, connectFaye, disconnectFaye } from 'services/conversation-service';
+import { getConversation, sendMessage, connectFaye, disconnectFaye, getReadTimestamp } from 'services/conversation-service';
 
 import { storage } from 'utils/storage';
 import { pick } from 'utils/functions';
@@ -76,6 +76,12 @@ export class Smooch {
             attributes = {};
         }
 
+        // in case it comes from a previous authenticated state
+        store.dispatch(resetAuth());
+        store.dispatch(resetUser());
+        store.dispatch(resetConversation());
+        disconnectFaye();
+
         attributes = pick(attributes, EDITABLE_PROPERTIES);
 
         if (store.getState().appState.settingsEnabled && attributes.email) {
@@ -108,6 +114,8 @@ export class Smooch {
             });
         }).then((loginResponse) => {
             store.dispatch(setUser(loginResponse.appUser));
+            store.dispatch(updateReadTimestamp(getReadTimestamp()));
+
             return immediateUpdateUser(attributes).then(() => {
                 const user = store.getState().user;
                 if (user.conversationStarted) {
@@ -124,11 +132,6 @@ export class Smooch {
     }
 
     logout() {
-        store.dispatch(resetAuth());
-        store.dispatch(resetUser());
-        store.dispatch(resetConversation());
-        disconnectFaye();
-
         return this.login();
     }
 

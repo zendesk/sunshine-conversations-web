@@ -120,6 +120,7 @@ describe('Smooch', () => {
         var immediateUpdateStub;
 
         beforeEach(() => {
+            mockedStore = mockStore(sandbox, defaultState);
             loginStub = sandbox.stub(authService, 'login');
             loginStub.resolves({
                 appUser: {
@@ -135,10 +136,38 @@ describe('Smooch', () => {
 
             connectFayeStub = sandbox.stub(conversationService, 'connectFaye');
             connectFayeStub.resolves({});
+
+            disconnectFayeStub = sandbox.stub(conversationService, 'disconnectFaye');
+        });
+
+        it('should reset the user', () => {
+            const props = {
+                userId: 'some-id',
+                appToken: 'some-token',
+                jwt: 'some-jwt',
+                email: 'some@email.com'
+            };
+
+            return smooch.login(props.userId, props.jwt).then(() => {
+                mockedStore.dispatch.firstCall.should.have.been.calledWith({
+                    type: 'RESET_AUTH'
+                });
+
+                mockedStore.dispatch.secondCall.should.have.been.calledWith({
+                    type: 'RESET_USER'
+                });
+
+
+                mockedStore.dispatch.thirdCall.should.have.been.calledWith({
+                    type: 'RESET_CONVERSATION'
+                });
+
+                disconnectFayeStub.should.have.been.calledOnce;
+            });
         });
 
         describe('conversation started', () => {
-            const state = Object.assign({}, defaultState)
+            const state = Object.assign({}, defaultState);
             beforeEach(() => {
                 mockedStore = mockStore(sandbox, state);
             });
@@ -320,26 +349,12 @@ describe('Smooch', () => {
 
     describe('Logout', () => {
         beforeEach(() => {
-            mockedStore = mockStore(sandbox, defaultState);
-            disconnectFayeStub = sandbox.stub(conversationService, 'disconnectFaye');
+            loginStub = sandbox.stub(smooch, 'login');
         });
 
-        it('should reset the user', () => {
+        it('should call login', () => {
             smooch.logout();
-            mockedStore.dispatch.firstCall.should.have.been.calledWith({
-                type: 'RESET_AUTH'
-            });
-
-            mockedStore.dispatch.secondCall.should.have.been.calledWith({
-                type: 'RESET_USER'
-            });
-
-
-            mockedStore.dispatch.thirdCall.should.have.been.calledWith({
-                type: 'RESET_CONVERSATION'
-            });
-
-            disconnectFayeStub.should.have.been.calledOnce;
+            loginStub.should.have.been.called;
         });
     });
 

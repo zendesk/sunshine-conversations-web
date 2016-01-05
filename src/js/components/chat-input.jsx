@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { sendMessage } from 'services/conversation-service';
+import { sendMessage, getReadTimestamp, updateReadTimestamp } from 'services/conversation-service';
 
 export class ChatInputComponent extends Component {
     constructor(...args) {
@@ -31,6 +31,12 @@ export class ChatInputComponent extends Component {
         }
     }
 
+    onFocus(e) {
+        if (getReadTimestamp() > 0) {
+            updateReadTimestamp(0);
+        }
+    }
+
     render() {
         return (
             <div id="sk-footer">
@@ -39,6 +45,7 @@ export class ChatInputComponent extends Component {
                            placeholder={ this.props.ui.text.inputPlaceholder }
                            className="input message-input"
                            onChange={ this.onChange }
+                           onFocus={ this.onFocus }
                            value={ this.state.text }></input>
                     <a ref="button"
                        href="#"

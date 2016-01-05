@@ -1,7 +1,6 @@
 export const ADD_MESSAGE = 'ADD_MESSAGE';
-export const MESSAGES_CLEARED = 'MESSAGES_CLEARED';
-export const SET_CONVERSATION = 'SET_CONVERSATION';
 export const RESET_CONVERSATION = 'RESET_CONVERSATION';
+export const SET_CONVERSATION = 'SET_CONVERSATION';
 
 export function resetConversation() {
     return {
@@ -23,11 +22,5 @@ export function addMessage(props) {
             _id: Math.random(),
             actions: []
         }, props)
-    };
-}
-
-export function messagesCleared() {
-    return {
-        type: MESSAGES_CLEARED
     };
 }

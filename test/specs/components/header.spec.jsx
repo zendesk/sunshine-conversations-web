@@ -15,6 +15,9 @@ const defaultProps = {
         settingsEnabled: false,
         settingsVisible: false,
     },
+    conversation: {
+        messages: []
+    },
     actions: {
         showSettings: sandbox.spy(),
         hideSettings: sandbox.spy(),
