@@ -6,6 +6,7 @@ import { store } from 'stores/app-store';
 
 import { setAuth, resetAuth } from 'actions/auth-actions';
 import { setUser, resetUser } from 'actions/user-actions';
+import { updateText } from 'actions/ui-actions';
 import { setConversation, resetConversation } from 'actions/conversation-actions';
 import { openWidget, closeWidget, showSettingsNotification, enableSettings, disableSettings, hideSettings, setEmailReadonly, unsetEmailReadonly, updateReadTimestamp } from 'actions/app-state-actions';
 import { reset } from 'actions/common-actions';
@@ -64,6 +65,10 @@ export class Smooch extends Observable {
             store.dispatch(enableSettings());
         } else {
             store.dispatch(disableSettings());
+        }
+
+        if(props.customText) {
+            store.dispatch(updateText(props.customText));
         }
 
         return this.login(props.userId, props.jwt, pick(props, EDITABLE_PROPERTIES));
@@ -127,8 +132,7 @@ export class Smooch extends Observable {
             if (!this._el) {
                 this._el = renderWidget();
             }
-
-            this.ready = true;
+            this.trigger('ready');
         });
     }
 
