@@ -14,6 +14,7 @@ import { login } from 'services/auth-service';
 import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, immediateUpdate as immediateUpdateUser } from 'services/user-service';
 import { getConversation, sendMessage, connectFaye, disconnectFaye, getReadTimestamp } from 'services/conversation-service';
 
+import { Observable } from 'utils/events';
 import { storage } from 'utils/storage';
 import { pick } from 'utils/functions';
 
@@ -51,7 +52,7 @@ function getDeviceId() {
     return deviceId;
 }
 
-export class Smooch {
+export class Smooch extends Observable {
     get VERSION() {
         return VERSION;
     }
