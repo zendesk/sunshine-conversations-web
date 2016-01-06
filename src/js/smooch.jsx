@@ -15,7 +15,7 @@ import { login } from 'services/auth-service';
 import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, immediateUpdate as immediateUpdateUser } from 'services/user-service';
 import { getConversation, sendMessage, connectFaye, disconnectFaye, getReadTimestamp } from 'services/conversation-service';
 
-import { Observable } from 'utils/events';
+import { Observable, observeStore } from 'utils/events';
 import { storage } from 'utils/storage';
 import { pick } from 'utils/functions';
 
@@ -53,6 +53,24 @@ function getDeviceId() {
     return deviceId;
 }
 
+let unsubscribeFromStore;
+
+// timestamp of last triggered message
+let lastTriggeredMessageTimestamp = 0;
+
+// hide it outside of the instance, but it will be bound to it
+// this keeps the API clean.
+function onStoreChange(messages) {
+    // if not set, fallback to the read timestamp, but it can be at 0 too if everything is already read
+    // then just set it to the timestamp on the last message
+    lastTriggeredMessageTimestamp = lastTriggeredMessageTimestamp || getReadTimestamp() || (messages.length > 0 && messages[messages.length - 1].received);
+
+    messages.filter(message => message.received > lastTriggeredMessageTimestamp).forEach(message => {
+        this.trigger('message', message);
+        lastTriggeredMessageTimestamp = message.received;
+    });
+}
+
 export class Smooch extends Observable {
     get VERSION() {
         return VERSION;
@@ -67,9 +85,11 @@ export class Smooch extends Observable {
             store.dispatch(disableSettings());
         }
 
-        if(props.customText) {
+        if (props.customText) {
             store.dispatch(updateText(props.customText));
         }
+
+        unsubscribeFromStore = observeStore(store, state => state.conversation.messages, onStoreChange.bind(this));
 
         return this.login(props.userId, props.jwt, pick(props, EDITABLE_PROPERTIES));
     }
@@ -137,6 +157,7 @@ export class Smooch extends Observable {
     }
 
     logout() {
+        lastTriggeredMessageTimestamp = 0;
         return this.login();
     }
 
@@ -166,6 +187,7 @@ export class Smooch extends Observable {
     destroy() {
         disconnectFaye();
         store.dispatch(reset());
+        unsubscribeFromStore();
 
         document.body.removeChild(this._el);
         delete this.appToken;

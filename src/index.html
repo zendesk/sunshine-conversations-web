@@ -20,6 +20,10 @@
             properties: PROPERTIES,
             emailCaptureEnabled: true
         };
+        
+        Smooch.on('message', function(message) {
+          console.log('Message received', message);
+        });
 
         Smooch.init(SmoochOptions);
     </script>

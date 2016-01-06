@@ -9,7 +9,10 @@ import { storage } from 'utils/storage';
 
 export function sendMessage(text) {
     var sendFn = () => {
+        // add an id just to be able to reconcile the message
+        // with the server response
         const message = {
+            _id: Math.random(),
             text: text,
             role: 'appUser'
         };
@@ -18,9 +21,11 @@ export function sendMessage(text) {
 
         const user = store.getState().user;
 
-        // TODO :  reconcile sent message with data returned by the server
-        return core().conversations.sendMessage(user._id, message).catch((e) => {
-            console.log(e)
+        return core().conversations.sendMessage(user._id, message).then((response) => {
+            store.dispatch(setConversation(response.conversation));
+            return response;
+        }).catch((e) => {
+            console.log(e);
             throw e;
         });
     };
