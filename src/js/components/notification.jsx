@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import { createMarkup } from 'utils/html';
 
