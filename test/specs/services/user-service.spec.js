@@ -3,6 +3,7 @@ import { getMock } from 'test/mocks/core';
 import { getMockedStore } from 'test/utils/redux';
 import * as coreService from 'services/core';
 import * as userService from 'services/user-service';
+import * as conversationService from 'services/conversation-service';
 
 const AppStore = require('stores/app-store');
 
@@ -40,6 +41,13 @@ describe('User service', () => {
 
     beforeEach(() => {
         coreMock = getMock(sandbox);
+
+        coreMock.appUsers.update.resolves({
+            appUser: {
+                _id: '1',
+                email: 'mocked@email.com'
+            }
+        });
 
         coreMock.appUsers.update.resolves({
             appUser: {
@@ -88,6 +96,50 @@ describe('User service', () => {
                         _id: '1',
                         email: 'mocked@email.com'
                     }
+                });
+            });
+        });
+    });
+
+    describe('trackEvent', () => {
+        describe('conversation updated', () => {
+            beforeEach(() => {
+                coreMock.appUsers.trackEvent.resolves({
+                    conversationUpdated: true
+                });
+
+                sandbox.stub(conversationService, 'getConversation');
+                sandbox.stub(conversationService, 'connectFaye');
+                conversationService.getConversation.resolves();
+                conversationService.connectFaye.resolves();
+            });
+
+            it('should call getConversation and connectFaye', () => {
+                return userService.trackEvent('event', 'props').then(() => {
+                    coreMock.appUsers.trackEvent.should.have.been.calledWith('1', 'event', 'props');
+                    conversationService.getConversation.should.have.been.calledOnce;
+                    conversationService.connectFaye.should.have.been.calledOnce;
+                });
+            });
+        });
+
+        describe('conversation not updated', () => {
+            beforeEach(() => {
+                coreMock.appUsers.trackEvent.resolves({
+                    conversationUpdated: false
+                });
+
+                sandbox.stub(conversationService, 'getConversation');
+                sandbox.stub(conversationService, 'connectFaye');
+                conversationService.getConversation.resolves();
+                conversationService.connectFaye.resolves();
+            });
+
+            it('should call getConversation and connectFaye', () => {
+                return userService.trackEvent('event', 'props').then(() => {
+                    coreMock.appUsers.trackEvent.should.have.been.calledWith('1', 'event', 'props');
+                    conversationService.getConversation.should.not.have.been.called;
+                    conversationService.connectFaye.should.not.have.been.called;
                 });
             });
         });
