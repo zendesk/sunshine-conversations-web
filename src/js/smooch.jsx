@@ -188,6 +188,7 @@ export class Smooch extends Observable {
         disconnectFaye();
         store.dispatch(reset());
         unsubscribeFromStore();
+        lastTriggeredMessageTimestamp = 0;
 
         document.body.removeChild(this._el);
         delete this.appToken;
