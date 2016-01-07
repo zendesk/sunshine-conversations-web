@@ -1,4 +1,5 @@
 'use strict';
+
 var sinon = require('sinon');
 sinon.behavior = require('sinon/lib/sinon/behavior');
 sinon.defaultConfig = {
@@ -7,4 +8,4 @@ sinon.defaultConfig = {
     useFakeTimers: true,
     useFakeServer: true
 };
-require('sinon-as-promised')
+require('sinon-as-promised');

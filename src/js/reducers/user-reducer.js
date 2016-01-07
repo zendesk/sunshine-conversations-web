@@ -8,7 +8,7 @@ export function UserReducer(state = INITIAL_STATE, action) {
         case RESET:
             return Object.assign({}, INITIAL_STATE);
         case SET_USER:
-            return Object.assign({}, action.user)
+            return Object.assign({}, action.user);
         case RESET_USER:
             return INITIAL_STATE;
         default:

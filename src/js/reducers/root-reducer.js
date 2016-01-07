@@ -8,10 +8,10 @@ import { UserReducer } from 'reducers/user-reducer';
 import { FayeReducer } from 'reducers/faye-reducer';
 
 export const RootReducer = combineReducers({
-  conversation: ConversationReducer,
-  ui: UIReducer,
-  appState: AppStateReducer,
-  auth: AuthReducer,
-  user: UserReducer,
-  faye: FayeReducer
+    conversation: ConversationReducer,
+    ui: UIReducer,
+    appState: AppStateReducer,
+    auth: AuthReducer,
+    user: UserReducer,
+    faye: FayeReducer
 });

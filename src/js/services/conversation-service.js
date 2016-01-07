@@ -25,7 +25,7 @@ export function sendMessage(text) {
             store.dispatch(setConversation(response.conversation));
             return response;
         }).catch((e) => {
-            console.log(e);
+            console.log(e); //eslint-disable-line no-console
             throw e;
         });
     };
@@ -37,7 +37,7 @@ export function sendMessage(text) {
             .then(() => {
                 const fayeSubscription = store.getState().faye.subscription;
                 if (!fayeSubscription) {
-                    return connectFaye()
+                    return connectFaye();
                 }
             })
             .then(sendFn);
@@ -62,7 +62,7 @@ export function getConversation() {
         store.dispatch(setConversation(response.conversation));
         return response;
     }).catch((e) => {
-        console.log(e)
+        console.log(e); //eslint-disable-line no-console
         throw e;
     });
 }

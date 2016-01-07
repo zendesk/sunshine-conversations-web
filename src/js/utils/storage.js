@@ -5,7 +5,7 @@ function setItem(key, value) {
         localStorage.setItem(key, value);
     }
     catch (err) {
-        console.warn('Smooch local storage warn: localStorage not available; falling back on memory storage');
+        console.warn('Smooch local storage warn: localStorage not available; falling back on memory storage'); //eslint-disable-line no-console
         memoryStorage[key] = value;
     }
 }
