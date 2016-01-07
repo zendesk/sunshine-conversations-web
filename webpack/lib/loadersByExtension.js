@@ -1,3 +1,5 @@
+'use strict';
+
 function extsToRegExp(exts) {
     let extPatterns = exts.map(function(ext) {
         return ext.replace(/\./g, '\\.');
