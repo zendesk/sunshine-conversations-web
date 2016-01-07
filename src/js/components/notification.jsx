@@ -9,12 +9,10 @@ import { hideSettingsNotification, showSettings } from 'actions/app-state-action
 
 export class NotificationComponent extends Component {
     bindHandler() {
-        if (this.props.appState.settingsNotificationVisible) {
-            let node = findDOMNode(this);
-            let linkNode = node.querySelector('[data-ui-settings-link]');
-            if (linkNode) {
-                linkNode.onclick = this.onLinkClick.bind(this);
-            }
+        let node = findDOMNode(this);
+        let linkNode = node.querySelector('[data-ui-settings-link]');
+        if (linkNode) {
+            linkNode.onclick = this.onLinkClick.bind(this);
         }
     }
 
@@ -48,8 +46,7 @@ export class NotificationComponent extends Component {
 
 export const Notification = connect((state) => {
     return {
-        ui: state.ui,
-        appState: state.appState
+        ui: state.ui
     }
 }, (dispatch) => {
     return {

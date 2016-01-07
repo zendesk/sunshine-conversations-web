@@ -29,50 +29,8 @@ describe('Notification', () => {
         sandbox.restore();
     });
 
-    describe('notification not visible', () => {
-        var props = Object.assign({}, defaultProps, {
-            actions: {
-                hideSettingsNotification: sandbox.spy(),
-                showSettings: sandbox.spy()
-            }
-        });
-
-        beforeEach(() => {
-            component = TestUtils.renderIntoDocument(<NotificationComponent {...props} />);
-            componentNode = ReactDOM.findDOMNode(component);
-        });
-
-        it('should not render the notification', () => {
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-notifications').length.should.eq(0);
-        });
-    });
-
-    describe('notification visible', () => {
-        var props = Object.assign({}, defaultProps, {
-            appState: {
-                settingsNotificationVisible: true
-            },
-            actions: {
-                hideSettingsNotification: sandbox.spy(),
-                showSettings: sandbox.spy()
-            }
-        });
-
-        beforeEach(() => {
-            component = TestUtils.renderIntoDocument(<NotificationComponent {...props} />);
-            componentNode = ReactDOM.findDOMNode(component);
-        });
-
-        it('should render the notification', () => {
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-notifications').length.should.eq(1);
-        });
-    });
-
     describe('text with link', () => {
         var props = Object.assign({}, defaultProps, {
-            appState: {
-                settingsNotificationVisible: true
-            },
             ui: {
                 text: {
                     settingsNotificationText: 'This is a text <a data-ui-settings-link>with a link</a>!'
@@ -164,7 +122,7 @@ describe('Notification', () => {
             props.actions.hideSettingsNotification.should.have.been.calledOnce;
             props.actions.showSettings.should.have.been.calledOnce;
         });
+
+
     });
-
-
 });

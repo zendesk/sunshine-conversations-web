@@ -118,11 +118,6 @@ describe('Widget', () => {
         it('should render the chat input', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedInput').length.should.eq(1);
         });
-
-        it('should render the notification', () => {
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedNotification').length.should.eq(1);
-        });
-
     });
 
 
@@ -144,7 +139,7 @@ describe('Widget', () => {
 
         it('should render the settings view', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedSettings').length.should.eq(1);
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedConversation').length.should.eq(0);
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedConversation').length.should.eq(1);
         });
 
         it('should render the header', () => {
@@ -154,10 +149,42 @@ describe('Widget', () => {
         it('should not render the chat input', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedInput').length.should.eq(0);
         });
+    });
 
-        it('should render the notification', () => {
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedNotification').length.should.eq(1);
+    describe('notification', () => {
+        describe('shown', () => {
+            const props = Object.assign({}, defaultProps, {
+                appState: {
+                    settingsNotificationVisible: true
+                }
+            });
+
+            beforeEach(() => {
+                component = TestUtils.renderIntoDocument(<Provider store={ store }>
+                                                             <WidgetComponent {...props} />
+                                                         </Provider>);
+            });
+
+            it('should render the notification', () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedNotification').length.should.eq(1);
+            });
         });
+        describe('hidden', () => {
+            const props = Object.assign({}, defaultProps, {
+                appState: {
+                    settingsNotificationVisible: false
+                }
+            });
 
+            beforeEach(() => {
+                component = TestUtils.renderIntoDocument(<Provider store={ store }>
+                                                             <WidgetComponent {...props} />
+                                                         </Provider>);
+            });
+
+            it('should render the notification', () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedNotification').length.should.eq(0);
+            });
+        });
     });
 });
