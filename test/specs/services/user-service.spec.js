@@ -62,7 +62,8 @@ describe('User service', () => {
 
         mockedStore = mockStore(sandbox, {
             user: {
-                _id: '1'
+                _id: '1',
+                email: 'some@email.com'
             }
         });
     });
@@ -72,30 +73,44 @@ describe('User service', () => {
     });
 
     describe('immediateUpdate', () => {
-        it('should call smooch-core update api and update the store on server response', () => {
-            let props = {
-                email: 'some@email.com'
-            };
-
-            return userService.immediateUpdate(props).then((response) => {
-                coreMock.appUsers.update.should.have.been.calledWith('1', {
+        describe('is not dirty', () => {
+            it('should do nothing', () => {
+                let props = {
                     email: 'some@email.com'
-                });
+                };
 
-                // the values here are different because these are values
-                // returned by the server and mocked in the beforeEach
-                response.should.deep.eq({
-                    appUser: {
-                        _id: '1',
-                        email: 'mocked@email.com'
-                    }
+                return userService.immediateUpdate(props).then((response) => {
+                    coreMock.appUsers.update.should.not.have.been.called;
                 });
-                mockedStore.dispatch.should.have.been.calledWith({
-                    type: 'SET_USER',
-                    user: {
-                        _id: '1',
-                        email: 'mocked@email.com'
-                    }
+            });
+        });
+
+        describe('is dirty', () => {
+            it('should call smooch-core update api and update the store on server response', () => {
+                let props = {
+                    email: 'other@email.com'
+                };
+
+                return userService.immediateUpdate(props).then((response) => {
+                    coreMock.appUsers.update.should.have.been.calledWith('1', {
+                        email: 'other@email.com'
+                    });
+
+                    // the values here are different because these are values
+                    // returned by the server and mocked in the beforeEach
+                    response.should.deep.eq({
+                        appUser: {
+                            _id: '1',
+                            email: 'mocked@email.com'
+                        }
+                    });
+                    mockedStore.dispatch.should.have.been.calledWith({
+                        type: 'SET_USER',
+                        user: {
+                            _id: '1',
+                            email: 'mocked@email.com'
+                        }
+                    });
                 });
             });
         });
