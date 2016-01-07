@@ -8,7 +8,7 @@ import { setAuth, resetAuth } from 'actions/auth-actions';
 import { setUser, resetUser } from 'actions/user-actions';
 import { updateText } from 'actions/ui-actions';
 import { setConversation, resetConversation } from 'actions/conversation-actions';
-import { openWidget, closeWidget, showSettingsNotification, enableSettings, disableSettings, hideSettings, setEmailReadonly, unsetEmailReadonly, updateReadTimestamp } from 'actions/app-state-actions';
+import { openWidget, closeWidget, showSettingsNotification, enableSettings, disableSettings, hideSettings, setServerURL, setEmailReadonly, unsetEmailReadonly, updateReadTimestamp } from 'actions/app-state-actions';
 import { reset } from 'actions/common-actions';
 
 import { login } from 'services/auth-service';
@@ -87,6 +87,10 @@ export class Smooch extends Observable {
 
         if (props.customText) {
             store.dispatch(updateText(props.customText));
+        }
+
+        if(props.serviceUrl) {
+            store.dispatch(setServerURL(props.serviceUrl));
         }
 
         unsubscribeFromStore = observeStore(store, state => state.conversation.messages, onStoreChange.bind(this));
