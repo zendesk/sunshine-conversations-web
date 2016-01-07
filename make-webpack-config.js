@@ -19,7 +19,7 @@ module.exports = function(options) {
         'js': {
             loader: 'babel-loader',
             include: [path.join(__dirname, 'src/js'), path.join(__dirname, 'test')],
-            exclude: [/node_modules/,],
+            exclude: [/node_modules/]
         },
         'json': 'json-loader',
         'txt': 'raw-loader',
@@ -72,7 +72,7 @@ module.exports = function(options) {
     };
 
     var excludeFromStats = [
-        /node_modules[\\\/]/,
+        /node_modules[\\\/]/
     ];
 
     var plugins = [
@@ -118,31 +118,31 @@ module.exports = function(options) {
     if (options.minimize) {
 
         plugins.push(
-        new webpack.optimize.UglifyJsPlugin({
-            compressor: {
-                warnings: false
-            }
-        }),
-        new webpack.optimize.DedupePlugin(),
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify('production')
-            }
-        }),
-        new webpack.NoErrorsPlugin(),
+            new webpack.optimize.UglifyJsPlugin({
+                compressor: {
+                    warnings: false
+                }
+            }),
+            new webpack.optimize.DedupePlugin(),
+            new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: JSON.stringify('production')
+                }
+            }),
+            new webpack.NoErrorsPlugin(),
 
-        new webpack.BannerPlugin(PACKAGE_NAME + ' ' + VERSION + ' \n' + LICENSE, {
-            entryOnly: true
-        })
+            new webpack.BannerPlugin(PACKAGE_NAME + ' ' + VERSION + ' \n' + LICENSE, {
+                entryOnly: true
+            })
         );
     } else {
         plugins.push(
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify('development')
-            }
-        })
-        )
+            new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: JSON.stringify('development')
+                }
+            })
+        );
     }
 
     return {

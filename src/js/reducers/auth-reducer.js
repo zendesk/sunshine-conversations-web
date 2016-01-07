@@ -8,7 +8,7 @@ export function AuthReducer(state = INITIAL_STATE, action) {
         case RESET:
             return Object.assign({}, INITIAL_STATE);
         case SET_AUTH:
-            return Object.assign({}, state, action.props)
+            return Object.assign({}, state, action.props);
         case RESET_AUTH:
             return INITIAL_STATE;
         default:

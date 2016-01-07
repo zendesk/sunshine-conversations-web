@@ -31,7 +31,7 @@ export function immediateUpdate(props) {
         store.dispatch(setUser(response.appUser));
         return response;
     }).catch((e) => {
-        console.error(e)
+        console.error(e); //eslint-disable-line no-console
         throw e;
     }) : Promise.resolve({
         user: user
@@ -69,7 +69,7 @@ export function trackEvent(eventName, userProps) {
 
         return response;
     }).catch((e) => {
-        console.log(e)
+        console.log(e); //eslint-disable-line no-console
         throw e;
     });
 }

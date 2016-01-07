@@ -85,7 +85,6 @@ export function setServerURL(url) {
     };
 }
 
-
 export function updateReadTimestamp(timestamp) {
     return {
         type: UPDATE_READ_TIMESTAMP,
