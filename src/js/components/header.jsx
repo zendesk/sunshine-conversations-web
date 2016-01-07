@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { toggleWidget, showSettings, hideSettings } from 'actions/app-state-actions'
-
+import { toggleWidget, showSettings, hideSettings } from 'actions/app-state-actions';
 
 export class HeaderComponent extends Component {
     constructor(props) {
@@ -81,7 +80,7 @@ function mapStateToProps(state) {
         ui: state.ui,
         appState: state.appState,
         conversation: state.conversation
-    }
+    };
 }
 
 function mapDispatchToProps(dispatch) {
@@ -91,7 +90,7 @@ function mapDispatchToProps(dispatch) {
             showSettings,
             hideSettings
         }, dispatch)
-    }
+    };
 }
 
-export const Header = connect(mapStateToProps, mapDispatchToProps)(HeaderComponent)
+export const Header = connect(mapStateToProps, mapDispatchToProps)(HeaderComponent);

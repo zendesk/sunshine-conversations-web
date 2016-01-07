@@ -63,4 +63,4 @@ export const ChatInput = connect((state) => {
     return {
         ui: state.ui
     };
-})(ChatInputComponent)
+})(ChatInputComponent);

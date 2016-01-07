@@ -20,7 +20,8 @@
     "hot-dev-server": "webpack-dev-server --config webpack-hot-dev-server.config.js --hot --colors --port 2992 --inline --no-info",
     "build": "webpack --config webpack-production.config.js --progress --profile --colors",
     "start-dev": "node lib/server-development",
-    "start": "node lib/server-production"
+    "start": "node lib/server-production",
+    "lint": "eslint . --ext=js --ext=jsx"
   },
   "main": "dist/smooch.js",
   "homepage": "http://smooch.io",

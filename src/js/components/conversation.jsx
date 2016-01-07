@@ -30,7 +30,7 @@ export class ConversationComponent extends Component {
                 <div ref="intro" className="sk-intro" dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.introText) }></div>
                 { messages }
                 <div className="sk-logo" ref="logo">
-                    <a href="https://smooch.io/?utm_source=widget" target="_blank">In-App Messaging by <img className="sk-image" src={ require('images/logo_webwidget.png') } alt="Smooch" /> <img className="sk-image-retina" src={ require('images/logo_webwidget_2x.png') } alt="Smooch" /></a>
+                    <a href="https://smooch.io/?utm_source=widget" target="_blank"><span>In-App Messaging by</span> <img className="sk-image" src={ require('images/logo_webwidget.png') } alt="Smooch" /> <img className="sk-image-retina" src={ require('images/logo_webwidget_2x.png') } alt="Smooch" /></a>
                 </div>
             </div>
             );

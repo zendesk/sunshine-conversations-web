@@ -13,7 +13,7 @@ const defaultProps = {
     appState: {
         widgetOpened: false,
         settingsEnabled: false,
-        settingsVisible: false,
+        settingsVisible: false
     },
     conversation: {
         messages: []
@@ -34,9 +34,9 @@ const defaultProps = {
 describe('Header', () => {
     afterEach(() => {
         sandbox.restore();
-        defaultProps.actions.showSettings = sandbox.spy(),
-        defaultProps.actions.hideSettings = sandbox.spy(),
-        defaultProps.actions.toggleWidget = sandbox.spy()
+        defaultProps.actions.showSettings = sandbox.spy();
+        defaultProps.actions.hideSettings = sandbox.spy();
+        defaultProps.actions.toggleWidget = sandbox.spy();
     });
 
     [true, false].forEach((settingsEnabled) => {

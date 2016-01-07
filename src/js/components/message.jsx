@@ -26,13 +26,13 @@ export class MessageComponent extends Component {
                 return;
             }
 
-            return (
-                <span key={ index }><span dangerouslySetInnerHTML={ createMarkup(autolink(item, {
-                                                        target: '_blank'
-                                                    })) }></span>
-                <br/>
-                </span>
-                );
+            let innerHtml = createMarkup(autolink(item, {
+                target: '_blank'
+            }));
+
+            return <span key={ index }><span dangerouslySetInnerHTML={ innerHtml }></span>
+                   <br/>
+                   </span>;
         });
 
         return (

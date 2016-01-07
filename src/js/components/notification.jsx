@@ -47,7 +47,7 @@ export class NotificationComponent extends Component {
 export const Notification = connect((state) => {
     return {
         ui: state.ui
-    }
+    };
 }, (dispatch) => {
     return {
         actions: bindActionCreators({
