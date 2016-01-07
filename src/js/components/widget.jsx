@@ -19,12 +19,12 @@ export class WidgetComponent extends Component {
         // for their animations. The animation can go from undefined to `sk-appear`, `sk-appear` to `sk-close`, and
         // `sk-close` to `sk-appear`. If it starts with `sk-close`, it starts by being opened and animates to close state.
         let className = typeof this.props.appState.widgetOpened === 'undefined' ? '' :
-            this.props.appState.widgetOpened ? 'sk-appear' : 'sk-close'
+            this.props.appState.widgetOpened ? 'sk-appear' : 'sk-close';
 
         let notification = this.props.appState.settingsNotificationVisible ? (
             <Notification />
             ) : null;
-            
+
         return (
             <div id="sk-container" className={ className }>
                 <div id="sk-wrapper">
@@ -57,5 +57,5 @@ export class WidgetComponent extends Component {
 export const Widget = connect((state) => {
     return {
         appState: state.appState
-    }
+    };
 })(WidgetComponent);
