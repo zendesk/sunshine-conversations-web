@@ -79,7 +79,7 @@ describe('User service', () => {
                     email: 'some@email.com'
                 };
 
-                return userService.immediateUpdate(props).then((response) => {
+                return userService.immediateUpdate(props).then(() => {
                     coreMock.appUsers.update.should.not.have.been.called;
                 });
             });

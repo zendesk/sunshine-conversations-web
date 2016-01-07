@@ -37,8 +37,7 @@ export function sendMessage(text) {
             .then(() => {
                 const fayeSubscription = store.getState().faye.subscription;
                 if (!fayeSubscription) {
-                    return getConversation()
-                        .then(connectFaye)
+                    return connectFaye()
                 }
             })
             .then(sendFn);
@@ -48,7 +47,6 @@ export function sendMessage(text) {
     // then get it and connect faye
     return promise
         .then(sendFn)
-        .then(getConversation)
         .then(connectFaye);
 }
 

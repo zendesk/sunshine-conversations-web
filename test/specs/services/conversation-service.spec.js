@@ -3,6 +3,7 @@ import { getMock } from 'test/mocks/core';
 import { getMockedStore } from 'test/utils/redux';
 import * as coreService from 'services/core';
 import * as utilsFaye from 'utils/faye';
+import * as userService from 'services/user-service';
 import * as conversationService from 'services/conversation-service';
 
 const AppStore = require('stores/app-store');
@@ -63,8 +64,8 @@ describe('Conversation service', () => {
             cancel: sandbox.stub()
         };
 
-        sandbox.stub(utilsFaye, 'initFaye');
-        utilsFaye.initFaye.returns(fayeSubscriptionMock);
+        sandbox.stub(utilsFaye, 'initFaye').returns(fayeSubscriptionMock);
+        sandbox.stub(userService, 'immediateUpdate').resolves();
     });
 
     afterEach(() => {
@@ -192,12 +193,105 @@ describe('Conversation service', () => {
                 fayeSubscriptionMock.cancel.should.have.been.calledOnce;
                 mockedStore.dispatch.should.have.been.calledWith({
                     type: 'UNSET_FAYE_SUBSCRIPTION'
-                })
+                });
             });
         });
     });
 
     describe('sendMessage', () => {
-        // TODO
+        describe('conversation started and connected to faye', () => {
+            beforeEach(() => {
+                mockedStore = mockStore(sandbox, {
+                    user: {
+                        _id: '1',
+                        conversationStarted: true
+                    },
+                    faye: {
+                        subscription: fayeSubscriptionMock
+                    }
+                });
+
+                coreMock.conversations.sendMessage.resolves({
+                    conversation: 'conversation'
+                });
+
+                sandbox.stub(conversationService, 'connectFaye').resolves();
+            });
+
+            it('should not connect faye', () => {
+                return conversationService.sendMessage('message').then(() => {
+                    userService.immediateUpdate.should.have.been.calledOnce;
+
+                    coreMock.conversations.sendMessage.should.have.been.calledWithMatch('1', {
+                        text: 'message',
+                        role: 'appUser'
+                    });
+
+                    utilsFaye.initFaye.should.not.have.been.called;
+                });
+            });
+        });
+
+        describe('conversation started and not connected to faye', () => {
+            beforeEach(() => {
+                mockedStore = mockStore(sandbox, {
+                    user: {
+                        _id: '1',
+                        conversationStarted: true
+                    },
+                    faye: {
+                        subscription: undefined
+                    }
+                });
+
+                coreMock.conversations.sendMessage.resolves({
+                    conversation: 'conversation'
+                });
+            });
+
+            it('should connect faye', () => {
+                return conversationService.sendMessage('message').then(() => {
+                    userService.immediateUpdate.should.have.been.calledOnce;
+
+                    coreMock.conversations.sendMessage.should.have.been.calledWithMatch('1', {
+                        text: 'message',
+                        role: 'appUser'
+                    });
+
+                    utilsFaye.initFaye.should.have.been.calledOnce;
+                });
+            });
+        });
+
+        describe('conversation not started', () => {
+            beforeEach(() => {
+                mockedStore = mockStore(sandbox, {
+                    user: {
+                        _id: '1',
+                        conversationStarted: true
+                    },
+                    faye: {
+                        subscription: undefined
+                    }
+                });
+
+                coreMock.conversations.sendMessage.resolves({
+                    conversation: 'conversation'
+                });
+            });
+
+            it('should connect faye', () => {
+                return conversationService.sendMessage('message').then(() => {
+                    userService.immediateUpdate.should.have.been.calledOnce;
+
+                    coreMock.conversations.sendMessage.should.have.been.calledWithMatch('1', {
+                        text: 'message',
+                        role: 'appUser'
+                    });
+
+                    utilsFaye.initFaye.should.have.been.calledOnce;
+                });
+            });
+        });
     });
 });
