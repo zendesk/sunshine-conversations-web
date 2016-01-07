@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import { Header } from 'components/header.jsx';
 import { Conversation } from 'components/conversation.jsx';
@@ -10,7 +11,7 @@ import { ChatInput } from 'components/chat-input.jsx';
 export class WidgetComponent extends Component {
 
     render() {
-        const mainComponent = this.props.appState.settingsVisible ? <Settings /> : <Conversation />;
+        const settingsComponent = this.props.appState.settingsVisible ? <Settings /> : null;
         const footer = this.props.appState.settingsVisible ? null : <ChatInput />;
 
         // We check for `undefined` explicitely because it means the widget is in it's default state
@@ -20,12 +21,32 @@ export class WidgetComponent extends Component {
         let className = typeof this.props.appState.widgetOpened === 'undefined' ? '' :
             this.props.appState.widgetOpened ? 'sk-appear' : 'sk-close'
 
+        let notification = this.props.appState.settingsNotificationVisible ? (
+            <Notification />
+            ) : null;
+            
         return (
             <div id="sk-container" className={ className }>
                 <div id="sk-wrapper">
                     <Header />
-                    <Notification />
-                    { mainComponent }
+                    <ReactCSSTransitionGroup component="div"
+                                             className="sk-notification-container"
+                                             transitionName="notification"
+                                             transitionAppear={ true }
+                                             transitionAppearTimeout={ 500 }
+                                             transitionEnterTimeout={ 500 }
+                                             transitionLeaveTimeout={ 500 }>
+                        { notification }
+                    </ReactCSSTransitionGroup>
+                    <ReactCSSTransitionGroup component="div"
+                                             transitionName="settings"
+                                             transitionAppear={ true }
+                                             transitionAppearTimeout={ 250 }
+                                             transitionEnterTimeout={ 250 }
+                                             transitionLeaveTimeout={ 250 }>
+                        { settingsComponent }
+                    </ReactCSSTransitionGroup>
+                    <Conversation />
                     { footer }
                 </div>
             </div>

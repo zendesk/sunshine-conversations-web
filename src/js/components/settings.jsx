@@ -65,7 +65,7 @@ export class SettingsComponent extends Component {
             );
 
         return (
-            <div id="sk-settings">
+            <div className="sk-settings">
                 <div className="settings-wrapper">
                     <p ref="description">
                         { this.props.appState.readOnlyEmail ? this.props.ui.text.settingsReadOnlyText : this.props.ui.text.settingsText }

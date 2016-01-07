@@ -36,24 +36,13 @@ export class NotificationComponent extends Component {
     }
 
     render() {
-        let content = this.props.appState.settingsNotificationVisible ? (
+        return (
             <div key="content" className="sk-notifications">
                 <p>
                     <span ref="text" dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.settingsNotificationText) }></span>
                     <a href="#" className="sk-notification-close" onClick={ this.props.actions.hideSettingsNotification }>&times;</a>
                 </p>
             </div>
-            ) : null;
-        return (
-            <ReactCSSTransitionGroup component="div"
-                                     className="sk-notification-container"
-                                     transitionName="notification"
-                                     transitionAppear={ true }
-                                     transitionAppearTimeout={ 500 }
-                                     transitionEnterTimeout={ 500 }
-                                     transitionLeaveTimeout={ 500 }>
-                { content }
-            </ReactCSSTransitionGroup>
             );
     }
 }

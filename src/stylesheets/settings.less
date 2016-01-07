@@ -1,4 +1,4 @@
-#sk-settings {
+.sk-settings {
     box-sizing: border-box;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     position: absolute;
@@ -44,5 +44,24 @@
                 }
             }
         }
+
+    }
+
+    &.settings-enter {
+        width: 0;
+    }
+
+    &.settings-enter-active {
+        .transition(width 250ms);
+        width: @widget-width;
+    }
+
+    &.settings-leave {
+        width: @widget-width;
+    }
+
+    &.settings-leave-active {
+        .transition(width 250ms);
+        width: 0;
     }
 }
