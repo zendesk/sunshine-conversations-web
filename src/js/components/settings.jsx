@@ -94,7 +94,7 @@ export const Settings = connect((state) => {
         ui: state.ui,
         appState: state.appState,
         user: state.user
-    }
+    };
 }, (dispatch) => {
     return {
         actions: bindActionCreators({

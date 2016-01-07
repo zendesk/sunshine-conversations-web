@@ -5,15 +5,15 @@ import { Provider } from 'react-redux';
 import { DevTools } from 'components/dev-tools';
 
 export class Root extends Component {
-  render() {
-    const { store } = this.props;
-    return (
-      <Provider store={store}>
-        <div>
-          <Widget />
-          <DevTools />
-        </div>
-      </Provider>
-    );
-  }
+    render() {
+        const {store} = this.props;
+        return (
+            <Provider store={ store }>
+                <div>
+                    <Widget />
+                    <DevTools />
+                </div>
+            </Provider>
+            );
+    }
 }

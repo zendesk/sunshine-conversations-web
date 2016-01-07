@@ -68,7 +68,7 @@ describe('Settings', () => {
 
         it('should not have errors', () => {
             expect(component.refs.button).to.not.exist;
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'has-error').length.should.be.eq(0)
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'has-error').length.should.be.eq(0);
         });
     });
 
@@ -94,7 +94,7 @@ describe('Settings', () => {
 
         it('should not have errors', () => {
             component.refs.button.disabled.should.be.false;
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'has-error').length.should.be.eq(0)
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'has-error').length.should.be.eq(0);
         });
     });
 
