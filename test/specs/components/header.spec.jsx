@@ -8,50 +8,41 @@ import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId } from
 import { HeaderComponent } from 'components/header.jsx';
 
 const sandbox = sinon.sandbox.create();
-
-const defaultProps = {
-    appState: {
-        widgetOpened: false,
-        settingsEnabled: false,
-        settingsVisible: false
-    },
-    conversation: {
-        messages: []
-    },
-    actions: {
-        showSettings: sandbox.spy(),
-        hideSettings: sandbox.spy(),
-        toggleWidget: sandbox.spy()
-    },
-    ui: {
-        text: {
-            headerText: 'Header',
-            settingsHeaderText: 'Settings'
-        }
-    }
-};
+let props;
 
 describe('Header', () => {
     afterEach(() => {
         sandbox.restore();
-        defaultProps.actions.showSettings = sandbox.spy();
-        defaultProps.actions.hideSettings = sandbox.spy();
-        defaultProps.actions.toggleWidget = sandbox.spy();
     });
 
     [true, false].forEach((settingsEnabled) => {
         describe(`widget is closed with settings ${settingsEnabled ? 'enabled' : 'disabled'}`, () => {
-            const props = Object.assign({}, defaultProps, {
-                appState: {
-                    widgetOpened: false,
-                    settingsEnabled: settingsEnabled
-                }
-            });
 
             var header;
             var headerNode;
 
             beforeEach(() => {
+                props = {
+                    appState: {
+                        widgetOpened: false,
+                        settingsEnabled: settingsEnabled,
+                        settingsVisible: false
+                    },
+                    conversation: {
+                        messages: []
+                    },
+                    actions: {
+                        showSettings: sandbox.spy(),
+                        hideSettings: sandbox.spy(),
+                        toggleWidget: sandbox.spy()
+                    },
+                    ui: {
+                        text: {
+                            headerText: 'Header',
+                            settingsHeaderText: 'Settings'
+                        }
+                    }
+                };
                 header = TestUtils.renderIntoDocument(<HeaderComponent {...props} />);
                 headerNode = ReactDOM.findDOMNode(header);
             });
@@ -79,16 +70,33 @@ describe('Header', () => {
         });
     });
 
-    describe('default view with settings off', () => {
-        const props = Object.assign({}, defaultProps, {
-            appState: {
-                widgetOpened: true
-            }
-        });
+    describe('default view with settings disabled', () => {
+
         var header;
         var headerNode;
 
         beforeEach(() => {
+            props = {
+                appState: {
+                    widgetOpened: true,
+                    settingsEnabled: false,
+                    settingsVisible: false
+                },
+                conversation: {
+                    messages: []
+                },
+                actions: {
+                    showSettings: sandbox.spy(),
+                    hideSettings: sandbox.spy(),
+                    toggleWidget: sandbox.spy()
+                },
+                ui: {
+                    text: {
+                        headerText: 'Header',
+                        settingsHeaderText: 'Settings'
+                    }
+                }
+            };
             header = TestUtils.renderIntoDocument(<HeaderComponent {...props} />);
             headerNode = ReactDOM.findDOMNode(header);
         });
@@ -120,18 +128,33 @@ describe('Header', () => {
     });
 
 
-    describe('default view with settings on', () => {
-        const props = Object.assign({}, defaultProps, {
-            appState: {
-                settingsEnabled: true,
-                widgetOpened: true
-            }
-        });
+    describe('default view with settings enabled', () => {
 
         var header;
         var headerNode;
 
         beforeEach(() => {
+            props = {
+                appState: {
+                    widgetOpened: true,
+                    settingsEnabled: true,
+                    settingsVisible: false
+                },
+                conversation: {
+                    messages: []
+                },
+                actions: {
+                    showSettings: sandbox.spy(),
+                    hideSettings: sandbox.spy(),
+                    toggleWidget: sandbox.spy()
+                },
+                ui: {
+                    text: {
+                        headerText: 'Header',
+                        settingsHeaderText: 'Settings'
+                    }
+                }
+            };
             header = TestUtils.renderIntoDocument(<HeaderComponent {...props} />);
             headerNode = ReactDOM.findDOMNode(header);
         });
@@ -170,18 +193,32 @@ describe('Header', () => {
 
 
     describe('settings view', () => {
-        const props = Object.assign({}, defaultProps, {
-            appState: {
-                settingsEnabled: true,
-                settingsVisible: true,
-                widgetOpened: true
-            }
-        });
 
         var header;
         var headerNode;
 
         beforeEach(() => {
+            props = {
+                appState: {
+                    settingsEnabled: true,
+                    settingsVisible: true,
+                    widgetOpened: true
+                },
+                conversation: {
+                    messages: []
+                },
+                actions: {
+                    showSettings: sandbox.spy(),
+                    hideSettings: sandbox.spy(),
+                    toggleWidget: sandbox.spy()
+                },
+                ui: {
+                    text: {
+                        headerText: 'Header',
+                        settingsHeaderText: 'Settings'
+                    }
+                }
+            };
             header = TestUtils.renderIntoDocument(<HeaderComponent {...props} />);
             headerNode = ReactDOM.findDOMNode(header);
         });
