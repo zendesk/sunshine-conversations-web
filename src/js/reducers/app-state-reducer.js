@@ -1,4 +1,4 @@
-import { ENABLE_SETTINGS, DISABLE_SETTINGS, TOGGLE_WIDGET, OPEN_WIDGET, CLOSE_WIDGET, SHOW_SETTINGS, HIDE_SETTINGS, SHOW_SETTINGS_NOTIFICATION, HIDE_SETTINGS_NOTIFICATION, SET_SERVER_URL, SET_EMAIL_READONLY, UNSET_EMAIL_READONLY, UPDATE_READ_TIMESTAMP } from 'actions/app-state-actions';
+import * as AppStateActions from 'actions/app-state-actions';
 import { RESET } from 'actions/common-actions';
 
 const INITIAL_STATE = {
@@ -16,61 +16,61 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
         case RESET:
             return Object.assign({}, INITIAL_STATE);
 
-        case ENABLE_SETTINGS:
+        case AppStateActions.ENABLE_SETTINGS:
             return Object.assign({}, state, {
                 settingsEnabled: true
             });
 
-        case DISABLE_SETTINGS:
+        case AppStateActions.DISABLE_SETTINGS:
             return Object.assign({}, state, {
                 settingsEnabled: false
             });
 
-        case SET_EMAIL_READONLY:
+        case AppStateActions.SET_EMAIL_READONLY:
             return Object.assign({}, state, {
                 readOnlyEmail: true
             });
 
-        case UNSET_EMAIL_READONLY:
+        case AppStateActions.UNSET_EMAIL_READONLY:
             return Object.assign({}, state, {
                 readOnlyEmail: false
             });
 
-        case TOGGLE_WIDGET:
+        case AppStateActions.TOGGLE_WIDGET:
             return Object.assign({}, state, {
                 widgetOpened: !state.widgetOpened,
                 settingsVisible: state.settingsVisible && !state.widgetOpened
             });
 
-        case OPEN_WIDGET:
+        case AppStateActions.OPEN_WIDGET:
             return Object.assign({}, state, {
                 widgetOpened: true
             });
-        case CLOSE_WIDGET:
+        case AppStateActions.CLOSE_WIDGET:
             return Object.assign({}, state, {
                 widgetOpened: false
             });
-        case SHOW_SETTINGS:
+        case AppStateActions.SHOW_SETTINGS:
             return Object.assign({}, state, {
                 settingsVisible: true
             });
-        case HIDE_SETTINGS:
+        case AppStateActions.HIDE_SETTINGS:
             return Object.assign({}, state, {
                 settingsVisible: false
             });
-        case SHOW_SETTINGS_NOTIFICATION:
+        case AppStateActions.SHOW_SETTINGS_NOTIFICATION:
             return Object.assign({}, state, {
                 settingsNotificationVisible: true
             });
-        case HIDE_SETTINGS_NOTIFICATION:
+        case AppStateActions.HIDE_SETTINGS_NOTIFICATION:
             return Object.assign({}, state, {
                 settingsNotificationVisible: false
             });
-        case SET_SERVER_URL:
+        case AppStateActions.SET_SERVER_URL:
             return Object.assign({}, state, {
                 serverURL: action.url
             });
-        case UPDATE_READ_TIMESTAMP:
+        case AppStateActions.UPDATE_READ_TIMESTAMP:
             return Object.assign({}, state, {
                 messageReadTimestamp: action.timestamp
             });
