@@ -31,7 +31,7 @@ export class WidgetComponent extends Component {
                     <Header />
                     <ReactCSSTransitionGroup component="div"
                                              className="sk-notification-container"
-                                             transitionName="notification"
+                                             transitionName="sk-notification"
                                              transitionAppear={ true }
                                              transitionAppearTimeout={ 500 }
                                              transitionEnterTimeout={ 500 }
