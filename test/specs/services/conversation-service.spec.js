@@ -5,6 +5,7 @@ import * as coreService from 'services/core';
 import * as utilsFaye from 'utils/faye';
 import * as userService from 'services/user-service';
 import * as conversationService from 'services/conversation-service';
+import { SHOW_SETTINGS_NOTIFICATION } from 'actions/app-state-actions';
 
 const AppStore = require('stores/app-store');
 
@@ -33,7 +34,7 @@ describe('Conversation service', () => {
         sandbox = sinon.sandbox.create();
     });
 
-    after(() => {
+    afterEach(() => {
         Object.defineProperty(AppStore, 'store', {
             get: () => {
                 return store;
@@ -198,6 +199,7 @@ describe('Conversation service', () => {
         });
     });
 
+
     describe('sendMessage', () => {
         describe('conversation started and connected to faye', () => {
             beforeEach(() => {
@@ -205,6 +207,12 @@ describe('Conversation service', () => {
                     user: {
                         _id: '1',
                         conversationStarted: true
+                    },
+                    appState: {
+                        settingsEnabled: true
+                    },
+                    conversation: {
+                        messages: []
                     },
                     faye: {
                         subscription: fayeSubscriptionMock
@@ -215,6 +223,7 @@ describe('Conversation service', () => {
                     conversation: 'conversation'
                 });
 
+                sandbox.stub(conversationService, 'handleFirstUserMessage');
                 sandbox.stub(conversationService, 'connectFaye').resolves();
             });
 
@@ -238,6 +247,12 @@ describe('Conversation service', () => {
                     user: {
                         _id: '1',
                         conversationStarted: true
+                    },
+                    appState: {
+                        settingsEnabled: true
+                    },
+                    conversation: {
+                        messages: []
                     },
                     faye: {
                         subscription: undefined
@@ -270,6 +285,12 @@ describe('Conversation service', () => {
                         _id: '1',
                         conversationStarted: true
                     },
+                    appState: {
+                        settingsEnabled: true
+                    },
+                    conversation: {
+                        messages: []
+                    },
                     faye: {
                         subscription: undefined
                     }
@@ -290,6 +311,162 @@ describe('Conversation service', () => {
                     });
 
                     utilsFaye.initFaye.should.have.been.calledOnce;
+                });
+            });
+        });
+    });
+
+
+    function getScenarioName(scenario) {
+        let messageType = scenario.state.conversation.messages.filter(message => message.role === 'appUser').length === 1 ?
+            `first appUser message` :
+            'not first message';
+        let settingsState = scenario.state.appState.settingsEnabled ? 'settings enabled' : 'settings disabled';
+        let emailState = scenario.state.user.email ? 'email set' : 'email not set';
+
+        // since the dispatch function is a no op, the last message in the state is assumed to be the last message dispatched
+        let role = scenario.state.conversation.messages[scenario.state.conversation.messages.length - 1].role;
+        let messageRole = `dispatching message with ${role} role`;
+
+        return `${messageType}, ${settingsState}, ${emailState}, ${messageRole}`;
+    }
+
+
+    describe('handleFirstUserMessage', () => {
+        let store;
+
+        [{
+            description: 'First message by appUser',
+            state: {
+                appState: {
+                    settingsEnabled: true
+                },
+                user: {
+                    email: undefined
+                },
+                conversation: {
+                    messages: [
+                        {
+                            role: 'appUser'
+                        }
+                    ]
+                }
+            },
+            outcome: true
+        }, {
+            description: 'Multiple messages by appUser',
+            state: {
+                appState: {
+                    settingsEnabled: true
+                },
+                user: {
+                    email: undefined
+                },
+                conversation: {
+                    messages: [
+                        {
+                            role: 'appUser'
+                        },
+                        {
+                            role: 'appUser'
+                        }
+                    ]
+                }
+            },
+            outcome: false
+        }, {
+            description: 'Multiple messages by appMaker, but first by appUser',
+            state: {
+                appState: {
+                    settingsEnabled: true
+                },
+                user: {
+                    email: undefined
+                },
+                conversation: {
+                    messages: [
+                        {
+                            role: 'appMaker'
+                        },
+                        {
+                            role: 'appMaker'
+                        },
+                        {
+                            role: 'appUser'
+                        }
+                    ]
+                }
+            },
+            outcome: true
+        }, {
+            description: 'Email set',
+            state: {
+                appState: {
+                    settingsEnabled: true
+                },
+                user: {
+                    email: 'test@test.com'
+                },
+                conversation: {
+                    messages: [
+                        {
+                            role: 'appUser'
+                        }
+                    ]
+                }
+            },
+            outcome: false
+        }, {
+            description: 'First message by appMaker',
+            state: {
+                appState: {
+                    settingsEnabled: true
+                },
+                user: {
+                    email: undefined
+                },
+                conversation: {
+                    messages: [
+                        {
+                            role: 'appMaker'
+                        }
+                    ]
+                }
+            },
+            outcome: false
+        }, {
+            description: 'Settings disabled',
+            state: {
+                appState: {
+                    settingsEnabled: false
+                },
+                user: {
+                    email: undefined
+                },
+                conversation: {
+                    messages: [
+                        {
+                            role: 'appUser'
+                        }
+                    ]
+                }
+            },
+            outcome: false
+        }].forEach((scenario) => {
+            describe(`${scenario.description}: ${getScenarioName(scenario)}`, () => {
+                beforeEach(() => {
+                    store = mockStore(sandbox, Object.assign({}, scenario.state));
+                });
+
+                it(`should ${scenario.outcome ? '' : 'not'} call dispatch with showSettingsNotification`, () => {
+                    conversationService.handleFirstUserMessage();
+                    if (scenario.outcome) {
+                        store.dispatch.should.have.been.calledWith({
+                            type: SHOW_SETTINGS_NOTIFICATION
+                        });
+                    } else {
+                        store.dispatch.should.not.have.been.called;
+                    }
                 });
             });
         });

@@ -1,11 +1,10 @@
-import { createStore, applyMiddleware, compose } from 'redux';
+import { createStore, compose } from 'redux';
 import { RootReducer } from 'reducers/root-reducer';
 import { DevTools } from 'components/dev-tools';
-import { firstMessage } from 'stores/middlewares/messages';
 import createLogger from 'redux-logger';
 
 const finalCreateStore = compose(
-    applyMiddleware(firstMessage, createLogger()),
+    createLogger(),
     DevTools.instrument()
 )(createStore);
 
