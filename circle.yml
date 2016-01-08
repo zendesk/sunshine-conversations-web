@@ -7,7 +7,7 @@ dependencies:
     - npm install -g npm@3
 test:
     override:
-        - grunt test:ci
+        - npm run test:ci
     post:
       - grunt build
 

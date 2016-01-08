@@ -11,26 +11,21 @@ module.exports = function(options) {
     var LICENSE = fs.readFileSync('LICENSE', 'utf8');
 
     var entry = {
-        smooch: './src/js/main'
+        smooch: ['babel-polyfill', './src/js/main']
     };
 
     var loaders = {
         'jsx': options.hotComponents ? ['react-hot-loader', 'babel-loader'] : 'babel-loader',
         'js': {
             loader: 'babel-loader',
-            include: path.join(__dirname, 'src/js')
+            include: [path.join(__dirname, 'src/js'), path.join(__dirname, 'test')],
+            exclude: [/node_modules/]
         },
         'json': 'json-loader',
-        'tpl': 'ejs-loader',
-        'coffee': 'coffee-redux-loader',
-        'json5': 'json5-loader',
         'txt': 'raw-loader',
         'png|jpg|jpeg|gif|svg': 'url-loader?limit=10000',
         'woff|woff2': 'url-loader?limit=100000',
-        'ttf|eot': 'file-loader',
-        'wav|mp3': 'file-loader',
-        'html': 'html-loader',
-        'md|markdown': ['html-loader', 'markdown-loader']
+        'ttf|eot': 'file-loader'
     };
     var cssLoader = options.minimize ? 'css-loader?insertAt=top' : 'css-loader?insertAt=top&localIdentName=[path][name]---[local]---[hash:base64:5]';
     var stylesheetLoaders = {
@@ -47,14 +42,23 @@ module.exports = function(options) {
             loader: 'expose?Smooch'
         }
     ];
+    var alias = {};
+
+    if (options.test) {
+        Object.assign(alias, {
+            test: __dirname + '/test',
+            bootstrapTest: 'test/bootstrap'
+        });
+    }
 
     var externals = [];
-    var modulesDirectories = ['web_modules', 'node_modules'];
+    var modulesDirectories = ['node_modules', 'src', 'src/js'];
     var extensions = ['', '.web.js', '.js', '.jsx'];
     var root = path.join(__dirname, 'src');
     var publicPath = options.devServer ?
         'http://localhost:2992/_assets/' :
         '/_assets/';
+
     var output = {
         path: path.join(__dirname, 'dist'),
         publicPath: publicPath,
@@ -68,31 +72,32 @@ module.exports = function(options) {
     };
 
     var excludeFromStats = [
-        /node_modules[\\\/]/,
+        /node_modules[\\\/]/
     ];
 
     var plugins = [
         new webpack.DefinePlugin({
             VERSION: JSON.stringify(VERSION)
         }),
-
-        new webpack.ProvidePlugin({
-            _: 'underscore'
-        })
+        new webpack.PrefetchPlugin('react'),
+        new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment')
     ];
-    // add these back for react support
-    // plugins.push(new webpack.PrefetchPlugin('react'));
-    // plugins.push(new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment'));
 
-    if (!options.test) {
+
+    if (options.test) {
+        additionalLoaders.push({
+            test: /\.spec\.js$/,
+            loader: 'imports?bootstrapTest'
+        });
+        additionalLoaders.push({
+            test: /\.spec\.jsx$/,
+            loader: 'imports?bootstrapTest'
+        });
+    } else {
         plugins.push(new StatsPlugin('stats.json', {
             chunkModules: true,
             exclude: excludeFromStats
         }));
-    }
-
-    if (options.commonsChunk) {
-        plugins.push(new webpack.optimize.CommonsChunkPlugin('commons', 'commons.js' + (options.longTermCaching ? '?[chunkhash]' : '')));
     }
 
     Object.keys(stylesheetLoaders).forEach(function(ext) {
@@ -113,25 +118,30 @@ module.exports = function(options) {
     if (options.minimize) {
 
         plugins.push(
-        new webpack.optimize.UglifyJsPlugin({
-            compressor: {
-                warnings: false
-            }
-        }),
-        new webpack.optimize.DedupePlugin()
+            new webpack.optimize.UglifyJsPlugin({
+                compressor: {
+                    warnings: false
+                }
+            }),
+            new webpack.optimize.DedupePlugin(),
+            new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: JSON.stringify('production')
+                }
+            }),
+            new webpack.NoErrorsPlugin(),
+
+            new webpack.BannerPlugin(PACKAGE_NAME + ' ' + VERSION + ' \n' + LICENSE, {
+                entryOnly: true
+            })
         );
-
+    } else {
         plugins.push(
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify('production')
-            }
-        }),
-        new webpack.NoErrorsPlugin(),
-
-        new webpack.BannerPlugin(PACKAGE_NAME + ' ' + VERSION + ' \n' + LICENSE, {
-            entryOnly: true
-        })
+            new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: JSON.stringify('development')
+                }
+            })
         );
     }
 
@@ -151,7 +161,8 @@ module.exports = function(options) {
         resolve: {
             root: root,
             modulesDirectories: modulesDirectories,
-            extensions: extensions
+            extensions: extensions,
+            alias: alias
         },
         plugins: plugins,
         devServer: {

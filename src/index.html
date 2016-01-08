@@ -20,6 +20,10 @@
             properties: PROPERTIES,
             emailCaptureEnabled: true
         };
+        
+        Smooch.on('message', function(message) {
+          console.log('Message received', message);
+        });
 
         Smooch.init(SmoochOptions);
     </script>
@@ -206,9 +210,7 @@
             });
 
             initButton.addEventListener('click', function() {
-                if (!Smooch.ready) {
-                    Smooch.init(window.SmoochOptions);
-                }
+              Smooch.init(window.SmoochOptions);
             });
 
             destroyButton.addEventListener('click', function() {
@@ -216,15 +218,11 @@
             });
 
             openButton.addEventListener('click', function() {
-                if (Smooch.ready) {
-                    Smooch.open();
-                }
+              Smooch.open();
             });
 
             closeButton.addEventListener('click', function() {
-                if (Smooch.ready) {
-                    Smooch.close();
-                }
+              Smooch.close();
             });
 
         }, false);

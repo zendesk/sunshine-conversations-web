@@ -1,6 +1,3 @@
-// Karma configuration
-// Generated on Fri Nov 07 2014 08:13:06 GMT-0500 (EST)
-
 module.exports = function(config) {
     var testReportsPath = process.env.CIRCLE_TEST_REPORTS || '.';
     var _ = require('underscore');
@@ -22,7 +19,10 @@ module.exports = function(config) {
         frameworks: ['mocha', 'sinon-chai', 'phantomjs-shim'],
 
         // list of files / patterns to load in the browser
-        files: ['test/specs/**/*.spec.js'],
+        files: [
+            'test/specs/**/*.spec.js',
+            'test/specs/**/*.spec.jsx'
+        ],
 
 
         // list of files to exclude
@@ -32,7 +32,8 @@ module.exports = function(config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            'test/specs/**/*.spec.js': ['webpack', 'sourcemap']
+            'test/specs/**/*.spec.js': ['webpack', 'sourcemap'],
+            'test/specs/**/*.spec.jsx': ['webpack', 'sourcemap']
         },
 
 
@@ -81,5 +82,6 @@ module.exports = function(config) {
             // i. e.
             noInfo: true
         },
+        specReporter: {}
     });
 };

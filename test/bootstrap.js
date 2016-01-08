@@ -1,6 +1,11 @@
 'use strict';
-require('../src/js/bootstrap');
-var sinon = require('sinon');
-var endpoint = require('../src/js/endpoint');
 
-endpoint.rootUrl = 'http://127.0.0.1';
+var sinon = require('sinon');
+sinon.behavior = require('sinon/lib/sinon/behavior');
+sinon.defaultConfig = {
+    injectInto: null,
+    properties: ['spy', 'stub', 'mock', 'clock', 'server', 'requests'],
+    useFakeTimers: true,
+    useFakeServer: true
+};
+require('sinon-as-promised');

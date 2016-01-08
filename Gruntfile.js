@@ -2,8 +2,6 @@
 
 /* global process:false */
 
-var _ = require('underscore');
-
 module.exports = function(grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
     grunt.registerTask('awsconfig', function() {
@@ -46,19 +44,6 @@ module.exports = function(grunt) {
         license: grunt.file.read('LICENSE'),
         globalVersion: '<%= pkg.version %>',
         clean: ['dist/*'],
-        karma: {
-            unit: {
-                configFile: 'karma.conf.js',
-                singleRun: false,
-                browsers: ['PhantomJS', 'Chrome'],
-                reporters: ['progress']
-            },
-            ci: {
-                configFile: 'karma.conf.js',
-                singleRun: true,
-                browsers: ['PhantomJS']
-            }
-        },
 
         s3: {
             options: {
@@ -76,14 +61,6 @@ module.exports = function(grunt) {
                     src: 'dist/smooch.js.map',
                     dest: 'smooch.js.map'
                 }]
-            },
-            images: {
-                upload: [
-                    {
-                        src: 'src/images/**',
-                        dest: 'images/'
-                    }
-                ]
             }
         },
 
@@ -95,21 +72,20 @@ module.exports = function(grunt) {
         },
 
         maxcdn: {
-          purgeCache: {
-            options: {
-              companyAlias:   '<%= maxcdn.options.companyAlias %>',
-              consumerKey:    '<%= maxcdn.options.consumerKey %>',
-              consumerSecret: '<%= maxcdn.options.consumerSecret %>',
-              zone_id:        '<%= maxcdn.options.zoneId %>',
-              method:         'delete'
-            },
-            files: [
-              { dest: '/smooch.min.js' },
-              { dest: '/smooch.js.map' },
-              { dest: '/images/logo_webwidget.png' },
-              { dest: '/images/logo_webwidget_2x.png' }
-            ],
-          },
+            purgeCache: {
+                options: {
+                    companyAlias: '<%= maxcdn.options.companyAlias %>',
+                    consumerKey: '<%= maxcdn.options.consumerKey %>',
+                    consumerSecret: '<%= maxcdn.options.consumerSecret %>',
+                    zone_id: '<%= maxcdn.options.zoneId %>',
+                    method: 'delete'
+                },
+                files: [
+                    {
+                        dest: '/smooch.min.js'
+                    }
+                ]
+            }
         },
 
         release: {
@@ -254,32 +230,14 @@ module.exports = function(grunt) {
         grunt.task.run('branchCheck', 'publish:prepare', 'publish:release', 'publish:cleanup');
     });
 
-    grunt.registerTask('loadConfig', 'Loads config from config folder (uses default if none present', function() {
-        var defaultConfig = grunt.file.readJSON('config/default/config.json');
-        var config = {};
-
-        try {
-            config = grunt.file.readJSON('config/config.json');
-        }
-        catch (err) {
-            grunt.log.warn('You might want to create a config with your app token at config/config.json');
-        }
-
-        var merged = _.extend(defaultConfig, config);
-        grunt.config.set('config', merged);
-    });
-
-    grunt.registerTask('setMinMode', function() {
-        grunt.config.set('config.WIDGET_CODE', 'smooch.min.js');
-    });
+    grunt.registerTask('build', ['clean', 'exec:build']);
+    grunt.registerTask('dev', ['concurrent:dev']);
 
 
     grunt.registerTask('build', ['clean', 'exec:build']);
     grunt.registerTask('dev', ['concurrent:dev']);
 
     grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig', 's3:js', 'maxcdn']);
-    grunt.registerTask('test', ['karma:unit']);
-    grunt.registerTask('test:ci', ['karma:ci']);
     grunt.registerTask('default', ['dev']);
 
     grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist']);
@@ -287,6 +245,4 @@ module.exports = function(grunt) {
     grunt.registerTask('publish:cleanup', ['exec:cleanRelease', 'exec:push']);
 
     grunt.registerTask('branchCheck', 'Checks that you are publishing from Master branch with no working changes', ['gitinfo', 'checkBranchStatus']);
-
-    grunt.registerTask('cdnify', ['awsconfig', 's3:images']);
 };
