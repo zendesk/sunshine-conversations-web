@@ -22,10 +22,10 @@ export class Observable {
         }
     }
 
-    trigger(event, args) {
+    trigger(event, options) {
         let map = this[listeners];
         if (map.has(event)) {
-            map.get(event).forEach(handler => handler(args));
+            map.get(event).forEach(handler => handler(options));
         }
     }
 }

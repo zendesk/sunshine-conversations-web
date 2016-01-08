@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import uuid from 'uuid';
+import pick from 'lodash.pick';
 
 import { store } from 'stores/app-store';
 
@@ -17,7 +18,6 @@ import { getConversation, sendMessage, connectFaye, disconnectFaye, getReadTimes
 
 import { Observable, observeStore } from 'utils/events';
 import { storage } from 'utils/storage';
-import { pick } from 'utils/functions';
 
 function renderWidget() {
     const el = document.createElement('div');
