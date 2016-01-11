@@ -8,7 +8,8 @@ const INITIAL_STATE = {
     settingsEnabled: true,
     readOnlyEmail: false,
     serverURL: 'https://api.smooch.io/',
-    messageReadTimestamp: 0
+    messageReadTimestamp: 0,
+    errorNotificationMessage: null
 };
 
 export function AppStateReducer(state = INITIAL_STATE, action) {
@@ -73,6 +74,16 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
         case AppStateActions.UPDATE_READ_TIMESTAMP:
             return Object.assign({}, state, {
                 messageReadTimestamp: action.timestamp
+            });
+        case AppStateActions.SHOW_ERROR_NOTIFICATION:
+            return Object.assign({}, state, {
+                settingsNotificationVisible: false,
+                errorNotificationMessage: action.message
+            });
+        case AppStateActions.HIDE_ERROR_NOTIFICATION:
+            return Object.assign({}, state, {
+                settingsNotificationVisible: false,
+                errorNotificationMessage: null
             });
         default:
             return state;

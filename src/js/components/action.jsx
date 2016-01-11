@@ -44,8 +44,6 @@ export class ActionComponent extends Component {
         this.setState({
             state: 'processing'
         });
-
-        //  this.refs.stripe.onClick();
     }
 
     render() {
@@ -58,7 +56,6 @@ export class ActionComponent extends Component {
                     <StripeCheckout token={ this.onStripeToken.bind(this) }
                                     stripeKey={ publicKeys.stripe }
                                     email={ user.email }
-                                    allowRememberMe={ false }
                                     amount={ this.props.amount }
                                     currency={ this.props.currency.toUpperCase() }>
                         <button className='btn btn-sk-primary' onClick={ this.onStripeClick.bind(this) }>
