@@ -18,7 +18,11 @@
             2,
             "always"
         ],
-        "no-unused-vars": 0
+        "no-unused-vars": 0,
+        "jsx-quotes": [
+            2,
+            "prefer-single"
+        ]
     },
     "env": {
         "es6": true,

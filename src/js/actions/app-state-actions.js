@@ -7,6 +7,8 @@ export const SHOW_SETTINGS = 'SHOW_SETTINGS';
 export const HIDE_SETTINGS = 'HIDE_SETTINGS';
 export const SHOW_SETTINGS_NOTIFICATION = 'SHOW_SETTINGS_NOTIFICATION';
 export const HIDE_SETTINGS_NOTIFICATION = 'HIDE_SETTINGS_NOTIFICATION';
+export const SHOW_ERROR_NOTIFICATION = 'SHOW_ERROR_NOTIFICATION';
+export const HIDE_ERROR_NOTIFICATION = 'HIDE_ERROR_NOTIFICATION';
 export const SET_SERVER_URL = 'SET_SERVER_URL';
 export const SET_EMAIL_READONLY = 'SET_EMAIL_READONLY';
 export const UNSET_EMAIL_READONLY = 'UNSET_EMAIL_READONLY';
@@ -90,4 +92,18 @@ export function updateReadTimestamp(timestamp) {
         type: UPDATE_READ_TIMESTAMP,
         timestamp
     };
+}
+
+export function showErrorNotification(message) {
+    return {
+        type: SHOW_ERROR_NOTIFICATION,
+        message
+    }
+}
+
+export function hideErrorNotification(message) {
+    return {
+        type: HIDE_ERROR_NOTIFICATION,
+        message
+    }
 }

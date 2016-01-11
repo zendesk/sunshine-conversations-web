@@ -1,6 +1,7 @@
 .sk-notification-container {
     box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
     position: absolute;
+    width: @widget-width;
     z-index: 1;
 
     .sk-notification {
@@ -38,6 +39,14 @@
         &:hover {
             .sk-notification-close {
                 display: block;
+            }
+        }
+
+        &.sk-notification-error {
+            background-color: red;
+            color: white;
+            .sk-notification-close {
+                color: white;
             }
         }
     }

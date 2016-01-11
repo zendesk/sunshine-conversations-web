@@ -7,6 +7,7 @@ import { store } from 'stores/app-store';
 
 import { setAuth, resetAuth } from 'actions/auth-actions';
 import { setUser, resetUser } from 'actions/user-actions';
+import { setPublicKeys } from 'actions/app-actions';
 import { updateText } from 'actions/ui-actions';
 import { setConversation, resetConversation } from 'actions/conversation-actions';
 import { openWidget, closeWidget, showSettingsNotification, enableSettings, disableSettings, hideSettings, setServerURL, setEmailReadonly, unsetEmailReadonly, updateReadTimestamp } from 'actions/app-state-actions';
@@ -89,7 +90,7 @@ export class Smooch extends Observable {
             store.dispatch(updateText(props.customText));
         }
 
-        if(props.serviceUrl) {
+        if (props.serviceUrl) {
             store.dispatch(setServerURL(props.serviceUrl));
         }
 
@@ -145,6 +146,10 @@ export class Smooch extends Observable {
         }).then((loginResponse) => {
             store.dispatch(setUser(loginResponse.appUser));
             store.dispatch(updateReadTimestamp(getReadTimestamp()));
+            
+            if (loginResponse.publicKeys) {
+                store.dispatch(setPublicKeys(loginResponse.publicKeys));
+            }
 
             return immediateUpdateUser(attributes).then(() => {
                 const user = store.getState().user;

@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
-import { Header } from 'components/header.jsx';
-import { Conversation } from 'components/conversation.jsx';
-import { Settings } from 'components/settings.jsx';
-import { Notification } from 'components/notification.jsx';
-import { ChatInput } from 'components/chat-input.jsx';
+import { Header } from 'components/header';
+import { Conversation } from 'components/conversation';
+import { Settings } from 'components/settings';
+import { Notification } from 'components/notification';
+import { ErrorNotification } from 'components/error-notification';
+import { ChatInput } from 'components/chat-input';
 
 export class WidgetComponent extends Component {
 
@@ -21,9 +22,11 @@ export class WidgetComponent extends Component {
         let className = typeof this.props.appState.widgetOpened === 'undefined' ? '' :
             this.props.appState.widgetOpened ? 'sk-appear' : 'sk-close';
 
-        let notification = this.props.appState.settingsNotificationVisible ? (
-            <Notification />
-            ) : null;
+        let notification = this.props.appState.errorNotificationMessage ?
+            <ErrorNotification message={ this.props.appState.errorNotificationMessage } /> :
+            this.props.appState.settingsNotificationVisible ?
+                <Notification /> :
+                null;
 
         return (
             <div id="sk-container" className={ className }>

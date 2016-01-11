@@ -6,6 +6,7 @@
     @import "bootstrap/variables.less";
     @import "font-awesome.less";
     @import "variables.less";
+    @import "loading.less";
     @import "animations.less";
     @import "reset.less";
 
@@ -23,7 +24,7 @@
         border-radius: 10px 10px 0 0;
         text-rendering: optimizeLegibility;
         color: #333;
-        z-index: 2147483647;
+        z-index: 9998; // 1 less than Stripe Checkout
         overflow: hidden;
 
         text-rendering: optimizeLegibility;
