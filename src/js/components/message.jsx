@@ -2,21 +2,18 @@ import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 
+import { ActionComponent } from 'components/action';
+
 import { createMarkup, autolink } from 'utils/html';
 
 export class MessageComponent extends Component {
     render() {
         const actions = this.props.actions.map((action) => {
-            return (
-                <div key={ action._id } className="sk-action">
-                    <a className="btn btn-sk-primary" href={ action.uri } target="_blank">
-                        { action.text }
-                    </a>
-                </div>
-                );
+            return <ActionComponent key={ action._id } {...action} />;
         });
 
         const isAppUser = this.props.role === 'appUser';
+        
         let avatar = isAppUser ? null : (
             <img className="sk-msg-avatar" src={ this.props.avatarUrl } />
             );

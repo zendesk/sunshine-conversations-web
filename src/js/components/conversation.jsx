@@ -9,7 +9,7 @@ import { MessageComponent } from 'components/message.jsx';
 export class ConversationComponent extends Component {
     constructor(...args) {
         super(...args);
-        this.state = {
+        this.state = {
             logoIsAnchored: true
         };
     }
@@ -32,13 +32,9 @@ export class ConversationComponent extends Component {
         let heightRemaining = conversationHeight - (introHeight + messagesHeight + logoHeight);
 
         if (heightRemaining > logoHeight) {
-            this.setState({
-                logoIsAnchored: true
-            });
+            this.refs.logo.className = 'sk-logo anchor-bottom';
         } else {
-            this.setState({
-                logoIsAnchored: false
-            });
+            this.refs.logo.className = 'sk-logo';
         }
     }
 
@@ -61,7 +57,7 @@ export class ConversationComponent extends Component {
                 <div ref="messages">
                     { messages }
                 </div>
-                <div className={this.state.logoIsAnchored ? "sk-logo anchor-bottom" : "sk-logo"} ref="logo">
+                <div className="sk-logo" ref="logo">
                     <a href="https://smooch.io/?utm_source=widget" target="_blank"><span>In-App Messaging by</span> <img className="sk-image" src={ require('images/logo_webwidget.png') } alt="Smooch" /> <img className="sk-image-retina" src={ require('images/logo_webwidget_2x.png') } alt="Smooch" /></a>
                 </div>
             </div>
