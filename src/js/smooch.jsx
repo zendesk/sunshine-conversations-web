@@ -20,6 +20,7 @@ import { getConversation, sendMessage, connectFaye, disconnectFaye, getReadTimes
 
 import { Observable, observeStore } from 'utils/events';
 import { storage } from 'utils/storage';
+import { waitForPage } from 'utils/dom';
 
 function renderWidget() {
     const el = document.createElement('div');
@@ -29,18 +30,24 @@ function renderWidget() {
     const Root = (process.env.NODE_ENV === 'production' ? require('./root-prod') : require('./root-dev')).Root;
     render(<Root store={ store } />, el);
 
-    const appendWidget = () => {
+    waitForPage().then(() => {
         document.body.appendChild(el);
         setTimeout(() => el.className = '', 200);
-    };
+    });
 
-    if (document.readyState == 'complete' || document.readyState == 'loaded' || document.readyState == 'interactive') {
-        appendWidget();
-    } else {
-        document.addEventListener('DOMContentLoaded', () => {
-            appendWidget();
-        });
-    }
+
+    return el;
+}
+
+function renderLink() {
+    const el = document.createElement('div');
+
+    render(<a href="https://smooch.io?utm_source=widget">In app messaging by smooch</a>, el);
+
+    waitForPage().then(() => {
+        document.body.appendChild(el);
+        setTimeout(() => el.className = '', 200);
+    });
 
     return el;
 }
@@ -79,6 +86,13 @@ export class Smooch extends Observable {
     }
 
     init(props) {
+
+        if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
+            renderLink();
+            this.trigger('ready');
+            return Promise.resolve();
+        }
+
         this.appToken = props.appToken;
 
         if (props.emailCaptureEnabled) {
