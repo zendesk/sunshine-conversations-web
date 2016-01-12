@@ -24,6 +24,9 @@ export class ActionComponent extends Component {
                 email: token.email
             }));
         }
+        this.setState({
+            state: 'processing'
+        });
 
         let transactionPromise = createTransaction(this.props._id, token.id).then(() => {
             this.setState({
@@ -39,17 +42,16 @@ export class ActionComponent extends Component {
 
         return Promise.all(promises);
     }
-
-    onStripeClick() {
-        this.setState({
-            state: 'processing'
-        });
-    }
-
     render() {
-        if (this.props.type === 'buy') {
+        let publicKeys = store.getState().app.publicKeys;
+
+        // the public key is necessary to use with Checkout
+        // use the link fallback if this happens        
+        if (this.props.type === 'buy' && publicKeys.stripe) {
             let user = store.getState().user;
-            let publicKeys = store.getState().app.publicKeys;
+
+            // let's change this when we support other providers
+            let stripeAccount = store.getState().app.stripe;
             let actionState = this.state.state;
             if (actionState === 'offered') {
                 return (
@@ -57,8 +59,10 @@ export class ActionComponent extends Component {
                                     stripeKey={ publicKeys.stripe }
                                     email={ user.email }
                                     amount={ this.props.amount }
-                                    currency={ this.props.currency.toUpperCase() }>
-                        <button className='btn btn-sk-primary' onClick={ this.onStripeClick.bind(this) }>
+                                    currency={ this.props.currency.toUpperCase() }
+                                    name={ stripeAccount.appName }
+                                    image={ stripeAccount.iconUrl }>
+                        <button className='btn btn-sk-primary'>
                             { this.props.text }
                         </button>
                     </StripeCheckout>

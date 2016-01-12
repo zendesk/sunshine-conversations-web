@@ -7,13 +7,14 @@ import { store } from 'stores/app-store';
 
 import { setAuth, resetAuth } from 'actions/auth-actions';
 import { setUser, resetUser } from 'actions/user-actions';
-import { setPublicKeys } from 'actions/app-actions';
+import { setPublicKeys, setStripeInfo } from 'actions/app-actions';
 import { updateText } from 'actions/ui-actions';
 import { setConversation, resetConversation } from 'actions/conversation-actions';
 import { openWidget, closeWidget, showSettingsNotification, enableSettings, disableSettings, hideSettings, setServerURL, setEmailReadonly, unsetEmailReadonly, updateReadTimestamp } from 'actions/app-state-actions';
 import { reset } from 'actions/common-actions';
 
 import { login } from 'services/auth-service';
+import { getAccount } from 'services/stripe-service';
 import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, immediateUpdate as immediateUpdateUser } from 'services/user-service';
 import { getConversation, sendMessage, connectFaye, disconnectFaye, getReadTimestamp } from 'services/conversation-service';
 
@@ -146,11 +147,17 @@ export class Smooch extends Observable {
         }).then((loginResponse) => {
             store.dispatch(setUser(loginResponse.appUser));
             store.dispatch(updateReadTimestamp(getReadTimestamp()));
-            
+
             if (loginResponse.publicKeys) {
                 store.dispatch(setPublicKeys(loginResponse.publicKeys));
-            }
 
+                if (loginResponse.publicKeys.stripe) {
+                    return getAccount().then((response) => {
+                        store.dispatch(setStripeInfo(response));
+                    });
+                }
+            }
+        }).then(() => {
             return immediateUpdateUser(attributes).then(() => {
                 const user = store.getState().user;
                 if (user.conversationStarted) {

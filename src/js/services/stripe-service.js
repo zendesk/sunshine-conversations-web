@@ -9,3 +9,7 @@ export function createTransaction(actionId, token) {
         throw e;
     });
 }
+
+export function getAccount() {
+    return core().stripe.getAccount();
+}
