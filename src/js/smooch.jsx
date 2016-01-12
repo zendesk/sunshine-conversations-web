@@ -152,8 +152,8 @@ export class Smooch extends Observable {
                 store.dispatch(setPublicKeys(loginResponse.publicKeys));
 
                 if (loginResponse.publicKeys.stripe) {
-                    return getAccount().then((response) => {
-                        store.dispatch(setStripeInfo(response));
+                    return getAccount().then((r) => {
+                        store.dispatch(setStripeInfo(r.account));
                     });
                 }
             }
