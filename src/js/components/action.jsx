@@ -12,11 +12,16 @@ export class ActionComponent extends Component {
         super(...args);
 
         this.state = {
-            state: this.props.state
+            state: this.props.state,
+            hasToken: false
         };
     }
 
     onStripeToken(token) {
+        this.setState({
+            hasToken: true
+        });
+
         let user = store.getState().user;
         let promises = [];
         if (!user.email) {
@@ -46,10 +51,24 @@ export class ActionComponent extends Component {
         });
     }
 
+    onStripeClose() {
+        if (!this.state.hasToken) {
+            this.setState({
+                state: 'offered'
+            });
+        }
+    }
+
     render() {
-        if (this.props.type === 'buy') {
+        let publicKeys = store.getState().app.publicKeys;
+
+        // the public key is necessary to use with Checkout
+        // use the link fallback if this happens
+        if (this.props.type === 'buy' && publicKeys.stripe) {
             let user = store.getState().user;
-            let publicKeys = store.getState().app.publicKeys;
+
+            // let's change this when we support other providers
+            let stripeAccount = store.getState().app.stripe;
             let actionState = this.state.state;
             if (actionState === 'offered') {
                 return (
@@ -57,7 +76,10 @@ export class ActionComponent extends Component {
                                     stripeKey={ publicKeys.stripe }
                                     email={ user.email }
                                     amount={ this.props.amount }
-                                    currency={ this.props.currency.toUpperCase() }>
+                                    currency={ this.props.currency.toUpperCase() }
+                                    name={ stripeAccount.appName }
+                                    image={ stripeAccount.iconUrl }
+                                    closed={ this.onStripeClose.bind(this) }>
                         <button className='btn btn-sk-primary' onClick={ this.onStripeClick.bind(this) }>
                             { this.props.text }
                         </button>

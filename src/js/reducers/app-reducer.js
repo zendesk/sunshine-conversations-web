@@ -1,8 +1,9 @@
-import { SET_PUBLIC_KEYS, RESET_APP } from 'actions/app-actions';
+import { SET_PUBLIC_KEYS, RESET_APP, SET_STRIPE_INFO } from 'actions/app-actions';
 import { RESET } from 'actions/common-actions';
 
 const INITIAL_STATE = {
-    publicKeys: {}
+    publicKeys: {},
+    stripe: {}
 };
 
 export function AppReducer(state = INITIAL_STATE, action) {
@@ -13,6 +14,10 @@ export function AppReducer(state = INITIAL_STATE, action) {
         case SET_PUBLIC_KEYS:
             return Object.assign({}, state, {
                 publicKeys: action.keys
+            });
+        case SET_STRIPE_INFO:
+            return Object.assign({}, state, {
+                stripe: action.props
             });
         default:
             return state;
