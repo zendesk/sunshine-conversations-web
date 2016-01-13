@@ -30,7 +30,7 @@ function renderWidget() {
     const Root = (process.env.NODE_ENV === 'production' ? require('./root-prod') : require('./root-dev')).Root;
     render(<Root store={ store } />, el);
 
-    waitForPage().then(() => {
+    waitForPage().then(() => {
         document.body.appendChild(el);
         setTimeout(() => el.className = '', 200);
     });
@@ -44,7 +44,7 @@ function renderLink() {
 
     render(<a href="https://smooch.io?utm_source=widget">In app messaging by smooch</a>, el);
 
-    waitForPage().then(() => {
+    waitForPage().then(() => {
         document.body.appendChild(el);
         setTimeout(() => el.className = '', 200);
     });
@@ -168,6 +168,8 @@ export class Smooch extends Observable {
                 if (loginResponse.publicKeys.stripe) {
                     return getAccount().then((r) => {
                         store.dispatch(setStripeInfo(r.account));
+                    }).catch(() => {
+                        // do nothing about it and let the flow continue
                     });
                 }
             }
