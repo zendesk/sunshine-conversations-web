@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import { ActionComponent } from 'components/action';
 
-import { createMarkup, autolink } from 'utils/html';
+import { createMarkup, autolink, escapeHtml } from 'utils/html';
 
 export class MessageComponent extends Component {
     render() {
@@ -13,7 +13,7 @@ export class MessageComponent extends Component {
         });
 
         const isAppUser = this.props.role === 'appUser';
-        
+
         let avatar = isAppUser ? null : (
             <img className="sk-msg-avatar" src={ this.props.avatarUrl } />
             );
@@ -23,7 +23,8 @@ export class MessageComponent extends Component {
                 return;
             }
 
-            let innerHtml = createMarkup(autolink(item, {
+
+            let innerHtml = createMarkup(autolink(escapeHtml(item), {
                 target: '_blank'
             }));
 

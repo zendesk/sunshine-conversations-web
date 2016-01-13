@@ -17,5 +17,10 @@ export function autolink(text, options) {
     linkAttributes && (linkAttributes += ' ');
 
     return text.replace(pattern, `$1<a ${linkAttributes}href="$2">$2</a>`);
+}
 
+export function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(text));
+    return div.innerHTML;
 }
