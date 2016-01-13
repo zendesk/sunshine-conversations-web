@@ -30,7 +30,6 @@ export function initFaye() {
         });
 
         return faye.subscribe('/conversations/' + state.conversation._id, (message) => {
-            updateReadTimestamp(message.received);
             store.dispatch(addMessage(message));
         });
     }
