@@ -1,4 +1,4 @@
-import { createMarkup, autolink } from 'utils/html';
+import { createMarkup, autolink, escapeHtml } from 'utils/html';
 
 describe('createMarkup', () => {
     it('should wrap the give value', () => {
@@ -30,5 +30,11 @@ describe('autolink', () => {
         let transformedValue = autolink(value, options);
 
         transformedValue.should.eq(expectedValue);
+    });
+});
+
+describe('escapeHtml', () => {
+    it('should escape html', () => {
+        escapeHtml('<strong>Escape me!</strong>').should.eq('&lt;strong&gt;Escape me!&lt;/strong&gt;');
     });
 });
