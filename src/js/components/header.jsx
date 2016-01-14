@@ -42,7 +42,7 @@ export class HeaderComponent extends Component {
             ) : null;
 
         const settingsButton = widgetOpened && settingsEnabled && !settingsVisible ? (
-            <div id="sk-notification-badge" onClick={ this.showSettings }>
+            <div id="sk-settings-handle" onClick={ this.showSettings }>
                 <i className="fa fa-gear"></i>
             </div>
             ) : null;
@@ -63,11 +63,18 @@ export class HeaderComponent extends Component {
             </div>
             );
 
+        const settingsTextStyle = {
+            display: 'inline-block',
+            height: 30
+        };
+
+        const settingsText = <div style={settingsTextStyle} onClick={ this.hideSettings }>{ settingsHeaderText }</div>;
+
         return (
             <div id={ settingsVisible ? 'sk-settings-header' : 'sk-header' } onClick={ this.actions.toggleWidget }>
                 { settingsButton }
                 { backButton }
-                { settingsVisible ? settingsHeaderText : headerText }
+                { settingsVisible ? settingsText : headerText }
                 { unreadBadge }
                 { closeHandle }
             </div>

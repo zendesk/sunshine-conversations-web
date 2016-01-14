@@ -52,7 +52,7 @@ describe('Header', () => {
             });
 
             it('should not contain the settings button', () => {
-                scryRenderedDOMComponentsWithId(header, 'sk-notification-badge').length.should.be.eq(0);
+                scryRenderedDOMComponentsWithId(header, 'sk-settings-handle').length.should.be.eq(0);
             });
 
             it('should call the toggleWidget action on header click', () => {
@@ -110,7 +110,7 @@ describe('Header', () => {
         });
 
         it('should not contain the settings button', () => {
-            scryRenderedDOMComponentsWithId(header, 'sk-notification-badge').length.should.be.eq(0);
+            scryRenderedDOMComponentsWithId(header, 'sk-settings-handle').length.should.be.eq(0);
         });
 
         it('should call the toggleWidget action on header click', () => {
@@ -168,11 +168,11 @@ describe('Header', () => {
         });
 
         it('should contain the settings button', () => {
-            scryRenderedDOMComponentsWithId(header, 'sk-notification-badge').length.should.be.eq(1);
+            scryRenderedDOMComponentsWithId(header, 'sk-settings-handle').length.should.be.eq(1);
         });
 
         it('should call the openSettings action on settings button click', () => {
-            let settingsButton = findRenderedDOMComponentsWithId(header, 'sk-notification-badge');
+            let settingsButton = findRenderedDOMComponentsWithId(header, 'sk-settings-handle');
             TestUtils.Simulate.click(settingsButton);
             props.actions.showSettings.should.have.been.calledOnce;
         });
@@ -232,7 +232,7 @@ describe('Header', () => {
         });
 
         it('should not contain the settings button', () => {
-            scryRenderedDOMComponentsWithId(header, 'sk-notification-badge').length.should.be.eq(0);
+            scryRenderedDOMComponentsWithId(header, 'sk-settings-handle').length.should.be.eq(0);
         });
 
         it('should call the hideSettings action on back button click', () => {
