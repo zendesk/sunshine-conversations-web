@@ -116,7 +116,8 @@ describe('Notification', () => {
 
         it('should dispatch a close notification action and a show settings action', () => {
             component.onLinkClick({
-                preventDefault: () => true
+                preventDefault: () => true,
+                stopPropagation: () => true
             });
 
             props.actions.hideSettingsNotification.should.have.been.calledOnce;
