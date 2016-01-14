@@ -30,6 +30,8 @@ export class ChatInputComponent extends Component {
             });
             sendMessage(text);
         }
+
+        this.refs.input.focus();
     }
 
     onFocus(e) {
