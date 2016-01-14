@@ -72,7 +72,9 @@ export class ActionComponent extends Component {
             let actionState = this.state.state;
             if (actionState === 'offered') {
                 return (
-                    <StripeCheckout token={ this.onStripeToken.bind(this) }
+                    <StripeCheckout componentClass='div'
+                                    className='sk-action'
+                                    token={ this.onStripeToken.bind(this) }
                                     stripeKey={ publicKeys.stripe }
                                     email={ user.email }
                                     amount={ this.props.amount }
