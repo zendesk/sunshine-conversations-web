@@ -45,12 +45,7 @@ export function sendMessage(text) {
 
     if (store.getState().user.conversationStarted) {
         return promise
-            .then(() => {
-                const fayeSubscription = store.getState().faye.subscription;
-                if (!fayeSubscription) {
-                    return connectFaye();
-                }
-            })
+            .then(connectFaye)
             .then(sendFn);
     }
 
@@ -64,12 +59,6 @@ export function sendMessage(text) {
 export function getConversation() {
     const user = store.getState().user;
     return core().conversations.get(user._id).then((response) => {
-        let conversationLength = response.conversation.messages.length;
-        let lastMessage = conversationLength > 0 && response.conversation.messages[conversationLength - 1];
-        if (lastMessage && lastMessage.role !== 'appUser' && getReadTimestamp() === 0) {
-            updateReadTimestamp(lastMessage.received);
-        }
-
         store.dispatch(setConversation(response.conversation));
         return response;
     });
@@ -113,4 +102,28 @@ export function updateReadTimestamp(timestamp = Date.now()) {
 
     storage.setItem(storageKey, timestamp);
     store.dispatch(updateReadTimestampAction(timestamp));
+}
+
+export function handleConversationUpdated() {
+    let subscription = store.getState().faye.subscription;
+    
+    if (!subscription) {
+        return getConversation()
+            .then((response) => {
+                return connectFaye().then(() => {
+                    return response;
+                })
+            })
+            .then((response) => {
+                let conversationLength = response.conversation.messages.length;
+                let lastMessage = conversationLength > 0 && response.conversation.messages[conversationLength - 1];
+                if (lastMessage && lastMessage.role !== 'appUser' && getReadTimestamp() === 0) {
+                    updateReadTimestamp(lastMessage.received);
+                }
+
+                return response;
+            });
+    }
+
+    return Promise.resolve();
 }

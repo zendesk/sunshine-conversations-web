@@ -123,17 +123,14 @@ describe('User service', () => {
                     conversationUpdated: true
                 });
 
-                sandbox.stub(conversationService, 'getConversation');
-                sandbox.stub(conversationService, 'connectFaye');
-                conversationService.getConversation.resolves();
-                conversationService.connectFaye.resolves();
+                sandbox.stub(conversationService, 'handleConversationUpdated');
+                conversationService.handleConversationUpdated.resolves({});
             });
 
             it('should call getConversation and connectFaye', () => {
                 return userService.trackEvent('event', 'props').then(() => {
                     coreMock.appUsers.trackEvent.should.have.been.calledWith('1', 'event', 'props');
-                    conversationService.getConversation.should.have.been.calledOnce;
-                    conversationService.connectFaye.should.have.been.calledOnce;
+                    conversationService.handleConversationUpdated.should.have.been.calledOnce;
                 });
             });
         });
@@ -144,17 +141,14 @@ describe('User service', () => {
                     conversationUpdated: false
                 });
 
-                sandbox.stub(conversationService, 'getConversation');
-                sandbox.stub(conversationService, 'connectFaye');
-                conversationService.getConversation.resolves();
-                conversationService.connectFaye.resolves();
+                sandbox.stub(conversationService, 'handleConversationUpdated');
+                conversationService.handleConversationUpdated.resolves({});
             });
 
             it('should call getConversation and connectFaye', () => {
                 return userService.trackEvent('event', 'props').then(() => {
                     coreMock.appUsers.trackEvent.should.have.been.calledWith('1', 'event', 'props');
-                    conversationService.getConversation.should.not.have.been.called;
-                    conversationService.connectFaye.should.not.have.been.called;
+                    conversationService.handleConversationUpdated.should.not.have.been.called;
                 });
             });
         });

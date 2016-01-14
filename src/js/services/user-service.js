@@ -2,7 +2,7 @@ import deepEqual from 'deep-equal';
 import { store } from 'stores/app-store';
 import { core } from 'services/core';
 import { setUser } from 'actions/user-actions';
-import { getConversation, connectFaye } from 'services/conversation-service';
+import { handleConversationUpdated } from 'services/conversation-service';
 
 let waitForSave = false;
 const waitDelay = 5000; // ms
@@ -57,11 +57,9 @@ export function trackEvent(eventName, userProps) {
     const user = store.getState().user;
     return core().appUsers.trackEvent(user._id, eventName, userProps).then((response) => {
         if (response.conversationUpdated) {
-            return getConversation()
-                .then(connectFaye)
-                .then(() => {
-                    return response;
-                });
+            return handleConversationUpdated().then(() => {
+                return response;
+            });
         }
 
         return response;

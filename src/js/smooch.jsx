@@ -16,7 +16,7 @@ import { reset } from 'actions/common-actions';
 import { login } from 'services/auth-service';
 import { getAccount } from 'services/stripe-service';
 import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, immediateUpdate as immediateUpdateUser } from 'services/user-service';
-import { getConversation, sendMessage, connectFaye, disconnectFaye, getReadTimestamp } from 'services/conversation-service';
+import { getConversation, sendMessage, connectFaye, disconnectFaye, getReadTimestamp, handleConversationUpdated } from 'services/conversation-service';
 
 import { Observable, observeStore } from 'utils/events';
 import { storage } from 'utils/storage';
@@ -204,10 +204,7 @@ export class Smooch extends Observable {
     updateUser(props) {
         return updateUser(props).then((response) => {
             if (response.appUser.conversationStarted) {
-                return getConversation().then((conversationResponse) => {
-                    store.dispatch(setConversation(conversationResponse.conversation));
-                    return connectFaye();
-                }).then(() => {
+                return handleConversationUpdated().then(() => {
                     return response;
                 });
             }

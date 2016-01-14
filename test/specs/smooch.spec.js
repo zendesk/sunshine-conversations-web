@@ -228,45 +228,20 @@ describe('Smooch', () => {
     describe('Track event', () => {
         beforeEach(() => {
             mockedStore = mockStore(sandbox, defaultState);
-        });
-
-        describe('conversation updated', () => {
-            beforeEach(() => {
-                trackEventStub = sandbox.stub(userService, 'trackEvent');
-                trackEventStub.resolves({
-                    conversationUpdated: true
-                });
-            });
-
-
-            it('should call trackEvent and connectFaye', () => {
-                const props = {
-                    email: 'some@email.com'
-                };
-
-                return smooch.track('some-event', props).then(() => {
-                    trackEventStub.should.have.been.calledWith('some-event', props);
-                });
+            trackEventStub = sandbox.stub(userService, 'trackEvent');
+            trackEventStub.resolves({
+                conversationUpdated: true
             });
         });
 
-        describe('conversation not updated', () => {
-            beforeEach(() => {
-                trackEventStub = sandbox.stub(userService, 'trackEvent');
-                trackEventStub.resolves({
-                    conversationUpdated: false
-                });
-            });
 
+        it('should call trackEvent', () => {
+            const props = {
+                email: 'some@email.com'
+            };
 
-            it('should call trackEvent and connectFaye', () => {
-                const props = {
-                    email: 'some@email.com'
-                };
-
-                return smooch.track('some-event', props).then(() => {
-                    trackEventStub.should.have.been.calledWith('some-event', props);
-                });
+            return smooch.track('some-event', props).then(() => {
+                trackEventStub.should.have.been.calledWith('some-event', props);
             });
         });
     });
@@ -293,11 +268,8 @@ describe('Smooch', () => {
 
             updateUserStub = sandbox.stub(userService, 'update');
 
-            getConversationStub = sandbox.stub(conversationService, 'getConversation');
-            getConversationStub.resolves({});
-
-            connectFayeStub = sandbox.stub(conversationService, 'connectFaye');
-            connectFayeStub.resolves({});
+            sandbox.stub(conversationService, 'handleConversationUpdated');
+            conversationService.handleConversationUpdated.resolves({});
         });
 
         describe('conversation started', () => {
@@ -309,7 +281,7 @@ describe('Smooch', () => {
                 });
             });
 
-            it('should get the conversation and connect faye', () => {
+            it('should call handleConversationUpdated', () => {
                 return smooch.updateUser({
                     email: 'update@me.com'
                 }).then(() => {
@@ -317,8 +289,7 @@ describe('Smooch', () => {
                         email: 'update@me.com'
                     });
 
-                    getConversationStub.should.have.been.calledOnce;
-                    connectFayeStub.should.have.been.calledOnce;
+                    conversationService.handleConversationUpdated.should.have.been.calledOnce;
                 });
             });
         });
@@ -332,7 +303,7 @@ describe('Smooch', () => {
                 });
             });
 
-            it('should not get the conversation and connect faye', () => {
+            it('should not handleConversationUpdated', () => {
                 return smooch.updateUser({
                     email: 'update@me.com'
                 }).then(() => {
@@ -340,8 +311,7 @@ describe('Smooch', () => {
                         email: 'update@me.com'
                     });
 
-                    getConversationStub.should.not.have.been.calledOnce;
-                    connectFayeStub.should.not.have.been.calledOnce;
+                    conversationService.handleConversationUpdated.should.not.have.been.calledOnce;
                 });
             });
         });
