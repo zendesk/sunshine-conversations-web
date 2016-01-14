@@ -106,13 +106,13 @@ export function updateReadTimestamp(timestamp = Date.now()) {
 
 export function handleConversationUpdated() {
     let subscription = store.getState().faye.subscription;
-    
+
     if (!subscription) {
         return getConversation()
             .then((response) => {
                 return connectFaye().then(() => {
                     return response;
-                })
+                });
             })
             .then((response) => {
                 let conversationLength = response.conversation.messages.length;
