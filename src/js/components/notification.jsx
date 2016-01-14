@@ -27,6 +27,7 @@ export class NotificationComponent extends Component {
 
     onLinkClick(e) {
         e.preventDefault();
+        e.stopPropagation();
 
         this.props.actions.hideSettingsNotification();
         this.props.actions.showSettings();
@@ -34,7 +35,7 @@ export class NotificationComponent extends Component {
 
     render() {
         return (
-            <div key="content" className="sk-notification">
+            <div key="content" className="sk-notification" onClick={ this.props.actions.hideSettingsNotification }>
                 <p>
                     <span ref="text" dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.settingsNotificationText) }></span>
                     <a href="#" className="sk-notification-close" onClick={ this.props.actions.hideSettingsNotification }>&times;</a>
