@@ -25,7 +25,8 @@ export class MessageComponent extends Component {
 
 
             let innerHtml = createMarkup(autolink(escapeHtml(item), {
-                target: '_blank'
+                target: '_blank',
+                class: 'link'
             }));
 
             return <span key={ index }><span dangerouslySetInnerHTML={ innerHtml }></span>
