@@ -105,19 +105,25 @@ export function updateReadTimestamp(timestamp = Date.now()) {
 }
 
 export function handleConversationUpdated() {
-    return getConversation()
-        .then((response) => {
-            return connectFaye().then(() => {
-                return response;
+    let subscription = store.getState().faye.subscription;
+    
+    if (!subscription) {
+        return getConversation()
+            .then((response) => {
+                return connectFaye().then(() => {
+                    return response;
+                })
             })
-        })
-        .then((response) => {
-            let conversationLength = response.conversation.messages.length;
-            let lastMessage = conversationLength > 0 && response.conversation.messages[conversationLength - 1];
-            if (lastMessage && lastMessage.role !== 'appUser' && getReadTimestamp() === 0) {
-                updateReadTimestamp(lastMessage.received);
-            }
+            .then((response) => {
+                let conversationLength = response.conversation.messages.length;
+                let lastMessage = conversationLength > 0 && response.conversation.messages[conversationLength - 1];
+                if (lastMessage && lastMessage.role !== 'appUser' && getReadTimestamp() === 0) {
+                    updateReadTimestamp(lastMessage.received);
+                }
 
-            return response;
-        });
+                return response;
+            });
+    }
+
+    return Promise.resolve();
 }
