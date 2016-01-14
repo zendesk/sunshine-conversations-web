@@ -93,8 +93,10 @@ export class ActionComponent extends Component {
                     <LoadingComponent />;
 
                 return (
-                    <div className={ `btn btn-sk-action-${actionState}` }>
-                        { text }
+                    <div className='sk-action'>
+                        <div className={ `btn btn-sk-action-${actionState}` }>
+                            { text }
+                        </div>
                     </div>
                     );
             }

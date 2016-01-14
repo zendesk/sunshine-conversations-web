@@ -10,10 +10,10 @@ import { hideErrorNotification } from 'actions/app-state-actions';
 export class ErrorNotificationComponent extends Component {
     render() {
         return (
-            <div key="content" className="sk-notification sk-notification-error">
+            <div key="content" className="sk-notification sk-notification-error" onClick={ this.props.actions.hideErrorNotification }>
                 <p>
                     <span ref="text" dangerouslySetInnerHTML={ createMarkup(this.props.message) }></span>
-                    <a href="#" className="sk-notification-close" onClick={ this.props.actions.hideErrorNotification }>&times;</a>
+                    <a href="#" className="sk-notification-close">&times;</a>
                 </p>
             </div>
             );
