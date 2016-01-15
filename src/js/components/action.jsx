@@ -101,7 +101,7 @@ export class ActionComponent extends Component {
                     );
             }
         } else {
-            let isJavascript = this.props.ui.startsWith('javascript:');
+            let isJavascript = this.props.uri.startsWith('javascript:');
 
             return (
                 <div className='sk-action'>
