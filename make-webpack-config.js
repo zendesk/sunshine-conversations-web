@@ -11,7 +11,7 @@ module.exports = function(options) {
     var LICENSE = fs.readFileSync('LICENSE', 'utf8');
 
     var entry = {
-        smooch: ['babel-polyfill', './src/js/main']
+        smooch: ['babel-polyfill', './src/js/utils/polyfills', './src/js/main']
     };
 
     var loaders = {

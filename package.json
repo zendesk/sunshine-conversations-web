@@ -40,7 +40,7 @@
     "react-redux": "^4.0.5",
     "react-stripe-checkout": "^1.7.2",
     "redux": "^3.0.5",
-    "smooch-core": "0.0.12",
+    "smooch-core": "0.0.13",
     "urljoin": "^0.1.5",
     "uuid": "^2.0.1"
   },
@@ -54,6 +54,7 @@
     "babel-core": "^6.2.1",
     "babel-loader": "^6.2.0",
     "babel-polyfill": "^6.3.14",
+    "babel-preset-es2015-loose": "^7.0.0",
     "body-parser": "^1.14.1",
     "chai": "^2.3.0",
     "chai-as-promised": "^5.0.0",
