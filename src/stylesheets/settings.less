@@ -1,4 +1,4 @@
-#sk-settings {
+.sk-settings {
     box-sizing: border-box;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     position: absolute;
@@ -6,7 +6,7 @@
     z-index: 2;
     background-color: white;
     overflow: hidden;
-    opacity: 0;
+    opacity: 1;
     font-size: 13px;
 
 
@@ -44,5 +44,24 @@
                 }
             }
         }
+
+    }
+
+    &.settings-enter {
+        width: 0;
+    }
+
+    &.settings-enter-active {
+        .transition(width 250ms);
+        width: @widget-width;
+    }
+
+    &.settings-leave {
+        width: @widget-width;
+    }
+
+    &.settings-leave-active {
+        .transition(width 250ms);
+        width: 0;
     }
 }

@@ -1,6 +1,13 @@
+machine:
+  node:
+    version: 4.2.2
+
+dependencies:
+  pre:
+    - npm install -g npm@3
 test:
     override:
-        - grunt test:ci
+        - npm run test:ci
     post:
       - grunt build
 

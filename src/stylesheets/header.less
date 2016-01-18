@@ -1,5 +1,5 @@
 .header() {
-    z-index: 1;
+    z-index: 10;
     height: @header-height;
     box-size: border-box;
     line-height: 28px;
@@ -24,9 +24,16 @@
         right: 10px;
     }
 
+    .sk-show-handle {
+        @media (min-width: @screen-sm-min) {
+            display: none;
+        }
+    }
+
     .sk-back-handle {
         display: inline-block;
         margin-right: 8px;
+        height: 30px;
     }
 
     .sk-close-handle .fa {
@@ -40,7 +47,7 @@
 }
 
 #sk-badge {
-    background-color: #e74c3c;
+    background-color: @brand-danger;
     border-radius: 100px;
     box-shadow: 0 0 0 1px #cf2615;
     color: white;
@@ -53,15 +60,16 @@
     line-height: 18px;
 }
 
-#sk-notification-badge  {
+#sk-settings-handle  {
     position: absolute;
     top: 7px;
-    right: 36px;
+    right: 27px;
+    width: 25px;
     display: none;
 }
 
 &.sk-appear {
-    #sk-notification-badge {
+    #sk-settings-handle {
         display: block;
     }
 }

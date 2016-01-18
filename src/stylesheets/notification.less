@@ -1,0 +1,71 @@
+.sk-notification-container {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+    position: absolute;
+    width: @widget-width;
+    z-index: 1;
+
+    .sk-notification {
+        overflow: hidden;
+
+        width: 100%;
+
+        border-top: 1px solid rgba(0, 0, 0, .1);
+        background-color: white;
+        p {
+            margin: 10px 18px;
+            a {
+                color: @sk-blue;
+            }
+            .sk-notification-close {
+                font-size: 20px;
+                font-weight: 600;
+
+                position: absolute;
+                top: 0;
+                right: 10px;
+                right: 0;
+
+                display: none;
+
+                width: 22px;
+                height: 32px;
+                padding-left: 10px;
+
+                text-decoration: none;
+
+                color: #808080;
+            }
+        }
+        &:hover {
+            .sk-notification-close {
+                display: block;
+            }
+        }
+
+        &.sk-notification-error {
+            background-color: @brand-danger;
+            color: white;
+            .sk-notification-close {
+                color: white;
+            }
+        }
+    }
+
+    .sk-notification-enter {
+        height: 0;
+    }
+
+    .sk-notification-enter-active {
+        .transition(height 500ms);
+        height: 56px;
+    }
+
+    .sk-notification-leave {
+        height: 56px;
+    }
+
+    .sk-notification-leave-active {
+        .transition(height 500ms);
+        height: 0;
+    }
+}

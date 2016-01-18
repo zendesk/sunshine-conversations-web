@@ -57,6 +57,28 @@
   .button-variant(white; @sk-blue; @sk-blue);
 }
 
+.btn-sk-action-paid {
+  cursor: default;
+  .button-variant(#b0b0b0; transparent; #b0b0b0);
+
+  &:active, &:hover {
+    .box-shadow(none);
+    border-color: #b0b0b0;
+  }
+}
+
+.btn-sk-action-processing {
+  width: 15px;
+  cursor: default;
+  .button-variant(white; @sk-blue; @sk-blue);
+
+  &:active, &:hover, &:active:hover  {
+    .box-shadow(none);
+    background-color: @sk-blue;
+    border-color: @sk-blue;
+  }
+}
+
 a.btn {
     text-decoration: none;
 }

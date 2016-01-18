@@ -1,67 +1,72 @@
 @import "bootstrap/mixins.less";
 @import "mixins.less";
-@import "animations.less";
 
-#sk-container {
-    position: fixed;
-    bottom: 0;
-    right: 10px;
-    margin-bottom: -1px;
-    box-shadow: 0 0 24px rgba(0,0,0,0.15);
-    border: 1px solid rgba(0,0,0,0.15);
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-weight: 400;
-    font-size: 13px;
-    line-height: 1.4;
-    border-radius: 10px 10px 0 0;
-    text-rendering: optimizeLegibility;
-    color: #333;
-    .translate(0, 90%);
-    z-index: 2147483647;
-
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-font-smoothing: antialiased;
-
-    div, a, form, input {
-        -webkit-box-sizing: content-box;
-        box-sizing: content-box;
-    }
-
-    #sk-wrapper {
-        background: @background-color;
-        width: @widget-width;
-        height: @widget-height;
-        position: relative;
-        border-radius: 10px 10px 0 0;
-    }
-
-    @media (max-width: @screen-sm-min) {
-        right: 0px;
-        border-radius: 0;
-        width: 100%;
-
-        &.sk-appear {
-            &, #sk-wrapper {
-                height: 100%;                
-            }
-        }
-
-        #sk-wrapper {
-            width: 100%;
-        }
-    }
+#sk-holder {
 
     @import "bootstrap/variables.less";
     @import "font-awesome.less";
     @import "variables.less";
+    @import "loading.less";
+    @import "animations.less";
     @import "reset.less";
-    @import "forms.less";
-    @import "buttons.less";
-    @import "visibility.less";
-    @import "header.less";
-    @import "notifications.less";
-    @import "conversation.less";
-    @import "footer.less";
-    @import "settings.less";
+
+    #sk-container {
+        position: fixed;
+        bottom: @widget-close-bottom;
+        right: 10px;
+        margin-bottom: -1px;
+        box-shadow: 0 0 24px rgba(0,0,0,0.15);
+        border: 1px solid rgba(0,0,0,0.15);
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-weight: 400;
+        font-size: 13px;
+        line-height: 1.4;
+        border-radius: 10px 10px 0 0;
+        text-rendering: optimizeLegibility;
+        color: #333;
+        z-index: 9998; // 1 less than Stripe Checkout
+        overflow: hidden;
+
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-font-smoothing: antialiased;
+
+        div, a, form, input {
+            -webkit-box-sizing: content-box;
+            box-sizing: content-box;
+        }
+
+        #sk-wrapper {
+            background: @background-color;
+            width: @widget-width;
+            height: @widget-height;
+            position: relative;
+            border-radius: 10px 10px 0 0;
+        }
+
+        @media (max-width: @screen-sm-min) {
+            right: 0px;
+            border-radius: 0;
+            width: 100%;
+
+            &.sk-appear {
+                &, #sk-wrapper {
+                    height: 100%;
+                }
+            }
+
+            #sk-wrapper {
+                width: 100%;
+            }
+        }
+
+        @import "forms.less";
+        @import "buttons.less";
+        @import "visibility.less";
+        @import "header.less";
+        @import "notification.less";
+        @import "conversation.less";
+        @import "footer.less";
+        @import "settings.less";
+    }
 }
