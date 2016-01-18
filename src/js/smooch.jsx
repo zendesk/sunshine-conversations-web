@@ -75,7 +75,14 @@ function onStoreChange(messages) {
     lastTriggeredMessageTimestamp = lastTriggeredMessageTimestamp || getReadTimestamp() || (messages.length > 0 && messages[messages.length - 1].received);
 
     messages.filter(message => message.received > lastTriggeredMessageTimestamp).forEach(message => {
+        if(message.role === 'appuser') {
+            this.trigger('message:sent', message);
+        } else {
+            this.trigger('message:received', message);
+        }
+
         this.trigger('message', message);
+
         lastTriggeredMessageTimestamp = message.received;
     });
 }
@@ -222,6 +229,7 @@ export class Smooch extends Observable {
         document.body.removeChild(this._el);
         delete this.appToken;
         delete this._el;
+        this.trigger('destroy');
     }
 
     open() {
