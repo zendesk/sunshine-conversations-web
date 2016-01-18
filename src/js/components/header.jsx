@@ -36,30 +36,30 @@ export class HeaderComponent extends Component {
         }, 0);
 
         let unreadBadge = !settingsVisible && unreadMessagesCount > 0 ? (
-            <div id="sk-badge">
+            <div id='sk-badge'>
                 { unreadMessagesCount }
             </div>
             ) : null;
 
         const settingsButton = widgetOpened && settingsEnabled && !settingsVisible ? (
-            <div id="sk-settings-handle" onClick={ this.showSettings }>
-                <i className="fa fa-gear"></i>
+            <div id='sk-settings-handle' onClick={ this.showSettings }>
+                <i className='fa fa-gear'></i>
             </div>
             ) : null;
 
         const backButton = widgetOpened && settingsEnabled && settingsVisible ? (
-            <div className="sk-back-handle" onClick={ this.hideSettings }>
-                <i className="fa fa-arrow-left"></i>
+            <div className='sk-back-handle' onClick={ this.hideSettings }>
+                <i className='fa fa-arrow-left'></i>
             </div>
             ) : null;
 
         const closeHandle = widgetOpened ? (
-            <div className="sk-close-handle sk-close-hidden">
-                <i className="fa fa-times"></i>
+            <div className='sk-close-handle sk-close-hidden'>
+                <i className='fa fa-times'></i>
             </div>
             ) : (
-            <div className="sk-show-handle sk-appear-hidden">
-                <i className="fa fa-arrow-up"></i>
+            <div className='sk-show-handle sk-appear-hidden'>
+                <i className='fa fa-arrow-up'></i>
             </div>
             );
 
@@ -68,7 +68,9 @@ export class HeaderComponent extends Component {
             height: 30
         };
 
-        const settingsText = <div style={settingsTextStyle} onClick={ this.hideSettings }>{ settingsHeaderText }</div>;
+        const settingsText = <div style={ settingsTextStyle } onClick={ this.hideSettings }>
+                                 { settingsHeaderText }
+                             </div>;
 
         return (
             <div id={ settingsVisible ? 'sk-settings-header' : 'sk-header' } onClick={ this.actions.toggleWidget }>

@@ -227,6 +227,14 @@ Smooch.on('message:sent', function(message) {
 });
 ```
 
+#### message
+```
+// This event triggers when a message was added to the conversation
+Smooch.on('message:sent', function(message) {
+    console.log('a message was added to the conversation', message);
+});
+```
+
 ## How to contribute
 
 ### Clone the git repo
@@ -239,6 +247,7 @@ Smooch.on('message:sent', function(message) {
 
 ### Essential Grunt Tasks
 
+* ```grunt``` runs the dev server
 * ```grunt build``` dumps a plain and a minified file from all files in the folder ```src``` to dist/smooch.min.js
 * ```grunt clean``` removes all files in the folder ```dist```
 * ```grunt test:unit``` runs karma tests
