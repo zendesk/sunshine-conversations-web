@@ -3,9 +3,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
-import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId } from 'test/utils/react';
+import { mockComponent, scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId } from 'test/utils/react';
 
 import { MessageComponent } from 'components/message.jsx';
+import { ActionComponent } from 'components/action.jsx';
 
 const sandbox = sinon.sandbox.create();
 
@@ -18,6 +19,12 @@ const defaultProps = {
 describe('Message', () => {
     var component;
     var componentNode;
+
+    beforeEach(() => {
+        mockComponent(sandbox, ActionComponent, 'div', {
+            className: 'mockedAction'
+        });
+    });
 
     afterEach(() => {
         sandbox.restore();
@@ -85,7 +92,7 @@ describe('Message', () => {
             });
 
             it('should not contain any actions', () => {
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-action').length.should.be.eq(0);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedAction').length.should.be.eq(0);
             });
 
             it('should contains the given text', () => {
@@ -134,14 +141,8 @@ describe('Message', () => {
             });
 
             it('should contain any actions', () => {
-                const actionNodes = TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-action');
+                const actionNodes = TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedAction');
                 actionNodes.length.should.be.eq(props.actions.length);
-
-                actionNodes.forEach((node, index) => {
-                    const link = node.getElementsByTagName('a')[0];
-                    link.href.should.eq(props.actions[index].uri);
-                    link.textContent.should.eq(props.actions[index].text);
-                });
             });
 
             it('should contains the given text', () => {

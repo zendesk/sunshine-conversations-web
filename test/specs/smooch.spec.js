@@ -48,18 +48,11 @@ describe('Smooch', () => {
     const sandbox = sinon.sandbox.create();
     var smooch;
 
-    var appendChildStub;
-
     var loginStub;
-    var getConversationStub;
     var sendMessageStub;
     var connectFayeStub;
     var disconnectFayeStub;
-    var resetConversationStub;
-    var resetUserStub;
-    var resetAuthStub;
     var updateUserStub;
-    var immediateUpdateUserStub;
     var trackEventStub;
     var mockedStore;
 
