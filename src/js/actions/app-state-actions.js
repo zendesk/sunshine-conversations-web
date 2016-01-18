@@ -98,12 +98,12 @@ export function showErrorNotification(message) {
     return {
         type: SHOW_ERROR_NOTIFICATION,
         message
-    }
+    };
 }
 
 export function hideErrorNotification(message) {
     return {
         type: HIDE_ERROR_NOTIFICATION,
         message
-    }
+    };
 }

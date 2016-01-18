@@ -29,20 +29,20 @@ export class WidgetComponent extends Component {
                 null;
 
         return (
-            <div id="sk-container" className={ className }>
-                <div id="sk-wrapper">
+            <div id='sk-container' className={ className }>
+                <div id='sk-wrapper'>
                     <Header />
-                    <ReactCSSTransitionGroup component="div"
-                                             className="sk-notification-container"
-                                             transitionName="sk-notification"
+                    <ReactCSSTransitionGroup component='div'
+                                             className='sk-notification-container'
+                                             transitionName='sk-notification'
                                              transitionAppear={ true }
                                              transitionAppearTimeout={ 500 }
                                              transitionEnterTimeout={ 500 }
                                              transitionLeaveTimeout={ 500 }>
                         { notification }
                     </ReactCSSTransitionGroup>
-                    <ReactCSSTransitionGroup component="div"
-                                             transitionName="settings"
+                    <ReactCSSTransitionGroup component='div'
+                                             transitionName='settings'
                                              transitionAppear={ true }
                                              transitionAppearTimeout={ 250 }
                                              transitionEnterTimeout={ 250 }

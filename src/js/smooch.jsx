@@ -42,7 +42,7 @@ function renderWidget() {
 function renderLink() {
     const el = document.createElement('div');
 
-    render(<a href="https://smooch.io?utm_source=widget">In app messaging by smooch</a>, el);
+    render(<a href='https://smooch.io?utm_source=widget'>In app messaging by smooch</a>, el);
 
     waitForPage().then(() => {
         document.body.appendChild(el);
