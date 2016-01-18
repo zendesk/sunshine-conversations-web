@@ -34,6 +34,10 @@ export class MessageComponent extends Component {
                    </span>;
         });
 
+        if (this.props.actions.length > 0) {
+            text = <span className='has-actions'>{ text }</span>;
+        }
+
         return (
             <div className={ 'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row') }>
                 { avatar }
