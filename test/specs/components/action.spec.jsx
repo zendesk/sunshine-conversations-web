@@ -11,6 +11,9 @@ import StripeCheckout from 'react-stripe-checkout';
 import { ActionComponent } from 'components/action.jsx';
 import { LoadingComponent } from 'components/loading.jsx';
 
+const stripeService = require('services/stripe-service');
+const userService = require('services/user-service');
+
 const AppStore = require('stores/app-store');
 
 const store = AppStore.store;
@@ -41,6 +44,12 @@ describe('Action', () => {
         mockComponent(sandbox, LoadingComponent, 'div', {
             className: 'mockedLoading'
         });
+
+        sandbox.stub(stripeService, 'createTransaction');
+        sandbox.stub(userService, 'immediateUpdate');
+
+        stripeService.createTransaction.resolves();
+        userService.immediateUpdate.resolves();
     });
 
     afterEach(() => {
@@ -210,7 +219,7 @@ describe('Action', () => {
         });
     });
 
-    describe('buy action without stripe keys and paid state', () => {
+    describe('buy action without stripe keys', () => {
         const props = {
             type: 'buy',
             text: 'action text',
