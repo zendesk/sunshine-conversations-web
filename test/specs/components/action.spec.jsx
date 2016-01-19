@@ -45,10 +45,7 @@ describe('Action', () => {
             className: 'mockedLoading'
         });
 
-        sandbox.stub(stripeService, 'createTransaction');
         sandbox.stub(userService, 'immediateUpdate');
-
-        stripeService.createTransaction.resolves();
         userService.immediateUpdate.resolves();
     });
 
@@ -256,6 +253,289 @@ describe('Action', () => {
             link.textContent = 'action text';
             link.href = 'fallback uri';
             link.target = '_blank';
+        });
+    });
+
+    describe('onStripeToken', () => {
+
+        describe('user has no email', () => {
+            const props = {
+                _id: 'action id',
+                type: 'buy',
+                text: 'action text',
+                uri: 'fallback uri',
+                currency: 'USD',
+                state: 'paid'
+            };
+
+            beforeEach(() => {
+
+                mockStore(sandbox, {
+                    app: {
+                        publicKeys: {},
+                        stripe: {
+                            appName: 'Fake app',
+                            iconUrl: 'fakeicon'
+                        }
+                    },
+                    user: {
+                        email: ''
+                    },
+                    ui: {
+                        text: {
+                            actionPaymentCompleted: 'payment completed text'
+                        }
+                    }
+                });
+
+                component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
+                componentNode = ReactDOM.findDOMNode(component);
+
+                sandbox.stub(stripeService, 'createTransaction');
+                stripeService.createTransaction.resolves();
+            });
+
+            it('call user update', () => {
+                return component.onStripeToken({
+                    email: 'email'
+                }).then(() => {
+                    userService.immediateUpdate.should.have.been.calledWith({
+                        email: 'email'
+                    });
+                });
+            });
+        });
+
+        describe('user has email', () => {
+            const props = {
+                _id: 'action id',
+                type: 'buy',
+                text: 'action text',
+                uri: 'fallback uri',
+                currency: 'USD',
+                state: 'paid'
+            };
+
+            beforeEach(() => {
+
+                mockStore(sandbox, {
+                    app: {
+                        publicKeys: {},
+                        stripe: {
+                            appName: 'Fake app',
+                            iconUrl: 'fakeicon'
+                        }
+                    },
+                    user: {
+                        email: 'test'
+                    },
+                    ui: {
+                        text: {
+                            actionPaymentCompleted: 'payment completed text'
+                        }
+                    }
+                });
+
+                component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
+                componentNode = ReactDOM.findDOMNode(component);
+
+                sandbox.stub(stripeService, 'createTransaction');
+                stripeService.createTransaction.resolves();
+            });
+
+            it('call user update', () => {
+                return component.onStripeToken({
+                    email: 'email'
+                }).then(() => {
+                    userService.immediateUpdate.should.not.have.been.called;
+                });
+            });
+        });
+
+        describe('create transaction success', () => {
+            const props = {
+                _id: 'action id',
+                type: 'buy',
+                text: 'action text',
+                uri: 'fallback uri',
+                currency: 'USD',
+                state: 'processing'
+            };
+
+            beforeEach(() => {
+
+                mockStore(sandbox, {
+                    app: {
+                        publicKeys: {},
+                        stripe: {
+                            appName: 'Fake app',
+                            iconUrl: 'fakeicon'
+                        }
+                    },
+                    user: {
+                        email: 'test'
+                    },
+                    ui: {
+                        text: {
+                            actionPaymentCompleted: 'payment completed text'
+                        }
+                    }
+                });
+
+                component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
+
+                sandbox.stub(stripeService, 'createTransaction');
+                stripeService.createTransaction.resolves();
+
+            });
+
+            it('should set state to paid', () => {
+                component.state.state.should.eq('processing');
+                return component.onStripeToken({
+                    email: 'email'
+                }).then(() => {
+                    component.state.state.should.eq('paid');
+                });
+            });
+        });
+
+        describe('create transaction fail', () => {
+            const props = {
+                _id: 'action id',
+                type: 'buy',
+                text: 'action text',
+                uri: 'fallback uri',
+                currency: 'USD',
+                state: 'processing'
+            };
+
+            beforeEach(() => {
+
+                mockStore(sandbox, {
+                    app: {
+                        publicKeys: {},
+                        stripe: {
+                            appName: 'Fake app',
+                            iconUrl: 'fakeicon'
+                        }
+                    },
+                    user: {
+                        email: 'test'
+                    },
+                    ui: {
+                        text: {
+                            actionPaymentCompleted: 'payment completed text'
+                        }
+                    }
+                });
+
+                component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
+
+                sandbox.stub(stripeService, 'createTransaction');
+                stripeService.createTransaction.rejects();
+
+            });
+
+            it('should set state to paid', () => {
+                component.state.state.should.eq('processing');
+                return component.onStripeToken({
+                    email: 'email'
+                }).then(() => {
+                    component.state.state.should.eq('offered');
+                });
+            });
+        });
+
+    });
+
+
+    describe('onStripeClick', () => {
+        const props = {
+            _id: 'action id',
+            type: 'buy',
+            text: 'action text',
+            uri: 'fallback uri',
+            currency: 'USD',
+            state: 'offered'
+        };
+
+        beforeEach(() => {
+
+            mockStore(sandbox, {
+                app: {
+                    publicKeys: {},
+                    stripe: {
+                        appName: 'Fake app',
+                        iconUrl: 'fakeicon'
+                    }
+                },
+                user: {
+                    email: ''
+                },
+                ui: {
+                    text: {
+                        actionPaymentCompleted: 'payment completed text'
+                    }
+                }
+            });
+
+            component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
+        });
+
+        it('set state to processing', () => {
+            component.state.state.should.eq('offered');
+            component.onStripeClick();
+            component.state.state.should.eq('processing');
+        });
+    });
+
+
+
+    describe('onStripeClose', () => {
+        const props = {
+            _id: 'action id',
+            type: 'buy',
+            text: 'action text',
+            uri: 'fallback uri',
+            currency: 'USD',
+            state: 'processing'
+        };
+
+        beforeEach(() => {
+
+            mockStore(sandbox, {
+                app: {
+                    publicKeys: {},
+                    stripe: {
+                        appName: 'Fake app',
+                        iconUrl: 'fakeicon'
+                    }
+                },
+                user: {
+                    email: ''
+                },
+                ui: {
+                    text: {
+                        actionPaymentCompleted: 'payment completed text'
+                    }
+                }
+            });
+
+            component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
+        });
+
+        it('should set state to offered if no token', () => {
+            component.state.state.should.eq('processing');
+            component.state.hasToken = false;
+            component.onStripeClose();
+            component.state.state.should.eq('offered');
+        });
+
+        it('should do nothing if token', () => {
+            component.state.state.should.eq('processing');
+            component.state.hasToken = true;
+            component.onStripeClose();
+            component.state.state.should.eq('processing');
         });
     });
 });
