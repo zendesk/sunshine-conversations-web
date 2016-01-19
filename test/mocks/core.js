@@ -3,11 +3,19 @@ export function getMock(sinon) {
         appUsers: {
             init: sinon.stub(),
             update: sinon.stub(),
-            trackEvent: sinon.stub()
+            trackEvent: sinon.stub(),
+            stripe: {
+                createTransaction: sinon.stub()
+            }
         },
+
         conversations: {
             sendMessage: sinon.stub(),
             get: sinon.stub()
+        },
+
+        stripe: {
+            getAccount: sinon.stub()
         }
     };
 
