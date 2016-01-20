@@ -4,7 +4,6 @@ export function createMarkup(html) {
     };
 }
 
-
 export function autolink(text, options) {
     options || (options = {});
 
