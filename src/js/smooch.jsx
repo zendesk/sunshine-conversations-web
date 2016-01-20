@@ -25,14 +25,12 @@ import { waitForPage } from 'utils/dom';
 function renderWidget() {
     const el = document.createElement('div');
     el.setAttribute('id', 'sk-holder');
-    el.className = 'sk-noanimation';
 
     const Root = (process.env.NODE_ENV === 'production' ? require('./root-prod') : require('./root-dev')).Root;
     render(<Root store={ store } />, el);
 
     waitForPage().then(() => {
         document.body.appendChild(el);
-        setTimeout(() => el.className = '', 200);
     });
 
 

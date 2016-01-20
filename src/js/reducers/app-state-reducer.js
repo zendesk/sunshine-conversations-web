@@ -4,7 +4,7 @@ import { RESET } from 'actions/common-actions';
 const INITIAL_STATE = {
     settingsVisible: false,
     settingsNotificationVisible: false,
-    widgetOpened: undefined,
+    widgetOpened: null,
     settingsEnabled: true,
     readOnlyEmail: false,
     serverURL: 'https://api.smooch.io/',
