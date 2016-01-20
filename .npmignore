@@ -17,6 +17,7 @@ karma.conf.js
 .esformatter
 .eslintignore
 .eslintrc
+.jshintrc
 .jsfmtrc
 bower.json
 circle.yml
