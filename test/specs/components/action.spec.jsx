@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
-import { getMockedStore } from 'test/utils/redux';
+import { mockAppStore } from 'test/utils/redux';
 import { mockComponent, findRenderedDOMComponentsWithId } from 'test/utils/react';
 
 import StripeCheckout from 'react-stripe-checkout';
@@ -14,28 +14,12 @@ import { LoadingComponent } from 'components/loading.jsx';
 const stripeService = require('services/stripe-service');
 const userService = require('services/user-service');
 
-const AppStore = require('stores/app-store');
-
-const store = AppStore.store;
-
-function mockStore(s, state = {}) {
-    var mockedStore = getMockedStore(s, state);
-
-    Object.defineProperty(AppStore, 'store', {
-        get: () => {
-            return mockedStore;
-        }
-    });
-
-    return mockedStore;
-}
-
 const sandbox = sinon.sandbox.create();
 
 describe('Action', () => {
     let component;
     let componentNode;
-    let store;
+    let mockedStore;
 
     beforeEach(() => {
         mockComponent(sandbox, StripeCheckout, 'div', {
@@ -54,11 +38,7 @@ describe('Action', () => {
     });
 
     after(() => {
-        Object.defineProperty(AppStore, 'store', {
-            get: () => {
-                return store;
-            }
-        });
+        mockedStore.restore();
     });
 
     describe('normal action link', () => {
@@ -106,12 +86,12 @@ describe('Action', () => {
             type: 'buy',
             text: 'action text',
             uri: 'fallback uri',
-            currency: 'USD',
+            currency: 'usd',
             state: 'offered'
         };
 
         beforeEach(() => {
-            mockStore(sandbox, {
+            mockedStore = mockAppStore(sandbox, {
                 app: {
                     publicKeys: {
                         stripe: 'stripe key'
@@ -142,12 +122,12 @@ describe('Action', () => {
             type: 'buy',
             text: 'action text',
             uri: 'fallback uri',
-            currency: 'USD',
+            currency: 'usd',
             state: 'processing'
         };
 
         beforeEach(() => {
-            mockStore(sandbox, {
+            mockedStore = mockAppStore(sandbox, {
                 app: {
                     publicKeys: {
                         stripe: 'stripe key'
@@ -179,12 +159,12 @@ describe('Action', () => {
             type: 'buy',
             text: 'action text',
             uri: 'fallback uri',
-            currency: 'USD',
+            currency: 'usd',
             state: 'paid'
         };
 
         beforeEach(() => {
-            mockStore(sandbox, {
+            mockedStore = mockAppStore(sandbox, {
                 app: {
                     publicKeys: {
                         stripe: 'stripe key'
@@ -221,12 +201,12 @@ describe('Action', () => {
             type: 'buy',
             text: 'action text',
             uri: 'fallback uri',
-            currency: 'USD',
+            currency: 'usd',
             state: 'paid'
         };
 
         beforeEach(() => {
-            mockStore(sandbox, {
+            mockedStore = mockAppStore(sandbox, {
                 app: {
                     publicKeys: {},
                     stripe: {
@@ -264,13 +244,13 @@ describe('Action', () => {
                 type: 'buy',
                 text: 'action text',
                 uri: 'fallback uri',
-                currency: 'USD',
+                currency: 'usd',
                 state: 'paid'
             };
 
             beforeEach(() => {
 
-                mockStore(sandbox, {
+                mockedStore = mockAppStore(sandbox, {
                     app: {
                         publicKeys: {},
                         stripe: {
@@ -312,13 +292,13 @@ describe('Action', () => {
                 type: 'buy',
                 text: 'action text',
                 uri: 'fallback uri',
-                currency: 'USD',
+                currency: 'usd',
                 state: 'paid'
             };
 
             beforeEach(() => {
 
-                mockStore(sandbox, {
+                mockedStore = mockAppStore(sandbox, {
                     app: {
                         publicKeys: {},
                         stripe: {
@@ -358,13 +338,13 @@ describe('Action', () => {
                 type: 'buy',
                 text: 'action text',
                 uri: 'fallback uri',
-                currency: 'USD',
+                currency: 'usd',
                 state: 'processing'
             };
 
             beforeEach(() => {
 
-                mockStore(sandbox, {
+                mockedStore = mockAppStore(sandbox, {
                     app: {
                         publicKeys: {},
                         stripe: {
@@ -405,13 +385,13 @@ describe('Action', () => {
                 type: 'buy',
                 text: 'action text',
                 uri: 'fallback uri',
-                currency: 'USD',
+                currency: 'usd',
                 state: 'processing'
             };
 
             beforeEach(() => {
 
-                mockStore(sandbox, {
+                mockedStore = mockAppStore(sandbox, {
                     app: {
                         publicKeys: {},
                         stripe: {
@@ -455,13 +435,13 @@ describe('Action', () => {
             type: 'buy',
             text: 'action text',
             uri: 'fallback uri',
-            currency: 'USD',
+            currency: 'usd',
             state: 'offered'
         };
 
         beforeEach(() => {
 
-            mockStore(sandbox, {
+            mockedStore = mockAppStore(sandbox, {
                 app: {
                     publicKeys: {},
                     stripe: {
@@ -497,13 +477,13 @@ describe('Action', () => {
             type: 'buy',
             text: 'action text',
             uri: 'fallback uri',
-            currency: 'USD',
+            currency: 'usd',
             state: 'processing'
         };
 
         beforeEach(() => {
 
-            mockStore(sandbox, {
+            mockedStore = mockAppStore(sandbox, {
                 app: {
                     publicKeys: {},
                     stripe: {

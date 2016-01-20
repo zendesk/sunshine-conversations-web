@@ -1,42 +1,27 @@
 import sinon from 'sinon';
-import { getMock } from 'test/mocks/core';
-import { getMockedStore } from 'test/utils/redux';
+import { createMock } from 'test/mocks/core';
+import { mockAppStore } from 'test/utils/redux';
 import * as coreService from 'services/core';
 import { createTransaction, getAccount } from 'services/stripe-service';
-
-const AppStore = require('stores/app-store');
-
-const store = AppStore.store;
-
-function mockStore(s, state = {}) {
-    var mockedStore = getMockedStore(s, state);
-
-    Object.defineProperty(AppStore, 'store', {
-        get: () => {
-            return mockedStore;
-        }
-    });
-
-    return mockedStore;
-}
 
 describe('Stripe service', () => {
     var sandbox;
     var coreMock;
     var coreStub;
+    let mockedStore;
 
     before(() => {
         sandbox = sinon.sandbox.create();
     });
 
     beforeEach(() => {
-        mockStore(sandbox, {
+        mockedStore = mockAppStore(sandbox, {
             user: {
                 _id: '1'
             }
         });
 
-        coreMock = getMock(sandbox);
+        coreMock = createMock(sandbox);
         coreStub = sandbox.stub(coreService, 'core', () => {
             return coreMock;
         });
@@ -46,11 +31,7 @@ describe('Stripe service', () => {
 
     afterEach(() => {
         sandbox.restore();
-        Object.defineProperty(AppStore, 'store', {
-            get: () => {
-                return store;
-            }
-        });
+        mockedStore.restore();
     });
 
     describe('createTransaction', () => {

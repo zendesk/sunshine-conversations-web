@@ -1,25 +1,9 @@
 import sinon from 'sinon';
-import { getMock } from 'test/mocks/core';
-import { getMockedStore } from 'test/utils/redux';
+import { createMock } from 'test/mocks/core';
+import { mockAppStore } from 'test/utils/redux';
 import * as coreService from 'services/core';
 import * as userService from 'services/user-service';
 import * as conversationService from 'services/conversation-service';
-
-const AppStore = require('stores/app-store');
-
-const store = AppStore.store;
-
-function mockStore(s, state = {}) {
-    var mockedStore = getMockedStore(s, state);
-
-    Object.defineProperty(AppStore, 'store', {
-        get: () => {
-            return mockedStore;
-        }
-    });
-
-    return mockedStore;
-}
 
 describe('User service', () => {
     var sandbox;
@@ -32,15 +16,11 @@ describe('User service', () => {
     });
 
     after(() => {
-        Object.defineProperty(AppStore, 'store', {
-            get: () => {
-                return store;
-            }
-        });
+        mockedStore.restore();
     });
 
     beforeEach(() => {
-        coreMock = getMock(sandbox);
+        coreMock = createMock(sandbox);
 
         coreMock.appUsers.update.resolves({
             appUser: {
@@ -60,7 +40,7 @@ describe('User service', () => {
             return coreMock;
         });
 
-        mockedStore = mockStore(sandbox, {
+        mockedStore = mockAppStore(sandbox, {
             user: {
                 _id: '1',
                 email: 'some@email.com'

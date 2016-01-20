@@ -1,4 +1,4 @@
-export function getMock(sinon) {
+export function createMock(sinon) {
     var mock = {
         appUsers: {
             init: sinon.stub(),
