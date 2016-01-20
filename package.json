@@ -62,6 +62,7 @@
     "chai-as-promised": "^5.0.0",
     "chai-things": "^0.2.0",
     "css-loader": "^0.23.0",
+    "deep-assign": "^2.0.0",
     "expose-loader": "^0.7.1",
     "express": "^4.13.3",
     "extract-text-webpack-plugin": "^0.9.1",

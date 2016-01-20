@@ -2,6 +2,7 @@ import sinon from 'sinon';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
+import deepAssign from 'deep-assign';
 
 import { mockAppStore } from 'test/utils/redux';
 import { mockComponent, findRenderedDOMComponentsWithId } from 'test/utils/react';
@@ -15,6 +16,54 @@ const stripeService = require('services/stripe-service');
 const userService = require('services/user-service');
 
 const sandbox = sinon.sandbox.create();
+
+function getNormalProps(props = {}) {
+    const defaultProps = {
+        _id: 'action id',
+        type: 'action',
+        text: 'action text',
+        uri: 'action uri'
+    };
+
+    return Object.assign(defaultProps, props);
+}
+
+function getBuyProps(props = {}) {
+    const defaultProps = {
+        _id: 'action id',
+        type: 'buy',
+        text: 'action text',
+        uri: 'action uri',
+        currency: 'usd',
+        state: 'offered'
+    };
+
+    return Object.assign(defaultProps, props);
+}
+
+function getStoreState(state = {}) {
+    const defaultState = {
+        app: {
+            publicKeys: {
+                stripe: 'fakekey'
+            },
+            stripe: {
+                appName: 'Fake app',
+                iconUrl: 'fakeicon'
+            }
+        },
+        user: {
+            email: 'test'
+        },
+        ui: {
+            text: {
+                actionPaymentCompleted: 'payment completed text'
+            }
+        }
+    };
+
+    return deepAssign(defaultState, state);
+}
 
 describe('Action', () => {
     let component;
@@ -42,11 +91,7 @@ describe('Action', () => {
     });
 
     describe('normal action link', () => {
-        const props = {
-            app: {},
-            text: 'action text',
-            uri: 'action uri'
-        };
+        const props = getNormalProps();
 
         beforeEach(() => {
             component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
@@ -62,11 +107,9 @@ describe('Action', () => {
     });
 
     describe('javascript action link', () => {
-        const props = {
-            app: {},
-            text: 'action text',
+        const props = getNormalProps({
             uri: 'javascript:someAction()'
-        };
+        });
 
         beforeEach(() => {
             component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
@@ -82,30 +125,12 @@ describe('Action', () => {
     });
 
     describe('buy action with stripe keys and offered state', () => {
-        const props = {
-            type: 'buy',
-            text: 'action text',
-            uri: 'fallback uri',
-            currency: 'usd',
-            state: 'offered'
-        };
+        const props = getBuyProps({
+            uri: 'fallback uri'
+        });
 
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, {
-                app: {
-                    publicKeys: {
-                        stripe: 'stripe key'
-                    },
-                    stripe: {
-                        appName: 'Fake app',
-                        iconUrl: 'fakeicon'
-                    }
-                },
-                user: {
-                    email: ''
-                }
-            });
-
+            mockedStore = mockAppStore(sandbox, getStoreState());
             component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
         });
 
@@ -118,30 +143,12 @@ describe('Action', () => {
     });
 
     describe('buy action with stripe keys and processing state', () => {
-        const props = {
-            type: 'buy',
-            text: 'action text',
-            uri: 'fallback uri',
-            currency: 'usd',
+        const props = getBuyProps({
             state: 'processing'
-        };
+        });
 
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, {
-                app: {
-                    publicKeys: {
-                        stripe: 'stripe key'
-                    },
-                    stripe: {
-                        appName: 'Fake app',
-                        iconUrl: 'fakeicon'
-                    }
-                },
-                user: {
-                    email: ''
-                }
-            });
-
+            mockedStore = mockAppStore(sandbox, getStoreState());
             component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
             componentNode = ReactDOM.findDOMNode(component);
         });
@@ -155,34 +162,12 @@ describe('Action', () => {
     });
 
     describe('buy action with stripe keys and paid state', () => {
-        const props = {
-            type: 'buy',
-            text: 'action text',
-            uri: 'fallback uri',
-            currency: 'usd',
+        const props = getBuyProps({
             state: 'paid'
-        };
+        });
 
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, {
-                app: {
-                    publicKeys: {
-                        stripe: 'stripe key'
-                    },
-                    stripe: {
-                        appName: 'Fake app',
-                        iconUrl: 'fakeicon'
-                    }
-                },
-                user: {
-                    email: ''
-                },
-                ui: {
-                    text: {
-                        actionPaymentCompleted: 'payment completed text'
-                    }
-                }
-            });
+            mockedStore = mockAppStore(sandbox, getStoreState());
 
             component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
             componentNode = ReactDOM.findDOMNode(component);
@@ -197,32 +182,16 @@ describe('Action', () => {
     });
 
     describe('buy action without stripe keys', () => {
-        const props = {
-            type: 'buy',
-            text: 'action text',
-            uri: 'fallback uri',
-            currency: 'usd',
-            state: 'paid'
-        };
+        const props = getBuyProps();
 
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, {
+            mockedStore = mockAppStore(sandbox, getStoreState({
                 app: {
-                    publicKeys: {},
-                    stripe: {
-                        appName: 'Fake app',
-                        iconUrl: 'fakeicon'
-                    }
-                },
-                user: {
-                    email: ''
-                },
-                ui: {
-                    text: {
-                        actionPaymentCompleted: 'payment completed text'
+                    publicKeys: {
+                        stripe: false
                     }
                 }
-            });
+            }));
 
             component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
             componentNode = ReactDOM.findDOMNode(component);
@@ -239,34 +208,15 @@ describe('Action', () => {
     describe('onStripeToken', () => {
 
         describe('user has no email', () => {
-            const props = {
-                _id: 'action id',
-                type: 'buy',
-                text: 'action text',
-                uri: 'fallback uri',
-                currency: 'usd',
-                state: 'paid'
-            };
+            const props = getBuyProps();
 
             beforeEach(() => {
 
-                mockedStore = mockAppStore(sandbox, {
-                    app: {
-                        publicKeys: {},
-                        stripe: {
-                            appName: 'Fake app',
-                            iconUrl: 'fakeicon'
-                        }
-                    },
+                mockedStore = mockAppStore(sandbox, getStoreState({
                     user: {
                         email: ''
-                    },
-                    ui: {
-                        text: {
-                            actionPaymentCompleted: 'payment completed text'
-                        }
                     }
-                });
+                }));
 
                 component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
                 componentNode = ReactDOM.findDOMNode(component);
@@ -287,34 +237,11 @@ describe('Action', () => {
         });
 
         describe('user has email', () => {
-            const props = {
-                _id: 'action id',
-                type: 'buy',
-                text: 'action text',
-                uri: 'fallback uri',
-                currency: 'usd',
-                state: 'paid'
-            };
+            const props = getBuyProps();
 
             beforeEach(() => {
 
-                mockedStore = mockAppStore(sandbox, {
-                    app: {
-                        publicKeys: {},
-                        stripe: {
-                            appName: 'Fake app',
-                            iconUrl: 'fakeicon'
-                        }
-                    },
-                    user: {
-                        email: 'test'
-                    },
-                    ui: {
-                        text: {
-                            actionPaymentCompleted: 'payment completed text'
-                        }
-                    }
-                });
+                mockedStore = mockAppStore(sandbox, getStoreState());
 
                 component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
                 componentNode = ReactDOM.findDOMNode(component);
@@ -333,34 +260,13 @@ describe('Action', () => {
         });
 
         describe('create transaction success', () => {
-            const props = {
-                _id: 'action id',
-                type: 'buy',
-                text: 'action text',
-                uri: 'fallback uri',
-                currency: 'usd',
+            const props = getBuyProps({
                 state: 'processing'
-            };
+            });
 
             beforeEach(() => {
 
-                mockedStore = mockAppStore(sandbox, {
-                    app: {
-                        publicKeys: {},
-                        stripe: {
-                            appName: 'Fake app',
-                            iconUrl: 'fakeicon'
-                        }
-                    },
-                    user: {
-                        email: 'test'
-                    },
-                    ui: {
-                        text: {
-                            actionPaymentCompleted: 'payment completed text'
-                        }
-                    }
-                });
+                mockedStore = mockAppStore(sandbox, getStoreState());
 
                 component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
 
@@ -380,34 +286,13 @@ describe('Action', () => {
         });
 
         describe('create transaction fail', () => {
-            const props = {
-                _id: 'action id',
-                type: 'buy',
-                text: 'action text',
-                uri: 'fallback uri',
-                currency: 'usd',
+            const props = getBuyProps({
                 state: 'processing'
-            };
+            });
 
             beforeEach(() => {
 
-                mockedStore = mockAppStore(sandbox, {
-                    app: {
-                        publicKeys: {},
-                        stripe: {
-                            appName: 'Fake app',
-                            iconUrl: 'fakeicon'
-                        }
-                    },
-                    user: {
-                        email: 'test'
-                    },
-                    ui: {
-                        text: {
-                            actionPaymentCompleted: 'payment completed text'
-                        }
-                    }
-                });
+                mockedStore = mockAppStore(sandbox, getStoreState());
 
                 component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
 
@@ -430,34 +315,11 @@ describe('Action', () => {
 
 
     describe('onStripeClick', () => {
-        const props = {
-            _id: 'action id',
-            type: 'buy',
-            text: 'action text',
-            uri: 'fallback uri',
-            currency: 'usd',
-            state: 'offered'
-        };
+        const props = getBuyProps();
 
         beforeEach(() => {
 
-            mockedStore = mockAppStore(sandbox, {
-                app: {
-                    publicKeys: {},
-                    stripe: {
-                        appName: 'Fake app',
-                        iconUrl: 'fakeicon'
-                    }
-                },
-                user: {
-                    email: ''
-                },
-                ui: {
-                    text: {
-                        actionPaymentCompleted: 'payment completed text'
-                    }
-                }
-            });
+            mockedStore = mockAppStore(sandbox, getStoreState());
 
             component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
         });
@@ -472,34 +334,13 @@ describe('Action', () => {
 
 
     describe('onStripeClose', () => {
-        const props = {
-            _id: 'action id',
-            type: 'buy',
-            text: 'action text',
-            uri: 'fallback uri',
-            currency: 'usd',
+        const props = getBuyProps({
             state: 'processing'
-        };
+        });
 
         beforeEach(() => {
 
-            mockedStore = mockAppStore(sandbox, {
-                app: {
-                    publicKeys: {},
-                    stripe: {
-                        appName: 'Fake app',
-                        iconUrl: 'fakeicon'
-                    }
-                },
-                user: {
-                    email: ''
-                },
-                ui: {
-                    text: {
-                        actionPaymentCompleted: 'payment completed text'
-                    }
-                }
-            });
+            mockedStore = mockAppStore(sandbox, getStoreState());
 
             component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
         });
