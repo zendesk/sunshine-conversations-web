@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import { getMock } from 'test/mocks/core';
+import { createMock } from 'test/mocks/core';
 import * as coreService from 'services/core';
 import { login } from 'services/auth-service';
 
@@ -13,7 +13,7 @@ describe('Auth service', () => {
     });
 
     beforeEach(() => {
-        coreMock = getMock(sandbox);
+        coreMock = createMock(sandbox);
         coreStub = sandbox.stub(coreService, 'core', () => {
             return coreMock;
         });
