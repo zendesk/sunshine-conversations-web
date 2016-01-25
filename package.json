@@ -19,8 +19,8 @@
     "dev-server": "webpack-dev-server --config webpack-dev-server.config.js --colors --port 2992 --inline  --no-info",
     "hot-dev-server": "webpack-dev-server --config webpack-hot-dev-server.config.js --hot --colors --port 2992 --inline --no-info",
     "build": "webpack --config webpack-production.config.js --progress --profile --colors",
-    "start-dev": "node server/server-development",
-    "start": "node server/server-production",
+    "start-dev": "node lib/server-development",
+    "start": "node lib/server-production",
     "lint": "eslint . --ext=js --ext=jsx"
   },
   "main": "dist/smooch.js",
@@ -38,7 +38,7 @@
     "react-redux": "^4.0.5",
     "react-stripe-checkout": "^1.7.2",
     "redux": "^3.0.5",
-    "smooch-core": "0.0.13",
+    "smooch-core": "0.0.14",
     "urljoin": "^0.1.5",
     "uuid": "^2.0.1"
   },
@@ -62,6 +62,7 @@
     "chai-as-promised": "^5.0.0",
     "chai-things": "^0.2.0",
     "css-loader": "^0.23.0",
+    "deep-assign": "^2.0.0",
     "expose-loader": "^0.7.1",
     "express": "^4.13.3",
     "extract-text-webpack-plugin": "^0.9.1",
