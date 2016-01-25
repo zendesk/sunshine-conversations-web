@@ -189,9 +189,12 @@ export class Smooch extends Observable {
             if (!this._el) {
                 this._el = renderWidget();
             }
-            this.trigger('ready');
 
-            return store.getState().user;
+            let user = store.getState().user;
+
+            this.trigger('ready', user);
+
+            return user;
         });
     }
 
