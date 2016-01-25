@@ -190,6 +190,8 @@ export class Smooch extends Observable {
                 this._el = renderWidget();
             }
             this.trigger('ready');
+
+            return store.getState().user;
         });
     }
 
