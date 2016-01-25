@@ -73,7 +73,7 @@ function onStoreChange(messages) {
     lastTriggeredMessageTimestamp = lastTriggeredMessageTimestamp || getReadTimestamp() || (messages.length > 0 && messages[messages.length - 1].received);
 
     messages.filter(message => message.received > lastTriggeredMessageTimestamp).forEach(message => {
-        if(message.role === 'appuser') {
+        if(message.role === 'appUser') {
             this.trigger('message:sent', message);
         } else {
             this.trigger('message:received', message);
