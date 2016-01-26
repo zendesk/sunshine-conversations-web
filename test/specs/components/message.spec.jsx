@@ -30,6 +30,27 @@ describe('Message', () => {
         sandbox.restore();
     });
 
+    describe('no actions', () => {
+        const props = {
+            role: 'appUser',
+            text: 'This is a text!'
+        };
+
+        beforeEach(() => {
+            component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
+            componentNode = ReactDOM.findDOMNode(component);
+        });
+        
+        it('should not contain any actions', () => {
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-action').length.should.be.eq(0);
+        });
+
+        it('should contains the given text', () => {
+            const message = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-msg');
+            message.textContent.should.eq(props.text);
+        });
+    });
+
     describe('appUser', () => {
         const props = Object.assign({}, defaultProps);
 
