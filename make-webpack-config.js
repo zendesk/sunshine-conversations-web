@@ -135,6 +135,14 @@ module.exports = function(options) {
                 entryOnly: true
             })
         );
+    } else if (options.test) {
+        plugins.push(
+            new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: JSON.stringify('test')
+                }
+            })
+        );
     } else {
         plugins.push(
             new webpack.DefinePlugin({

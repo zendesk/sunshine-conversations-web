@@ -230,7 +230,7 @@ Smooch.on('message:sent', function(message) {
 #### message
 ```
 // This event triggers when a message was added to the conversation
-Smooch.on('message:sent', function(message) {
+Smooch.on('message', function(message) {
     console.log('a message was added to the conversation', message);
 });
 ```
