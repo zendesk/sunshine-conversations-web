@@ -1,7 +1,5 @@
 'use strict';
 
-window.SmoochTest = true;
-
 var sinon = require('sinon');
 sinon.behavior = require('sinon/lib/sinon/behavior');
 sinon.defaultConfig = {

@@ -96,7 +96,7 @@ export class Smooch extends Observable {
             renderLink();
             this.trigger('ready');
             return Promise.resolve();
-        } else if (/PhantomJS/.test(navigator.userAgent) && !window.SmoochTest) {
+        } else if (/PhantomJS/.test(navigator.userAgent) && process.env.NODE_ENV !== 'test') {
             return Promise.resolve();
         }
 
