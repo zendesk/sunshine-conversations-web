@@ -31,11 +31,8 @@ export class ConversationComponent extends Component {
         let messagesHeight = messages.clientHeight;
         let heightRemaining = conversationHeight - (introHeight + messagesHeight + logoHeight);
 
-        if (heightRemaining > logoHeight) {
-            this.refs.logo.className = 'sk-logo anchor-bottom';
-        } else {
-            this.refs.logo.className = 'sk-logo';
-        }
+
+        this.refs.logo.className = 'sk-logo';
     }
 
     componentDidMount() {
@@ -54,11 +51,13 @@ export class ConversationComponent extends Component {
         return (
             <div id='sk-conversation' ref='container'>
                 <div ref='intro' className='sk-intro' dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.introText) }></div>
-                <div ref='messages'>
-                    { messages }
-                </div>
-                <div className='sk-logo' ref='logo'>
-                    <a href='https://smooch.io/?utm_source=widget' target='_blank'><span>In-App Messaging by</span> <img className='sk-image' src={ require('images/logo_webwidget.png') } alt='Smooch' /> <img className='sk-image-retina' src={ require('images/logo_webwidget_2x.png') } alt='Smooch' /></a>
+                <div className='sk-messages-container'>
+                    <div ref='messages' className='sk-messages'>
+                        { messages }
+                    </div>
+                    <div className='sk-logo' ref='logo'>
+                        <a href='https://smooch.io/?utm_source=widget' target='_blank'><span>In-App Messaging by</span> <img className='sk-image' src={ require('images/logo_webwidget.png') } alt='Smooch' /> <img className='sk-image-retina' src={ require('images/logo_webwidget_2x.png') } alt='Smooch' /></a>
+                    </div>
                 </div>
             </div>
             );
