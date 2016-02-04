@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
-
 import { createMarkup } from 'utils/html';
-
 import { MessageComponent } from 'components/message.jsx';
 
 export class ConversationComponent extends Component {
@@ -13,36 +11,23 @@ export class ConversationComponent extends Component {
             logoIsAnchored: true
         };
     }
+
     _scrollToBottom() {
-        let container = findDOMNode(this);
-        let logo = this.refs.logo;
-        let scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight;
-        container.scrollTop = scrollTop;
-    }
-
-    _positionLogo() {
-        let container = findDOMNode(this);
-        let logo = this.refs.logo;
-        let intro = this.refs.intro;
-        let messages = this.refs.messages;
-        let conversationHeight = container.clientHeight;
-        let logoHeight = logo.clientHeight;
-        let introHeight = intro.clientHeight;
-        let messagesHeight = messages.clientHeight;
-        let heightRemaining = conversationHeight - (introHeight + messagesHeight + logoHeight);
-
-
-        this.refs.logo.className = 'sk-logo';
+        let self = this;
+        setTimeout(function() {
+            let container = findDOMNode(self);
+            let logo = self.refs.logo;
+            let scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight;
+            container.scrollTop = scrollTop;
+        });
     }
 
     componentDidMount() {
-        setTimeout(this._scrollToBottom.bind(this));
-        setTimeout(this._positionLogo.bind(this));
+        this._scrollToBottom();
     }
 
     componentDidUpdate() {
-        setTimeout(this._scrollToBottom.bind(this));
-        setTimeout(this._positionLogo.bind(this));
+        this._scrollToBottom();
     }
 
     render() {
