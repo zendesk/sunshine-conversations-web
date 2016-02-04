@@ -1,6 +1,6 @@
 #sk-conversation {
     position: relative;
-    padding: @conversation-padding 18px 0 13px;
+    padding: 0;
     height: @conversation-height;
     overflow-y: scroll;
     overflow-x: hidden;
@@ -24,11 +24,16 @@
         position: absolute;
         bottom: 0;
         width: 100%;
-        margin-left: -15px;
+        max-height: ~"calc(100% - @{conversation-intro-height})";
     }
-    
+
+    .sk-intro {
+        top: 0;
+        padding: 15px;
+    }
+
     .sk-messages {
-        margin: 15px;
+        padding: 0 15px 0 15px;
     }
 
     .sk-row {
