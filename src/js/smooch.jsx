@@ -25,14 +25,12 @@ import { waitForPage } from 'utils/dom';
 function renderWidget() {
     const el = document.createElement('div');
     el.setAttribute('id', 'sk-holder');
-    el.className = 'sk-noanimation';
 
     const Root = (process.env.NODE_ENV === 'production' ? require('./root-prod') : require('./root-dev')).Root;
     render(<Root store={ store } />, el);
 
     waitForPage().then(() => {
         document.body.appendChild(el);
-        setTimeout(() => el.className = '', 200);
     });
 
 
@@ -75,7 +73,7 @@ function onStoreChange(messages) {
     lastTriggeredMessageTimestamp = lastTriggeredMessageTimestamp || getReadTimestamp() || (messages.length > 0 && messages[messages.length - 1].received);
 
     messages.filter(message => message.received > lastTriggeredMessageTimestamp).forEach(message => {
-        if(message.role === 'appuser') {
+        if(message.role === 'appUser') {
             this.trigger('message:sent', message);
         } else {
             this.trigger('message:received', message);
@@ -97,6 +95,8 @@ export class Smooch extends Observable {
         if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
             renderLink();
             this.trigger('ready');
+            return Promise.resolve();
+        } else if (/PhantomJS/.test(navigator.userAgent) && process.env.NODE_ENV !== 'test') {
             return Promise.resolve();
         }
 
@@ -191,7 +191,12 @@ export class Smooch extends Observable {
             if (!this._el) {
                 this._el = renderWidget();
             }
-            this.trigger('ready');
+
+            let user = store.getState().user;
+
+            this.trigger('ready', user);
+
+            return user;
         });
     }
 

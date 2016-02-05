@@ -11,7 +11,7 @@ module.exports = function(options) {
     var LICENSE = fs.readFileSync('LICENSE', 'utf8');
 
     var entry = {
-        smooch: ['babel-polyfill', './src/js/utils/polyfills', './src/js/main']
+        smooch: ['./src/js/utils/polyfills', './src/js/main']
     };
 
     var loaders = {
@@ -133,6 +133,14 @@ module.exports = function(options) {
 
             new webpack.BannerPlugin(PACKAGE_NAME + ' ' + VERSION + ' \n' + LICENSE, {
                 entryOnly: true
+            })
+        );
+    } else if (options.test) {
+        plugins.push(
+            new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: JSON.stringify('test')
+                }
             })
         );
     } else {
