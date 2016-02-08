@@ -2,7 +2,8 @@ import * as ConversationActions from 'actions/conversation-actions';
 import { RESET } from 'actions/common-actions';
 
 const INITIAL_STATE = {
-    messages: []
+    messages: [],
+    unreadCount: 0
 };
 
 export function ConversationReducer(state = INITIAL_STATE, action) {
