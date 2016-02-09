@@ -4,11 +4,10 @@ import { RESET } from 'actions/common-actions';
 const INITIAL_STATE = {
     settingsVisible: false,
     settingsNotificationVisible: false,
-    widgetOpened: undefined,
+    widgetOpened: null,
     settingsEnabled: true,
     readOnlyEmail: false,
     serverURL: 'https://api.smooch.io/',
-    messageReadTimestamp: 0,
     errorNotificationMessage: null
 };
 
@@ -70,10 +69,6 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
         case AppStateActions.SET_SERVER_URL:
             return Object.assign({}, state, {
                 serverURL: action.url
-            });
-        case AppStateActions.UPDATE_READ_TIMESTAMP:
-            return Object.assign({}, state, {
-                messageReadTimestamp: action.timestamp
             });
         case AppStateActions.SHOW_ERROR_NOTIFICATION:
             return Object.assign({}, state, {

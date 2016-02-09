@@ -7,6 +7,10 @@ import { ActionComponent } from 'components/action';
 import { createMarkup, autolink, escapeHtml } from 'utils/html';
 
 export class MessageComponent extends Component {
+    static defaultProps = {
+        actions: []
+    };
+
     render() {
         const actions = this.props.actions.map((action) => {
             return <ActionComponent key={ action._id } {...action} />;

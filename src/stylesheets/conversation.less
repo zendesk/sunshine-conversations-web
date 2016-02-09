@@ -1,5 +1,6 @@
 #sk-conversation {
-    padding: @conversation-padding 18px 0 13px;
+    position: relative;
+    padding: 0;
     height: @conversation-height;
     overflow-y: scroll;
     overflow-x: hidden;
@@ -12,11 +13,29 @@
     &:not(*:root) {
         margin-right: 3px;
     }
+    
     .sk-intro {
         color: #b0b0b0;
         font-size: 12px;
         line-height: 1.3;
     }
+
+    .sk-messages-container {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        max-height: ~"calc(100% - @{conversation-intro-height})";
+    }
+
+    .sk-intro {
+        top: 0;
+        padding: 15px;
+    }
+
+    .sk-messages {
+        padding: 0 15px 0 15px;
+    }
+
     .sk-row {
         clear: both;
 
@@ -176,14 +195,5 @@
                 display: inherit;
             }
         }
-        &.anchor-bottom {
-            position: absolute;
-            left: 0px;
-            bottom: 45px;
-        }
-    }
-
-    @media (max-width:@screen-sm-min) {
-        height: @main-region-height-mobile;
     }
 }
