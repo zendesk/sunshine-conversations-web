@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { sendMessage, getReadTimestamp, updateReadTimestamp } from 'services/conversation-service';
+import { sendMessage, resetUnreadCount } from 'services/conversation-service';
+import { store } from 'stores/app-store';
 
 
 export class ChatInputComponent extends Component {
@@ -35,8 +36,8 @@ export class ChatInputComponent extends Component {
     }
 
     onFocus(e) {
-        if (getReadTimestamp() > 0) {
-            updateReadTimestamp(0);
+        if (store.getState().conversation.unreadCount > 0) {
+            resetUnreadCount();
         }
     }
 

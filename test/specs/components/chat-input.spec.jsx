@@ -2,6 +2,7 @@ import sinon from 'sinon';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
+import { mockAppStore } from 'test/utils/redux';
 
 import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId } from 'test/utils/react';
 
@@ -23,33 +24,61 @@ const props = {
 describe('ChatInput', () => {
     var component;
     var componentNode;
+    var mockedStore;
 
     var onChangeSpy;
     var onSendMessageSpy;
     var setStateSpy;
 
+    var resetUnreadCountStub;
     var serviceSendMessageStub;
-
 
     beforeEach(() => {
         onChangeSpy = sandbox.spy(ChatInputComponent.prototype, 'onChange');
         onSendMessageSpy = sandbox.spy(ChatInputComponent.prototype, 'onSendMessage');
         setStateSpy = sandbox.spy(ChatInputComponent.prototype, 'setState');
 
+        resetUnreadCountStub = sandbox.stub(conversationService, 'resetUnreadCount');
         serviceSendMessageStub = sandbox.stub(conversationService, 'sendMessage');
 
         component = TestUtils.renderIntoDocument(<ChatInputComponent {...props} />);
         componentNode = ReactDOM.findDOMNode(component);
-
     });
 
     afterEach(() => {
+        mockedStore && mockedStore.restore();
         sandbox.restore();
     });
 
     it('should use the ui text', () => {
         component.refs.input.placeholder.should.eq(props.ui.text.inputPlaceholder);
         component.refs.button.textContent.should.eq(props.ui.text.sendButtonText);
+    });
+
+    describe('focus input', () => {
+        it('should reset unread count if > 0', () => {
+            mockedStore = mockAppStore(sandbox, {
+                conversation: {
+                    unreadCount: 1
+                }
+            });
+
+            component.onFocus();
+
+            resetUnreadCountStub.should.have.been.calledOnce;
+        });
+
+        it('should not reset unread count if == 0', () => {
+            mockedStore = mockAppStore(sandbox, {
+                conversation: {
+                    unreadCount: 0
+                }
+            });
+
+            component.onFocus();
+
+            resetUnreadCountStub.should.not.have.been.called;
+        });
     });
 
     describe('change input', () => {
