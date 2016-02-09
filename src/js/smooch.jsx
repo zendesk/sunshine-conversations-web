@@ -10,15 +10,15 @@ import { setUser, resetUser } from 'actions/user-actions';
 import { setPublicKeys, setStripeInfo } from 'actions/app-actions';
 import { updateText } from 'actions/ui-actions';
 import { setConversation, resetConversation } from 'actions/conversation-actions';
-import { openWidget, closeWidget, showSettingsNotification, enableSettings, disableSettings, hideSettings, setServerURL, setEmailReadonly, unsetEmailReadonly, updateReadTimestamp } from 'actions/app-state-actions';
+import { openWidget, closeWidget, showSettingsNotification, enableSettings, disableSettings, hideSettings, setServerURL, setEmailReadonly, unsetEmailReadonly } from 'actions/app-state-actions';
 import { reset } from 'actions/common-actions';
 
 import { login } from 'services/auth-service';
 import { getAccount } from 'services/stripe-service';
 import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, immediateUpdate as immediateUpdateUser } from 'services/user-service';
-import { getConversation, sendMessage, connectFaye, disconnectFaye, getReadTimestamp, handleConversationUpdated } from 'services/conversation-service';
+import { getConversation, sendMessage, connectFaye, disconnectFaye, handleConversationUpdated } from 'services/conversation-service';
 
-import { Observable, observeStore } from 'utils/events';
+import { observable } from 'utils/events';
 import { storage } from 'utils/storage';
 import { waitForPage } from 'utils/dom';
 
@@ -60,41 +60,31 @@ function getDeviceId() {
     return deviceId;
 }
 
-let unsubscribeFromStore;
+observable.on('message:sent', (message) => {
+    observable.trigger('message', message);
+});
+observable.on('message:received', (message) => {
+    observable.trigger('message', message);
+});
 
-// timestamp of last triggered message
-let lastTriggeredMessageTimestamp = 0;
-
-// hide it outside of the instance, but it will be bound to it
-// this keeps the API clean.
-function onStoreChange(messages) {
-    // if not set, fallback to the read timestamp, but it can be at 0 too if everything is already read
-    // then just set it to the timestamp on the last message
-    lastTriggeredMessageTimestamp = lastTriggeredMessageTimestamp || getReadTimestamp() || (messages.length > 0 && messages[messages.length - 1].received);
-
-    messages.filter(message => message.received > lastTriggeredMessageTimestamp).forEach(message => {
-        if(message.role === 'appUser') {
-            this.trigger('message:sent', message);
-        } else {
-            this.trigger('message:received', message);
-        }
-
-        this.trigger('message', message);
-
-        lastTriggeredMessageTimestamp = message.received;
-    });
-}
-
-export class Smooch extends Observable {
+export class Smooch {
     get VERSION() {
         return VERSION;
+    }
+
+    on() {
+        return observable.on(...arguments);
+    }
+
+    off() {
+        return observable.off(...arguments);
     }
 
     init(props) {
 
         if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
             renderLink();
-            this.trigger('ready');
+            observable.trigger('ready');
             return Promise.resolve();
         } else if (/PhantomJS/.test(navigator.userAgent) && process.env.NODE_ENV !== 'test') {
             return Promise.resolve();
@@ -115,8 +105,6 @@ export class Smooch extends Observable {
         if (props.serviceUrl) {
             store.dispatch(setServerURL(props.serviceUrl));
         }
-
-        unsubscribeFromStore = observeStore(store, state => state.conversation.messages, onStoreChange.bind(this));
 
         return this.login(props.userId, props.jwt, pick(props, EDITABLE_PROPERTIES));
     }
@@ -167,7 +155,6 @@ export class Smooch extends Observable {
             });
         }).then((loginResponse) => {
             store.dispatch(setUser(loginResponse.appUser));
-            store.dispatch(updateReadTimestamp(getReadTimestamp()));
 
             if (loginResponse.publicKeys) {
                 store.dispatch(setPublicKeys(loginResponse.publicKeys));
@@ -194,14 +181,13 @@ export class Smooch extends Observable {
 
             let user = store.getState().user;
 
-            this.trigger('ready', user);
+            observable.trigger('ready', user);
 
             return user;
         });
     }
 
     logout() {
-        lastTriggeredMessageTimestamp = 0;
         return this.login();
     }
 
@@ -228,13 +214,11 @@ export class Smooch extends Observable {
     destroy() {
         disconnectFaye();
         store.dispatch(reset());
-        unsubscribeFromStore();
-        lastTriggeredMessageTimestamp = 0;
 
         document.body.removeChild(this._el);
         delete this.appToken;
         delete this._el;
-        this.trigger('destroy');
+        observable.trigger('destroy');
     }
 
     open() {

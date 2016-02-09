@@ -26,14 +26,7 @@ export class HeaderComponent extends Component {
         let {settingsEnabled, settingsVisible, widgetOpened} = this.props.appState;
         let {settingsHeaderText, headerText} = this.props.ui.text;
 
-        let unreadTimestamp = this.props.appState.messageReadTimestamp;
-
-        let unreadMessagesCount = unreadTimestamp <= 0 ? 0 : this.props.conversation.messages.reduce((count, message) => {
-            if (message.role !== 'appUser' && unreadTimestamp <= message.received) {
-                return count + 1;
-            }
-            return count;
-        }, 0);
+        let unreadMessagesCount = this.props.conversation.unreadCount;
 
         let unreadBadge = !settingsVisible && unreadMessagesCount > 0 ? (
             <div id='sk-badge'>
