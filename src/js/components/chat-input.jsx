@@ -17,6 +17,9 @@ export class ChatInputComponent extends Component {
     }
 
     onChange(e) {
+        if (store.getState().conversation.unreadCount > 0) {
+            resetUnreadCount();
+        }
         this.setState({
             text: e.target.value
         });
@@ -33,12 +36,6 @@ export class ChatInputComponent extends Component {
         }
 
         this.refs.input.focus();
-    }
-
-    onFocus(e) {
-        if (store.getState().conversation.unreadCount > 0) {
-            resetUnreadCount();
-        }
     }
 
     render() {
