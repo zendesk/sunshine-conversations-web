@@ -232,4 +232,8 @@ export class Smooch {
     showSettingsNotification() {
         store.dispatch(showSettingsNotification());
     }
+
+    getConversation() {
+        return getConversation();
+    }
 }
