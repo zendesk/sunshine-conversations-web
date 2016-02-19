@@ -234,6 +234,20 @@ export class Smooch {
     }
 
     getConversation() {
-        return getConversation();
+        let conversation = store.getState().conversation;
+        if (conversation) {
+            return Promise.resolve(conversation);
+        }
+
+        return getConversation()
+            .then(response => {
+                if (response.conversation) {
+                    // user.conversationStarted = true
+                    // connect to faye
+                    // write docs and tests
+                    return response.conversation;
+                }
+                throw new Error('conversation not found');
+            });
     }
 }
