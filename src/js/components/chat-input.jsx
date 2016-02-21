@@ -45,12 +45,14 @@ export class ChatInputComponent extends Component {
         return (
             <div id='sk-footer'>
                 <form onSubmit={ this.onSendMessage }>
-                    <input ref='input'
-                           placeholder={ this.props.ui.text.inputPlaceholder }
-                           className='input message-input'
-                           onChange={ this.onChange }
-                           onFocus={ this.onFocus }
-                           value={ this.state.text }></input>
+                    <div className='input-container'>
+                        <input ref='input'
+                               placeholder={ this.props.ui.text.inputPlaceholder }
+                               className='input message-input'
+                               onChange={ this.onChange }
+                               onFocus={ this.onFocus }
+                               value={ this.state.text }></input>
+                    </div>
                     <a ref='button'
                        href='#'
                        className='send'

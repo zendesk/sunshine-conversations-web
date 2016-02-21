@@ -7,6 +7,7 @@ const INITIAL_STATE = {
     widgetOpened: null,
     settingsEnabled: true,
     readOnlyEmail: false,
+    embedded: false,
     serverURL: 'https://api.smooch.io/',
     errorNotificationMessage: null
 };
@@ -79,6 +80,11 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             return Object.assign({}, state, {
                 settingsNotificationVisible: false,
                 errorNotificationMessage: null
+            });
+        case AppStateActions.SET_EMBEDDED:
+            return Object.assign({}, state, {
+                embedded: action.value,
+                widgetOpened: action.value ? true : state.widgetOpened
             });
         default:
             return state;
