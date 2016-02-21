@@ -23,7 +23,7 @@ import { storage } from 'utils/storage';
 import { waitForPage } from 'utils/dom';
 
 function renderWidget(container) {
-    const Root = (process.env.NODE_ENV === 'production' ? require('./root-prod') : require('./root-dev')).Root;
+    const Root = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test' ? require('./root-prod') : require('./root-dev')).Root;
     if (container) {
         render(<Root store={ store } />, container);
         return container;
