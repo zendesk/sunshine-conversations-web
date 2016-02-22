@@ -23,7 +23,7 @@ export class HeaderComponent extends Component {
     }
 
     render() {
-        let {settingsEnabled, settingsVisible, widgetOpened} = this.props.appState;
+        let {settingsEnabled, settingsVisible, widgetOpened, embedded} = this.props.appState;
         let {settingsHeaderText, headerText} = this.props.ui.text;
 
         let unreadMessagesCount = this.props.conversation.unreadCount;
@@ -46,19 +46,23 @@ export class HeaderComponent extends Component {
             </div>
             ) : null;
 
-        const closeHandle = widgetOpened ? (
-            <div className='sk-close-handle sk-close-hidden'>
-                <i className='fa fa-times'></i>
-            </div>
-            ) : (
-            <div className='sk-show-handle sk-appear-hidden'>
-                <i className='fa fa-arrow-up'></i>
-            </div>
-            );
+        let closeHandle = null;
+        if (!embedded) {
+            closeHandle = widgetOpened ? (
+                <div className='sk-close-handle sk-close-hidden'>
+                    <i className='fa fa-times'></i>
+                </div>
+                ) : (
+                <div className='sk-show-handle sk-appear-hidden'>
+                    <i className='fa fa-arrow-up'></i>
+                </div>
+                );
+        }
 
         const settingsTextStyle = {
             display: 'inline-block',
-            height: 30
+            height: 30,
+            cursor: 'pointer'
         };
 
         const settingsText = <div style={ settingsTextStyle } onClick={ this.hideSettings }>
@@ -66,7 +70,7 @@ export class HeaderComponent extends Component {
                              </div>;
 
         return (
-            <div id={ settingsVisible ? 'sk-settings-header' : 'sk-header' } onClick={ this.actions.toggleWidget }>
+            <div id={ settingsVisible ? 'sk-settings-header' : 'sk-header' } onClick={ !embedded && this.actions.toggleWidget }>
                 { settingsButton }
                 { backButton }
                 { settingsVisible ? settingsText : headerText }

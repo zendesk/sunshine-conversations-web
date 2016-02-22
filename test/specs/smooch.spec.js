@@ -318,27 +318,63 @@ describe('Smooch', () => {
     });
 
     describe('Open', () => {
-        beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, defaultState);
+        describe('normal', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, defaultState);
+            });
+
+            it('should dispatch', () => {
+                smooch.open();
+                mockedStore.dispatch.should.have.been.calledWith({
+                    type: 'OPEN_WIDGET'
+                });
+            });
         });
 
-        it('should dispatch', () => {
-            smooch.open();
-            mockedStore.dispatch.should.have.been.calledWith({
-                type: 'OPEN_WIDGET'
+        describe('embedded', () => {
+            beforeEach(() => {
+                let state = Object.assign({}, defaultState, {
+                    appState: Object.assign({}, defaultState.appState, {
+                        embedded: true
+                    })
+                });
+                mockedStore = mockAppStore(sandbox, state);
+            });
+
+            it('should dispatch', () => {
+                smooch.open();
+                mockedStore.dispatch.should.not.have.been.called;
             });
         });
     });
 
     describe('Close', () => {
-        beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, defaultState);
+        describe('normal', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, defaultState);
+            });
+
+            it('should not dispatch', () => {
+                smooch.close();
+                mockedStore.dispatch.should.have.been.calledWith({
+                    type: 'CLOSE_WIDGET'
+                });
+            });
         });
 
-        it('should dispatch', () => {
-            smooch.close();
-            mockedStore.dispatch.should.have.been.calledWith({
-                type: 'CLOSE_WIDGET'
+        describe('embedded', () => {
+            beforeEach(() => {
+                let state = Object.assign({}, defaultState, {
+                    appState: Object.assign({}, defaultState.appState, {
+                        embedded: true
+                    })
+                });
+                mockedStore = mockAppStore(sandbox, state);
+            });
+
+            it('should not dispatch', () => {
+                smooch.close();
+                mockedStore.dispatch.should.not.have.been.called;
             });
         });
     });

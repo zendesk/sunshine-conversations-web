@@ -10,24 +10,29 @@ export class ConversationComponent extends Component {
         this.state = {
             logoIsAnchored: true
         };
+        this.scrollTimeouts = [];
     }
 
-    _scrollToBottom() {
-        let self = this;
-        setTimeout(function() {
-            let container = findDOMNode(self);
-            let logo = self.refs.logo;
+    scrollToBottom() {
+        let timeout = setTimeout(() => {
+            let container = findDOMNode(this);
+            let logo = this.refs.logo;
             let scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight;
             container.scrollTop = scrollTop;
         });
+        this.scrollTimeouts.push(timeout);
     }
 
     componentDidMount() {
-        this._scrollToBottom();
+        this.scrollToBottom();
     }
 
     componentDidUpdate() {
-        this._scrollToBottom();
+        this.scrollToBottom();
+    }
+
+    componentWillUnmount() {
+        this.scrollTimeouts.forEach(clearTimeout);
     }
 
     render() {
