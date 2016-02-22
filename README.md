@@ -71,6 +71,7 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | userId | Yes | - | User's id |
 | properties | Yes | - | An object with all properties you want to set on your user |
 | emailCaptureEnabled | Yes | `false` | Enables prompt for email after the first user's message. You can retrieve that email in Slack using `/sk !profile`. We are aware of this limitation and are working on improving it. |
+| embedded | Yes | False | Tells the widget it will be embedded. (see Embedded section below) |
 | customText | Yes | See the example below | Strings used in the widget UI. You can use these to either customize the text or translate it. |
 
 ```javascript
@@ -117,14 +118,14 @@ skPromise.then(function() {
 
 
 #### open()
-Opens the conversation widget
+Opens the conversation widget (noop when embedded)
 
 ```javascript
 Smooch.open();
 ```
 
 #### close()
-Closes the conversation widget
+Closes the conversation widget (noop when embedded)
 
 ```javascript
 Smooch.close();
@@ -230,10 +231,15 @@ Smooch.on('message:sent', function(message) {
 #### message
 ```
 // This event triggers when a message was added to the conversation
-Smooch.on('message:sent', function(message) {
+Smooch.on('message', function(message) {
     console.log('a message was added to the conversation', message);
 });
 ```
+
+### Embedded mode
+As describe above, to activate the embedded mode, you need to pass `embedded: true` when calling `Smooch.init`. By doing so, you are disabling the auto-rendering mechanism and you will need to call `Smooch.render` manually. This method accepts a DOM element which will be used as the container where the widget will be rendered.
+
+The embedded widget will take full width and height of the container. You must give it a height, otherwise, the widget will collapse.
 
 ## How to contribute
 
@@ -243,11 +249,7 @@ Smooch.on('message:sent', function(message) {
 ### Install Node.js and run the following
 
 ```npm install```
-```npm install -g grunt```
 
-### Essential Grunt Tasks
+In one console, run `npm run start-dev` to start the web server. In another, run `npm run hot-dev-server` to start the webpack dev server.
 
-* ```grunt``` runs the dev server
-* ```grunt build``` dumps a plain and a minified file from all files in the folder ```src``` to dist/smooch.min.js
-* ```grunt clean``` removes all files in the folder ```dist```
-* ```grunt test:unit``` runs karma tests
+Then, go to `http://localhost:8282` to test the normal widget or `http://localhost:8282/embedded` for the embedded one.

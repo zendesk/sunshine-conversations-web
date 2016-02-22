@@ -3,7 +3,7 @@
 @widget-height: 420px;
 @widget-width: 330px;
 
-@main-region-height-mobile: ~"calc(100% - @{footer-height} - @{header-height} - 2*@{header-padding})";
+@main-region-height-mobile: ~"calc(100% - @{footer-height} - @{header-height} - 2* @{header-padding})";
 
 @header-height: 28px;
 @header-padding: 6px;
@@ -11,13 +11,12 @@
 
 @widget-close-bottom: -@widget-height + @header-height + 2 *@header-padding;
 
-@conversation-padding: 18px;
-@conversation-height: calc(@widget-height - (@header-height + 2 * @header-padding) - @footer-height - @conversation-padding);
-@conversation-height-mobile: ~"calc(100%  - @{conversation-padding})";
+@conversation-intro-height: 60px;
+@remaining-height: (@header-height + 2 * @header-padding) + @footer-height;
+@conversation-height: calc(@widget-height - @remaining-height);
+@conversation-height-mobile: ~"calc(100%  - @{remaining-height})";
 
 @logo-margin: ~"calc(50% - 100px)";
-
-@fa-font-path: '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts';
 
 @input-horizontal-margin: 9px;
 @input-horizontal-padding: 9px;
