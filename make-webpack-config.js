@@ -84,16 +84,7 @@ module.exports = function(options) {
     ];
 
 
-    if (options.test) {
-        additionalLoaders.push({
-            test: /\.spec\.js$/,
-            loader: 'imports?bootstrapTest'
-        });
-        additionalLoaders.push({
-            test: /\.spec\.jsx$/,
-            loader: 'imports?bootstrapTest'
-        });
-    } else {
+    if (!options.test) {
         plugins.push(new StatsPlugin('stats.json', {
             chunkModules: true,
             exclude: excludeFromStats

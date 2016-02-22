@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from 'react-dom';
+import { render, unmountComponentAtNode } from 'react-dom';
 import uuid from 'uuid';
 import pick from 'lodash.pick';
 
@@ -10,7 +10,7 @@ import { setUser, resetUser } from 'actions/user-actions';
 import { setPublicKeys, setStripeInfo } from 'actions/app-actions';
 import { updateText } from 'actions/ui-actions';
 import { setConversation, resetConversation } from 'actions/conversation-actions';
-import { openWidget, closeWidget, showSettingsNotification, enableSettings, disableSettings, hideSettings, setServerURL, setEmailReadonly, unsetEmailReadonly } from 'actions/app-state-actions';
+import * as AppStateActions from 'actions/app-state-actions';
 import { reset } from 'actions/common-actions';
 
 import { login } from 'services/auth-service';
@@ -22,19 +22,22 @@ import { observable } from 'utils/events';
 import { storage } from 'utils/storage';
 import { waitForPage } from 'utils/dom';
 
-function renderWidget() {
-    const el = document.createElement('div');
-    el.setAttribute('id', 'sk-holder');
+function renderWidget(container) {
+    const Root = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test' ? require('./root-prod') : require('./root-dev')).Root;
+    if (container) {
+        render(<Root store={ store } />, container);
+        return container;
+    } else {
+        const el = document.createElement('div');
+        el.setAttribute('id', 'sk-holder');
+        render(<Root store={ store } />, el);
 
-    const Root = (process.env.NODE_ENV === 'production' ? require('./root-prod') : require('./root-dev')).Root;
-    render(<Root store={ store } />, el);
+        waitForPage().then(() => {
+            document.body.appendChild(el);
+        });
 
-    waitForPage().then(() => {
-        document.body.appendChild(el);
-    });
-
-
-    return el;
+        return el;
+    }
 }
 
 function renderLink() {
@@ -93,17 +96,19 @@ export class Smooch {
         this.appToken = props.appToken;
 
         if (props.emailCaptureEnabled) {
-            store.dispatch(enableSettings());
+            store.dispatch(AppStateActions.enableSettings());
         } else {
-            store.dispatch(disableSettings());
+            store.dispatch(AppStateActions.disableSettings());
         }
+
+        store.dispatch(AppStateActions.setEmbedded(!!props.embedded));
 
         if (props.customText) {
             store.dispatch(updateText(props.customText));
         }
 
         if (props.serviceUrl) {
-            store.dispatch(setServerURL(props.serviceUrl));
+            store.dispatch(AppStateActions.setServerURL(props.serviceUrl));
         }
 
         return this.login(props.userId, props.jwt, pick(props, EDITABLE_PROPERTIES));
@@ -126,9 +131,9 @@ export class Smooch {
         attributes = pick(attributes, EDITABLE_PROPERTIES);
 
         if (store.getState().appState.settingsEnabled && attributes.email) {
-            store.dispatch(setEmailReadonly());
+            store.dispatch(AppStateActions.setEmailReadonly());
         } else {
-            store.dispatch(unsetEmailReadonly());
+            store.dispatch(AppStateActions.unsetEmailReadonly());
         }
 
         return Promise.resolve().then(() => {
@@ -175,8 +180,10 @@ export class Smooch {
                 }
             });
         }).then(() => {
-            if (!this._el) {
-                this._el = renderWidget();
+            if (!store.getState().appState.embedded) {
+                if (!this._container) {
+                    this._container = this.render();
+                }
             }
 
             let user = store.getState().user;
@@ -212,24 +219,41 @@ export class Smooch {
     }
 
     destroy() {
+        let {embedded} = store.getState().appState;
         disconnectFaye();
         store.dispatch(reset());
+        if (process.env.NODE_ENV !== 'test') {
+            unmountComponentAtNode(this._container);
+        }
 
-        document.body.removeChild(this._el);
+        if (embedded) {
+            // retain the embed mode
+            store.dispatch(AppStateActions.setEmbedded(true));
+        } else {
+            document.body.removeChild(this._container);
+        }
+
         delete this.appToken;
-        delete this._el;
+        delete this._container;
         observable.trigger('destroy');
     }
 
     open() {
-        store.dispatch(openWidget());
+        let {embedded} = store.getState().appState;
+        if (!embedded) {
+            store.dispatch(AppStateActions.openWidget());
+        }
     }
 
     close() {
-        store.dispatch(closeWidget());
+        let {embedded} = store.getState().appState;
+        if (!embedded) {
+            store.dispatch(AppStateActions.closeWidget());
+        }
     }
 
-    showSettingsNotification() {
-        store.dispatch(showSettingsNotification());
+    render(container) {
+        this._container = container;
+        return renderWidget(container);
     }
 }
