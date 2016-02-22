@@ -46,9 +46,9 @@ export class HeaderComponent extends Component {
             </div>
             ) : null;
 
-        const closeHandle = embedded ?
-            null :
-            widgetOpened ? (
+        let closeHandle = null;
+        if (!embedded) {
+            closeHandle = widgetOpened ? (
                 <div className='sk-close-handle sk-close-hidden'>
                     <i className='fa fa-times'></i>
                 </div>
@@ -57,6 +57,7 @@ export class HeaderComponent extends Component {
                     <i className='fa fa-arrow-up'></i>
                 </div>
                 );
+        }
 
         const settingsTextStyle = {
             display: 'inline-block',
