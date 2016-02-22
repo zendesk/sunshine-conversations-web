@@ -11,15 +11,8 @@ describe('User service', () => {
     var coreStub;
     var mockedStore;
 
-    before(() => {
-        sandbox = sinon.sandbox.create();
-    });
-
-    after(() => {
-        mockedStore.restore();
-    });
-
     beforeEach(() => {
+        sandbox = sinon.sandbox.create();
         coreMock = createMock(sandbox);
 
         coreMock.appUsers.update.resolves({
@@ -49,6 +42,7 @@ describe('User service', () => {
     });
 
     afterEach(() => {
+        mockedStore.restore();
         sandbox.restore();
     });
 
@@ -134,15 +128,10 @@ describe('User service', () => {
         });
     });
 
-    // disabling these tests until weirdness with fake timers is resolved
+    // skip these untils fake timers weirdness is resolved.
     describe.skip('update', () => {
         beforeEach(() => {
             sandbox.useFakeTimers();
-        });
-
-        afterEach(() => {
-            // advance the clock to reset the throttling stuff
-            sandbox.clock.tick(50000);
         });
 
         it('should call immediateUpdate', () => {
@@ -180,6 +169,7 @@ describe('User service', () => {
                     coreMock.appUsers.update.should.have.been.calledWith('1', props);
                 });
             });
+
         });
 
 
