@@ -26,14 +26,6 @@
     Smooch.on('message', function(message) {
       console.log('Message received', message);
     });
-
-    Smooch.on('widget:opened', function(message) {
-      console.log('Widget opened');
-    });
-
-    Smooch.on('widget:closed', function(message) {
-      console.log('Widget opened');
-    });
   </script>
 
   <style type="text/css">
@@ -240,17 +232,8 @@
 
       destroyButton.addEventListener('click', function() {
         Smooch.destroy();
-
         Smooch.on('message', function(message) {
           console.log('Message received', message);
-        });
-
-        Smooch.on('widget:opened', function(message) {
-          console.log('Widget opened');
-        });
-
-        Smooch.on('widget:closed', function(message) {
-          console.log('Widget opened');
         });
       });
 

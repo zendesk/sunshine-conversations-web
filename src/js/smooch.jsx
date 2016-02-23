@@ -248,6 +248,10 @@ export class Smooch {
         closeWidget();
     }
 
+    isOpened() {
+        return !!store.getState().appState.widgetOpened;
+    }
+
     render(container) {
         this._container = container;
         return renderWidget(container);

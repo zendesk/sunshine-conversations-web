@@ -131,6 +131,13 @@ Closes the conversation widget (noop when embedded)
 Smooch.close();
 ```
 
+#### isOpened()
+Tells if the widget is currently opened or closed.
+
+```javascript
+Smooch.isOpened();
+```
+
 #### login(userId [, jwt] [, attributes])
 Logs a user in the widget, retrieving the conversation that user already had on other browsers and/or devices. This will destroy and reinitialize the widget with the user's data. Note that you don't need to call this after `init`, it's already done internally. This returns a promise that resolves when the widget is ready again.
 ```
@@ -233,6 +240,22 @@ Smooch.on('message:sent', function(message) {
 // This event triggers when a message was added to the conversation
 Smooch.on('message', function(message) {
     console.log('a message was added to the conversation', message);
+});
+```
+
+#### widget:opened
+```
+// This event triggers when the widget is opened
+Smooch.on('widget:opened', function() {
+    console.log('Widget is opened!');
+});
+```
+
+#### widget:closed
+```
+// This event triggers when the widget is closed
+Smooch.on('widget:closed', function() {
+    console.log('Widget is closed!');
 });
 ```
 
