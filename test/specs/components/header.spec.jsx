@@ -4,13 +4,17 @@ import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
 import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId } from 'test/utils/react';
-
+import * as appService from 'services/app-service';
 import { HeaderComponent } from 'components/header.jsx';
 
 const sandbox = sinon.sandbox.create();
 let props;
 
 describe('Header', () => {
+    beforeEach(() => {
+        sandbox.stub(appService, 'toggleWidget');
+    });
+
     afterEach(() => {
         sandbox.restore();
     });
@@ -33,8 +37,7 @@ describe('Header', () => {
                     },
                     actions: {
                         showSettings: sandbox.spy(),
-                        hideSettings: sandbox.spy(),
-                        toggleWidget: sandbox.spy()
+                        hideSettings: sandbox.spy()
                     },
                     ui: {
                         text: {
@@ -57,7 +60,7 @@ describe('Header', () => {
 
             it('should call the toggleWidget action on header click', () => {
                 TestUtils.Simulate.click(headerNode);
-                props.actions.toggleWidget.should.have.been.calledOnce;
+                appService.toggleWidget.should.have.been.calledOnce;
             });
 
             it('should contain the show handle', () => {
@@ -115,7 +118,7 @@ describe('Header', () => {
 
         it('should call the toggleWidget action on header click', () => {
             TestUtils.Simulate.click(headerNode);
-            props.actions.toggleWidget.should.have.been.calledOnce;
+            appService.toggleWidget.should.have.been.calledOnce;
         });
 
         it('should not contain the show handle', () => {
@@ -179,7 +182,7 @@ describe('Header', () => {
 
         it('should call the toggleWidget action on header click', () => {
             TestUtils.Simulate.click(headerNode);
-            props.actions.toggleWidget.should.have.been.calledOnce;
+            appService.toggleWidget.should.have.been.calledOnce;
         });
 
         it('should not contain the show handle', () => {
@@ -244,7 +247,7 @@ describe('Header', () => {
 
         it('should not call the toggleWidget action on header click', () => {
             TestUtils.Simulate.click(headerNode);
-            props.actions.toggleWidget.should.not.have.been.called;
+            appService.toggleWidget.should.not.have.been.called;
         });
 
         it('should not contain the show handle', () => {
@@ -308,7 +311,7 @@ describe('Header', () => {
 
         it('should call the toggleWidget action on header click', () => {
             TestUtils.Simulate.click(headerNode);
-            props.actions.toggleWidget.should.have.been.calledOnce;
+            appService.toggleWidget.should.have.been.calledOnce;
         });
 
         it('should not contain the show handle', () => {
@@ -372,7 +375,7 @@ describe('Header', () => {
 
         it('should not call the toggleWidget action on header click', () => {
             TestUtils.Simulate.click(headerNode);
-            props.actions.toggleWidget.should.not.have.been.called;
+            appService.toggleWidget.should.not.have.been.called;
         });
 
         it('should not contain the show handle', () => {

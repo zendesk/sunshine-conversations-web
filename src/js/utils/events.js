@@ -18,14 +18,20 @@ export class Observable {
     off(event, handler) {
         let map = this[listeners];
         if (map.has(event)) {
-            map.get(event).delete(handler);
+            if (handler) {
+                map.get(event).delete(handler);
+            } else {
+                map.get(event).clear();
+            }
+        } else {
+            map.clear();
         }
     }
 
     trigger(event, options) {
         let map = this[listeners];
         if (map.has(event)) {
-            map.get(event).forEach(handler => handler(options));
+            map.get(event).forEach((handler) => handler(options));
         }
     }
 }
