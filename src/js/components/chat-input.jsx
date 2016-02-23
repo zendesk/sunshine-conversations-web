@@ -54,7 +54,6 @@ export class ChatInputComponent extends Component {
                                value={ this.state.text }></input>
                     </div>
                     <a ref='button'
-                       href='#'
                        className='send'
                        onClick={ this.onSendMessage }>
                         { this.props.ui.text.sendButtonText }
