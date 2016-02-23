@@ -15,12 +15,18 @@ export class WidgetComponent extends Component {
         const settingsComponent = this.props.appState.settingsVisible ? <Settings /> : null;
         const footer = this.props.appState.settingsVisible ? null : <ChatInput />;
 
-        // We check for `undefined` explicitely because it means the widget is in it's default state
-        // It was never opened nor closed. `sk-appear` and `sk-close` expect to be in one or the other state
-        // for their animations. The animation can go from undefined to `sk-appear`, `sk-appear` to `sk-close`, and
-        // `sk-close` to `sk-appear`. If it starts with `sk-close`, it starts by being opened and animates to close state.
-        let className = typeof this.props.appState.widgetOpened === 'undefined' ? '' :
-            this.props.appState.widgetOpened ? 'sk-appear' : 'sk-close';
+        let className;
+
+        if (this.props.appState.embedded) {
+            className = 'sk-embedded'
+        } else {
+            // We check for `undefined` explicitely because it means the widget is in it's default state
+            // It was never opened nor closed. `sk-appear` and `sk-close` expect to be in one or the other state
+            // for their animations. The animation can go from undefined to `sk-appear`, `sk-appear` to `sk-close`, and
+            // `sk-close` to `sk-appear`. If it starts with `sk-close`, it starts by being opened and animates to close state.
+            className = this.props.appState.widgetOpened === null ? '' :
+                this.props.appState.widgetOpened ? `sk-appear` : 'sk-close';
+        }
 
         let notification = this.props.appState.errorNotificationMessage ?
             <ErrorNotification message={ this.props.appState.errorNotificationMessage } /> :

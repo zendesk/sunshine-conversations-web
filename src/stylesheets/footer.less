@@ -9,14 +9,19 @@
     background-color: white;
     z-index: 1;
 
-    .message-input {
-        width: 75%;
-        margin: 5px @input-horizontal-margin;
+    .input-container {
+        width: 100%;
+        padding-right: 65px;
+        .message-input {
+            width: 100%;
+            margin: 5px @input-horizontal-margin;
+        }
     }
 
     .send {
         margin-top: 1px;
-        right: 0px;
+        right: 0;
+        top: 0;
         color: #b2b2b2;
         font-weight: 600;
         position: absolute;
@@ -24,6 +29,7 @@
         line-height: 42px;
         text-decoration: none;
         padding: 0 10px;
+        cursor: pointer;
 
         &:hover {
             color: #00aeff;

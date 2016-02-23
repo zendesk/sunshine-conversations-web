@@ -1,14 +1,13 @@
 {
     "parser": "babel-eslint",
     "rules": {
-        "indent": [
-            2,
-            4,
-            {"SwitchCase": 1}
-        ],
         "quotes": [
             2,
             "single"
+        ],
+        "jsx-quotes": [
+            2,
+            "prefer-single"
         ],
         "linebreak-style": [
             2,
@@ -19,10 +18,10 @@
             "always"
         ],
         "no-unused-vars": 0,
-        "jsx-quotes": [
-            2,
-            "prefer-single"
-        ]
+        "no-extra-boolean-cast": 0,
+        "no-console": 0,
+        "no-constant-condition": 0,
+        "no-redeclare": 0
     },
     "env": {
         "es6": true,

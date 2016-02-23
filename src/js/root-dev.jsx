@@ -7,9 +7,12 @@ import { DevTools } from 'components/dev-tools';
 export class Root extends Component {
     render() {
         const {store} = this.props;
+        const style = {
+            height: '100%'
+        };
         return (
             <Provider store={ store }>
-                <div>
+                <div style={ style }>
                     <Widget />
                     <DevTools />
                 </div>

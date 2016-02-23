@@ -1,9 +1,9 @@
 import { Client } from 'faye';
 import urljoin from 'urljoin';
 
+import { observable } from 'utils/events';
 import { store } from 'stores/app-store';
-import { addMessage } from 'actions/conversation-actions';
-import { updateReadTimestamp, getReadTimestamp } from 'services/conversation-service';
+import { addMessage, incrementUnreadCount } from 'actions/conversation-actions';
 
 export function initFaye() {
     const state = store.getState();
@@ -30,10 +30,9 @@ export function initFaye() {
         });
 
         return faye.subscribe('/conversations/' + state.conversation._id, (message) => {
-            if (message && message.role !== 'appUser' && getReadTimestamp() === 0) {
-                updateReadTimestamp(message.received);
-            }
             store.dispatch(addMessage(message));
+            store.dispatch(incrementUnreadCount());
+            observable.trigger('message:received', message);
         });
     }
 }
