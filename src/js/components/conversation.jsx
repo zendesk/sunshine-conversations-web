@@ -40,13 +40,18 @@ export class ConversationComponent extends Component {
 
         return (
             <div id='sk-conversation' ref='container'>
-                <div ref='intro' className='sk-intro' dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.introText) }></div>
+                <div ref='intro'
+                     className='sk-intro'
+                     dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.introText) }></div>
                 <div className='sk-messages-container'>
                     <div ref='messages' className='sk-messages'>
                         { messages }
                     </div>
                     <div className='sk-logo' ref='logo'>
-                        <a href='https://smooch.io/?utm_source=widget' target='_blank'><span>In-App Messaging by</span> <img className='sk-image' src={ require('images/logo_webwidget.png') } alt='Smooch' /> <img className='sk-image-retina' src={ require('images/logo_webwidget_2x.png') } alt='Smooch' /></a>
+                        <a href='https://smooch.io/?utm_source=widget' target='_blank'><span>In-App Messaging by</span> <img className='sk-image'
+                                                                                                                            src={ require('images/logo_webwidget.png') }
+                                                                                                                            srcSet={ `${require('images/logo_webwidget.png')} 1x, ${require('images/logo_webwidget_2x.png')} 2x` }
+                                                                                                                            alt='Smooch' /></a>
                     </div>
                 </div>
             </div>

@@ -13,7 +13,7 @@
     &:not(*:root) {
         margin-right: 3px;
     }
-    
+
     .sk-intro {
         color: #b0b0b0;
         font-size: 12px;
@@ -177,23 +177,12 @@
             color: #bbb;
             text-decoration: none;
         }
-        .sk-image, .sk-image-retina {
+        .sk-image {
             position: relative;
             left: 2px;
             top: 3px;
-
-            @media (-o-min-device-pixel-ratio:5/4), (-webkit-min-device-pixel-ratio:1.25), (min-resolution:120dpi) {
-                display: none;
-            }
-        }
-        .sk-image-retina {
             width: 83px;
-            display: none;
-
-            /* HiDPI support */
-            @media (-o-min-device-pixel-ratio:5/4), (-webkit-min-device-pixel-ratio:1.25), (min-resolution:120dpi) {
-                display: inherit;
-            }
+            vertical-align: baseline;
         }
     }
 }
