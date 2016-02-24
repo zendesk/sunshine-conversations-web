@@ -235,6 +235,45 @@ describe('Smooch', () => {
 
     });
 
+    describe('Get conversation', () => {
+        beforeEach(() => {
+            mockedStore = mockAppStore(sandbox, defaultState);
+            sandbox.stub(conversationService, 'handleConversationUpdated');
+        });
+
+        describe('conversation exists', () => {
+            beforeEach(() => {
+                conversationService.handleConversationUpdated.resolves({});
+            });
+
+            it('should call handleConversationUpdated', () => {
+                return smooch.getConversation().then(conversation => {
+                    conversationService.handleConversationUpdated.should.have.been.calledOnce;
+                });
+            });
+
+            it('should resolve conversation object', () => {
+                return smooch.getConversation().then(conversation => {
+                    if (!conversation.messages) {
+                        return Promise.reject(new Error('Conversation not found'));
+                    }
+                });
+            });
+        });
+
+        describe('conversation does not exist', () => {
+            beforeEach(() => {
+                conversationService.handleConversationUpdated.rejects();
+            });
+            it('should reject', (done) => {
+                return smooch.getConversation()
+                    .then(() => done(new Error('Promise should not have resolved')))
+                    .catch(() => done());
+            });
+        });
+
+    });
+
     describe('Update user', () => {
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, defaultState);
