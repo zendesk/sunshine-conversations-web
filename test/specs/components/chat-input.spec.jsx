@@ -102,6 +102,27 @@ describe('ChatInput', () => {
 
             component.state.text.should.eq('some text');
         });
+        it('should reset unread count if > 0', () => {
+            mockedStore = mockAppStore(sandbox, {
+                conversation: {
+                    unreadCount: 1
+                }
+            });
+            TestUtils.Simulate.change(component.refs.input);
+
+            resetUnreadCountStub.should.have.been.calledOnce;
+        });
+
+        it('should not reset unread count if == 0', () => {
+            mockedStore = mockAppStore(sandbox, {
+                conversation: {
+                    unreadCount: 0
+                }
+            });
+            TestUtils.Simulate.change(component.refs.input);
+
+            resetUnreadCountStub.should.not.have.been.called;
+        });
     });
 
     describe('press button', () => {
