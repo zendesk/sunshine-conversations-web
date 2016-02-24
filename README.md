@@ -182,6 +182,13 @@ Smooch.updateUser({
 });
 ```
 
+#### getConversation()
+Returns promise that resolves to conversation object, or rejects if none exists
+
+```javascript
+Smooch.getConversation().then(conversation => ...);
+```
+
 #### track(eventName)
 Tracks an event for the current user.
 
