@@ -98,16 +98,20 @@ describe('App Service', () => {
                                 });
                             });
 
-                            it('should call dispatch with toggle action', () => {
+                            it(`should call dispatch with ${isOpened ? 'closed' : 'opened'} action`, () => {
                                 toggleWidget();
-                                mockedStore.dispatch.should.have.been.calledWith({
-                                    type: TOGGLE_WIDGET
-                                });
-
                                 if (isOpened) {
+                                    mockedStore.dispatch.should.have.been.calledWith({
+                                        type: CLOSE_WIDGET
+                                    });
+
                                     openSpy.should.not.have.been.called;
                                     closeSpy.should.have.been.calledOnce;
                                 } else {
+                                    mockedStore.dispatch.should.have.been.calledWith({
+                                        type: OPEN_WIDGET
+                                    });
+
                                     openSpy.should.have.been.calledOnce;
                                     closeSpy.should.not.have.been.called;
                                 }
