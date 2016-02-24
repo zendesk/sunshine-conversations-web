@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { toggleWidget, showSettings, hideSettings } from 'actions/app-state-actions';
+import { toggleWidget } from 'services/app-service';
+import { showSettings, hideSettings } from 'actions/app-state-actions';
 
 export class HeaderComponent extends Component {
     constructor(props) {
@@ -70,7 +71,7 @@ export class HeaderComponent extends Component {
                              </div>;
 
         return (
-            <div id={ settingsVisible ? 'sk-settings-header' : 'sk-header' } onClick={ !embedded && this.actions.toggleWidget }>
+            <div id={ settingsVisible ? 'sk-settings-header' : 'sk-header' } onClick={ !embedded && toggleWidget }>
                 { settingsButton }
                 { backButton }
                 { settingsVisible ? settingsText : headerText }
@@ -92,7 +93,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators({
-            toggleWidget,
             showSettings,
             hideSettings
         }, dispatch)

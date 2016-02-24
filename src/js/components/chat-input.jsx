@@ -17,9 +17,14 @@ export class ChatInputComponent extends Component {
     }
 
     onChange(e) {
+        checkAndResetUnreadCount();
         this.setState({
             text: e.target.value
         });
+    }
+
+    onFocus(e) {
+        checkAndResetUnreadCount();
     }
 
     onSendMessage(e) {
@@ -33,12 +38,6 @@ export class ChatInputComponent extends Component {
         }
 
         this.refs.input.focus();
-    }
-
-    onFocus(e) {
-        if (store.getState().conversation.unreadCount > 0) {
-            resetUnreadCount();
-        }
     }
 
     render() {
@@ -69,3 +68,9 @@ export const ChatInput = connect((state) => {
         ui: state.ui
     };
 })(ChatInputComponent);
+
+function checkAndResetUnreadCount() {
+    if (store.getState().conversation.unreadCount > 0) {
+        resetUnreadCount();
+    }
+}
