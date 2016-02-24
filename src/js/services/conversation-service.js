@@ -87,8 +87,8 @@ export function disconnectFaye() {
 
 export function resetUnreadCount() {
     const user = store.getState().user;
+    store.dispatch(resetUnreadCountAction());
     return core().conversations.resetUnreadCount(user._id).then((response) => {
-        store.dispatch(resetUnreadCountAction());
         return response;
     });
 }
