@@ -267,8 +267,8 @@ describe('Smooch', () => {
             });
             it('should reject', (done) => {
                 return smooch.getConversation()
-                    .then(() => done(new Error('Promise should not have resolved')))
-                    .catch(() => done());
+                    .catch(() => done())
+                    .then(() => done(new Error('Promise should not have resolved')));
             });
         });
 
