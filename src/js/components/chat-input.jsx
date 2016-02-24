@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { sendMessage, getReadTimestamp, updateReadTimestamp } from 'services/conversation-service';
+import { sendMessage, resetUnreadCount } from 'services/conversation-service';
+import { store } from 'stores/app-store';
 
 
 export class ChatInputComponent extends Component {
@@ -16,9 +17,14 @@ export class ChatInputComponent extends Component {
     }
 
     onChange(e) {
+        checkAndResetUnreadCount();
         this.setState({
             text: e.target.value
         });
+    }
+
+    onFocus(e) {
+        checkAndResetUnreadCount();
     }
 
     onSendMessage(e) {
@@ -34,24 +40,19 @@ export class ChatInputComponent extends Component {
         this.refs.input.focus();
     }
 
-    onFocus(e) {
-        if (getReadTimestamp() > 0) {
-            updateReadTimestamp(0);
-        }
-    }
-
     render() {
         return (
             <div id='sk-footer'>
                 <form onSubmit={ this.onSendMessage }>
-                    <input ref='input'
-                           placeholder={ this.props.ui.text.inputPlaceholder }
-                           className='input message-input'
-                           onChange={ this.onChange }
-                           onFocus={ this.onFocus }
-                           value={ this.state.text }></input>
+                    <div className='input-container'>
+                        <input ref='input'
+                               placeholder={ this.props.ui.text.inputPlaceholder }
+                               className='input message-input'
+                               onChange={ this.onChange }
+                               onFocus={ this.onFocus }
+                               value={ this.state.text }></input>
+                    </div>
                     <a ref='button'
-                       href='#'
                        className='send'
                        onClick={ this.onSendMessage }>
                         { this.props.ui.text.sendButtonText }
@@ -67,3 +68,9 @@ export const ChatInput = connect((state) => {
         ui: state.ui
     };
 })(ChatInputComponent);
+
+function checkAndResetUnreadCount() {
+    if (store.getState().conversation.unreadCount > 0) {
+        resetUnreadCount();
+    }
+}
