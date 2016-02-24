@@ -23,12 +23,10 @@ export function closeWidget() {
 export function toggleWidget() {
     let {embedded, widgetOpened} = store.getState().appState;
     if (!embedded) {
-        store.dispatch(AppStateActions.toggleWidget());
-        
         if (widgetOpened) {
-            observable.trigger('widget:closed');
+            closeWidget();
         } else {
-            observable.trigger('widget:opened');
+            openWidget();
         }
     }
 }
