@@ -162,7 +162,7 @@ Smooch.logout();
 ```
 
 #### destroy()
-Destroys the widget and makes it disappear. The widget has to be reinitialized with `init`  to be working again because it also clears up the app token from the widget.
+Destroys the widget and makes it disappear. The widget has to be reinitialized with `init`  to be working again because it also clears up the app token from the widget. It will also unbind all listeners you might have with `Smooch.on`.
 
 ```
 Smooch.destroy();
@@ -198,6 +198,8 @@ Smooch.track('item-in-cart');
 
 ### Events
 If you want to make sure your events are triggered, try to bind them before calling `Smooch.init`.
+
+To bind an event, use `Smooch.on(<event name>, <handler>);`. To unbind events, you can either call `Smooch.off(<event name>, handler)` to remove one specific handler, call `Smooch.off(<event name>)` to remove all handlers for an event, or call `Smooch.off()` to unbind all handlers.
 
 #### ready
 ```
