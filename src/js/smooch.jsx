@@ -218,6 +218,15 @@ export class Smooch {
         });
     }
 
+    getConversation() {
+        return handleConversationUpdated().then(() => {
+            store.dispatch(setUser({
+                conversationStarted: true
+            }));
+            return store.getState().conversation;
+        });
+    }
+
     destroy() {
         let {embedded} = store.getState().appState;
         disconnectFaye();
