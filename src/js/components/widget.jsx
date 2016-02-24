@@ -18,7 +18,7 @@ export class WidgetComponent extends Component {
         let className;
 
         if (this.props.appState.embedded) {
-            className = 'sk-embedded'
+            className = 'sk-embedded';
         } else {
             // We check for `undefined` explicitely because it means the widget is in it's default state
             // It was never opened nor closed. `sk-appear` and `sk-close` expect to be in one or the other state

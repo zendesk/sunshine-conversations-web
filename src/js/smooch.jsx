@@ -13,6 +13,7 @@ import { setConversation, resetConversation } from 'actions/conversation-actions
 import * as AppStateActions from 'actions/app-state-actions';
 import { reset } from 'actions/common-actions';
 
+import { openWidget, closeWidget } from 'services/app-service';
 import { login } from 'services/auth-service';
 import { getAccount } from 'services/stripe-service';
 import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, immediateUpdate as immediateUpdateUser } from 'services/user-service';
@@ -245,20 +246,19 @@ export class Smooch {
         delete this.appToken;
         delete this._container;
         observable.trigger('destroy');
+        observable.off();
     }
 
     open() {
-        let {embedded} = store.getState().appState;
-        if (!embedded) {
-            store.dispatch(AppStateActions.openWidget());
-        }
+        openWidget();
     }
 
     close() {
-        let {embedded} = store.getState().appState;
-        if (!embedded) {
-            store.dispatch(AppStateActions.closeWidget());
-        }
+        closeWidget();
+    }
+
+    isOpened() {
+        return !!store.getState().appState.widgetOpened;
     }
 
     render(container) {

@@ -232,6 +232,9 @@
 
       destroyButton.addEventListener('click', function() {
         Smooch.destroy();
+        Smooch.on('message', function(message) {
+          console.log('Message received', message);
+        });
       });
 
       openButton.addEventListener('click', function() {
