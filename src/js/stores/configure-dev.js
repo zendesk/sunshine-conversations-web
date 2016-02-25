@@ -1,9 +1,8 @@
 import { createStore, compose } from 'redux';
 import { RootReducer } from 'reducers/root-reducer';
-import { DevTools } from 'components/dev-tools';
 
 const finalCreateStore = compose(
-    DevTools.instrument()
+    window.devToolsExtension ? window.devToolsExtension() : (f) => f
 )(createStore);
 
 export function configureStore(initialState) {

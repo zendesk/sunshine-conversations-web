@@ -23,8 +23,9 @@ import { observable } from 'utils/events';
 import { storage } from 'utils/storage';
 import { waitForPage } from 'utils/dom';
 
+import { Root } from './root';
+
 function renderWidget(container) {
-    const Root = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test' ? require('./root-prod') : require('./root-dev')).Root;
     if (container) {
         render(<Root store={ store } />, container);
         return container;
