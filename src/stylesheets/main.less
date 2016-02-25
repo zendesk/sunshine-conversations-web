@@ -49,6 +49,14 @@
 
         .container();
 
+        #sk-wrapper {
+            background: @background-color;
+            width: @widget-width;
+            height: @widget-height;
+            position: relative;
+            border-radius: 10px 10px 0 0;
+        }
+
         @media (max-width: @screen-sm-min) {
             right: 0px;
             border-radius: 0;
@@ -63,14 +71,6 @@
             #sk-wrapper {
                 width: 100%;
             }
-        }
-
-        #sk-wrapper {
-            background: @background-color;
-            width: @widget-width;
-            height: @widget-height;
-            position: relative;
-            border-radius: 10px 10px 0 0;
         }
     }
 
