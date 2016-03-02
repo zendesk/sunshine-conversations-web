@@ -23,8 +23,11 @@
       embedded: true
     };
 
-    Smooch.on('message', function(message) {
+    Smooch.on('message:received', function(message) {
       console.log('Message received', message);
+    });
+    Smooch.on('message:sent', function(message) {
+      console.log('Message sent', message);
     });
   </script>
 
@@ -232,8 +235,11 @@
 
       destroyButton.addEventListener('click', function() {
         Smooch.destroy();
-        Smooch.on('message', function(message) {
+        Smooch.on('message:received', function(message) {
           console.log('Message received', message);
+        });
+        Smooch.on('message:sent', function(message) {
+          console.log('Message sent', message);
         });
       });
 
