@@ -1,5 +1,6 @@
 #sk-conversation {
-    padding: @conversation-padding 18px 0 13px;
+    position: relative;
+    padding: 0;
     height: @conversation-height;
     overflow-y: scroll;
     overflow-x: hidden;
@@ -12,11 +13,29 @@
     &:not(*:root) {
         margin-right: 3px;
     }
+
     .sk-intro {
         color: #b0b0b0;
         font-size: 12px;
         line-height: 1.3;
     }
+
+    .sk-messages-container {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        max-height: ~"calc(100% - @{conversation-intro-height})";
+    }
+
+    .sk-intro {
+        top: 0;
+        padding: 15px;
+    }
+
+    .sk-messages {
+        padding: 0 15px 0 15px;
+    }
+
     .sk-row {
         clear: both;
 
@@ -158,32 +177,12 @@
             color: #bbb;
             text-decoration: none;
         }
-        .sk-image, .sk-image-retina {
+        .sk-image {
             position: relative;
             left: 2px;
             top: 3px;
-
-            @media (-o-min-device-pixel-ratio:5/4), (-webkit-min-device-pixel-ratio:1.25), (min-resolution:120dpi) {
-                display: none;
-            }
-        }
-        .sk-image-retina {
             width: 83px;
-            display: none;
-
-            /* HiDPI support */
-            @media (-o-min-device-pixel-ratio:5/4), (-webkit-min-device-pixel-ratio:1.25), (min-resolution:120dpi) {
-                display: inherit;
-            }
+            vertical-align: baseline;
         }
-        &.anchor-bottom {
-            position: absolute;
-            left: 0px;
-            bottom: 45px;
-        }
-    }
-
-    @media (max-width:@screen-sm-min) {
-        height: @main-region-height-mobile;
     }
 }
