@@ -2,6 +2,8 @@ import { store } from 'stores/app-store';
 import * as AppStateActions from 'actions/app-state-actions';
 import { observable } from 'utils/events';
 
+import { preventPageScroll, allowPageScroll } from 'utils/dom';
+
 
 export function openWidget() {
     let {embedded} = store.getState().appState;
@@ -9,8 +11,7 @@ export function openWidget() {
         store.dispatch(AppStateActions.openWidget());
         observable.trigger('widget:opened');
 
-        const htmlEl = document.querySelector('html');
-        htmlEl.classList.add('sk-widget-opened');
+        preventPageScroll();
     }
 }
 
@@ -20,8 +21,7 @@ export function closeWidget() {
         store.dispatch(AppStateActions.closeWidget());
         observable.trigger('widget:closed');
 
-        const htmlEl = document.querySelector('html');
-        htmlEl.classList.remove('sk-widget-opened');
+        allowPageScroll();
     }
 }
 

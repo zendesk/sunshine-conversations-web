@@ -54,6 +54,7 @@
             right: 0;
             border-radius: 0;
             width: 100%;
+            border: none;
             &.sk-appear {
                 &,
                 #sk-wrapper {
@@ -64,6 +65,10 @@
                 width: 100%;
             }
         }
+    }
+    @media (max-width: @screen-sm-min) {
+        width: 100%;
+        height: 100%;
     }
 }
 #sk-container.sk-embedded {
@@ -111,7 +116,37 @@ html.sk-widget-opened {
             overflow: hidden;
             position: relative;
             height: 100%;
+            width: 100%;
             -webkit-overflow-scrolling: auto;
+        }
+    }
+}
+html.sk-ios-device {
+    @media (max-width: @screen-sm-min) {
+        #sk-conversation {
+            .sk-logo {
+                padding-bottom: 10px !important;
+            }
+        }
+
+        #sk-footer {
+            .sk-footer-content {
+                width: 100%;
+                border-bottom: 1px solid rgba(0,0,0,0.15);
+            }
+            form {
+                width: 100%;
+                margin-left: -@input-horizontal-margin;
+                margin-right: -@input-horizontal-margin;
+                padding-left: @input-horizontal-margin;
+                padding-right: @input-horizontal-margin;
+            }
+            .input-container {
+                padding-right: 0 !important;
+            }
+            .send {
+                display: none;
+            }
         }
     }
 }

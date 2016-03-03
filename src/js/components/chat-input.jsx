@@ -43,22 +43,25 @@ export class ChatInputComponent extends Component {
     render() {
         return (
             <div id='sk-footer'>
-                <form onSubmit={ this.onSendMessage }>
-                    <div className='input-container'>
-                        <input ref='input'
-                               placeholder={ this.props.ui.text.inputPlaceholder }
-                               className='input message-input'
-                               onChange={ this.onChange }
-                               onFocus={ this.onFocus }
-                               value={ this.state.text }
-                               title={ this.props.ui.text.sendButtonText }></input>
-                    </div>
-                    <a ref='button'
-                       className='send'
-                       onClick={ this.onSendMessage }>
-                        { this.props.ui.text.sendButtonText }
-                    </a>
-                </form>
+                <div className='sk-footer-content'>
+                    <form onSubmit={ this.onSendMessage } action='#'>
+                        <div className='input-container'>
+                            <input ref='input'
+                                   placeholder={ this.props.ui.text.inputPlaceholder }
+                                   className='input message-input'
+                                   onChange={ this.onChange }
+                                   onFocus={ this.onFocus }
+                                   value={ this.state.text }
+                                   title={ this.props.ui.text.sendButtonText }></input>
+                        </div>
+                        <button ref='button'
+                                type='submit'
+                                className='btn-link send'
+                                onClick={ this.onSendMessage }>
+                            { this.props.ui.text.sendButtonText }
+                        </button>
+                    </form>
+                </div>
             </div>
             );
     }
