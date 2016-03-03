@@ -12,9 +12,21 @@ import { ErrorNotification } from 'components/error-notification';
 import { ChatInput } from 'components/chat-input';
 
 export class WidgetComponent extends Component {
+    onTouchStart = (e) => {
+        if(this.refs.input) {
+            const component = this.refs.input.getWrappedInstance();
+            const node = findDOMNode(component);
+
+            // only blur if touching outside of the footer
+            if(!node.contains(e.target)) {
+                component.blur();
+            }
+        }
+    };
+
     render() {
         const settingsComponent = this.props.appState.settingsVisible ? <Settings /> : null;
-        const footer = this.props.appState.settingsVisible ? null : <ChatInput />;
+        const footer = this.props.appState.settingsVisible ? null : <ChatInput ref='input'/>;
 
         let className;
 
@@ -36,7 +48,7 @@ export class WidgetComponent extends Component {
                 null;
 
         return (
-            <div id='sk-container' className={ className }>
+            <div id='sk-container' className={ className } onTouchStart={this.onTouchStart}>
                 <div id='sk-wrapper'>
                     <Header />
                     <ReactCSSTransitionGroup component='div'

@@ -16,6 +16,10 @@ export class ChatInputComponent extends Component {
         this.onSendMessage = this.onSendMessage.bind(this);
     }
 
+    blur() {
+        this.refs.input.blur();
+    }
+
     onChange(e) {
         checkAndResetUnreadCount();
         this.setState({
@@ -71,6 +75,8 @@ export const ChatInput = connect((state) => {
     return {
         ui: state.ui
     };
+}, undefined, undefined, {
+    withRef: true
 })(ChatInputComponent);
 
 function checkAndResetUnreadCount() {
