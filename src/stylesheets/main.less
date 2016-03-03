@@ -2,7 +2,6 @@
 @import "mixins.less";
 @import "bootstrap/variables.less";
 @import "variables.less";
-
 .container() {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 400;
@@ -11,16 +10,15 @@
     border-radius: 10px 10px 0 0;
     text-rendering: optimizeLegibility;
     color: #333;
-
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-font-smoothing: antialiased;
-
-    div, a, form, input {
+    div,
+    a,
+    form,
+    input {
         box-sizing: border-box;
     }
-
-
     @import "font-awesome.less";
     @import "forms.less";
     @import "buttons.less";
@@ -31,12 +29,10 @@
     @import "settings.less";
     @import "visibility.less";
 }
-
 #sk-holder {
     @import "loading.less";
     @import "animations.less";
     @import "reset.less";
-
     #sk-container {
         position: fixed;
         bottom: @widget-close-bottom;
@@ -46,9 +42,7 @@
         border: 1px solid rgba(0,0,0,0.15);
         z-index: 9998; // 1 less than Stripe Checkout
         overflow: hidden;
-
         .container();
-
         #sk-wrapper {
             background: @background-color;
             width: @widget-width;
@@ -56,33 +50,27 @@
             position: relative;
             border-radius: 10px 10px 0 0;
         }
-
         @media (max-width: @screen-sm-min) {
-            right: 0px;
+            right: 0;
             border-radius: 0;
             width: 100%;
-
             &.sk-appear {
-                &, #sk-wrapper {
+                &,
+                #sk-wrapper {
                     height: 100%;
                 }
             }
-
             #sk-wrapper {
                 width: 100%;
             }
         }
     }
-
 }
-
 #sk-container.sk-embedded {
     @import "loading.less";
     @import "animations.less";
     @import "reset.less";
-
     .container();
-
     height: 100%;
     #sk-wrapper {
         background: @background-color;
@@ -90,34 +78,40 @@
         height: 100%;
         position: relative;
     }
-    #sk-header, #sk-settings-header {
+    #sk-header,
+    #sk-settings-header {
         cursor: default;
         border-radius: 0;
-
         .sk-close-handle,
         .sk-show-handle {
-            display: none
+            display: none;
         }
     }
-
     #sk-conversation {
         height: ~"calc(100% - @{remaining-height})";
-
         .sk-messages-container {
             position: relative;
         }
     }
-
     #sk-settings-handle {
         display: block;
         right: 10px;
     }
-
     #sk-footer {
         box-shadow: none;
     }
-
     .sk-settings {
         width: 100%;
+    }
+}
+html.sk-widget-opened {
+    &,
+    body {
+        @media (max-width: @screen-sm-min) {
+            overflow: hidden;
+            position: relative;
+            height: 100%;
+            -webkit-overflow-scrolling: auto;
+        }
     }
 }

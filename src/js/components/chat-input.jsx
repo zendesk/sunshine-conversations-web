@@ -50,7 +50,8 @@ export class ChatInputComponent extends Component {
                                className='input message-input'
                                onChange={ this.onChange }
                                onFocus={ this.onFocus }
-                               value={ this.state.text }></input>
+                               value={ this.state.text }
+                               title={ this.props.ui.text.sendButtonText }></input>
                     </div>
                     <a ref='button'
                        className='send'

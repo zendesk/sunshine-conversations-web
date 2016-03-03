@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import isMobile from 'ismobilejs';
 
 import { Header } from 'components/header';
 import { Conversation } from 'components/conversation';
@@ -10,6 +12,41 @@ import { ErrorNotification } from 'components/error-notification';
 import { ChatInput } from 'components/chat-input';
 
 export class WidgetComponent extends Component {
+    onTouchMove = (e) => {
+        const node = findDOMNode(this);
+
+        if (!node.contains(e.target)) {
+            event.preventDefault();
+        }
+
+        e.stopPropagation();
+    };
+
+    onTouchStart = () => {
+        const node = findDOMNode(this);
+        const top = node.scrollTop;
+        const totalScroll = node.scrollHeight;
+        const currentScroll = top + node.offsetHeight;
+
+        if (top === 0) {
+            node.scrollTop = 1;
+        } else if (currentScroll === totalScroll) {
+            node.scrollTop = top - 1;
+        }
+    };
+
+
+    componentDidMount() {
+        const node = findDOMNode(this);
+
+        document.addEventListener('touchstart', this.onTouchStart);
+        document.addEventListener('touchmove', this.onTouchMove);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('touchstart', this.onTouchStart);
+        document.removeEventListener('touchmove', this.onTouchMove);
+    }
 
     render() {
         const settingsComponent = this.props.appState.settingsVisible ? <Settings /> : null;

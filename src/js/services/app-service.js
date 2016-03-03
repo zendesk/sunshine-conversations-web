@@ -8,6 +8,9 @@ export function openWidget() {
     if (!embedded) {
         store.dispatch(AppStateActions.openWidget());
         observable.trigger('widget:opened');
+
+        const htmlEl = document.querySelector('html');
+        htmlEl.classList.add('sk-widget-opened');
     }
 }
 
@@ -16,6 +19,9 @@ export function closeWidget() {
     if (!embedded) {
         store.dispatch(AppStateActions.closeWidget());
         observable.trigger('widget:closed');
+
+        const htmlEl = document.querySelector('html');
+        htmlEl.classList.remove('sk-widget-opened');
     }
 }
 
