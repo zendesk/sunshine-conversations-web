@@ -32,10 +32,10 @@ function renderWidget(container) {
     } else {
         const el = document.createElement('div');
         el.setAttribute('id', 'sk-holder');
-        render(<Root store={ store } />, el);
 
         waitForPage().then(() => {
             document.body.appendChild(el);
+            render(<Root store={ store } />, el);
         });
 
         return el;

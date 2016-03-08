@@ -11,25 +11,30 @@
     .input-container {
         position: relative;
         width: 100%;
-        padding-right: 65px;
+        padding: 5px 0px 5px @input-horizontal-margin;
         .message-input {
             width: 100%;
-            margin: 5px @input-horizontal-margin;
             -webkit-appearance: none;
         }
     }
-    .send {
-        margin-top: 1px;
+    .send-wrapper {
+        display: block;
+        position: absolute;
         right: 0;
         top: 0;
+        height: @footer-height;
+        padding: 0 10px;
+    }
+    .send {
+        margin-top: 1px;
         color: #b2b2b2;
         font-weight: 600;
-        position: absolute;
+        position: relative;
         height: 40px;
         line-height: 42px;
         text-decoration: none;
-        padding: 0 10px;
         cursor: pointer;
+        pointer-events: none;
         &:hover {
             color: #00aeff;
         }

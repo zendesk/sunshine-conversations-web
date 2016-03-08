@@ -10,6 +10,15 @@ module.exports = function(options) {
     var PACKAGE_NAME = require('./package.json').name;
     var LICENSE = fs.readFileSync('LICENSE', 'utf8');
 
+    var config = require('./config/default/config.json');
+
+    try {
+        Object.assign(config, require('./config/config.json'));
+    }
+    catch (e) {
+        // do nothing
+    }
+
     var entry = {
         smooch: ['./src/js/utils/polyfills', './src/js/main']
     };
@@ -56,7 +65,7 @@ module.exports = function(options) {
     var extensions = ['', '.web.js', '.js', '.jsx'];
     var root = path.join(__dirname, 'src');
     var publicPath = options.devServer ?
-        'http://localhost:2992/_assets/' :
+        'http://' + config.SERVER_HOST + '/_assets/' :
         '/_assets/';
 
     var output = {
@@ -165,6 +174,8 @@ module.exports = function(options) {
         },
         plugins: plugins,
         devServer: {
+            host: config.SERVER_HOST.split(':')[0],
+            port: config.SERVER_HOST.split(':')[1],
             stats: {
                 cached: false,
                 exclude: excludeFromStats
