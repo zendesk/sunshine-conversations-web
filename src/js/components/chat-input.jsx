@@ -39,7 +39,6 @@ export class ChatInputComponent extends Component {
     onSendMessage(e) {
         e.preventDefault();
         const text = this.state.text;
-        const node = findDOMNode(this);
         if (text.trim()) {
             this.setState({
                 text: ''
