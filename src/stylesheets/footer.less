@@ -8,33 +8,28 @@
     box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
     background-color: white;
     z-index: 1;
+
     .input-container {
-        position: relative;
         width: 100%;
-        padding: 5px 0px 5px @input-horizontal-margin;
+        padding: 5px 0 5px @input-horizontal-margin;
+        float: left;
         .message-input {
             width: 100%;
-            -webkit-appearance: none;
         }
     }
-    .send-wrapper {
-        display: block;
-        position: absolute;
-        right: 0;
-        top: 0;
-        height: @footer-height;
-        padding: 0 10px;
-    }
+
     .send {
         margin-top: 1px;
         color: #b2b2b2;
         font-weight: 600;
         position: relative;
-        height: 40px;
+        height: @footer-height;
         line-height: 42px;
         text-decoration: none;
+        padding: 0 10px;
         cursor: pointer;
-        pointer-events: none;
+        display: inline-block;
+
         &:hover {
             color: #00aeff;
         }

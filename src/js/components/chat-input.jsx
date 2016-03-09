@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { findDOMNode } from 'react-dom';
+import isMobile from 'ismobilejs';
+
 import { sendMessage, resetUnreadCount } from 'services/conversation-service';
 import { store } from 'stores/app-store';
 import { preventPageScroll, allowPageScroll } from 'utils/dom';
@@ -30,8 +32,7 @@ export class ChatInputComponent extends Component {
         });
     }
 
-    onFocus(e) {
-        e.preventDefault();
+    onFocus() {
         checkAndResetUnreadCount();
     }
 
@@ -44,19 +45,14 @@ export class ChatInputComponent extends Component {
                 text: ''
             });
             sendMessage(text);
-        // this.refs.input.focus();
+            this.refs.input.focus();
         }
-
-    }
-
-    onTouchStart(e) {
-        console.log('touch start')
     }
 
     componentDidMount() {
         const node = findDOMNode(this);
         this.setState({
-            inputContainerWidth: node.clientWidth - this.refs.buttonWrapper.clientWidth
+            inputContainerWidth: node.offsetWidth - this.refs.button.offsetWidth
         });
     }
 
@@ -65,28 +61,36 @@ export class ChatInputComponent extends Component {
             width: this.state.inputContainerWidth
         };
 
+        let sendButton;
+
+        if (isMobile.apple.device) {
+            // Safari on iOS needs a way to send on click, without triggering a mouse event.
+            // onTouchStart will do the trick and the input won't lose focus.
+            sendButton = <span ref='button'
+                               className='send'
+                               onTouchStart={ this.onSendMessage }>{ this.props.ui.text.sendButtonText }</span>;
+        } else {
+            sendButton = <a ref='button'
+                            className='send'
+                            onClick={ this.onSendMessage }>
+                             { this.props.ui.text.sendButtonText }
+                         </a>;
+        }
+
         return (
             <div id='sk-footer'>
-                <div className='sk-footer-content'>
-                    <form onSubmit={ this.onSendMessage } action='#'>
-                        <div className='input-container' style={containerStyle}>
-                            <input ref='input'
-                                   placeholder={ this.props.ui.text.inputPlaceholder }
-                                   className='input message-input'
-                                   onChange={ this.onChange }
-                                   onFocus={ this.onFocus }
-                                   value={ this.state.text }
-                                   title={ this.props.ui.text.sendButtonText }></input>
-                        </div>
-                        <div className='send-wrapper' onTouchStart={ this.onSendMessage } ref='buttonWrapper'>
-                            <a ref='button'
-                               className='send'
-                               onClick={ this.onSendMessage }>
-                                { this.props.ui.text.sendButtonText }
-                            </a>
-                        </div>
-                    </form>
-                </div>
+                <form onSubmit={ this.onSendMessage } action='#'>
+                    <div className='input-container' style={ containerStyle }>
+                        <input ref='input'
+                               placeholder={ this.props.ui.text.inputPlaceholder }
+                               className='input message-input'
+                               onChange={ this.onChange }
+                               onFocus={ this.onFocus }
+                               value={ this.state.text }
+                               title={ this.props.ui.text.sendButtonText }></input>
+                    </div>
+                    { sendButton }
+                </form>
             </div>
             );
     }

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import isMobile from 'ismobilejs';
 
 import { Header } from 'components/header';
 import { Conversation } from 'components/conversation';
