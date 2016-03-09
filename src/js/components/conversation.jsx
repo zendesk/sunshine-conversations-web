@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
+import isMobile from 'ismobilejs';
+
 import { createMarkup } from 'utils/html';
 import { MessageComponent } from 'components/message.jsx';
 
@@ -49,6 +51,10 @@ export class ConversationComponent extends Component {
     render() {
         const messages = this.props.conversation.messages.map((message) => <MessageComponent key={ message._id } {...message} />);
 
+        const logoStyle = isMobile.apple.device ? {
+            paddingBottom: 10
+        } : undefined;
+
         return (
             <div id='sk-conversation'
                  ref='container'
@@ -60,7 +66,7 @@ export class ConversationComponent extends Component {
                     <div ref='messages' className='sk-messages'>
                         { messages }
                     </div>
-                    <div className='sk-logo' ref='logo'>
+                    <div className='sk-logo' ref='logo' style={logoStyle}>
                         <a href='https://smooch.io/?utm_source=widget' target='_blank'><span>In-App Messaging by</span> <img className='sk-image'
                                                                                                                              src={ require('images/logo_webwidget.png') }
                                                                                                                              srcSet={ `${require('images/logo_webwidget.png')} 1x, ${require('images/logo_webwidget_2x.png')} 2x` }

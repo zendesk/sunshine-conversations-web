@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import isMobile from 'ismobilejs';
 
 import { Header } from 'components/header';
 import { Conversation } from 'components/conversation';
@@ -27,18 +28,27 @@ export class WidgetComponent extends Component {
         const settingsComponent = this.props.appState.settingsVisible ? <Settings /> : null;
         const footer = this.props.appState.settingsVisible ? null : <ChatInput ref='input'/>;
 
-        let className;
+        const classNames = [];
 
         if (this.props.appState.embedded) {
-            className = 'sk-embedded';
+            classNames.push('sk-embedded');
         } else {
             // We check for `undefined` explicitely because it means the widget is in it's default state
             // It was never opened nor closed. `sk-appear` and `sk-close` expect to be in one or the other state
             // for their animations. The animation can go from undefined to `sk-appear`, `sk-appear` to `sk-close`, and
             // `sk-close` to `sk-appear`. If it starts with `sk-close`, it starts by being opened and animates to close state.
-            className = this.props.appState.widgetOpened === null ? '' :
-                this.props.appState.widgetOpened ? `sk-appear` : 'sk-close';
+            if(this.props.appState.widgetOpened === true) {
+                classNames.push('sk-appear');
+            } else if(this.props.appState.widgetOpened === false) {
+                classNames.push('sk-close');
+            }
         }
+
+        if(isMobile.apple.device) {
+            classNames.push('sk-ios-device');
+        }
+
+        const className = classNames.join(' ');
 
         let notification = this.props.appState.errorNotificationMessage ?
             <ErrorNotification message={ this.props.appState.errorNotificationMessage } /> :
