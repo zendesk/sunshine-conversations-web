@@ -33,10 +33,9 @@ export class WidgetComponent extends Component {
         if (this.props.appState.embedded) {
             classNames.push('sk-embedded');
         } else {
-            // We check for `undefined` explicitely because it means the widget is in it's default state
-            // It was never opened nor closed. `sk-appear` and `sk-close` expect to be in one or the other state
-            // for their animations. The animation can go from undefined to `sk-appear`, `sk-appear` to `sk-close`, and
-            // `sk-close` to `sk-appear`. If it starts with `sk-close`, it starts by being opened and animates to close state.
+            // `widgetOpened` can have 3 values: `true`, `false`, and `undefined`.
+            // `undefined` is basically the default state where the widget was never
+            // opened or closed and not visibility class is applied to the widget
             if(this.props.appState.widgetOpened === true) {
                 classNames.push('sk-appear');
             } else if(this.props.appState.widgetOpened === false) {
