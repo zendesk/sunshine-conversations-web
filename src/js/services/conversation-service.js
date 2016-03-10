@@ -1,16 +1,16 @@
 import { store } from 'stores/app-store';
-import { addMessage, setConversation } from 'actions/conversation-actions';
-import { updateReadTimestamp as updateReadTimestampAction, showSettingsNotification } from 'actions/app-state-actions';
+import { addMessage, setConversation, resetUnreadCount as resetUnreadCountAction } from 'actions/conversation-actions';
+import { showSettingsNotification } from 'actions/app-state-actions';
 import { setFayeSubscription, unsetFayeSubscription } from 'actions/faye-actions';
 import { core } from 'services/core';
 import { immediateUpdate } from 'services/user-service';
 import { initFaye } from 'utils/faye';
-import { storage } from 'utils/storage';
+import { observable } from 'utils/events';
 
 export function handleFirstUserMessage(response) {
-    let state = store.getState();
+    const state = store.getState();
     if (state.appState.settingsEnabled && !state.user.email) {
-        let appUserMessageCount = state.conversation.messages.filter(message => message.role === 'appUser').length;
+        const appUserMessageCount = state.conversation.messages.filter((message) => message.role === 'appUser').length;
 
         if (appUserMessageCount === 1) {
             // should only be one message from the app user
@@ -37,6 +37,7 @@ export function sendMessage(text) {
 
         return core().conversations.sendMessage(user._id, message).then((response) => {
             store.dispatch(setConversation(response.conversation));
+            observable.trigger('message:sent', response.message);
             return response;
         }).then(handleFirstUserMessage);
     };
@@ -83,29 +84,20 @@ export function disconnectFaye() {
     }
 }
 
-export function getReadTimestamp() {
-    const user = store.getState().user;
-    const storageKey = `sk_latestts_${user._id || 'anonymous'}`;
-    let timestamp;
-    try {
-        timestamp = parseInt(storage.getItem(storageKey) || 0);
+export function resetUnreadCount() {
+    const {user, conversation} = store.getState();
+    if (conversation.unreadCount > 0) {
+        store.dispatch(resetUnreadCountAction());
+        return core().conversations.resetUnreadCount(user._id).then((response) => {
+            return response;
+        });
     }
-    catch (e) {
-        timestamp = 0;
-    }
-    return timestamp;
-}
-
-export function updateReadTimestamp(timestamp = Date.now()) {
-    const user = store.getState().user;
-    const storageKey = `sk_latestts_${user._id || 'anonymous'}`;
-
-    storage.setItem(storageKey, timestamp);
-    store.dispatch(updateReadTimestampAction(timestamp));
+    
+    return Promise.resolve();
 }
 
 export function handleConversationUpdated() {
-    let subscription = store.getState().faye.subscription;
+    const subscription = store.getState().faye.subscription;
 
     if (!subscription) {
         return getConversation()
@@ -113,15 +105,6 @@ export function handleConversationUpdated() {
                 return connectFaye().then(() => {
                     return response;
                 });
-            })
-            .then((response) => {
-                let conversationLength = response.conversation.messages.length;
-                let lastMessage = conversationLength > 0 && response.conversation.messages[conversationLength - 1];
-                if (lastMessage && lastMessage.role !== 'appUser' && getReadTimestamp() === 0) {
-                    updateReadTimestamp(lastMessage.received);
-                }
-
-                return response;
             });
     }
 

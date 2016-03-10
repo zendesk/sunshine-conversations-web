@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from 'react-dom';
+import { render, unmountComponentAtNode } from 'react-dom';
 import uuid from 'uuid';
 import pick from 'lodash.pick';
 
@@ -9,34 +9,37 @@ import { setAuth, resetAuth } from 'actions/auth-actions';
 import { setUser, resetUser } from 'actions/user-actions';
 import { setPublicKeys, setStripeInfo } from 'actions/app-actions';
 import { updateText } from 'actions/ui-actions';
-import { setConversation, resetConversation } from 'actions/conversation-actions';
-import { openWidget, closeWidget, showSettingsNotification, enableSettings, disableSettings, hideSettings, setServerURL, setEmailReadonly, unsetEmailReadonly, updateReadTimestamp } from 'actions/app-state-actions';
+import { resetConversation } from 'actions/conversation-actions';
+import * as AppStateActions from 'actions/app-state-actions';
 import { reset } from 'actions/common-actions';
 
+import { openWidget, closeWidget } from 'services/app-service';
 import { login } from 'services/auth-service';
 import { getAccount } from 'services/stripe-service';
 import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, immediateUpdate as immediateUpdateUser } from 'services/user-service';
-import { getConversation, sendMessage, connectFaye, disconnectFaye, getReadTimestamp, handleConversationUpdated } from 'services/conversation-service';
+import { getConversation, sendMessage, connectFaye, disconnectFaye, handleConversationUpdated } from 'services/conversation-service';
 
-import { Observable, observeStore } from 'utils/events';
+import { observable } from 'utils/events';
 import { storage } from 'utils/storage';
 import { waitForPage } from 'utils/dom';
 
-function renderWidget() {
-    const el = document.createElement('div');
-    el.setAttribute('id', 'sk-holder');
-    el.className = 'sk-noanimation';
+import { Root } from './root';
 
-    const Root = (process.env.NODE_ENV === 'production' ? require('./root-prod') : require('./root-dev')).Root;
-    render(<Root store={ store } />, el);
+function renderWidget(container) {
+    if (container) {
+        render(<Root store={ store } />, container);
+        return container;
+    } else {
+        const el = document.createElement('div');
+        el.setAttribute('id', 'sk-holder');
 
-    waitForPage().then(() => {
-        document.body.appendChild(el);
-        setTimeout(() => el.className = '', 200);
-    });
+        waitForPage().then(() => {
+            document.body.appendChild(el);
+            render(<Root store={ store } />, el);
+        });
 
-
-    return el;
+        return el;
+    }
 }
 
 function renderLink() {
@@ -62,61 +65,53 @@ function getDeviceId() {
     return deviceId;
 }
 
-let unsubscribeFromStore;
+observable.on('message:sent', (message) => {
+    observable.trigger('message', message);
+});
+observable.on('message:received', (message) => {
+    observable.trigger('message', message);
+});
 
-// timestamp of last triggered message
-let lastTriggeredMessageTimestamp = 0;
-
-// hide it outside of the instance, but it will be bound to it
-// this keeps the API clean.
-function onStoreChange(messages) {
-    // if not set, fallback to the read timestamp, but it can be at 0 too if everything is already read
-    // then just set it to the timestamp on the last message
-    lastTriggeredMessageTimestamp = lastTriggeredMessageTimestamp || getReadTimestamp() || (messages.length > 0 && messages[messages.length - 1].received);
-
-    messages.filter(message => message.received > lastTriggeredMessageTimestamp).forEach(message => {
-        if(message.role === 'appuser') {
-            this.trigger('message:sent', message);
-        } else {
-            this.trigger('message:received', message);
-        }
-
-        this.trigger('message', message);
-
-        lastTriggeredMessageTimestamp = message.received;
-    });
-}
-
-export class Smooch extends Observable {
+export class Smooch {
     get VERSION() {
         return VERSION;
+    }
+
+    on() {
+        return observable.on(...arguments);
+    }
+
+    off() {
+        return observable.off(...arguments);
     }
 
     init(props) {
 
         if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
             renderLink();
-            this.trigger('ready');
+            observable.trigger('ready');
+            return Promise.resolve();
+        } else if (/PhantomJS/.test(navigator.userAgent) && process.env.NODE_ENV !== 'test') {
             return Promise.resolve();
         }
 
         this.appToken = props.appToken;
 
         if (props.emailCaptureEnabled) {
-            store.dispatch(enableSettings());
+            store.dispatch(AppStateActions.enableSettings());
         } else {
-            store.dispatch(disableSettings());
+            store.dispatch(AppStateActions.disableSettings());
         }
+
+        store.dispatch(AppStateActions.setEmbedded(!!props.embedded));
 
         if (props.customText) {
             store.dispatch(updateText(props.customText));
         }
 
         if (props.serviceUrl) {
-            store.dispatch(setServerURL(props.serviceUrl));
+            store.dispatch(AppStateActions.setServerURL(props.serviceUrl));
         }
-
-        unsubscribeFromStore = observeStore(store, state => state.conversation.messages, onStoreChange.bind(this));
 
         return this.login(props.userId, props.jwt, pick(props, EDITABLE_PROPERTIES));
     }
@@ -138,9 +133,9 @@ export class Smooch extends Observable {
         attributes = pick(attributes, EDITABLE_PROPERTIES);
 
         if (store.getState().appState.settingsEnabled && attributes.email) {
-            store.dispatch(setEmailReadonly());
+            store.dispatch(AppStateActions.setEmailReadonly());
         } else {
-            store.dispatch(unsetEmailReadonly());
+            store.dispatch(AppStateActions.unsetEmailReadonly());
         }
 
         return Promise.resolve().then(() => {
@@ -167,7 +162,6 @@ export class Smooch extends Observable {
             });
         }).then((loginResponse) => {
             store.dispatch(setUser(loginResponse.appUser));
-            store.dispatch(updateReadTimestamp(getReadTimestamp()));
 
             if (loginResponse.publicKeys) {
                 store.dispatch(setPublicKeys(loginResponse.publicKeys));
@@ -188,15 +182,21 @@ export class Smooch extends Observable {
                 }
             });
         }).then(() => {
-            if (!this._el) {
-                this._el = renderWidget();
+            if (!store.getState().appState.embedded) {
+                if (!this._container) {
+                    this._container = this.render();
+                }
             }
-            this.trigger('ready');
+
+            const user = store.getState().user;
+
+            observable.trigger('ready', user);
+
+            return user;
         });
     }
 
     logout() {
-        lastTriggeredMessageTimestamp = 0;
         return this.login();
     }
 
@@ -220,27 +220,50 @@ export class Smooch extends Observable {
         });
     }
 
+    getConversation() {
+        return handleConversationUpdated().then(() => {
+            store.dispatch(setUser({
+                conversationStarted: true
+            }));
+            return store.getState().conversation;
+        });
+    }
+
     destroy() {
+        const {embedded} = store.getState().appState;
         disconnectFaye();
         store.dispatch(reset());
-        unsubscribeFromStore();
-        lastTriggeredMessageTimestamp = 0;
+        if (process.env.NODE_ENV !== 'test') {
+            unmountComponentAtNode(this._container);
+        }
 
-        document.body.removeChild(this._el);
+        if (embedded) {
+            // retain the embed mode
+            store.dispatch(AppStateActions.setEmbedded(true));
+        } else {
+            document.body.removeChild(this._container);
+        }
+
         delete this.appToken;
-        delete this._el;
-        this.trigger('destroy');
+        delete this._container;
+        observable.trigger('destroy');
+        observable.off();
     }
 
     open() {
-        store.dispatch(openWidget());
+        openWidget();
     }
 
     close() {
-        store.dispatch(closeWidget());
+        closeWidget();
     }
 
-    showSettingsNotification() {
-        store.dispatch(showSettingsNotification());
+    isOpened() {
+        return !!store.getState().appState.widgetOpened;
+    }
+
+    render(container) {
+        this._container = container;
+        return renderWidget(container);
     }
 }

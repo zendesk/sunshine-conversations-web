@@ -1,32 +1,16 @@
 import sinon from 'sinon';
-import { getMock } from 'test/mocks/core';
-import { getMockedStore } from 'test/utils/redux';
+import { createMock } from 'test/mocks/core';
+import { mockAppStore } from 'test/utils/redux';
 import * as coreService from 'services/core';
 import * as utilsFaye from 'utils/faye';
 import * as userService from 'services/user-service';
 import * as conversationService from 'services/conversation-service';
 import { SHOW_SETTINGS_NOTIFICATION } from 'actions/app-state-actions';
 
-const AppStore = require('stores/app-store');
-
-const store = AppStore.store;
-
-function mockStore(s, state = {}) {
-    var mockedStore = getMockedStore(s, state);
-
-    Object.defineProperty(AppStore, 'store', {
-        get: () => {
-            return mockedStore;
-        }
-    });
-
-    return mockedStore;
-}
 
 describe('Conversation service', () => {
     var sandbox;
     var coreMock;
-    var coreStub;
     var mockedStore;
     var fayeSubscriptionMock;
 
@@ -35,22 +19,18 @@ describe('Conversation service', () => {
     });
 
     afterEach(() => {
-        Object.defineProperty(AppStore, 'store', {
-            get: () => {
-                return store;
-            }
-        });
+        mockedStore.restore();
     });
 
     beforeEach(() => {
-        coreMock = getMock(sandbox);
+        coreMock = createMock(sandbox);
         coreMock.conversations.get.resolves({
             conversation: {
                 messages: []
             }
         });
 
-        coreStub = sandbox.stub(coreService, 'core', () => {
+        sandbox.stub(coreService, 'core', () => {
             return coreMock;
         });
 
@@ -75,7 +55,7 @@ describe('Conversation service', () => {
 
     describe('getConversation', () => {
         beforeEach(() => {
-            mockedStore = mockStore(sandbox, {
+            mockedStore = mockAppStore(sandbox, {
                 user: {
                     _id: '1'
                 }
@@ -104,7 +84,7 @@ describe('Conversation service', () => {
     describe('connectFaye', () => {
         describe('without subscription active', () => {
             beforeEach(() => {
-                mockedStore = mockStore(sandbox, {
+                mockedStore = mockAppStore(sandbox, {
                     user: {
                         _id: '1'
                     },
@@ -133,7 +113,7 @@ describe('Conversation service', () => {
 
         describe('with subscription active', () => {
             beforeEach(() => {
-                mockedStore = mockStore(sandbox, {
+                mockedStore = mockAppStore(sandbox, {
                     faye: {
                         subscription: fayeSubscriptionMock
                     }
@@ -167,7 +147,7 @@ describe('Conversation service', () => {
 
         describe('without subscription active', () => {
             beforeEach(() => {
-                mockedStore = mockStore(sandbox, {
+                mockedStore = mockAppStore(sandbox, {
                     faye: {
                         subscription: undefined
                     }
@@ -182,7 +162,7 @@ describe('Conversation service', () => {
 
         describe('with subscription active', () => {
             beforeEach(() => {
-                mockedStore = mockStore(sandbox, {
+                mockedStore = mockAppStore(sandbox, {
                     faye: {
                         subscription: fayeSubscriptionMock
                     }
@@ -203,7 +183,7 @@ describe('Conversation service', () => {
     describe('sendMessage', () => {
         describe('conversation started and connected to faye', () => {
             beforeEach(() => {
-                mockedStore = mockStore(sandbox, {
+                mockedStore = mockAppStore(sandbox, {
                     user: {
                         _id: '1',
                         conversationStarted: true
@@ -243,7 +223,7 @@ describe('Conversation service', () => {
 
         describe('conversation started and not connected to faye', () => {
             beforeEach(() => {
-                mockedStore = mockStore(sandbox, {
+                mockedStore = mockAppStore(sandbox, {
                     user: {
                         _id: '1',
                         conversationStarted: true
@@ -280,7 +260,7 @@ describe('Conversation service', () => {
 
         describe('conversation not started', () => {
             beforeEach(() => {
-                mockedStore = mockStore(sandbox, {
+                mockedStore = mockAppStore(sandbox, {
                     user: {
                         _id: '1',
                         conversationStarted: true
@@ -318,15 +298,15 @@ describe('Conversation service', () => {
 
 
     function getScenarioName(scenario) {
-        let messageType = scenario.state.conversation.messages.filter(message => message.role === 'appUser').length === 1 ?
-            `first appUser message` :
+        const messageType = scenario.state.conversation.messages.filter((message) => message.role === 'appUser').length === 1 ?
+            'first appUser message' :
             'not first message';
-        let settingsState = scenario.state.appState.settingsEnabled ? 'settings enabled' : 'settings disabled';
-        let emailState = scenario.state.user.email ? 'email set' : 'email not set';
+        const settingsState = scenario.state.appState.settingsEnabled ? 'settings enabled' : 'settings disabled';
+        const emailState = scenario.state.user.email ? 'email set' : 'email not set';
 
         // since the dispatch function is a no op, the last message in the state is assumed to be the last message dispatched
-        let role = scenario.state.conversation.messages[scenario.state.conversation.messages.length - 1].role;
-        let messageRole = `dispatching message with ${role} role`;
+        const role = scenario.state.conversation.messages[scenario.state.conversation.messages.length - 1].role;
+        const messageRole = `dispatching message with ${role} role`;
 
         return `${messageType}, ${settingsState}, ${emailState}, ${messageRole}`;
     }
@@ -455,7 +435,7 @@ describe('Conversation service', () => {
         }].forEach((scenario) => {
             describe(`${scenario.description}: ${getScenarioName(scenario)}`, () => {
                 beforeEach(() => {
-                    store = mockStore(sandbox, Object.assign({}, scenario.state));
+                    store = mockAppStore(sandbox, Object.assign({}, scenario.state));
                 });
 
                 it(`should ${scenario.outcome ? '' : 'not'} call dispatch with showSettingsNotification`, () => {

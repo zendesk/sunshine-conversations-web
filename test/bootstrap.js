@@ -1,5 +1,5 @@
 'use strict';
-
+require('../src/js/utils/polyfills');
 var sinon = require('sinon');
 sinon.behavior = require('sinon/lib/sinon/behavior');
 sinon.defaultConfig = {

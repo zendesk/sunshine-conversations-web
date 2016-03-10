@@ -1,6 +1,8 @@
 export const ADD_MESSAGE = 'ADD_MESSAGE';
 export const RESET_CONVERSATION = 'RESET_CONVERSATION';
 export const SET_CONVERSATION = 'SET_CONVERSATION';
+export const RESET_UNREAD_COUNT = 'RESET_UNREAD_COUNT';
+export const INCREMENT_UNREAD_COUNT = 'INCREMENT_UNREAD_COUNT';
 
 export function resetConversation() {
     return {
@@ -21,5 +23,17 @@ export function addMessage(props) {
         message: Object.assign({
             actions: []
         }, props)
+    };
+}
+
+export function incrementUnreadCount() {
+    return {
+        type: INCREMENT_UNREAD_COUNT
+    };
+}
+
+export function resetUnreadCount() {
+    return {
+        type: RESET_UNREAD_COUNT
     };
 }

@@ -4,11 +4,11 @@ import { RESET } from 'actions/common-actions';
 const INITIAL_STATE = {
     settingsVisible: false,
     settingsNotificationVisible: false,
-    widgetOpened: undefined,
+    widgetOpened: null,
     settingsEnabled: true,
     readOnlyEmail: false,
+    embedded: false,
     serverURL: 'https://api.smooch.io/',
-    messageReadTimestamp: 0,
     errorNotificationMessage: null
 };
 
@@ -49,7 +49,8 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             });
         case AppStateActions.CLOSE_WIDGET:
             return Object.assign({}, state, {
-                widgetOpened: false
+                widgetOpened: false,
+                settingsVisible: false
             });
         case AppStateActions.SHOW_SETTINGS:
             return Object.assign({}, state, {
@@ -71,10 +72,6 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             return Object.assign({}, state, {
                 serverURL: action.url
             });
-        case AppStateActions.UPDATE_READ_TIMESTAMP:
-            return Object.assign({}, state, {
-                messageReadTimestamp: action.timestamp
-            });
         case AppStateActions.SHOW_ERROR_NOTIFICATION:
             return Object.assign({}, state, {
                 settingsNotificationVisible: false,
@@ -84,6 +81,11 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             return Object.assign({}, state, {
                 settingsNotificationVisible: false,
                 errorNotificationMessage: null
+            });
+        case AppStateActions.SET_EMBEDDED:
+            return Object.assign({}, state, {
+                embedded: action.value,
+                widgetOpened: action.value ? true : state.widgetOpened
             });
         default:
             return state;
