@@ -49,7 +49,7 @@ export class WidgetComponent extends Component {
 
         const className = classNames.join(' ');
 
-        let notification = this.props.appState.errorNotificationMessage ?
+        const notification = this.props.appState.errorNotificationMessage ?
             <ErrorNotification message={ this.props.appState.errorNotificationMessage } /> :
             this.props.appState.settingsNotificationVisible ?
                 <Notification /> :

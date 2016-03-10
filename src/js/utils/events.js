@@ -7,7 +7,7 @@ export class Observable {
     }
 
     on(event, handler) {
-        let map = this[listeners];
+        const map = this[listeners];
         if (!map.has(event)) {
             map.set(event, new Set());
         }
@@ -16,7 +16,7 @@ export class Observable {
     }
 
     off(event, handler) {
-        let map = this[listeners];
+        const map = this[listeners];
         if (map.has(event)) {
             if (handler) {
                 map.get(event).delete(handler);
@@ -29,7 +29,7 @@ export class Observable {
     }
 
     trigger(event, options) {
-        let map = this[listeners];
+        const map = this[listeners];
         if (map.has(event)) {
             map.get(event).forEach((handler) => handler(options));
         }

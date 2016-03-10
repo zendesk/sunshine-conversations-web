@@ -247,13 +247,13 @@ describe('Smooch', () => {
             });
 
             it('should call handleConversationUpdated', () => {
-                return smooch.getConversation().then(conversation => {
+                return smooch.getConversation().then(() => {
                     conversationService.handleConversationUpdated.should.have.been.calledOnce;
                 });
             });
 
             it('should resolve conversation object', () => {
-                return smooch.getConversation().then(conversation => {
+                return smooch.getConversation().then((conversation) => {
                     if (!conversation.messages) {
                         return Promise.reject(new Error('Conversation not found'));
                     }
@@ -372,7 +372,7 @@ describe('Smooch', () => {
 
         describe('embedded', () => {
             beforeEach(() => {
-                let state = Object.assign({}, defaultState, {
+                const state = Object.assign({}, defaultState, {
                     appState: Object.assign({}, defaultState.appState, {
                         embedded: true
                     })
@@ -403,7 +403,7 @@ describe('Smooch', () => {
 
         describe('embedded', () => {
             beforeEach(() => {
-                let state = Object.assign({}, defaultState, {
+                const state = Object.assign({}, defaultState, {
                     appState: Object.assign({}, defaultState.appState, {
                         embedded: true
                     })

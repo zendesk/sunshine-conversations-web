@@ -6,7 +6,7 @@ import { preventMobilePageScroll, allowMobilePageScroll } from 'utils/dom';
 
 
 export function openWidget() {
-    let {embedded} = store.getState().appState;
+    const {embedded} = store.getState().appState;
     if (!embedded) {
         store.dispatch(AppStateActions.openWidget());
         observable.trigger('widget:opened');
@@ -16,7 +16,7 @@ export function openWidget() {
 }
 
 export function closeWidget() {
-    let {embedded} = store.getState().appState;
+    const {embedded} = store.getState().appState;
     if (!embedded) {
         store.dispatch(AppStateActions.closeWidget());
         observable.trigger('widget:closed');
@@ -27,7 +27,7 @@ export function closeWidget() {
 
 
 export function toggleWidget() {
-    let {embedded, widgetOpened} = store.getState().appState;
+    const {embedded, widgetOpened} = store.getState().appState;
     if (!embedded) {
         if (widgetOpened) {
             closeWidget();

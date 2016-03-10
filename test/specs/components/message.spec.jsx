@@ -1,9 +1,8 @@
 import sinon from 'sinon';
 import React from 'react';
-import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
-import { mockComponent, scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId } from 'test/utils/react';
+import { mockComponent } from 'test/utils/react';
 
 import { MessageComponent } from 'components/message.jsx';
 import { ActionComponent } from 'components/action.jsx';
@@ -18,7 +17,6 @@ const defaultProps = {
 
 describe('Message', () => {
     var component;
-    var componentNode;
 
     beforeEach(() => {
         mockComponent(sandbox, ActionComponent, 'div', {
@@ -38,9 +36,8 @@ describe('Message', () => {
 
         beforeEach(() => {
             component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
-            componentNode = ReactDOM.findDOMNode(component);
         });
-        
+
         it('should not contain any actions', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-action').length.should.be.eq(0);
         });
@@ -56,7 +53,6 @@ describe('Message', () => {
 
         beforeEach(() => {
             component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
-            componentNode = ReactDOM.findDOMNode(component);
         });
 
         it('should not have an avatar', () => {
@@ -84,7 +80,7 @@ describe('Message', () => {
         });
     });
 
-    for (let role of ['appMaker', 'whisper']) {
+    ['appMaker', 'whisper'].forEach((role) => {
         describe(`${role} without actions`, () => {
             const props = Object.assign({}, defaultProps, {
                 role: role,
@@ -94,7 +90,6 @@ describe('Message', () => {
 
             beforeEach(() => {
                 component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
-                componentNode = ReactDOM.findDOMNode(component);
             });
 
             it('should have an avatar', () => {
@@ -143,7 +138,6 @@ describe('Message', () => {
 
             beforeEach(() => {
                 component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
-                componentNode = ReactDOM.findDOMNode(component);
             });
 
             it('should have an avatar', () => {
@@ -172,6 +166,6 @@ describe('Message', () => {
                 message.textContent.indexOf(props.text).should.eq(0);
             });
         });
-    }
+    });
 
 });

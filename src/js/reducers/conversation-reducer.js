@@ -8,7 +8,7 @@ const INITIAL_STATE = {
 
 export function ConversationReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
-        case ConversationActions.RESET:
+        case RESET:
         case ConversationActions.RESET_CONVERSATION:
             return Object.assign({}, INITIAL_STATE);
         case ConversationActions.SET_CONVERSATION:

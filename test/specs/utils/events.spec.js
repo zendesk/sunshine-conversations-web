@@ -10,12 +10,12 @@ describe('Events utils', () => {
 
     describe('Observable', () => {
         it('should register and trigger events', () => {
-            let firstHandler = sandbox.spy();
-            let secondHandler = sandbox.spy();
-            let thirdHandler = sandbox.spy();
-            let fourthHandler = sandbox.spy();
+            const firstHandler = sandbox.spy();
+            const secondHandler = sandbox.spy();
+            const thirdHandler = sandbox.spy();
+            const fourthHandler = sandbox.spy();
 
-            let observable = new Observable();
+            const observable = new Observable();
 
             observable.on('1', firstHandler);
             observable.on('1', secondHandler);
