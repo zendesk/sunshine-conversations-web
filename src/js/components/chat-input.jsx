@@ -70,15 +70,21 @@ export class ChatInputComponent extends Component {
 
         let sendButton;
 
+        const buttonClassNames = ['send'];
+
+        if (this.state.text.trim()) {
+            buttonClassNames.push('active');
+        }
+
         if (isMobile.apple.device) {
             // Safari on iOS needs a way to send on click, without triggering a mouse event.
             // onTouchStart will do the trick and the input won't lose focus.
             sendButton = <span ref='button'
-                               className='send'
+                               className={ buttonClassNames.join(' ') }
                                onTouchStart={ this.onSendMessage }>{ this.props.ui.text.sendButtonText }</span>;
         } else {
             sendButton = <a ref='button'
-                            className='send'
+                            className={ buttonClassNames.join(' ') }
                             onClick={ this.onSendMessage }>
                              { this.props.ui.text.sendButtonText }
                          </a>;
