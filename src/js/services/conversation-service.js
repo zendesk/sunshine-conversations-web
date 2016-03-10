@@ -85,11 +85,15 @@ export function disconnectFaye() {
 }
 
 export function resetUnreadCount() {
-    const user = store.getState().user;
-    store.dispatch(resetUnreadCountAction());
-    return core().conversations.resetUnreadCount(user._id).then((response) => {
-        return response;
-    });
+    const {user, conversation} = store.getState();
+    if (conversation.unreadCount > 0) {
+        store.dispatch(resetUnreadCountAction());
+        return core().conversations.resetUnreadCount(user._id).then((response) => {
+            return response;
+        });
+    }
+    
+    return Promise.resolve();
 }
 
 export function handleConversationUpdated() {
