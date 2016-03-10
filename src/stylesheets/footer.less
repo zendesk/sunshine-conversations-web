@@ -15,6 +15,14 @@
         float: left;
         .message-input {
             width: 100%;
+
+            &::-ms-clear {
+                display: none;
+            }
+
+            &:-ms-input-placeholder {
+                color: #b2b2b2;
+            }
         }
     }
 
