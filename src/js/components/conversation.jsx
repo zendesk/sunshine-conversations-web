@@ -31,10 +31,10 @@ export class ConversationComponent extends Component {
     };
 
     scrollToBottom() {
-        let timeout = setTimeout(() => {
-            let container = findDOMNode(this);
-            let logo = this.refs.logo;
-            let scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight;
+        const timeout = setTimeout(() => {
+            const container = findDOMNode(this);
+            const logo = this.refs.logo;
+            const scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight;
             container.scrollTop = scrollTop;
         });
         this.scrollTimeouts.push(timeout);

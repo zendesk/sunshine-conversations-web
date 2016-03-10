@@ -32,7 +32,10 @@
         "es6": true,
         "node": true,
         "commonjs": true,
-        "browser": true,
+        "browser": true
+    },
+    "globals": {
+        "VERSION": true
     },
     "plugins": [
         "react"

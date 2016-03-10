@@ -12,7 +12,7 @@ function restoreAppStore() {
 }
 
 export function createMockedStore(sinon, mockedState = {}) {
-    const store = createStore((state, action) => mockedState);
+    const store = createStore(() => mockedState);
 
     sinon.spy(store, 'dispatch');
     store.restore = restoreAppStore;

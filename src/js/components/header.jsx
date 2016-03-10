@@ -24,12 +24,12 @@ export class HeaderComponent extends Component {
     }
 
     render() {
-        let {settingsEnabled, settingsVisible, widgetOpened, embedded} = this.props.appState;
-        let {settingsHeaderText, headerText} = this.props.ui.text;
+        const {settingsEnabled, settingsVisible, widgetOpened, embedded} = this.props.appState;
+        const {settingsHeaderText, headerText} = this.props.ui.text;
 
-        let unreadMessagesCount = this.props.conversation.unreadCount;
+        const unreadMessagesCount = this.props.conversation.unreadCount;
 
-        let unreadBadge = !settingsVisible && unreadMessagesCount > 0 ? (
+        const unreadBadge = !settingsVisible && unreadMessagesCount > 0 ? (
             <div id='sk-badge'>
                 { unreadMessagesCount }
             </div>

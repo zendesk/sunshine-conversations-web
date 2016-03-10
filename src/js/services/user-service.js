@@ -23,7 +23,7 @@ export function immediateUpdate(props) {
     props = Object.assign({}, pendingUserProps, props);
     pendingUserProps = {};
 
-    let isDirty = EDITABLE_PROPERTIES.reduce((isDirty, prop) => {
+    const isDirty = EDITABLE_PROPERTIES.reduce((isDirty, prop) => {
         return isDirty || !deepEqual(user[prop], props[prop]);
     }, false);
 

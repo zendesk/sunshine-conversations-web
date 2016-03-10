@@ -5,8 +5,6 @@ import isMobile from 'ismobilejs';
 
 import { sendMessage, resetUnreadCount } from 'services/conversation-service';
 import { store } from 'stores/app-store';
-import { preventPageScroll, allowPageScroll } from 'utils/dom';
-
 
 export class ChatInputComponent extends Component {
     constructor(...args) {

@@ -5,13 +5,12 @@ import { setFayeSubscription, unsetFayeSubscription } from 'actions/faye-actions
 import { core } from 'services/core';
 import { immediateUpdate } from 'services/user-service';
 import { initFaye } from 'utils/faye';
-import { storage } from 'utils/storage';
 import { observable } from 'utils/events';
 
 export function handleFirstUserMessage(response) {
-    let state = store.getState();
+    const state = store.getState();
     if (state.appState.settingsEnabled && !state.user.email) {
-        let appUserMessageCount = state.conversation.messages.filter(message => message.role === 'appUser').length;
+        const appUserMessageCount = state.conversation.messages.filter((message) => message.role === 'appUser').length;
 
         if (appUserMessageCount === 1) {
             // should only be one message from the app user
@@ -94,7 +93,7 @@ export function resetUnreadCount() {
 }
 
 export function handleConversationUpdated() {
-    let subscription = store.getState().faye.subscription;
+    const subscription = store.getState().faye.subscription;
 
     if (!subscription) {
         return getConversation()

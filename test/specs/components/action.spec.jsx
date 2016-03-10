@@ -5,7 +5,7 @@ import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
 
 import { mockAppStore } from 'test/utils/redux';
-import { mockComponent, findRenderedDOMComponentsWithId } from 'test/utils/react';
+import { mockComponent } from 'test/utils/react';
 
 import StripeCheckout from 'react-stripe-checkout';
 

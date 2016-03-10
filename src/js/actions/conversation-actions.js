@@ -35,5 +35,5 @@ export function incrementUnreadCount() {
 export function resetUnreadCount() {
     return {
         type: RESET_UNREAD_COUNT
-    }
+    };
 }

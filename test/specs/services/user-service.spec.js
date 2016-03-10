@@ -8,7 +8,6 @@ import * as conversationService from 'services/conversation-service';
 describe('User service', () => {
     var sandbox;
     var coreMock;
-    var coreStub;
     var mockedStore;
 
     beforeEach(() => {
@@ -29,7 +28,7 @@ describe('User service', () => {
             }
         });
 
-        coreStub = sandbox.stub(coreService, 'core', () => {
+        sandbox.stub(coreService, 'core', () => {
             return coreMock;
         });
 
@@ -49,7 +48,7 @@ describe('User service', () => {
     describe('immediateUpdate', () => {
         describe('is not dirty', () => {
             it('should do nothing', () => {
-                let props = {
+                const props = {
                     email: 'some@email.com'
                 };
 
@@ -61,7 +60,7 @@ describe('User service', () => {
 
         describe('is dirty', () => {
             it('should call smooch-core update api and update the store on server response', () => {
-                let props = {
+                const props = {
                     email: 'other@email.com'
                 };
 
@@ -135,11 +134,11 @@ describe('User service', () => {
         });
 
         it('should call immediateUpdate', () => {
-            let props = {
+            const props = {
                 email: 'email'
             };
 
-            let promise = userService.update(props);
+            const promise = userService.update(props);
             sandbox.clock.tick(1);
             return promise.then(() => {
                 coreMock.appUsers.update.should.have.been.calledWith('1', props);
@@ -147,23 +146,23 @@ describe('User service', () => {
         });
 
         it('should be throttled for 5 sec', () => {
-            let props = {
+            const props = {
                 email: 'email'
             };
 
-            let promise = userService.update(props);
+            const promise = userService.update(props);
             sandbox.clock.tick(1);
             return promise.then(() => {
                 coreMock.appUsers.update.should.have.been.calledWith('1', props);
                 coreMock.appUsers.update.reset();
             }).then(() => {
-                let throttledPromise = userService.update(props);
+                const throttledPromise = userService.update(props);
                 sandbox.clock.tick(4998);
                 return throttledPromise.then(() => {
                     coreMock.appUsers.update.should.not.have.been.called;
                 });
             }).then(() => {
-                let unthrottledPromise = userService.update(props);
+                const unthrottledPromise = userService.update(props);
                 sandbox.clock.tick(1);
                 return unthrottledPromise.then(() => {
                     coreMock.appUsers.update.should.have.been.calledWith('1', props);
@@ -174,7 +173,7 @@ describe('User service', () => {
 
 
         it('should merge props when throttling and reset for the next call', () => {
-            let promise = userService.update({
+            const promise = userService.update({
                 email: 'this@email.com'
             });
 
@@ -185,7 +184,7 @@ describe('User service', () => {
                     email: 'this@email.com'
                 });
             }).then(() => {
-                let throttledPromise = userService.update({
+                const throttledPromise = userService.update({
                     givenName: 'Example'
                 });
 
@@ -196,7 +195,7 @@ describe('User service', () => {
                     coreMock.appUsers.update.should.not.have.been.called;
                 });
             }).then(() => {
-                let unthrottledPromise = userService.update({
+                const unthrottledPromise = userService.update({
                     email: 'another@email.com'
                 });
 
@@ -213,7 +212,7 @@ describe('User service', () => {
                 // move to an unthrottled timeframe
                 sandbox.clock.tick(20000);
 
-                let unthrottledPromise = userService.update({
+                const unthrottledPromise = userService.update({
                     email: 'yetanother@email.com'
                 });
                 sandbox.clock.tick(1);
