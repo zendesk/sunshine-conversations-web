@@ -11,7 +11,6 @@ import { SHOW_SETTINGS_NOTIFICATION } from 'actions/app-state-actions';
 describe('Conversation service', () => {
     var sandbox;
     var coreMock;
-    var coreStub;
     var mockedStore;
     var fayeSubscriptionMock;
 
@@ -31,7 +30,7 @@ describe('Conversation service', () => {
             }
         });
 
-        coreStub = sandbox.stub(coreService, 'core', () => {
+        sandbox.stub(coreService, 'core', () => {
             return coreMock;
         });
 
@@ -299,15 +298,15 @@ describe('Conversation service', () => {
 
 
     function getScenarioName(scenario) {
-        let messageType = scenario.state.conversation.messages.filter(message => message.role === 'appUser').length === 1 ?
-            `first appUser message` :
+        const messageType = scenario.state.conversation.messages.filter((message) => message.role === 'appUser').length === 1 ?
+            'first appUser message' :
             'not first message';
-        let settingsState = scenario.state.appState.settingsEnabled ? 'settings enabled' : 'settings disabled';
-        let emailState = scenario.state.user.email ? 'email set' : 'email not set';
+        const settingsState = scenario.state.appState.settingsEnabled ? 'settings enabled' : 'settings disabled';
+        const emailState = scenario.state.user.email ? 'email set' : 'email not set';
 
         // since the dispatch function is a no op, the last message in the state is assumed to be the last message dispatched
-        let role = scenario.state.conversation.messages[scenario.state.conversation.messages.length - 1].role;
-        let messageRole = `dispatching message with ${role} role`;
+        const role = scenario.state.conversation.messages[scenario.state.conversation.messages.length - 1].role;
+        const messageRole = `dispatching message with ${role} role`;
 
         return `${messageType}, ${settingsState}, ${emailState}, ${messageRole}`;
     }

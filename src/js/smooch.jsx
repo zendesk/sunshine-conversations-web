@@ -9,7 +9,7 @@ import { setAuth, resetAuth } from 'actions/auth-actions';
 import { setUser, resetUser } from 'actions/user-actions';
 import { setPublicKeys, setStripeInfo } from 'actions/app-actions';
 import { updateText } from 'actions/ui-actions';
-import { setConversation, resetConversation } from 'actions/conversation-actions';
+import { resetConversation } from 'actions/conversation-actions';
 import * as AppStateActions from 'actions/app-state-actions';
 import { reset } from 'actions/common-actions';
 
@@ -32,10 +32,10 @@ function renderWidget(container) {
     } else {
         const el = document.createElement('div');
         el.setAttribute('id', 'sk-holder');
-        render(<Root store={ store } />, el);
 
         waitForPage().then(() => {
             document.body.appendChild(el);
+            render(<Root store={ store } />, el);
         });
 
         return el;
@@ -188,7 +188,7 @@ export class Smooch {
                 }
             }
 
-            let user = store.getState().user;
+            const user = store.getState().user;
 
             observable.trigger('ready', user);
 
@@ -230,7 +230,7 @@ export class Smooch {
     }
 
     destroy() {
-        let {embedded} = store.getState().appState;
+        const {embedded} = store.getState().appState;
         disconnectFaye();
         store.dispatch(reset());
         if (process.env.NODE_ENV !== 'test') {

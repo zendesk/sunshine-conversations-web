@@ -49,7 +49,8 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             });
         case AppStateActions.CLOSE_WIDGET:
             return Object.assign({}, state, {
-                widgetOpened: false
+                widgetOpened: false,
+                settingsVisible: false
             });
         case AppStateActions.SHOW_SETTINGS:
             return Object.assign({}, state, {

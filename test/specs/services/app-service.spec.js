@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import { openWidget, closeWidget, toggleWidget } from 'services/app-service';
 import { mockAppStore } from 'test/utils/redux';
-import { OPEN_WIDGET, CLOSE_WIDGET, TOGGLE_WIDGET } from 'actions/app-state-actions';
+import { OPEN_WIDGET, CLOSE_WIDGET } from 'actions/app-state-actions';
 import { observable } from 'utils/events';
 
 describe('App Service', () => {
@@ -34,7 +34,8 @@ describe('App Service', () => {
                 mockedStore = mockAppStore(sandbox, {
                     appState: {
                         embedded: isEmbedded
-                    }
+                    },
+                    conversation: {}
                 });
             });
 
@@ -94,7 +95,8 @@ describe('App Service', () => {
                                     appState: {
                                         embedded: isEmbedded,
                                         widgetOpened: isOpened
-                                    }
+                                    },
+                                    conversation: {}
                                 });
                             });
 

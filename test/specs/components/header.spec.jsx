@@ -175,7 +175,7 @@ describe('Header', () => {
         });
 
         it('should call the openSettings action on settings button click', () => {
-            let settingsButton = findRenderedDOMComponentsWithId(header, 'sk-settings-handle');
+            const settingsButton = findRenderedDOMComponentsWithId(header, 'sk-settings-handle');
             TestUtils.Simulate.click(settingsButton);
             props.actions.showSettings.should.have.been.calledOnce;
         });
@@ -240,7 +240,7 @@ describe('Header', () => {
         });
 
         it('should call the openSettings action on settings button click', () => {
-            let settingsButton = findRenderedDOMComponentsWithId(header, 'sk-settings-handle');
+            const settingsButton = findRenderedDOMComponentsWithId(header, 'sk-settings-handle');
             TestUtils.Simulate.click(settingsButton);
             props.actions.showSettings.should.have.been.calledOnce;
         });
@@ -304,7 +304,7 @@ describe('Header', () => {
         });
 
         it('should call the hideSettings action on back button click', () => {
-            let backButton = TestUtils.findRenderedDOMComponentWithClass(header, 'sk-back-handle');
+            const backButton = TestUtils.findRenderedDOMComponentWithClass(header, 'sk-back-handle');
             TestUtils.Simulate.click(backButton);
             props.actions.hideSettings.should.have.been.calledOnce;
         });
@@ -368,7 +368,7 @@ describe('Header', () => {
         });
 
         it('should call the hideSettings action on back button click', () => {
-            let backButton = TestUtils.findRenderedDOMComponentWithClass(header, 'sk-back-handle');
+            const backButton = TestUtils.findRenderedDOMComponentWithClass(header, 'sk-back-handle');
             TestUtils.Simulate.click(backButton);
             props.actions.hideSettings.should.have.been.calledOnce;
         });

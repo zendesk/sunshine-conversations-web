@@ -7,7 +7,6 @@ import { createTransaction, getAccount } from 'services/stripe-service';
 describe('Stripe service', () => {
     var sandbox;
     var coreMock;
-    var coreStub;
     let mockedStore;
 
     before(() => {
@@ -22,7 +21,7 @@ describe('Stripe service', () => {
         });
 
         coreMock = createMock(sandbox);
-        coreStub = sandbox.stub(coreService, 'core', () => {
+        sandbox.stub(coreService, 'core', () => {
             return coreMock;
         });
         coreMock.appUsers.stripe.createTransaction.resolves();
