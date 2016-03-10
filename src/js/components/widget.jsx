@@ -13,7 +13,8 @@ import { ChatInput } from 'components/chat-input';
 
 export class WidgetComponent extends Component {
     onTouchStart = (e) => {
-        if(this.refs.input) {
+        // the behavior is problematic only on iOS devices
+        if(this.refs.input && isMobile.apple.device) {
             const component = this.refs.input.getWrappedInstance();
             const node = findDOMNode(component);
 
@@ -26,7 +27,7 @@ export class WidgetComponent extends Component {
 
     render() {
         const settingsComponent = this.props.appState.settingsVisible ? <Settings /> : null;
-        const footer = this.props.appState.settingsVisible ? null : <ChatInput ref='input'/>;
+        const footer = this.props.appState.settingsVisible ? null : <ChatInput ref='input' />;
 
         const classNames = [];
 
@@ -36,14 +37,14 @@ export class WidgetComponent extends Component {
             // `widgetOpened` can have 3 values: `true`, `false`, and `undefined`.
             // `undefined` is basically the default state where the widget was never
             // opened or closed and not visibility class is applied to the widget
-            if(this.props.appState.widgetOpened === true) {
+            if (this.props.appState.widgetOpened === true) {
                 classNames.push('sk-appear');
-            } else if(this.props.appState.widgetOpened === false) {
+            } else if (this.props.appState.widgetOpened === false) {
                 classNames.push('sk-close');
             }
         }
 
-        if(isMobile.apple.device) {
+        if (isMobile.apple.device) {
             classNames.push('sk-ios-device');
         }
 
@@ -56,7 +57,9 @@ export class WidgetComponent extends Component {
                 null;
 
         return (
-            <div id='sk-container' className={ className } onTouchStart={this.onTouchStart}>
+            <div id='sk-container'
+                 className={ className }
+                 onTouchStart={ this.onTouchStart }>
                 <div id='sk-wrapper'>
                     <Header />
                     <ReactCSSTransitionGroup component='div'
