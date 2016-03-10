@@ -12,7 +12,7 @@ export function waitForPage() {
     });
 }
 
-export function preventPageScroll() {
+export function preventMobilePageScroll() {
     const htmlEl = document.querySelector('html');
     htmlEl.classList.add('sk-widget-opened');
     if (isMobile.apple.device) {
@@ -20,7 +20,7 @@ export function preventPageScroll() {
     }
 }
 
-export function allowPageScroll() {
+export function allowMobilePageScroll() {
     const htmlEl = document.querySelector('html');
     htmlEl.classList.remove('sk-widget-opened');
     if (isMobile.apple.device) {

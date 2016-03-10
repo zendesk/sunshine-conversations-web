@@ -2,7 +2,7 @@ import { store } from 'stores/app-store';
 import * as AppStateActions from 'actions/app-state-actions';
 import { observable } from 'utils/events';
 
-import { preventPageScroll, allowPageScroll } from 'utils/dom';
+import { preventMobilePageScroll, allowMobilePageScroll } from 'utils/dom';
 
 
 export function openWidget() {
@@ -11,7 +11,7 @@ export function openWidget() {
         store.dispatch(AppStateActions.openWidget());
         observable.trigger('widget:opened');
 
-        preventPageScroll();
+        preventMobilePageScroll();
     }
 }
 
@@ -21,7 +21,7 @@ export function closeWidget() {
         store.dispatch(AppStateActions.closeWidget());
         observable.trigger('widget:closed');
 
-        allowPageScroll();
+        allowMobilePageScroll();
     }
 }
 

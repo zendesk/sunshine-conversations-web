@@ -19,6 +19,10 @@ export class ConversationComponent extends Component {
         const totalScroll = node.scrollHeight;
         const currentScroll = top + node.offsetHeight;
 
+
+        // this bit of code makes sure there's always something to scroll
+        // in the conversation view so the page behind won't start scrolling
+        // when hitting top or bottom.
         if (top === 0) {
             node.scrollTop = 1;
         } else if (currentScroll === totalScroll) {
