@@ -1,1 +1,9 @@
 node_modules
+vendor
+public/js/lib
+public/vendors
+dist
+coverage
+test/client/lib
+coverage/
+temp/

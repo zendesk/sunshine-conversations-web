@@ -315,7 +315,7 @@
       "attrsOnSameLineAsTag": false,
        // how many attributes should the node have before having to put each
        // attribute in a new line. Default 1
-      "maxAttrsOnTag": 2,
+      "maxAttrsOnTag": 1,
       // if the attributes are going to be put each one on its own line, then keep the first
       // on the same line as the open tag
       "firstAttributeOnSameLine": true,
