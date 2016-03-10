@@ -36,13 +36,15 @@ describe('ChatInput', () => {
     beforeEach(() => {
         onChangeSpy = sandbox.spy(ChatInputComponent.prototype, 'onChange');
         onSendMessageSpy = sandbox.spy(ChatInputComponent.prototype, 'onSendMessage');
-        setStateSpy = sandbox.spy(ChatInputComponent.prototype, 'setState');
 
         resetUnreadCountStub = sandbox.stub(conversationService, 'resetUnreadCount');
         serviceSendMessageStub = sandbox.stub(conversationService, 'sendMessage');
 
         component = TestUtils.renderIntoDocument(<ChatInputComponent {...props} />);
         componentNode = ReactDOM.findDOMNode(component);
+
+        // spy on it after rendering to avoid triggering it when the component mounts
+        setStateSpy = sandbox.spy(ChatInputComponent.prototype, 'setState');
     });
 
     afterEach(() => {

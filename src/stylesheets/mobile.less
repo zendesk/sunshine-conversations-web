@@ -1,0 +1,28 @@
+html.sk-widget-opened {
+    &,
+    body {
+        @media (max-width: @screen-sm-min) {
+            overflow: hidden;
+            position: relative;
+            height: 100%;
+            width: 100%;
+            -webkit-overflow-scrolling: auto;
+        }
+    }
+}
+
+#sk-container.sk-ios-device {
+    #sk-holder {
+        -webkit-text-size-adjust: 100%;
+    }
+}
+
+@media (max-width: @screen-sm-min) {
+    #sk-footer {
+        .send {
+            &:hover {
+                color: #b2b2b2 !important;
+            }
+        }
+    }
+}
