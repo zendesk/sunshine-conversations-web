@@ -1,8 +1,9 @@
 import { store } from 'stores/app-store';
 import * as AppStateActions from 'actions/app-state-actions';
 import { observable } from 'utils/events';
-
 import { preventMobilePageScroll, allowMobilePageScroll } from 'utils/dom';
+import { resetUnreadCount } from 'services/conversation-service';
+
 
 
 export function openWidget() {
@@ -10,7 +11,7 @@ export function openWidget() {
     if (!embedded) {
         store.dispatch(AppStateActions.openWidget());
         observable.trigger('widget:opened');
-
+        resetUnreadCount();
         preventMobilePageScroll();
     }
 }
@@ -20,7 +21,7 @@ export function closeWidget() {
     if (!embedded) {
         store.dispatch(AppStateActions.closeWidget());
         observable.trigger('widget:closed');
-
+        resetUnreadCount();
         allowMobilePageScroll();
     }
 }

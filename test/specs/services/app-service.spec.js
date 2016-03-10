@@ -34,7 +34,8 @@ describe('App Service', () => {
                 mockedStore = mockAppStore(sandbox, {
                     appState: {
                         embedded: isEmbedded
-                    }
+                    },
+                    conversation: {}
                 });
             });
 
@@ -94,7 +95,8 @@ describe('App Service', () => {
                                     appState: {
                                         embedded: isEmbedded,
                                         widgetOpened: isOpened
-                                    }
+                                    },
+                                    conversation: {}
                                 });
                             });
 

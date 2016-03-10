@@ -72,7 +72,7 @@ export class SettingsComponent extends Component {
                                <i className='fa fa-envelope-o before-icon'></i>
                                <input disabled={ this.props.appState.readOnlyEmail }
                                       ref='input'
-                                      type='text'
+                                      type='email'
                                       placeholder={ this.props.ui.text.settingsInputPlaceholder }
                                       className='input email-input'
                                       onChange={ this.onChange }
