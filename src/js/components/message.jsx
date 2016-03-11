@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 
+import { TextMessage } from 'components/text-message';
+import { ImageMessage } from 'components/image-message';
 import { ActionComponent } from 'components/action';
 
-import { createMarkup, autolink, escapeHtml } from 'utils/html';
 
 export class MessageComponent extends Component {
     static defaultProps = {
@@ -22,25 +23,9 @@ export class MessageComponent extends Component {
                  src={ this.props.avatarUrl } />
             );
 
-        let text = this.props.text.split('\n').map((item, index) => {
-            if (!item.trim()) {
-                return;
-            }
-
-
-            const innerHtml = createMarkup(autolink(escapeHtml(item), {
-                target: '_blank',
-                class: 'link'
-            }));
-
-            return <span key={ index }><span dangerouslySetInnerHTML={ innerHtml }></span>
-                   <br/>
-                   </span>;
-        });
-
-        if (this.props.actions.length > 0) {
-            text = <span className='has-actions'>{ text }</span>;
-        }
+        const message = this.props.mediaUrl ?
+            <ImageMessage {...this.props} /> :
+            <TextMessage {...this.props} />;
 
         return <div className={ 'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row') }>
                    { avatar }
@@ -49,7 +34,7 @@ export class MessageComponent extends Component {
                            { isAppUser ? '' : this.props.name }
                        </div>
                        <div className='sk-msg'>
-                           { text }
+                           { message }
                            { actions }
                        </div>
                    </div>

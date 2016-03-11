@@ -4,7 +4,7 @@ import { findDOMNode } from 'react-dom';
 import isMobile from 'ismobilejs';
 import debounce from 'lodash.debounce';
 
-import { sendMessage, resetUnreadCount } from 'services/conversation-service';
+import { sendMessage, resetUnreadCount, uploadImage } from 'services/conversation-service';
 import { store } from 'stores/app-store';
 
 export class ChatInputComponent extends Component {
@@ -18,6 +18,7 @@ export class ChatInputComponent extends Component {
 
         this.onChange = this.onChange.bind(this);
         this.onSendMessage = this.onSendMessage.bind(this);
+        this.onImageChange = this.onImageChange.bind(this);
         this._debouncedResize = debounce(this.resizeInput.bind(this), 150);
     }
 
@@ -37,8 +38,13 @@ export class ChatInputComponent extends Component {
     }
     resizeInput() {
         const node = findDOMNode(this);
+        let buttonsWidth = this.refs.button.offsetWidth;
+        if (this.refs.imageUpload) {
+            buttonsWidth += this.refs.imageUpload.offsetWidth;
+        }
+
         this.setState({
-            inputContainerWidth: node.offsetWidth - this.refs.button.offsetWidth
+            inputContainerWidth: node.offsetWidth - buttonsWidth
         });
     }
 
@@ -52,6 +58,12 @@ export class ChatInputComponent extends Component {
             sendMessage(text);
             this.refs.input.focus();
         }
+    }
+
+    onImageChange(e) {
+        e.preventDefault();
+        const files = this.refs.fileInput.files;
+        Array.from(files).forEach(uploadImage);
     }
 
     componentDidMount() {
@@ -94,6 +106,14 @@ export class ChatInputComponent extends Component {
             <div id='sk-footer'>
                 <form onSubmit={ this.onSendMessage }
                       action='#'>
+                    <label className='btn btn-sk-link image-upload'
+                           ref='imageUpload'>
+                        <input type='file'
+                               accept='image/*'
+                               onChange={ this.onImageChange }
+                               ref='fileInput' />
+                        <i className='fa fa-camera'></i>
+                    </label>
                     <div className='input-container'
                          style={ containerStyle }>
                         <input ref='input'

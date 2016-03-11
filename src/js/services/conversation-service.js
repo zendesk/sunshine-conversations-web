@@ -6,6 +6,7 @@ import { core } from 'services/core';
 import { immediateUpdate } from 'services/user-service';
 import { initFaye } from 'utils/faye';
 import { observable } from 'utils/events';
+import { resizeImage, getBlobFromDataUrl } from 'utils/media';
 
 export function handleFirstUserMessage(response) {
     const state = store.getState();
@@ -21,14 +22,32 @@ export function handleFirstUserMessage(response) {
     return response;
 }
 
+export function sendChain(sendFn) {
+    const promise = immediateUpdate(store.getState().user);
+
+    if (store.getState().user.conversationStarted) {
+        return promise
+            .then(connectFaye)
+            .then(sendFn)
+            .then(handleFirstUserMessage);
+    }
+
+    // if it's not started, send the message first to create the conversation,
+    // then get it and connect faye
+    return promise
+        .then(sendFn)
+        .then(handleFirstUserMessage)
+        .then(connectFaye);
+}
+
 export function sendMessage(text) {
-    var sendFn = () => {
+    return sendChain(() => {
         // add an id just to please React
         // this message will be replaced by the real one on the server response
         const message = {
             _id: Math.random(),
-            text: text,
-            role: 'appUser'
+            role: 'appUser',
+            text
         };
 
         store.dispatch(addMessage(message));
@@ -39,22 +58,34 @@ export function sendMessage(text) {
             store.dispatch(setConversation(response.conversation));
             observable.trigger('message:sent', response.message);
             return response;
-        }).then(handleFirstUserMessage);
-    };
+        });
+    });
+}
 
-    var promise = immediateUpdate(store.getState().user);
+export function uploadImage(file) {
+    resizeImage(file).then((dataUrl) => {
+        return sendChain(() => {
+            // add an id just to please React
+            // this message will be replaced by the real one on the server response
+            const tmpMessage = {
+                mediaUrl: dataUrl,
+                mediaType: 'image/jpeg',
+                _id: Math.random(),
+                role: 'appUser'
+            };
 
-    if (store.getState().user.conversationStarted) {
-        return promise
-            .then(connectFaye)
-            .then(sendFn);
-    }
+            store.dispatch(addMessage(tmpMessage));
 
-    // if it's not started, send the message first to create the conversation,
-    // then get it and connect faye
-    return promise
-        .then(sendFn)
-        .then(connectFaye);
+            const user = store.getState().user;
+            return core().conversations.uploadImage(user._id, getBlobFromDataUrl(dataUrl), {
+                role: 'appUser'
+            }).then((response) => {
+                store.dispatch(setConversation(response.conversation));
+                observable.trigger('message:sent', response.message);
+                return response;
+            });
+        });
+    });
 }
 
 export function getConversation() {
@@ -92,7 +123,7 @@ export function resetUnreadCount() {
             return response;
         });
     }
-    
+
     return Promise.resolve();
 }
 
