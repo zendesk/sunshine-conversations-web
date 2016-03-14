@@ -17,6 +17,10 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             return Object.assign({}, state, {
                 messages: [...state.messages, action.message]
             });
+        case ConversationActions.REMOVE_MESSAGE:
+            return Object.assign({}, state, {
+                messages: [...state.messages.filter((message) => message._id !== action.id)]
+            });
         case ConversationActions.INCREMENT_UNREAD_COUNT:
             return Object.assign({}, state, {
                 unreadCount: state.unreadCount + 1

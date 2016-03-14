@@ -1,6 +1,6 @@
 import { store } from 'stores/app-store';
-import { addMessage, setConversation, resetUnreadCount as resetUnreadCountAction } from 'actions/conversation-actions';
-import { showSettingsNotification } from 'actions/app-state-actions';
+import { addMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction } from 'actions/conversation-actions';
+import { showSettingsNotification, showErrorNotification } from 'actions/app-state-actions';
 import { setFayeSubscription, unsetFayeSubscription } from 'actions/faye-actions';
 import { core } from 'services/core';
 import { immediateUpdate } from 'services/user-service';
@@ -67,22 +67,30 @@ export function uploadImage(file) {
         return sendChain(() => {
             // add an id just to please React
             // this message will be replaced by the real one on the server response
-            const tmpMessage = {
+            const message = {
                 mediaUrl: dataUrl,
                 mediaType: 'image/jpeg',
                 _id: Math.random(),
                 role: 'appUser'
             };
 
-            store.dispatch(addMessage(tmpMessage));
+            store.dispatch(addMessage(message));
 
             const user = store.getState().user;
-            return core().conversations.uploadImage(user._id, getBlobFromDataUrl(dataUrl), {
+            const blob = getBlobFromDataUrl(dataUrl);
+
+            return core().conversations.uploadImage(user._id, blob, {
                 role: 'appUser'
             }).then((response) => {
                 store.dispatch(setConversation(response.conversation));
                 observable.trigger('message:sent', response.message);
                 return response;
+            }).catch(() => {
+                store.dispatch(showErrorNotification(store.getState().ui.text.messageError));
+                store.dispatch(removeMessage({
+                    id: message._id
+                }));
+
             });
         });
     });
