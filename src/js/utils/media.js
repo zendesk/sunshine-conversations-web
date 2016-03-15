@@ -1,8 +1,17 @@
 import loadImage from 'lib/load-image';
 
 export function isImageUploadSupported() {
-    // to be improved
-    return true;
+    // check for features used in the image upload
+    let isSupported = ['atob', 'Blob', 'Uint8Array', 'File', 'FileReader'].every((feature) => {
+        return typeof global[feature] !== 'undefined';
+    });
+
+    if (isSupported) {
+        const canvas = document.createElement('canvas');
+        isSupported = typeof canvas.toDataURL === 'function';
+    }
+
+    return isSupported;
 }
 
 export function getBlobFromDataUrl(dataUrl) {
