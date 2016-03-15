@@ -22,6 +22,7 @@ import { getConversation, sendMessage, connectFaye, disconnectFaye, handleConver
 import { observable } from 'utils/events';
 import { storage } from 'utils/storage';
 import { waitForPage } from 'utils/dom';
+import { isImageUploadSupported } from 'utils/media';
 
 import { Root } from './root';
 
@@ -86,6 +87,10 @@ export class Smooch {
     }
 
     init(props) {
+        props = {
+            imageUploadEnabled: true,
+            ...props
+        };
 
         if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
             renderLink();
@@ -101,6 +106,12 @@ export class Smooch {
             store.dispatch(AppStateActions.enableSettings());
         } else {
             store.dispatch(AppStateActions.disableSettings());
+        }
+
+        if(props.imageUploadEnabled && isImageUploadSupported()) {
+            store.dispatch(AppStateActions.enableImageUpload());            
+        } else {
+            store.dispatch(AppStateActions.disableImageUpload());
         }
 
         store.dispatch(AppStateActions.setEmbedded(!!props.embedded));

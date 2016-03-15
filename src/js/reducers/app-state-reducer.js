@@ -28,6 +28,17 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
                 settingsEnabled: false
             });
 
+
+        case AppStateActions.ENABLE_IMAGE_UPLOAD:
+            return Object.assign({}, state, {
+                imageUploadEnabled: true
+            });
+
+        case AppStateActions.DISABLE_IMAGE_UPLOAD:
+            return Object.assign({}, state, {
+                imageUploadEnabled: false
+            });
+
         case AppStateActions.SET_EMAIL_READONLY:
             return Object.assign({}, state, {
                 readOnlyEmail: true

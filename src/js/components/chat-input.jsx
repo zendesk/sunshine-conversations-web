@@ -102,19 +102,28 @@ export class ChatInputComponent extends Component {
                          </a>;
         }
 
+        const imageUploadButton = this.props.imageUploadEnabled ?
+            <label className='btn btn-sk-link image-upload'
+                   ref='imageUpload'>
+                <input type='file'
+                       accept='image/*'
+                       onChange={ this.onImageChange }
+                       ref='fileInput' />
+                <i className='fa fa-camera'></i>
+            </label> : null;
+
+        const inputContainerClasses = ['input-container'];
+
+        if (!this.props.imageUploadEnabled) {
+            inputContainerClasses.push('no-upload');
+        }
+
         return (
             <div id='sk-footer'>
                 <form onSubmit={ this.onSendMessage }
                       action='#'>
-                    <label className='btn btn-sk-link image-upload'
-                           ref='imageUpload'>
-                        <input type='file'
-                               accept='image/*'
-                               onChange={ this.onImageChange }
-                               ref='fileInput' />
-                        <i className='fa fa-camera'></i>
-                    </label>
-                    <div className='input-container'
+                    { imageUploadButton }
+                    <div className={ inputContainerClasses.join(' ') }
                          style={ containerStyle }>
                         <input ref='input'
                                placeholder={ this.props.ui.text.inputPlaceholder }
@@ -133,7 +142,8 @@ export class ChatInputComponent extends Component {
 
 export const ChatInput = connect((state) => {
     return {
-        ui: state.ui
+        ui: state.ui,
+        imageUploadEnabled: state.appState.imageUploadEnabled
     };
 }, undefined, undefined, {
     withRef: true

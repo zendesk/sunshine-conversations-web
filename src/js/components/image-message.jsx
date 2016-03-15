@@ -6,6 +6,7 @@ export class ImageMessage extends Component {
     };
 
     render() {
-        return <img src={ this.props.mediaUrl } />;
+        return <img src={ this.props.mediaUrl }
+                    onLoad={ this.props.onLoad } />;
     }
 }
