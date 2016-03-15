@@ -115,7 +115,6 @@ module.exports = function(options) {
     }
 
     if (options.minimize) {
-
         plugins.push(
             new webpack.optimize.UglifyJsPlugin({
                 compressor: {
