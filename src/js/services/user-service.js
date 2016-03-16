@@ -53,6 +53,10 @@ export function update(props) {
     return previousValue;
 }
 
+export function updateDevice(deviceId, props) {
+    return core().appUsers.updateDevice(store.getState().user._id, deviceId, props);
+}
+
 export function trackEvent(eventName, userProps) {
     const user = store.getState().user;
     return core().appUsers.trackEvent(user._id, eventName, userProps).then((response) => {
