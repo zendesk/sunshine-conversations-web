@@ -11,10 +11,10 @@
 
     .image-upload {
         height: @footer-height;
-        width: @footer-height;
+        width: @footer-height - 10px;
         color: #b2b2b2;
         display: inline-block;
-        padding: 15px;
+        padding: 15px 10px;
 
         &:hover {
             color: #00aeff;
@@ -37,6 +37,7 @@
 
         .message-input {
             width: 100%;
+            -webkit-appearance: none;
 
             &::-ms-clear {
                 display: none;

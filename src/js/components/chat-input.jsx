@@ -109,7 +109,7 @@ export class ChatInputComponent extends Component {
                        accept='image/*'
                        onChange={ this.onImageChange }
                        ref='fileInput' />
-                <i className='fa fa-camera'></i>
+                <i className='fa fa-picture-o'></i>
             </label> : null;
 
         const inputContainerClasses = ['input-container'];

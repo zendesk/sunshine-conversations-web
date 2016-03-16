@@ -109,7 +109,7 @@ export class Smooch {
         }
 
         if(props.imageUploadEnabled && isImageUploadSupported()) {
-            store.dispatch(AppStateActions.enableImageUpload());            
+            store.dispatch(AppStateActions.enableImageUpload());
         } else {
             store.dispatch(AppStateActions.disableImageUpload());
         }

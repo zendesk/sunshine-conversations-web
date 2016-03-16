@@ -71,7 +71,8 @@ export function uploadImage(file) {
                 mediaUrl: dataUrl,
                 mediaType: 'image/jpeg',
                 _id: Math.random(),
-                role: 'appUser'
+                role: 'appUser',
+                status: 'sending'
             };
 
             store.dispatch(addMessage(message));

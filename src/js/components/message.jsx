@@ -27,13 +27,19 @@ export class MessageComponent extends Component {
             <ImageMessage {...this.props} /> :
             <TextMessage {...this.props} />;
 
+        const containerClass = [this.props.mediaUrl ? 'sk-msg-image' : 'sk-msg'];
+
+        if(this.props.actions.length > 0) {
+            containerClass.push('has-actions');
+        }
+
         return <div className={ 'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row') }>
                    { avatar }
                    <div className='sk-msg-wrapper'>
                        <div className='sk-from'>
                            { isAppUser ? '' : this.props.name }
                        </div>
-                       <div className='sk-msg'>
+                       <div className={ containerClass.join(' ') }>
                            { message }
                            { actions }
                        </div>
