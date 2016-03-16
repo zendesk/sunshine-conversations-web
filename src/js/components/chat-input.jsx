@@ -67,7 +67,7 @@ export class ChatInputComponent extends Component {
     }
 
     componentDidMount() {
-        this.resizeInput();
+        setTimeout(() => this.resizeInput());
         window.addEventListener('resize', this._debouncedResize);
     }
 
