@@ -53,8 +53,13 @@ export function update(props) {
     return previousValue;
 }
 
-export function updateDevice(deviceId, props) {
-    return core().appUsers.updateDevice(store.getState().user._id, deviceId, props);
+export function updateNowViewing(deviceId) {
+    return core().appUsers.updateDevice(store.getState().user._id, deviceId, {
+        info: {
+            currentUrl: document.location.href,
+            currentTitle: document.title
+        }
+    });
 }
 
 export function trackEvent(eventName, userProps) {

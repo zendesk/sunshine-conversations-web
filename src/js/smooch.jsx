@@ -16,12 +16,12 @@ import { reset } from 'actions/common-actions';
 import { openWidget, closeWidget } from 'services/app-service';
 import { login } from 'services/auth-service';
 import { getAccount } from 'services/stripe-service';
-import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, updateDevice, immediateUpdate as immediateUpdateUser } from 'services/user-service';
+import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, updateNowViewing, immediateUpdate as immediateUpdateUser } from 'services/user-service';
 import { getConversation, sendMessage, connectFaye, disconnectFaye, handleConversationUpdated } from 'services/conversation-service';
 
 import { observable } from 'utils/events';
 import { storage } from 'utils/storage';
-import { waitForPage } from 'utils/dom';
+import { waitForPage, monitorUrlChanges, stopMonitoring as stopMonitoringUrlChanges } from 'utils/dom';
 
 import { Root } from './root';
 
@@ -159,8 +159,11 @@ export class Smooch {
                 }
             }
         }).then((loginResponse) => {
-            this.monitorUrlChanges();
             store.dispatch(userActions.setUser(loginResponse.appUser));
+
+            monitorUrlChanges(() => {
+                updateNowViewing(getDeviceId());
+            });
 
             if (loginResponse.publicKeys) {
                 store.dispatch(setPublicKeys(loginResponse.publicKeys));
@@ -192,40 +195,6 @@ export class Smooch {
             observable.trigger('ready', user);
 
             return user;
-        });
-    }
-
-    monitorUrlChanges() {
-        const onhashchange = window.onhashchange;
-        const pushState = window.history.pushState;
-        const replaceState = window.history.replaceState;
-
-        window.onhashchange = function() {
-            this.updateNowViewing();
-            onhashchange && onhashchange.apply(window, arguments);
-        }.bind(this);
-
-        window.history.pushState = function(state, title, url) {
-            if (url) {
-                this.updateNowViewing();
-            }
-            pushState && pushState.apply(window.history, arguments);
-        }.bind(this);
-
-        window.history.replaceState = function(state, title, url) {
-            if (url) {
-                this.updateNowViewing();
-            }
-            replaceState && replaceState.apply(window.history, arguments);
-        }.bind(this);
-    }
-
-    updateNowViewing() {
-        return updateDevice(getDeviceId(), {
-            info: {
-                currentUrl: document.location.href,
-                currentTitle: document.title
-            }
         });
     }
 
@@ -276,6 +245,8 @@ export class Smooch {
         } else {
             document.body.removeChild(this._container);
         }
+
+        stopMonitoringUrlChanges();
 
         delete this.appToken;
         delete this._container;
