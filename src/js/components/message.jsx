@@ -12,6 +12,7 @@ export class MessageComponent extends Component {
     render() {
         const actions = this.props.actions.map((action) => {
             return <ActionComponent key={ action._id }
+                                    accentColor={ this.props.accentColor }
                                     {...action} />;
         });
 
@@ -27,11 +28,16 @@ export class MessageComponent extends Component {
                 return;
             }
 
-
-            const innerHtml = createMarkup(autolink(escapeHtml(item), {
+            const linkOptions = {
                 target: '_blank',
-                class: 'link'
-            }));
+                class: 'link',
+            };
+
+            if (!isAppUser && this.props.linkColor) {
+                linkOptions.style = `color: #${this.props.linkColor}`
+            }
+
+            const innerHtml = createMarkup(autolink(escapeHtml(item), linkOptions));
 
             return <span key={ index }><span dangerouslySetInnerHTML={ innerHtml }></span>
                    <br/>
@@ -42,13 +48,19 @@ export class MessageComponent extends Component {
             text = <span className='has-actions'>{ text }</span>;
         }
 
+        const style = {};
+        if (isAppUser && this.props.accentColor) {
+            style.backgroundColor = style.borderLeftColor = `#${this.props.accentColor}`;
+        }
+
         return <div className={ 'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row') }>
                    { avatar }
                    <div className='sk-msg-wrapper'>
                        <div className='sk-from'>
                            { isAppUser ? '' : this.props.name }
                        </div>
-                       <div className='sk-msg'>
+                       <div className='sk-msg'
+                            style={ style }>
                            { text }
                            { actions }
                        </div>

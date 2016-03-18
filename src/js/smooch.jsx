@@ -7,7 +7,7 @@ import { store } from 'stores/app-store';
 
 import { setAuth, resetAuth } from 'actions/auth-actions';
 import { setUser, resetUser } from 'actions/user-actions';
-import { setPublicKeys, setStripeInfo } from 'actions/app-actions';
+import { setPublicKeys, setStripeInfo, setAppSettings } from 'actions/app-actions';
 import { updateText } from 'actions/ui-actions';
 import { resetConversation } from 'actions/conversation-actions';
 import * as AppStateActions from 'actions/app-state-actions';
@@ -162,6 +162,7 @@ export class Smooch {
             });
         }).then((loginResponse) => {
             store.dispatch(setUser(loginResponse.appUser));
+            store.dispatch(setAppSettings(loginResponse.app.settings));
 
             if (loginResponse.publicKeys) {
                 store.dispatch(setPublicKeys(loginResponse.publicKeys));

@@ -71,9 +71,14 @@ export class ChatInputComponent extends Component {
         let sendButton;
 
         const buttonClassNames = ['send'];
+        const buttonStyle = {};
 
         if (this.state.text.trim()) {
             buttonClassNames.push('active');
+
+            if (this.props.settings.accentColor) {
+                buttonStyle.color = `#${this.props.settings.accentColor}`;
+            }
         }
 
         if (isMobile.apple.device) {
@@ -81,11 +86,13 @@ export class ChatInputComponent extends Component {
             // onTouchStart will do the trick and the input won't lose focus.
             sendButton = <span ref='button'
                                className={ buttonClassNames.join(' ') }
-                               onTouchStart={ this.onSendMessage }>{ this.props.ui.text.sendButtonText }</span>;
+                               onTouchStart={ this.onSendMessage }
+                               style={ buttonStyle }>{ this.props.ui.text.sendButtonText }</span>;
         } else {
             sendButton = <a ref='button'
                             className={ buttonClassNames.join(' ') }
-                            onClick={ this.onSendMessage }>
+                            onClick={ this.onSendMessage }
+                            style={ buttonStyle }>
                              { this.props.ui.text.sendButtonText }
                          </a>;
         }
@@ -113,7 +120,8 @@ export class ChatInputComponent extends Component {
 
 export const ChatInput = connect((state) => {
     return {
-        ui: state.ui
+        ui: state.ui,
+        settings: state.app.settings.web
     };
 }, undefined, undefined, {
     withRef: true
