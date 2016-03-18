@@ -21,7 +21,7 @@ import { getConversation, sendMessage, connectFaye, disconnectFaye, handleConver
 
 import { observable } from 'utils/events';
 import { storage } from 'utils/storage';
-import { waitForPage, monitorUrlChanges, stopMonitoring as stopMonitoringUrlChanges } from 'utils/dom';
+import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges } from 'utils/dom';
 
 import { Root } from './root';
 

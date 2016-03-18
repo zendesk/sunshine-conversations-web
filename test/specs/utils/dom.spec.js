@@ -1,8 +1,8 @@
-import { monitorUrlChanges, stopMonitoring } from 'utils/dom';
+import { monitorUrlChanges, stopMonitoringUrlChanges } from 'utils/dom';
 
 describe('monitorUrlChanges', () => {
     it('should monitor hash changes and call callback', (done) => {
-        stopMonitoring();
+        stopMonitoringUrlChanges();
 
         monitorUrlChanges(() => {
             done();
@@ -12,7 +12,7 @@ describe('monitorUrlChanges', () => {
     });
 
     it('should monitor push state changes and call callback', (done) => {
-        stopMonitoring();
+        stopMonitoringUrlChanges();
 
         monitorUrlChanges(() => {
             done();
@@ -24,7 +24,7 @@ describe('monitorUrlChanges', () => {
     });
 
     it('should monitor replace state changes and call callback', (done) => {
-        stopMonitoring();
+        stopMonitoringUrlChanges();
 
         monitorUrlChanges(() => {
             done();
