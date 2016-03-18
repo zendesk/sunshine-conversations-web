@@ -29,6 +29,14 @@ export function initFaye() {
             }
         });
 
+        faye.on('transport:up', function() {
+            observable.trigger('socket:connected');
+        });
+
+        faye.on('transport:down', function() {
+            observable.trigger('socket:disconnected');
+        });
+
         return faye.subscribe('/conversations/' + state.conversation._id, (message) => {
             store.dispatch(addMessage(message));
             store.dispatch(incrementUnreadCount());

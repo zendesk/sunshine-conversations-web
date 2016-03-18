@@ -128,6 +128,9 @@ export class Smooch {
         store.dispatch(resetAuth());
         store.dispatch(resetUser());
         store.dispatch(resetConversation());
+
+        observable.off('socket:connected');
+
         disconnectFaye();
 
         attributes = pick(attributes, EDITABLE_PROPERTIES);
@@ -161,6 +164,14 @@ export class Smooch {
                 }
             });
         }).then((loginResponse) => {
+            observable.on('socket:connected', () => {
+                const user = store.getState().user;
+
+                if (user.conversationStarted) {
+                    getConversation();
+                }
+            });
+
             store.dispatch(setUser(loginResponse.appUser));
 
             if (loginResponse.publicKeys) {

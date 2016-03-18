@@ -4,6 +4,7 @@ import * as authService from 'services/auth-service';
 import * as conversationService from 'services/conversation-service';
 import * as userService from 'services/user-service';
 import { mockAppStore } from 'test/utils/redux';
+import { observable } from 'utils/events';
 
 const defaultState = {
     user: {
@@ -41,7 +42,7 @@ describe('Smooch', () => {
     let mockedStore;
 
     after(() => {
-        mockedStore.restore();
+        mockedStore && mockedStore.restore();
     });
 
     beforeEach(() => {
@@ -113,6 +114,12 @@ describe('Smooch', () => {
             disconnectFayeStub = sandbox.stub(conversationService, 'disconnectFaye');
         });
 
+        afterEach(() => {
+            loginStub.restore();
+            getConversationStub.restore();
+            immediateUpdateStub.restore();
+        });
+
         it('should reset the user', () => {
             const props = {
                 userId: 'some-id',
@@ -163,6 +170,11 @@ describe('Smooch', () => {
                     connectFayeStub.should.have.been.calledOnce;
                 });
             });
+
+            it('should call getConversation on socket connected', () => {
+                observable.trigger('socket:connected');
+                getConversationStub.should.have.been.calledOnce;
+            });
         });
 
         describe('conversation not started', () => {
@@ -194,6 +206,11 @@ describe('Smooch', () => {
                     getConversationStub.should.not.have.been.called;
                     connectFayeStub.should.not.have.been.called;
                 });
+            });
+
+            it('should not call getConversation on socket connected', () => {
+                observable.trigger('socket:connected');
+                getConversationStub.should.not.have.been.called;
             });
         });
     });
