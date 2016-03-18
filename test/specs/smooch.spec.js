@@ -4,7 +4,6 @@ import * as authService from 'services/auth-service';
 import * as conversationService from 'services/conversation-service';
 import * as userService from 'services/user-service';
 import { mockAppStore } from 'test/utils/redux';
-import { observable } from 'utils/events';
 
 const defaultState = {
     user: {
@@ -170,11 +169,6 @@ describe('Smooch', () => {
                     connectFayeStub.should.have.been.calledOnce;
                 });
             });
-
-            it('should call getConversation on socket connected', () => {
-                observable.trigger('socket:connected');
-                getConversationStub.should.have.been.calledOnce;
-            });
         });
 
         describe('conversation not started', () => {
@@ -206,11 +200,6 @@ describe('Smooch', () => {
                     getConversationStub.should.not.have.been.called;
                     connectFayeStub.should.not.have.been.called;
                 });
-            });
-
-            it('should not call getConversation on socket connected', () => {
-                observable.trigger('socket:connected');
-                getConversationStub.should.not.have.been.called;
             });
         });
     });

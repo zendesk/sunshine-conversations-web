@@ -4,6 +4,7 @@ import urljoin from 'urljoin';
 import { observable } from 'utils/events';
 import { store } from 'stores/app-store';
 import { addMessage, incrementUnreadCount } from 'actions/conversation-actions';
+import { getConversation } from 'services/conversation-service';
 
 export function initFaye() {
     const state = store.getState();
@@ -30,11 +31,11 @@ export function initFaye() {
         });
 
         faye.on('transport:up', function() {
-            observable.trigger('socket:connected');
-        });
+            const user = store.getState().user;
 
-        faye.on('transport:down', function() {
-            observable.trigger('socket:disconnected');
+            if (user.conversationStarted) {
+                getConversation();
+            }
         });
 
         return faye.subscribe('/conversations/' + state.conversation._id, (message) => {
