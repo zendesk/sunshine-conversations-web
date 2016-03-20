@@ -6,7 +6,7 @@ import pick from 'lodash.pick';
 import { store } from 'stores/app-store';
 
 import { setAuth, resetAuth } from 'actions/auth-actions';
-import { setUser, resetUser } from 'actions/user-actions';
+import * as userActions from 'actions/user-actions';
 import { setPublicKeys, setStripeInfo } from 'actions/app-actions';
 import { updateText } from 'actions/ui-actions';
 import { resetConversation } from 'actions/conversation-actions';
@@ -126,7 +126,7 @@ export class Smooch {
 
         // in case it comes from a previous authenticated state
         store.dispatch(resetAuth());
-        store.dispatch(resetUser());
+        store.dispatch(userActions.resetUser());
         store.dispatch(resetConversation());
         disconnectFaye();
 
@@ -161,7 +161,7 @@ export class Smooch {
                 }
             });
         }).then((loginResponse) => {
-            store.dispatch(setUser(loginResponse.appUser));
+            store.dispatch(userActions.setUser(loginResponse.appUser));
 
             if (loginResponse.publicKeys) {
                 store.dispatch(setPublicKeys(loginResponse.publicKeys));
@@ -222,7 +222,7 @@ export class Smooch {
 
     getConversation() {
         return handleConversationUpdated().then(() => {
-            store.dispatch(setUser({
+            store.dispatch(userActions.updateUser({
                 conversationStarted: true
             }));
             return store.getState().conversation;
