@@ -95,6 +95,8 @@ export function uploadImage(file) {
 
                 });
             });
+        }).catch(() => {
+            store.dispatch(showErrorNotification(store.getState().ui.text.invalidFileError));
         });
     }
 
