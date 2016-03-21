@@ -119,6 +119,7 @@ export class ChatInputComponent extends Component {
                 <form ref='imageUploadForm'
                       onSubmit={ prevenDefault }>
                     <input type='file'
+                           accept='image/*'
                            onChange={ this.onImageChange }
                            ref='fileInput' />
                 </form>
