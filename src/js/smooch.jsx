@@ -16,12 +16,12 @@ import { reset } from 'actions/common-actions';
 import { openWidget, closeWidget } from 'services/app-service';
 import { login } from 'services/auth-service';
 import { getAccount } from 'services/stripe-service';
-import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, immediateUpdate as immediateUpdateUser } from 'services/user-service';
+import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, updateNowViewing, immediateUpdate as immediateUpdateUser } from 'services/user-service';
 import { getConversation, sendMessage, connectFaye, disconnectFaye, handleConversationUpdated } from 'services/conversation-service';
 
 import { observable } from 'utils/events';
 import { storage } from 'utils/storage';
-import { waitForPage } from 'utils/dom';
+import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges } from 'utils/dom';
 
 import { Root } from './root';
 
@@ -32,10 +32,10 @@ function renderWidget(container) {
     } else {
         const el = document.createElement('div');
         el.setAttribute('id', 'sk-holder');
+        render(<Root store={ store } />, el);
 
         waitForPage().then(() => {
             document.body.appendChild(el);
-            render(<Root store={ store } />, el);
         });
 
         return el;
@@ -58,7 +58,7 @@ function renderLink() {
 function getDeviceId() {
     const SK_STORAGE = 'sk_deviceid';
     const deviceId = storage.getItem(SK_STORAGE) ||
-        uuid.v4().replace(/-/g, '');
+    uuid.v4().replace(/-/g, '');
 
     storage.setItem(SK_STORAGE, deviceId);
 
@@ -138,30 +138,32 @@ export class Smooch {
             store.dispatch(AppStateActions.unsetEmailReadonly());
         }
 
-        return Promise.resolve().then(() => {
-            store.dispatch(setAuth({
-                jwt: jwt,
-                appToken: this.appToken
-            }));
+        store.dispatch(setAuth({
+            jwt: jwt,
+            appToken: this.appToken
+        }));
 
-            return login({
-                userId: userId,
-                device: {
-                    platform: 'web',
-                    id: getDeviceId(),
-                    info: {
-                        sdkVersion: VERSION,
-                        URL: document.location.host,
-                        userAgent: navigator.userAgent,
-                        referrer: document.referrer,
-                        browserLanguage: navigator.language,
-                        currentUrl: document.location.href,
-                        currentTitle: document.title
-                    }
+        return login({
+            userId: userId,
+            device: {
+                platform: 'web',
+                id: getDeviceId(),
+                info: {
+                    sdkVersion: VERSION,
+                    URL: document.location.host,
+                    userAgent: navigator.userAgent,
+                    referrer: document.referrer,
+                    browserLanguage: navigator.language,
+                    currentUrl: document.location.href,
+                    currentTitle: document.title
                 }
-            });
+            }
         }).then((loginResponse) => {
             store.dispatch(userActions.setUser(loginResponse.appUser));
+
+            monitorUrlChanges(() => {
+                updateNowViewing(getDeviceId());
+            });
 
             if (loginResponse.publicKeys) {
                 store.dispatch(setPublicKeys(loginResponse.publicKeys));
@@ -243,6 +245,8 @@ export class Smooch {
         } else {
             document.body.removeChild(this._container);
         }
+
+        stopMonitoringUrlChanges();
 
         delete this.appToken;
         delete this._container;

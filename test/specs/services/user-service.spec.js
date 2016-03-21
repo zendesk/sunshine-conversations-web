@@ -28,6 +28,12 @@ describe('User service', () => {
             }
         });
 
+        coreMock.appUsers.updateDevice.resolves({
+            info: {
+                test: true
+            }
+        });
+
         sandbox.stub(coreService, 'core', () => {
             return coreMock;
         });
@@ -43,6 +49,19 @@ describe('User service', () => {
     afterEach(() => {
         mockedStore.restore();
         sandbox.restore();
+    });
+
+    describe('updateNowViewing', () => {
+        it('should call smooch-core update device api and return the device on server response', () => {
+            return userService.updateNowViewing('blap').then(() => {
+                coreMock.appUsers.updateDevice.should.have.been.calledWith('1', 'blap', {
+                    info: {
+                        currentUrl: document.location.href,
+                        currentTitle: document.title
+                    }
+                });
+            });
+        });
     });
 
     describe('immediateUpdate', () => {
