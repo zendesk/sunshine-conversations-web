@@ -129,8 +129,6 @@ export class Smooch {
         store.dispatch(resetUser());
         store.dispatch(resetConversation());
 
-        observable.off('socket:connected');
-
         disconnectFaye();
 
         attributes = pick(attributes, EDITABLE_PROPERTIES);

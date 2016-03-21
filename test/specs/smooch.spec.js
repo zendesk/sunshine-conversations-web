@@ -113,12 +113,6 @@ describe('Smooch', () => {
             disconnectFayeStub = sandbox.stub(conversationService, 'disconnectFaye');
         });
 
-        afterEach(() => {
-            loginStub.restore();
-            getConversationStub.restore();
-            immediateUpdateStub.restore();
-        });
-
         it('should reset the user', () => {
             const props = {
                 userId: 'some-id',

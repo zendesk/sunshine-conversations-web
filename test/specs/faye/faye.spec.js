@@ -48,12 +48,25 @@ describe('faye', () => {
     });
 
     describe('when connected', () => {
-        beforeEach(() => utilsFaye.initFaye());
-
         describe('when conversation is started', () => {
-
             it('should call getconversation when transport:up event is emitted', () => {
+                utilsFaye.initFaye();
                 getConversationStub.should.have.been.calledOnce;
+            });
+        });
+
+        describe('when conversation is not started', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, Object.assign(state, {
+                    user: {
+                        conversationStarted: false
+                    }
+                }));
+            });
+
+            it('should not call getconversation when transport:up event is emitted', () => {
+                utilsFaye.initFaye();
+                getConversationStub.should.not.have.been.called;
             });
         });
     });
