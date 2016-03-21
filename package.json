@@ -48,7 +48,7 @@
     "react-redux": "4.0.5",
     "react-stripe-checkout": "1.7.2",
     "redux": "3.0.5",
-    "smooch-core": "0.0.15",
+    "smooch-core": "1.1.1",
     "urljoin": "0.1.5",
     "uuid": "2.0.1"
   },

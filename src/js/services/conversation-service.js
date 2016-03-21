@@ -70,7 +70,6 @@ export function connectFaye() {
     if (!subscription) {
         subscription = initFaye();
         store.dispatch(setFayeSubscription(subscription));
-        return subscription.then(getConversation);
     }
 
     return subscription;
@@ -92,7 +91,7 @@ export function resetUnreadCount() {
             return response;
         });
     }
-    
+
     return Promise.resolve();
 }
 

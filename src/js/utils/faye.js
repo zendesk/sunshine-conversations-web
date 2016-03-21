@@ -4,6 +4,7 @@ import urljoin from 'urljoin';
 import { observable } from 'utils/events';
 import { store } from 'stores/app-store';
 import { addMessage, incrementUnreadCount } from 'actions/conversation-actions';
+import { getConversation } from 'services/conversation-service';
 
 export function initFaye() {
     const state = store.getState();
@@ -26,6 +27,14 @@ export function initFaye() {
                 }
 
                 callback(message);
+            }
+        });
+
+        faye.on('transport:up', function() {
+            const user = store.getState().user;
+
+            if (user.conversationStarted) {
+                getConversation();
             }
         });
 
