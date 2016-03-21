@@ -1,7 +1,7 @@
 {
   "name": "smooch",
   "analyze": false,
-  "version": "2.1.11",
+  "version": "2.1.12",
   "keywords": [
     "smooch",
     "javascript",
@@ -50,7 +50,7 @@
     "react-spinkit": "1.1.4",
     "react-stripe-checkout": "1.7.2",
     "redux": "3.0.5",
-    "smooch-core": "1.1.0",
+    "smooch-core": "1.1.1",
     "urljoin": "0.1.5",
     "uuid": "2.0.1"
   },

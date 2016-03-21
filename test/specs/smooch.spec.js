@@ -41,7 +41,7 @@ describe('Smooch', () => {
     let mockedStore;
 
     after(() => {
-        mockedStore.restore();
+        mockedStore && mockedStore.restore();
     });
 
     beforeEach(() => {
@@ -259,16 +259,39 @@ describe('Smooch', () => {
                     }
                 });
             });
+
+            it('should update conversationStarted to true ', () => {
+                return smooch.getConversation().then(() => {
+                    mockedStore.dispatch.should.have.been.calledWith({
+                        type: 'UPDATE_USER',
+                        properties: {
+                            conversationStarted: true
+                        }
+                    });
+                });
+            });
         });
 
         describe('conversation does not exist', () => {
             beforeEach(() => {
                 conversationService.handleConversationUpdated.rejects();
             });
+
             it('should reject', (done) => {
                 return smooch.getConversation()
                     .catch(() => done())
                     .then(() => done(new Error('Promise should not have resolved')));
+            });
+
+            it('should not update conversationStarted to true ', () => {
+                return smooch.getConversation().catch(() => {
+                    mockedStore.dispatch.should.not.have.been.calledWith({
+                        type: 'UPDATE_USER',
+                        properties: {
+                            conversationStarted: true
+                        }
+                    });
+                });
             });
         });
 
