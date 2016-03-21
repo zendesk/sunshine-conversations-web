@@ -3,7 +3,6 @@ import { Client } from 'faye';
 import { mockAppStore } from 'test/utils/redux';
 import * as utilsFaye from 'utils/faye';
 import * as conversationService from 'services/conversation-service';
-import { SHOW_SETTINGS_NOTIFICATION } from 'actions/app-state-actions';
 
 const state = {
     user: {
