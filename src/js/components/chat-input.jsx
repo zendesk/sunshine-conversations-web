@@ -6,6 +6,7 @@ import debounce from 'lodash.debounce';
 
 import { sendMessage, resetUnreadCount, uploadImage } from 'services/conversation-service';
 import { store } from 'stores/app-store';
+import { prevenDefault } from 'utils/events';
 
 export class ChatInputComponent extends Component {
     constructor(...args) {
@@ -63,7 +64,17 @@ export class ChatInputComponent extends Component {
     onImageChange(e) {
         e.preventDefault();
         const files = this.refs.fileInput.files;
-        Array.from(files).forEach(uploadImage);
+        // we only allow one file in the input, but let's handle it
+        // as if we supported multiple ones
+        Promise.all(Array.from(files).map((file) => {
+            // catch it to prevent an unhandled promise exception
+            return uploadImage(file).catch(() => {
+            });
+        })).then(() => {
+            // it the file input is not reset, a user can't pick the same
+            // file twice in a row.
+            this.refs.imageUploadForm.reset();
+        });
     }
 
     componentDidMount() {
@@ -105,10 +116,12 @@ export class ChatInputComponent extends Component {
         const imageUploadButton = this.props.imageUploadEnabled ?
             <label className='btn btn-sk-link image-upload'
                    ref='imageUpload'>
-                <input type='file'
-                       accept='image/*'
-                       onChange={ this.onImageChange }
-                       ref='fileInput' />
+                <form ref='imageUploadForm'
+                      onSubmit={ prevenDefault }>
+                    <input type='file'
+                           onChange={ this.onImageChange }
+                           ref='fileInput' />
+                </form>
                 <i className='fa fa-picture-o'></i>
             </label> : null;
 
@@ -120,9 +133,9 @@ export class ChatInputComponent extends Component {
 
         return (
             <div id='sk-footer'>
+                { imageUploadButton }
                 <form onSubmit={ this.onSendMessage }
                       action='#'>
-                    { imageUploadButton }
                     <div className={ inputContainerClasses.join(' ') }
                          style={ containerStyle }>
                         <input ref='input'

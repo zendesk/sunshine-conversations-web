@@ -27,6 +27,10 @@ export function getBlobFromDataUrl(dataUrl) {
     });
 }
 
+export function isFileTypeSupported(filetype) {
+    return filetype.startsWith('image/');
+}
+
 export function resizeImage(file) {
     return new Promise((resolve) => {
         loadImage.parseMetaData(file, (data) => {

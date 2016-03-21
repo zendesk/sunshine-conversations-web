@@ -40,3 +40,7 @@ export class Observable {
 }
 
 export const observable = new Observable();
+
+export function preventDefault(e) {
+    e.preventDefault();
+}
