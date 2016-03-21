@@ -6,7 +6,8 @@ export function createMock(sinon) {
             trackEvent: sinon.stub(),
             stripe: {
                 createTransaction: sinon.stub()
-            }
+            },
+            updateDevice: sinon.stub()
         },
 
         conversations: {

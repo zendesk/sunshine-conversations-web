@@ -8,6 +8,8 @@ let waitForSave = false;
 const waitDelay = 5000; // ms
 let pendingUserProps = {};
 let previousValue = Promise.resolve();
+let deviceUpdateThrottle;
+let deviceUpdatePending = false;
 
 export const EDITABLE_PROPERTIES = [
     'givenName',
@@ -64,4 +66,31 @@ export function trackEvent(eventName, userProps) {
 
         return response;
     });
+}
+
+export function updateNowViewing(deviceId) {
+    if (!deviceUpdateThrottle) {
+        deviceUpdateThrottle = setTimeout(() => {
+            deviceUpdateThrottle = null;
+
+            if (deviceUpdatePending) {
+                updateNowViewing(deviceId);
+                deviceUpdatePending = false;
+            }
+        }, waitDelay);
+
+        return immediateUpdateDevice(deviceId, {
+            info: {
+                currentUrl: document.location.href,
+                currentTitle: document.title
+            }
+        });
+    } else {
+        deviceUpdatePending = true;
+        return Promise.resolve();
+    }
+}
+
+function immediateUpdateDevice(deviceId, device) {
+    return core().appUsers.updateDevice(store.getState().user._id, deviceId, device);
 }

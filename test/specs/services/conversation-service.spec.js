@@ -101,7 +101,6 @@ describe('Conversation service', () => {
                         type: 'SET_FAYE_SUBSCRIPTION',
                         subscription: fayeSubscriptionMock
                     });
-                    coreMock.conversations.get.should.have.been.calledOnce;
                     payload.should.deep.eq({
                         conversation: {
                             messages: []
