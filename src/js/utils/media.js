@@ -41,10 +41,10 @@ export function resizeImage(file) {
         const MAX_HEIGHT = 1280;
         return new Promise((resolve, reject) => {
             loadImage(file, (img) => {
-                if (img) {
-                    resolve(img);
-                } else {
+                if (img.type === 'error') {
                     reject();
+                } else {
+                    resolve(img);
                 }
             }, {
                 maxWidth: MAX_WIDTH,
