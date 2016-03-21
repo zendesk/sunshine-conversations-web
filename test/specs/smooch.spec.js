@@ -41,7 +41,7 @@ describe('Smooch', () => {
     let mockedStore;
 
     after(() => {
-        mockedStore.restore();
+        mockedStore && mockedStore.restore();
     });
 
     beforeEach(() => {

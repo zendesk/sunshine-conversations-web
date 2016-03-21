@@ -128,6 +128,7 @@ export class Smooch {
         store.dispatch(resetAuth());
         store.dispatch(userActions.resetUser());
         store.dispatch(resetConversation());
+
         disconnectFaye();
 
         attributes = pick(attributes, EDITABLE_PROPERTIES);
