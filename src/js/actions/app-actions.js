@@ -23,7 +23,11 @@ export function setStripeInfo(props) {
     };
 }
 
-export function setAppSettings(props) {
+export function setAppSettings(props = {}) {
+    if (!props.web) {
+        props.web = {};
+    }
+
     return {
         type: SET_APP_SETTINGS,
         props
