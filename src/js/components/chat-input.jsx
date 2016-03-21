@@ -35,11 +35,26 @@ export class ChatInputComponent extends Component {
     onFocus() {
         checkAndResetUnreadCount();
     }
-    resizeInput() {
+
+    resizeInput(depth = 0) {
         const node = findDOMNode(this);
-        this.setState({
-            inputContainerWidth: node.offsetWidth - this.refs.button.offsetWidth
-        });
+        if (node.offsetWidth - this.refs.button.offsetWidth > 0) {
+            this.setState({
+                inputContainerWidth: node.offsetWidth - this.refs.button.offsetWidth
+            });
+        } else {
+            // let's try it 10 times (so, 1 sec)
+            if (depth < 10) {
+                setTimeout(() => {
+                    this.resizeInput(depth + 1);
+                }, 100);
+            } else {
+                // otherwise, let's hope 80% won't break it and won't look too silly
+                this.setState({
+                    inputContainerWidth: '80%'
+                });
+            }
+        }
     }
 
     onSendMessage(e) {
