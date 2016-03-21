@@ -3,9 +3,10 @@ import { createMock } from 'test/mocks/core';
 import { mockAppStore } from 'test/utils/redux';
 import * as coreService from 'services/core';
 import * as utilsFaye from 'utils/faye';
+import * as utilsMedia from 'utils/media';
 import * as userService from 'services/user-service';
 import * as conversationService from 'services/conversation-service';
-import { SHOW_SETTINGS_NOTIFICATION } from 'actions/app-state-actions';
+import { SHOW_SETTINGS_NOTIFICATION, SHOW_ERROR_NOTIFICATION } from 'actions/app-state-actions';
 
 
 describe('Conversation service', () => {
@@ -47,6 +48,10 @@ describe('Conversation service', () => {
 
         sandbox.stub(utilsFaye, 'initFaye').returns(fayeSubscriptionMock);
         sandbox.stub(userService, 'immediateUpdate').resolves();
+        sandbox.stub(utilsMedia, 'isImageUploadSupported').returns(true);
+        sandbox.stub(utilsMedia, 'isFileTypeSupported');
+        sandbox.stub(utilsMedia, 'resizeImage');
+        sandbox.stub(utilsMedia, 'getBlobFromDataUrl').returns('this-is-a-blob');
     });
 
     afterEach(() => {
@@ -178,7 +183,6 @@ describe('Conversation service', () => {
         });
     });
 
-
     describe('sendMessage', () => {
         describe('conversation started and connected to faye', () => {
             beforeEach(() => {
@@ -290,6 +294,181 @@ describe('Conversation service', () => {
                     });
 
                     utilsFaye.initFaye.should.have.been.calledOnce;
+                });
+            });
+        });
+    });
+
+    describe('uploadImage', () => {
+        describe('conversation started and connected to faye', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, {
+                    user: {
+                        _id: '1',
+                        conversationStarted: true
+                    },
+                    appState: {
+                        settingsEnabled: true
+                    },
+                    conversation: {
+                        messages: []
+                    },
+                    faye: {
+                        subscription: fayeSubscriptionMock
+                    }
+                });
+
+                coreMock.conversations.uploadImage.resolves({
+                    conversation: 'conversation'
+                });
+
+                sandbox.stub(conversationService, 'handleFirstUserMessage');
+                sandbox.stub(conversationService, 'connectFaye').resolves();
+                utilsMedia.isFileTypeSupported.returns(true);
+                utilsMedia.resizeImage.resolves({});
+            });
+
+            it('should not connect faye', () => {
+                return conversationService.uploadImage({}).then(() => {
+                    userService.immediateUpdate.should.have.been.calledOnce;
+
+                    coreMock.conversations.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
+                        role: 'appUser'
+                    });
+
+                    utilsFaye.initFaye.should.not.have.been.called;
+                });
+            });
+        });
+
+        describe('conversation started and not connected to faye', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, {
+                    user: {
+                        _id: '1',
+                        conversationStarted: true
+                    },
+                    appState: {
+                        settingsEnabled: true
+                    },
+                    conversation: {
+                        messages: []
+                    },
+                    faye: {
+                        subscription: undefined
+                    },
+                    ui: {
+                        text: {
+
+                        }
+                    }
+                });
+
+                sandbox.stub(conversationService, 'handleFirstUserMessage');
+                sandbox.stub(conversationService, 'connectFaye').resolves();
+                utilsMedia.isFileTypeSupported.returns(true);
+                utilsMedia.resizeImage.resolves({});
+            });
+
+            it('should connect faye', () => {
+                return conversationService.uploadImage({}).then(() => {
+                    userService.immediateUpdate.should.have.been.calledOnce;
+
+                    coreMock.conversations.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
+                        role: 'appUser'
+                    });
+
+                    utilsFaye.initFaye.should.have.been.calledOnce;
+                });
+            });
+        });
+
+        describe('conversation not started', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, {
+                    user: {
+                        _id: '1',
+                        conversationStarted: true
+                    },
+                    appState: {
+                        settingsEnabled: true
+                    },
+                    conversation: {
+                        messages: []
+                    },
+                    faye: {
+                        subscription: undefined
+                    },
+                    ui: {
+                        text: {
+
+                        }
+                    }
+                });
+
+                sandbox.stub(conversationService, 'handleFirstUserMessage');
+                sandbox.stub(conversationService, 'connectFaye').resolves();
+                utilsMedia.isFileTypeSupported.returns(true);
+                utilsMedia.resizeImage.resolves({});
+            });
+
+            it('should connect faye', () => {
+                return conversationService.uploadImage({}).then(() => {
+                    userService.immediateUpdate.should.have.been.calledOnce;
+
+                    coreMock.conversations.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
+                        role: 'appUser'
+                    });
+
+                    utilsFaye.initFaye.should.have.been.calledOnce;
+                });
+            });
+        });
+
+        describe('errors', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, {
+                    user: {
+                        _id: '1',
+                        conversationStarted: true
+                    },
+                    appState: {
+                        settingsEnabled: true
+                    },
+                    conversation: {
+                        messages: []
+                    },
+                    faye: {
+                        subscription: fayeSubscriptionMock
+                    },
+                    ui: {
+                        text: {
+                            invalidFileError: 'invalidFileError'
+                        }
+                    }
+                });
+
+                coreMock.conversations.uploadImage.resolves({
+                    conversation: 'conversation'
+                });
+
+                sandbox.stub(conversationService, 'handleFirstUserMessage');
+                sandbox.stub(conversationService, 'connectFaye').resolves();
+            });
+
+            describe('unsupported file type', () => {
+                beforeEach(() => {
+                    utilsMedia.isFileTypeSupported.returns(false);
+                    utilsMedia.resizeImage.resolves({});
+                });
+
+                it('should show an error notification', () => {
+                    return conversationService.uploadImage({}).catch(() => {
+                        mockedStore.dispatch.should.have.been.calledWith({
+                            type: SHOW_ERROR_NOTIFICATION,
+                            message: 'invalidFileError'
+                        });
+                    });
                 });
             });
         });
