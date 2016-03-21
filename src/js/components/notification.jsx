@@ -9,8 +9,8 @@ import { hideSettingsNotification, showSettings } from 'actions/app-state-action
 
 export class NotificationComponent extends Component {
     bindHandler() {
-        let node = findDOMNode(this);
-        let linkNode = node.querySelector('[data-ui-settings-link]');
+        const node = findDOMNode(this);
+        const linkNode = node.querySelector('[data-ui-settings-link]');
         if (linkNode) {
             linkNode.onclick = this.onLinkClick.bind(this);
         }

@@ -1,9 +1,7 @@
 import sinon from 'sinon';
 import React from 'react';
-import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
-
-import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId } from 'test/utils/react';
+import { mockAppStore } from 'test/utils/redux';
 
 import { ChatInputComponent } from 'components/chat-input.jsx';
 
@@ -22,34 +20,62 @@ const props = {
 
 describe('ChatInput', () => {
     var component;
-    var componentNode;
+    var mockedStore;
 
     var onChangeSpy;
     var onSendMessageSpy;
     var setStateSpy;
 
+    var resetUnreadCountStub;
     var serviceSendMessageStub;
-
 
     beforeEach(() => {
         onChangeSpy = sandbox.spy(ChatInputComponent.prototype, 'onChange');
         onSendMessageSpy = sandbox.spy(ChatInputComponent.prototype, 'onSendMessage');
-        setStateSpy = sandbox.spy(ChatInputComponent.prototype, 'setState');
 
+        resetUnreadCountStub = sandbox.stub(conversationService, 'resetUnreadCount');
         serviceSendMessageStub = sandbox.stub(conversationService, 'sendMessage');
 
         component = TestUtils.renderIntoDocument(<ChatInputComponent {...props} />);
-        componentNode = ReactDOM.findDOMNode(component);
 
+        // spy on it after rendering to avoid triggering it when the component mounts
+        setStateSpy = sandbox.spy(ChatInputComponent.prototype, 'setState');
     });
 
     afterEach(() => {
+        mockedStore && mockedStore.restore();
         sandbox.restore();
     });
 
     it('should use the ui text', () => {
         component.refs.input.placeholder.should.eq(props.ui.text.inputPlaceholder);
         component.refs.button.textContent.should.eq(props.ui.text.sendButtonText);
+    });
+
+    describe('focus input', () => {
+        it('should reset unread count if > 0', () => {
+            mockedStore = mockAppStore(sandbox, {
+                conversation: {
+                    unreadCount: 1
+                }
+            });
+
+            component.onFocus();
+
+            resetUnreadCountStub.should.have.been.calledOnce;
+        });
+
+        it('should not reset unread count if == 0', () => {
+            mockedStore = mockAppStore(sandbox, {
+                conversation: {
+                    unreadCount: 0
+                }
+            });
+
+            component.onFocus();
+
+            resetUnreadCountStub.should.not.have.been.called;
+        });
     });
 
     describe('change input', () => {
@@ -73,6 +99,27 @@ describe('ChatInput', () => {
 
             component.state.text.should.eq('some text');
         });
+        it('should reset unread count if > 0', () => {
+            mockedStore = mockAppStore(sandbox, {
+                conversation: {
+                    unreadCount: 1
+                }
+            });
+            TestUtils.Simulate.change(component.refs.input);
+
+            resetUnreadCountStub.should.have.been.calledOnce;
+        });
+
+        it('should not reset unread count if == 0', () => {
+            mockedStore = mockAppStore(sandbox, {
+                conversation: {
+                    unreadCount: 0
+                }
+            });
+            TestUtils.Simulate.change(component.refs.input);
+
+            resetUnreadCountStub.should.not.have.been.called;
+        });
     });
 
     describe('press button', () => {
@@ -83,7 +130,7 @@ describe('ChatInput', () => {
         });
 
         it('should prevent default event behavior', () => {
-            let event = {
+            const event = {
                 preventDefault: sandbox.stub()
             };
             component.onSendMessage(event);
@@ -91,7 +138,7 @@ describe('ChatInput', () => {
             event.preventDefault.should.have.been.calledOnce;
         });
 
-        for (let value of ['', '      ']) {
+        ['', '      '].forEach((value) => {
             it('should do nothing if the current state is blank', () => {
                 component.state.text = value;
                 component.onSendMessage({
@@ -101,7 +148,7 @@ describe('ChatInput', () => {
                 setStateSpy.should.not.have.been.called;
                 serviceSendMessageStub.should.not.have.been.called;
             });
-        }
+        });
 
         it('should reset state and call conversation service if state not blank', () => {
             component.state.text = 'this is a value!';
