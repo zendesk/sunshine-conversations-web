@@ -37,6 +37,7 @@ export class ChatInputComponent extends Component {
     onFocus() {
         checkAndResetUnreadCount();
     }
+
     resizeInput() {
         const node = findDOMNode(this);
         let buttonsWidth = this.refs.button.offsetWidth;
@@ -66,12 +67,12 @@ export class ChatInputComponent extends Component {
         const files = this.refs.fileInput.files;
         // we only allow one file in the input, but let's handle it
         // as if we supported multiple ones
-        Promise.all(Array.from(files).map((file) => {
+        return Promise.all(Array.from(files).map((file) => {
             // catch it to prevent an unhandled promise exception
             return uploadImage(file).catch(() => {
             });
         })).then(() => {
-            // it the file input is not reset, a user can't pick the same
+            // if the file input is not reset, a user can't pick the same
             // file twice in a row.
             this.refs.imageUploadForm.reset();
         });
