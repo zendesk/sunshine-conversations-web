@@ -1,9 +1,6 @@
 import sinon from 'sinon';
 import React from 'react';
-import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
-
-import { scryRenderedDOMComponentsWithAttribute } from 'test/utils/react';
 
 import { SettingsComponent } from 'components/settings.jsx';
 import * as userService from 'services/user-service';
@@ -31,7 +28,6 @@ const defaultProps = {
 describe('Settings', () => {
 
     var component;
-    var componentNode;
 
     beforeEach(() => {
         sandbox.stub(userService, 'immediateUpdate');
@@ -51,7 +47,6 @@ describe('Settings', () => {
 
         beforeEach(() => {
             component = TestUtils.renderIntoDocument(<SettingsComponent {...props} />);
-            componentNode = ReactDOM.findDOMNode(component);
         });
 
         it('should render the read-only text', () => {
@@ -77,7 +72,6 @@ describe('Settings', () => {
 
         beforeEach(() => {
             component = TestUtils.renderIntoDocument(<SettingsComponent {...props} />);
-            componentNode = ReactDOM.findDOMNode(component);
         });
 
         it('should render the normal text', () => {
@@ -107,7 +101,7 @@ describe('Settings', () => {
         });
 
         it('should call onChange', () => {
-            let node = component.refs.input;
+            const node = component.refs.input;
             node.value = 'other@email.com';
             TestUtils.Simulate.change(node);
             SettingsComponent.prototype.onChange.args[0][0].target.value.should.eq('other@email.com');
@@ -126,7 +120,6 @@ describe('Settings', () => {
         beforeEach(() => {
             sandbox.stub(SettingsComponent.prototype, 'save');
             component = TestUtils.renderIntoDocument(<SettingsComponent {...props} />);
-            componentNode = ReactDOM.findDOMNode(component);
         });
 
         it('should call save', () => {

@@ -1,10 +1,3 @@
-&.sk-noanimation {
-    .sk-appear, .sk-close {
-        -webkit-animation: none;
-                animation: none;
-    }
-}
-
 .sk-appear {
     bottom: 0;
 
@@ -16,6 +9,7 @@
     -webkit-animation-fill-mode: forwards;
             animation-fill-mode: forwards;
 }
+
 .sk-appear #sk-handle {
     -webkit-transform: rotate(270deg);
             transform: rotate(270deg);
@@ -44,22 +38,7 @@
         bottom: 0;
     }
 }
-@-webkit-keyframes sk-rotate-frames {
-    0% {
-        -webkit-transform: rotate(270deg);
-    }
-    100% {
-        -webkit-transform: rotate(90deg);
-    }
-}
-@keyframes sk-rotate-frames {
-    0% {
-        transform: rotate(270deg);
-    }
-    100% {
-        transform: rotate(90deg);
-    }
-}
+
 .sk-close {
     bottom: @widget-close-bottom;
 
@@ -87,37 +66,7 @@
         bottom: @widget-close-bottom;
     }
 }
-.sk-close #sk-handle {
-    -webkit-transform: rotate(90deg);
-            transform: rotate(90deg);
-    -webkit-animation: sk-rotate-close-frames .7s cubic-bezier(.62, .28, .23, .99);
-            animation: sk-rotate-close-frames .7s cubic-bezier(.62, .28, .23, .99);
-    -webkit-animation-delay: .0s;
-            animation-delay: .0s;
 
-    -webkit-animation-fill-mode: forwards;
-            animation-fill-mode: forwards;
-}
-@-webkit-keyframes sk-rotate-close-frames {
-    0% {
-        -webkit-transform: rotate(90deg);
-    }
-    100% {
-        -webkit-transform: rotate(270deg);
-    }
-}
-@keyframes sk-rotate-close-frames {
-    0% {
-        transform: rotate(90deg);
-    }
-    100% {
-        transform: rotate(270deg);
-    }
-}
-.sk-noanimation {
-    -webkit-animation: none;
-            animation: none;
-}
 .sk-noselect {
     -webkit-user-select: none;
        -moz-user-select: none;

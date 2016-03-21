@@ -3,8 +3,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
-import { scryRenderedDOMComponentsWithAttribute } from 'test/utils/react';
-
 import { NotificationComponent } from 'components/notification.jsx';
 
 const sandbox = sinon.sandbox.create();

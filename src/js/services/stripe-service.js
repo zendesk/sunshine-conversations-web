@@ -3,7 +3,7 @@ import { core } from 'services/core';
 import { showErrorNotification } from 'actions/app-state-actions';
 
 export function createTransaction(actionId, token) {
-    let user = store.getState().user;
+    const user = store.getState().user;
     return core().appUsers.stripe.createTransaction(user._id, actionId, token).catch((e) => {
         store.dispatch(showErrorNotification(store.getState().ui.text.actionPaymentError));
         throw e;
