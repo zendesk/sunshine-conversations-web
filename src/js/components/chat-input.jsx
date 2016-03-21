@@ -36,7 +36,7 @@ export class ChatInputComponent extends Component {
         checkAndResetUnreadCount();
     }
 
-    resizeInput(depth = 0) {
+    resizeInput(attempt = 0) {
         const node = findDOMNode(this);
         if (node.offsetWidth - this.refs.button.offsetWidth > 0) {
             this.setState({
@@ -44,9 +44,9 @@ export class ChatInputComponent extends Component {
             });
         } else {
             // let's try it 10 times (so, 1 sec)
-            if (depth < 10) {
+            if (attempt < 10) {
                 setTimeout(() => {
-                    this.resizeInput(depth + 1);
+                    this.resizeInput(attempt + 1);
                 }, 100);
             } else {
                 // otherwise, let's hope 80% won't break it and won't look too silly
