@@ -38,9 +38,17 @@ export class ChatInputComponent extends Component {
 
     resizeInput(attempt = 0) {
         const node = findDOMNode(this);
-        if (node.offsetWidth - this.refs.button.offsetWidth > 0) {
+
+        const nodeRect = node.getBoundingClientRect();
+        const buttonRect = this.refs.button.getBoundingClientRect();
+
+        // use floor on widget and ceil on button to get worst rounding scenario
+        const nodeWidth = Math.floor(nodeRect.width);
+        const buttonWidth = Math.ceil(buttonRect.width);
+
+        if (nodeWidth - buttonWidth > 0) {
             this.setState({
-                inputContainerWidth: node.offsetWidth - this.refs.button.offsetWidth
+                inputContainerWidth: nodeWidth - buttonWidth
             });
         } else {
             // let's try it 10 times (so, 1 sec)
