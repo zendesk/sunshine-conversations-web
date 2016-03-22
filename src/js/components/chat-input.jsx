@@ -4,9 +4,10 @@ import { findDOMNode } from 'react-dom';
 import isMobile from 'ismobilejs';
 import debounce from 'lodash.debounce';
 
-import { sendMessage, resetUnreadCount, uploadImage } from 'services/conversation-service';
+import { sendMessage, resetUnreadCount } from 'services/conversation-service';
 import { store } from 'stores/app-store';
-import { prevenDefault } from 'utils/events';
+
+import { ImageUpload } from 'components/image-upload';
 
 export class ChatInputComponent extends Component {
     constructor(...args) {
@@ -19,7 +20,6 @@ export class ChatInputComponent extends Component {
 
         this.onChange = this.onChange.bind(this);
         this.onSendMessage = this.onSendMessage.bind(this);
-        this.onImageChange = this.onImageChange.bind(this);
         this._debouncedResize = debounce(this.resizeInput.bind(this), 150);
     }
 
@@ -77,22 +77,6 @@ export class ChatInputComponent extends Component {
         }
     }
 
-    onImageChange(e) {
-        e.preventDefault();
-        const files = this.refs.fileInput.files;
-        // we only allow one file in the input, but let's handle it
-        // as if we supported multiple ones
-        return Promise.all(Array.from(files).map((file) => {
-            // catch it to prevent an unhandled promise exception
-            return uploadImage(file).catch(() => {
-            });
-        })).then(() => {
-            // if the file input is not reset, a user can't pick the same
-            // file twice in a row.
-            this.refs.imageUploadForm.reset();
-        });
-    }
-
     componentDidMount() {
         setTimeout(() => this.resizeInput());
         window.addEventListener('resize', this._debouncedResize);
@@ -130,17 +114,7 @@ export class ChatInputComponent extends Component {
         }
 
         const imageUploadButton = this.props.imageUploadEnabled ?
-            <label className='btn btn-sk-link image-upload'
-                   ref='imageUpload'>
-                <form ref='imageUploadForm'
-                      onSubmit={ prevenDefault }>
-                    <input type='file'
-                           accept='image/*'
-                           onChange={ this.onImageChange }
-                           ref='fileInput' />
-                </form>
-                <i className='fa fa-picture-o'></i>
-            </label> : null;
+            <ImageUpload ref='imageUpload' /> : null;
 
         const inputContainerClasses = ['input-container'];
 

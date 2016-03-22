@@ -1,10 +1,12 @@
 import sinon from 'sinon';
 import React from 'react';
-import { findDOMNode } from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
+
 import { mockAppStore } from 'test/utils/redux';
+import { mockComponent } from 'test/utils/react';
 
 import { ChatInputComponent } from 'components/chat-input.jsx';
+import { ImageUpload } from 'components/image-upload.jsx';
 
 const conversationService = require('services/conversation-service');
 
@@ -28,14 +30,17 @@ describe('ChatInput', () => {
     var onSendMessageSpy;
     var setStateSpy;
 
-    var onImageChangeSpy;
     var resetUnreadCountStub;
     var serviceSendMessageStub;
 
     beforeEach(() => {
+
+        mockComponent(sandbox, ImageUpload, 'div', {
+            className: 'image-upload'
+        });
+
         onChangeSpy = sandbox.spy(ChatInputComponent.prototype, 'onChange');
         onSendMessageSpy = sandbox.spy(ChatInputComponent.prototype, 'onSendMessage');
-        onImageChangeSpy = sandbox.spy(ChatInputComponent.prototype, 'onImageChange');
 
         sandbox.stub(conversationService, 'uploadImage').resolves();
         resetUnreadCountStub = sandbox.stub(conversationService, 'resetUnreadCount');
@@ -185,25 +190,6 @@ describe('ChatInput', () => {
             it(`should${imageUploadEnabled ? '' : 'not'} display the image upload button`, () => {
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'image-upload').length.should.be.eq(imageUploadEnabled ? 1 : 0);
             });
-
-            if (imageUploadEnabled) {
-                it('should call onImageChange when selecting an image', () => {
-                    const fileInput = findDOMNode(component.refs.fileInput);
-                    TestUtils.Simulate.change(fileInput);
-                    onImageChangeSpy.should.have.been.calledOnce;
-                });
-
-                it('should call form reset after upload', () => {
-                    const resetSpy = sandbox.spy(component.refs.imageUploadForm, 'reset');
-                    return component.onImageChange({
-                        preventDefault: () => {
-                        }
-                    }).then(() => {
-                        resetSpy.should.have.been.calledOnce;
-                    });
-
-                });
-            }
         });
     });
 });
