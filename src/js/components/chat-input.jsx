@@ -40,15 +40,23 @@ export class ChatInputComponent extends Component {
 
     resizeInput(attempt = 0) {
         const node = findDOMNode(this);
-        let buttonsWidth = this.refs.button.offsetWidth;
+
+        const nodeRect = node.getBoundingClientRect();
+        const buttonRect = this.refs.button.getBoundingClientRect();
+
+        // floor widget width and ceil button width to ensure button fits in widget
+        const nodeWidth = Math.floor(nodeRect.width);
+        let buttonsWidth = Math.ceil(buttonRect.width);
 
         if (this.refs.imageUpload) {
-            buttonsWidth += findDOMNode(this.refs.imageUpload).offsetWidth;
+            const imageUploadRect = findDOMNode(this.refs.imageUpload).getBoundingClientRect();
+            const imageUploadWith = Math.ceil(imageUploadRect.width);
+            buttonsWidth += imageUploadWith;
         }
 
         if (node.offsetWidth - buttonsWidth > 0) {
             this.setState({
-                inputContainerWidth: node.offsetWidth - buttonsWidth
+                inputContainerWidth: nodeWidth - buttonsWidth
             });
         } else {
             // let's try it 10 times (so, 1 sec)
