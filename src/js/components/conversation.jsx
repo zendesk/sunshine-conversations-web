@@ -7,6 +7,10 @@ import { createMarkup } from 'utils/html';
 import { MessageComponent } from 'components/message.jsx';
 
 export class ConversationComponent extends Component {
+    static defaultProps = {
+        settings: {}
+    };
+
     state = {
         logoIsAnchored: true
     };
@@ -93,6 +97,6 @@ export const Conversation = connect((state) => {
     return {
         ui: state.ui,
         conversation: state.conversation,
-        settings: (state.app.settings && state.app.settings.web) || {}
+        settings: state.app.settings && state.app.settings.web
     };
 })(ConversationComponent);

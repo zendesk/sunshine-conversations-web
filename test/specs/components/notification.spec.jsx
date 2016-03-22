@@ -14,8 +14,7 @@ const defaultProps = {
         text: {
             settingsNotificationText: 'Intro text'
         }
-    },
-    settings: {}
+    }
 };
 
 

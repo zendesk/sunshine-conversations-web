@@ -21,8 +21,7 @@ const defaultProps = {
     },
     user: {
         email: 'some@email.com'
-    },
-    settings: {}
+    }
 };
 
 

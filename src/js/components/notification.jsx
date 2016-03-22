@@ -8,6 +8,10 @@ import { createMarkup } from 'utils/html';
 import { hideSettingsNotification, showSettings } from 'actions/app-state-actions';
 
 export class NotificationComponent extends Component {
+    static defaultProps = {
+        settings: {}
+    };
+
     bindHandler() {
         const node = findDOMNode(this);
         const linkNode = node.querySelector('[data-ui-settings-link]');
@@ -57,7 +61,7 @@ export class NotificationComponent extends Component {
 export const Notification = connect((state) => {
     return {
         ui: state.ui,
-        settings: (state.app.settings && state.app.settings.web) || {}
+        settings: state.app.settings && state.app.settings.web
     };
 }, (dispatch) => {
     return {

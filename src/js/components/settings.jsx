@@ -6,6 +6,10 @@ import { immediateUpdate } from 'services/user-service';
 import { hideSettings } from 'actions/app-state-actions';
 
 export class SettingsComponent extends Component {
+    static defaultProps = {
+        settings: {}
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -97,7 +101,7 @@ export const Settings = connect((state) => {
         ui: state.ui,
         appState: state.appState,
         user: state.user,
-        settings: (state.app.settings && state.app.settings.web) || {}
+        settings: state.app.settings && state.app.settings.web
     };
 }, (dispatch) => {
     return {

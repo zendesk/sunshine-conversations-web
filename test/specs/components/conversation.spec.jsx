@@ -29,8 +29,7 @@ const props = {
                 _id: 4
             }
         ]
-    },
-    settings: {}
+    }
 };
 
 

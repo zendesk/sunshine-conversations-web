@@ -8,6 +8,10 @@ import { sendMessage, resetUnreadCount } from 'services/conversation-service';
 import { store } from 'stores/app-store';
 
 export class ChatInputComponent extends Component {
+    static defaultProps = {
+        settings: {}
+    };
+    
     constructor(...args) {
         super(...args);
 
@@ -136,7 +140,7 @@ export class ChatInputComponent extends Component {
 export const ChatInput = connect((state) => {
     return {
         ui: state.ui,
-        settings: (state.app.settings && state.app.settings.web) || {}
+        settings: state.app.settings && state.app.settings.web
     };
 }, undefined, undefined, {
     withRef: true
