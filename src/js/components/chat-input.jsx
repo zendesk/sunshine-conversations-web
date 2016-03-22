@@ -43,7 +43,7 @@ export class ChatInputComponent extends Component {
         let buttonsWidth = this.refs.button.offsetWidth;
 
         if (this.refs.imageUpload) {
-            buttonsWidth += this.refs.imageUpload.offsetWidth;
+            buttonsWidth += findDOMNode(this.refs.imageUpload).offsetWidth;
         }
 
         if (node.offsetWidth - buttonsWidth > 0) {
