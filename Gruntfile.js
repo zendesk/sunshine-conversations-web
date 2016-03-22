@@ -140,8 +140,7 @@ module.exports = function(grunt) {
             addDist: {
                 cmd: function() {
                     return [
-                        'git add --force dist/smooch.js',
-                        'git add --force dist/smooch.min.js'
+                        'git add --force dist/smooch.js'
                     ].join(' && ');
                 }
             },

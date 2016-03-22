@@ -1,4 +1,4 @@
-import { combineReducers, applyMiddleware, compose } from 'redux';
+import { combineReducers } from 'redux';
 
 import { ConversationReducer } from 'reducers/conversation-reducer';
 import { UIReducer } from 'reducers/ui-reducer';
