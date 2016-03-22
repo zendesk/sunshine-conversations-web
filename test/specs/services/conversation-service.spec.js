@@ -448,18 +448,53 @@ describe('Conversation service', () => {
                     }
                 });
 
-                coreMock.conversations.uploadImage.resolves({
-                    conversation: 'conversation'
-                });
-
                 sandbox.stub(conversationService, 'handleFirstUserMessage');
                 sandbox.stub(conversationService, 'connectFaye').resolves();
             });
 
             describe('unsupported file type', () => {
                 beforeEach(() => {
+                    coreMock.conversations.uploadImage.resolves({
+                        conversation: 'conversation'
+                    });
                     utilsMedia.isFileTypeSupported.returns(false);
                     utilsMedia.resizeImage.resolves({});
+                });
+
+                it('should show an error notification', () => {
+                    return conversationService.uploadImage({}).catch(() => {
+                        mockedStore.dispatch.should.have.been.calledWith({
+                            type: SHOW_ERROR_NOTIFICATION,
+                            message: 'invalidFileError'
+                        });
+                    });
+                });
+            });
+
+            describe('resize error', () => {
+                beforeEach(() => {
+                    coreMock.conversations.uploadImage.resolves({
+                        conversation: 'conversation'
+                    });
+                    utilsMedia.isFileTypeSupported.returns(true);
+                    utilsMedia.resizeImage.rejects();
+                });
+
+                it('should show an error notification', () => {
+                    return conversationService.uploadImage({}).catch(() => {
+                        mockedStore.dispatch.should.have.been.calledWith({
+                            type: SHOW_ERROR_NOTIFICATION,
+                            message: 'invalidFileError'
+                        });
+                    });
+                });
+            });
+
+            describe('upload error', () => {
+                beforeEach(() => {
+                    utilsMedia.isFileTypeSupported.returns(true);
+                    utilsMedia.resizeImage.resolves({});
+                    coreMock.conversations.uploadImage.rejects();
                 });
 
                 it('should show an error notification', () => {
