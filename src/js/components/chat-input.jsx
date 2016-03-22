@@ -42,7 +42,7 @@ export class ChatInputComponent extends Component {
         const nodeRect = node.getBoundingClientRect();
         const buttonRect = this.refs.button.getBoundingClientRect();
 
-        // use floor on widget and ceil on button to get worst rounding scenario
+        // floor widget width and ceil button width to ensure button fits in widget
         const nodeWidth = Math.floor(nodeRect.width);
         const buttonWidth = Math.ceil(buttonRect.width);
 
