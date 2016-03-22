@@ -23,7 +23,8 @@ const defaultProps = {
     appState: {
         widgetOpened: false,
         settingsVisible: false
-    }
+    },
+    app: {}
 };
 
 

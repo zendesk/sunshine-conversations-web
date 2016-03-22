@@ -25,7 +25,8 @@ const defaultState = {
         text: {
 
         }
-    }
+    },
+    app: {}
 };
 
 describe('Smooch', () => {
@@ -98,7 +99,8 @@ describe('Smooch', () => {
             loginStub.resolves({
                 appUser: {
                     _id: 1
-                }
+                },
+                app: {}
             });
 
             immediateUpdateStub = sandbox.stub(userService, 'immediateUpdate');

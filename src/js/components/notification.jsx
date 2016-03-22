@@ -57,7 +57,7 @@ export class NotificationComponent extends Component {
 export const Notification = connect((state) => {
     return {
         ui: state.ui,
-        settings: state.app.settings.web
+        settings: (state.app.settings && state.app.settings.web) || {}
     };
 }, (dispatch) => {
     return {

@@ -93,6 +93,6 @@ export const Conversation = connect((state) => {
     return {
         ui: state.ui,
         conversation: state.conversation,
-        settings: state.app.settings.web
+        settings: (state.app.settings && state.app.settings.web) || {}
     };
 })(ConversationComponent);

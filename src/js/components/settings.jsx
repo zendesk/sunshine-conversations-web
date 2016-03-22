@@ -97,7 +97,7 @@ export const Settings = connect((state) => {
         ui: state.ui,
         appState: state.appState,
         user: state.user,
-        settings: state.app.settings.web
+        settings: (state.app.settings && state.app.settings.web) || {}
     };
 }, (dispatch) => {
     return {

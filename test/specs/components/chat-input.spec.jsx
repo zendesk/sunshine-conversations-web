@@ -15,7 +15,8 @@ const props = {
             inputPlaceholder: 'Placeholder',
             sendButtonText: 'Button'
         }
-    }
+    },
+    settings: {}
 };
 
 describe('ChatInput', () => {
