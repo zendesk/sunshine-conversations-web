@@ -38,16 +38,31 @@ export class ChatInputComponent extends Component {
         checkAndResetUnreadCount();
     }
 
-    resizeInput() {
+    resizeInput(attempt = 0) {
         const node = findDOMNode(this);
         let buttonsWidth = this.refs.button.offsetWidth;
+
         if (this.refs.imageUpload) {
             buttonsWidth += this.refs.imageUpload.offsetWidth;
         }
 
-        this.setState({
-            inputContainerWidth: node.offsetWidth - buttonsWidth
-        });
+        if (node.offsetWidth - buttonsWidth > 0) {
+            this.setState({
+                inputContainerWidth: node.offsetWidth - buttonsWidth
+            });
+        } else {
+            // let's try it 10 times (so, 1 sec)
+            if (attempt < 10) {
+                setTimeout(() => {
+                    this.resizeInput(attempt + 1);
+                }, 100);
+            } else {
+                // otherwise, let's hope 70% won't break it and won't look too silly
+                this.setState({
+                    inputContainerWidth: '70%'
+                });
+            }
+        }
     }
 
     onSendMessage(e) {
