@@ -63,46 +63,45 @@ export function sendMessage(text) {
 }
 
 export function uploadImage(file) {
-    if (isFileTypeSupported(file.type)) {
-        return resizeImage(file).then((dataUrl) => {
-            return sendChain(() => {
-                // add an id just to please React
-                // this message will be replaced by the real one on the server response
-                const message = {
-                    mediaUrl: dataUrl,
-                    mediaType: 'image/jpeg',
-                    _id: Math.random(),
-                    role: 'appUser',
-                    status: 'sending'
-                };
-
-                store.dispatch(addMessage(message));
-
-                const user = store.getState().user;
-                const blob = getBlobFromDataUrl(dataUrl);
-
-                return core().conversations.uploadImage(user._id, blob, {
-                    role: 'appUser'
-                }).then((response) => {
-                    store.dispatch(setConversation(response.conversation));
-                    observable.trigger('message:sent', response.message);
-                    return response;
-                }).catch(() => {
-                    store.dispatch(showErrorNotification(store.getState().ui.text.messageError));
-                    store.dispatch(removeMessage({
-                        id: message._id
-                    }));
-
-                });
-            });
-        }).catch(() => {
-            store.dispatch(showErrorNotification(store.getState().ui.text.invalidFileError));
-        });
+    if (!isFileTypeSupported(file.type)) {
+        store.dispatch(showErrorNotification(store.getState().ui.text.invalidFileError));
+        return Promise.reject('Invalid file type');
     }
 
-    store.dispatch(showErrorNotification(store.getState().ui.text.invalidFileError));
-    return Promise.reject('Invalid file type');
+    return resizeImage(file).then((dataUrl) => {
+        return sendChain(() => {
+            // add an id just to please React
+            // this message will be replaced by the real one on the server response
+            const message = {
+                mediaUrl: dataUrl,
+                mediaType: 'image/jpeg',
+                _id: Math.random(),
+                role: 'appUser',
+                status: 'sending'
+            };
 
+            store.dispatch(addMessage(message));
+
+            const user = store.getState().user;
+            const blob = getBlobFromDataUrl(dataUrl);
+
+            return core().conversations.uploadImage(user._id, blob, {
+                role: 'appUser'
+            }).then((response) => {
+                store.dispatch(setConversation(response.conversation));
+                observable.trigger('message:sent', response.message);
+                return response;
+            }).catch(() => {
+                store.dispatch(showErrorNotification(store.getState().ui.text.messageError));
+                store.dispatch(removeMessage({
+                    id: message._id
+                }));
+
+            });
+        });
+    }).catch(() => {
+        store.dispatch(showErrorNotification(store.getState().ui.text.invalidFileError));
+    });
 }
 
 export function getConversation() {
