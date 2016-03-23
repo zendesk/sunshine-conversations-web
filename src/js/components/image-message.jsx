@@ -1,16 +1,8 @@
 import React, { Component } from 'react';
 import ImageLoader from 'react-imageloader';
 
+import {ImageLoading} from 'components/image-loading';
 
-function Loading() {
-    return <div className='image-overlay'>
-               <div className='three-bounce spinner'>
-                   <div className='bounce1'></div>
-                   <div className='bounce2'></div>
-                   <div className='bounce3'></div>
-               </div>
-           </div>;
-}
 
 export class ImageMessage extends Component {
     static propTypes = {
@@ -32,7 +24,7 @@ export class ImageMessage extends Component {
     render() {
         const preloader = () => {
             return <div className='preloader-container'>
-                       <Loading />
+                       <ImageLoading />
                        { this.state.oldMediaUrl ?
                              <img src={ this.state.oldMediaUrl } /> :
                              null }
@@ -46,7 +38,7 @@ export class ImageMessage extends Component {
 
         if (this.props.status === 'sending') {
             return <div className='image-container'>
-                       <Loading />
+                       <ImageLoading />
                        { image }
                    </div>;
         }
