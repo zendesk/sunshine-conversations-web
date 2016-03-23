@@ -34,7 +34,7 @@ export class ImageUpload extends Component {
                               onChange={ this.onImageChange }
                               ref='fileInput' />
                    </form>
-                   <i className='fa fa-picture-o'></i>
+                   <i className='fa fa-camera'></i>
                </label>;
     }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Loading() {
+export function ImageLoading() {
     return <div className='image-overlay'>
                <div className='three-bounce spinner'>
                    <div className='bounce1'></div>
