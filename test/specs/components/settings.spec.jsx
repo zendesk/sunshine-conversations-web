@@ -101,10 +101,8 @@ describe('Settings', () => {
         });
 
         it('should call onChange', () => {
-            const node = component.refs.input;
-            node.value = 'other@email.com';
-            TestUtils.Simulate.change(node);
-            SettingsComponent.prototype.onChange.args[0][0].target.value.should.eq('other@email.com');
+            TestUtils.Simulate.change(component.refs.input);
+            SettingsComponent.prototype.onChange.should.have.been.calledOnce;
         });
 
 
