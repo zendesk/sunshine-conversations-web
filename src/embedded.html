@@ -1,0 +1,267 @@
+<!-- The following line is essential for the "position: fixed" property to work correctly in IE -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <title>Embedded Conversation Demo</title>
+  <script src="SCRIPT_URL"></script>
+  <script>
+    /* global Smooch: false */
+
+    window.SmoochOptions = {
+      serviceUrl: 'ROOT_URL',
+      appToken: 'APP_TOKEN',
+      givenName: 'GIVEN_NAME',
+      surname: 'SURNAME',
+      email: 'EMAIL',
+      jwt: 'JWT',
+      userId: 'USER_ID',
+      properties: PROPERTIES,
+      emailCaptureEnabled: true,
+      embedded: true
+    };
+
+    Smooch.on('message:received', function(message) {
+      console.log('Message received', message);
+    });
+    Smooch.on('message:sent', function(message) {
+      console.log('Message sent', message);
+    });
+  </script>
+
+  <style type="text/css">
+    body {
+      padding-top: 100px;
+    }
+    #chat-container {
+      height: 500px;
+    }
+  </style>
+
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+        <div id="chat-container"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+        <form class="form-horizontal" id="formMain">
+          <legend>Login</legend>
+          <div class="form-group">
+            <label for="userId" class="col-sm-3 control-label">User ID</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="userId">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="jwt" class="col-sm-3 control-label">JWT</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="jwt">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-6">
+              <button type="submit" class="btn btn-primary">Sign in</button>
+              <button type="button" class="btn btn-danger" id="signOut">Sign out</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-6">
+              <button type="button" class="btn btn-default" id="reset">Reset device id</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-6">
+              <button type="button" class="btn btn-default" id="init">Init</button>
+              <button type="button" class="btn btn-default" id="destroy">Destroy</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="col-sm-6">
+        <form class="form-horizontal" id="formTrack">
+          <legend>Track</legend>
+          <div class="form-group">
+            <label for="track" class="col-sm-3 control-label">Event name</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="trackEvent">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="submit" class="btn btn-default" id="track">Track</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="col-sm-6">
+        <form class="form-horizontal" id="formUser">
+          <legend>Update user</legend>
+          <div class="form-group">
+            <label for="updateUser" class="col-sm-3 control-label">JSON</label>
+            <div class="col-sm-6">
+              <textarea class="form-control" id="updateUser"></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-6">
+              <button type="submit" class="btn btn-default" id="update">Update</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="col-sm-6">
+        <form class="form-horizontal">
+          <legend>General API</legend>
+
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-6">
+              <button type="button" class="btn btn-default" id="open">Open</button>
+              <button type="button" class="btn btn-default" id="close">Close</button>
+              <button type="button" class="btn btn-default" id="rerender">Re-Render</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="col-sm-6">
+        <form class="form-horizontal" id="formMessage">
+          <legend>Send Message</legend>
+          <div class="form-group">
+            <label for="track" class="col-sm-3 control-label">Text</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="message">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="submit" class="btn btn-default" id="sendMessage">Send</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+  <script>
+    function renderSmooch() {
+      Smooch.render(document.getElementById('chat-container'));
+    }
+
+
+    window.addEventListener('load', function() {
+      var formMain = document.getElementById('formMain');
+      var formTrack = document.getElementById('formTrack');
+      var formUser = document.getElementById('formUser');
+      var formMessage = document.getElementById('formMessage');
+
+      var userIdInput = document.getElementById('userId');
+      var jwtInput = document.getElementById('jwt');
+      var trackEventInput = document.getElementById('trackEvent');
+      var updateUserInput = document.getElementById('updateUser');
+      var messageInput = document.getElementById('message');
+
+      var signOutButton = document.getElementById('signOut');
+      var resetButton = document.getElementById('reset');
+      var initButton = document.getElementById('init');
+      var destroyButton = document.getElementById('destroy');
+      var openButton = document.getElementById('open');
+      var closeButton = document.getElementById('close');
+      var renderButton = document.getElementById('rerender');
+
+      if (window.SmoochOptions.userId) {
+        userIdInput.value = window.SmoochOptions.userId;
+      }
+
+      if (window.SmoochOptions.jwt) {
+        jwtInput.value = window.SmoochOptions.jwt;
+      }
+
+
+
+      formMain.addEventListener('submit', function(e) {
+        e.preventDefault();
+        Smooch.login(userIdInput.value, jwtInput.value);
+      });
+
+      formTrack.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (trackEventInput.value) {
+          Smooch.track(trackEventInput.value);
+        }
+      });
+
+      formUser.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (updateUserInput.value) {
+          try {
+            var value = JSON.parse(updateUserInput.value);
+            Smooch.updateUser(value);
+          } catch (err) {
+            alert('Bad json')
+          }
+        }
+      });
+
+      formMessage.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (messageInput.value) {
+          Smooch.sendMessage(messageInput.value);
+          messageInput.value = '';
+        }
+      });
+
+      signOutButton.addEventListener('click', function() {
+        Smooch.logout();
+      });
+
+      resetButton.addEventListener('click', function() {
+        localStorage.removeItem('sk_deviceid');
+        Smooch.logout();
+      });
+
+      initButton.addEventListener('click', function() {
+        Smooch.init(window.SmoochOptions);
+        renderSmooch();
+      });
+
+      destroyButton.addEventListener('click', function() {
+        Smooch.destroy();
+        Smooch.on('message:received', function(message) {
+          console.log('Message received', message);
+        });
+        Smooch.on('message:sent', function(message) {
+          console.log('Message sent', message);
+        });
+      });
+
+      openButton.addEventListener('click', function() {
+        Smooch.open();
+      });
+
+      closeButton.addEventListener('click', function() {
+        Smooch.close();
+      });
+
+      renderButton.addEventListener('click', function() {
+        renderSmooch();
+      });
+
+
+
+      Smooch.init(SmoochOptions);
+      renderSmooch();
+
+    }, false);
+  </script>
+</body>
+
+</html>
