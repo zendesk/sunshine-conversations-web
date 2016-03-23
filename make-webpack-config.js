@@ -10,16 +10,24 @@ module.exports = function(options) {
     var PACKAGE_NAME = require('./package.json').name;
     var LICENSE = fs.readFileSync('LICENSE', 'utf8');
 
+    var config = require('./config/default/config.json');
+
+    try {
+        Object.assign(config, require('./config/config.json'));
+    }
+    catch (e) {
+        // do nothing
+    }
+
     var entry = {
-        smooch: ['babel-polyfill', './src/js/utils/polyfills', './src/js/main']
+        smooch: ['./src/js/utils/polyfills', './src/js/main']
     };
 
     var loaders = {
         'jsx': options.hotComponents ? ['react-hot-loader', 'babel-loader'] : 'babel-loader',
         'js': {
             loader: 'babel-loader',
-            include: [path.join(__dirname, 'src/js'), path.join(__dirname, 'test')],
-            exclude: [/node_modules/]
+            include: [path.join(__dirname, 'src/js'), path.join(__dirname, 'test')]
         },
         'json': 'json-loader',
         'txt': 'raw-loader',
@@ -56,7 +64,7 @@ module.exports = function(options) {
     var extensions = ['', '.web.js', '.js', '.jsx'];
     var root = path.join(__dirname, 'src');
     var publicPath = options.devServer ?
-        'http://localhost:2992/_assets/' :
+        'http://' + config.SERVER_HOST + '/_assets/' :
         '/_assets/';
 
     var output = {
@@ -84,16 +92,7 @@ module.exports = function(options) {
     ];
 
 
-    if (options.test) {
-        additionalLoaders.push({
-            test: /\.spec\.js$/,
-            loader: 'imports?bootstrapTest'
-        });
-        additionalLoaders.push({
-            test: /\.spec\.jsx$/,
-            loader: 'imports?bootstrapTest'
-        });
-    } else {
+    if (!options.test) {
         plugins.push(new StatsPlugin('stats.json', {
             chunkModules: true,
             exclude: excludeFromStats
@@ -116,7 +115,6 @@ module.exports = function(options) {
     }
 
     if (options.minimize) {
-
         plugins.push(
             new webpack.optimize.UglifyJsPlugin({
                 compressor: {
@@ -133,6 +131,14 @@ module.exports = function(options) {
 
             new webpack.BannerPlugin(PACKAGE_NAME + ' ' + VERSION + ' \n' + LICENSE, {
                 entryOnly: true
+            })
+        );
+    } else if (options.test) {
+        plugins.push(
+            new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: JSON.stringify('test')
+                }
             })
         );
     } else {
@@ -166,6 +172,8 @@ module.exports = function(options) {
         },
         plugins: plugins,
         devServer: {
+            host: config.SERVER_HOST.split(':')[0],
+            port: config.SERVER_HOST.split(':')[1],
             stats: {
                 cached: false,
                 exclude: excludeFromStats

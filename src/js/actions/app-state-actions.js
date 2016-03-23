@@ -12,7 +12,9 @@ export const HIDE_ERROR_NOTIFICATION = 'HIDE_ERROR_NOTIFICATION';
 export const SET_SERVER_URL = 'SET_SERVER_URL';
 export const SET_EMAIL_READONLY = 'SET_EMAIL_READONLY';
 export const UNSET_EMAIL_READONLY = 'UNSET_EMAIL_READONLY';
-export const UPDATE_READ_TIMESTAMP = 'UPDATE_READ_TIMESTAMP';
+export const SET_EMBEDDED = 'SET_EMBEDDED';
+export const ENABLE_IMAGE_UPLOAD = 'ENABLE_IMAGE_UPLOAD';
+export const DISABLE_IMAGE_UPLOAD = 'DISABLE_IMAGE_UPLOAD';
 
 export function toggleWidget() {
     return {
@@ -56,6 +58,18 @@ export function disableSettings() {
     };
 }
 
+export function enableImageUpload() {
+    return {
+        type: ENABLE_IMAGE_UPLOAD
+    };
+}
+
+export function disableImageUpload() {
+    return {
+        type: DISABLE_IMAGE_UPLOAD
+    };
+}
+
 export function setEmailReadonly() {
     return {
         type: SET_EMAIL_READONLY
@@ -87,13 +101,6 @@ export function setServerURL(url) {
     };
 }
 
-export function updateReadTimestamp(timestamp) {
-    return {
-        type: UPDATE_READ_TIMESTAMP,
-        timestamp
-    };
-}
-
 export function showErrorNotification(message) {
     return {
         type: SHOW_ERROR_NOTIFICATION,
@@ -105,5 +112,12 @@ export function hideErrorNotification(message) {
     return {
         type: HIDE_ERROR_NOTIFICATION,
         message
+    };
+}
+
+export function setEmbedded(value) {
+    return {
+        type: SET_EMBEDDED,
+        value
     };
 }
