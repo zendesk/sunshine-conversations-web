@@ -1,14 +1,13 @@
 {
     "parser": "babel-eslint",
     "rules": {
-        "indent": [
-            2,
-            4,
-            {"SwitchCase": 1}
-        ],
         "quotes": [
             2,
             "single"
+        ],
+        "jsx-quotes": [
+            2,
+            "prefer-single"
         ],
         "linebreak-style": [
             2,
@@ -18,23 +17,29 @@
             2,
             "always"
         ],
-        "no-unused-vars": 0,
-        "jsx-quotes": [
-            2,
-            "prefer-single"
-        ]
+        "react/jsx-uses-vars": 2,
+        "react/jsx-uses-react": 2,
+        "react/jsx-no-undef": 2,
+        "no-unused-vars": 1,
+        "no-extra-boolean-cast": 0,
+        "no-console": 0,
+        "no-constant-condition": 0,
+        "no-redeclare": 0,
+        "prefer-const": 2,
+        "arrow-parens": [2, "always"]
     },
     "env": {
         "es6": true,
         "node": true,
         "commonjs": true,
-        "browser": true,
-        "mocha": true
+        "browser": true
     },
     "globals": {
-        "expect": true,
         "VERSION": true
     },
+    "plugins": [
+        "react"
+    ],
     "ecmaFeatures": {
         "jsx": true
     },

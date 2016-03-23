@@ -9,8 +9,8 @@ import { hideSettingsNotification, showSettings } from 'actions/app-state-action
 
 export class NotificationComponent extends Component {
     bindHandler() {
-        let node = findDOMNode(this);
-        let linkNode = node.querySelector('[data-ui-settings-link]');
+        const node = findDOMNode(this);
+        const linkNode = node.querySelector('[data-ui-settings-link]');
         if (linkNode) {
             linkNode.onclick = this.onLinkClick.bind(this);
         }
@@ -34,11 +34,19 @@ export class NotificationComponent extends Component {
     }
 
     render() {
+        const linkStyle = {
+            cursor: 'pointer'
+        };
         return (
-            <div key='content' className='sk-notification' onClick={ this.props.actions.hideSettingsNotification }>
+            <div key='content'
+                 className='sk-notification'
+                 onClick={ this.props.actions.hideSettingsNotification }>
                 <p>
-                    <span ref='text' dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.settingsNotificationText) }></span>
-                    <a href='#' className='sk-notification-close' onClick={ this.props.actions.hideSettingsNotification }>&times;</a>
+                    <span ref='text'
+                          dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.settingsNotificationText) }></span>
+                    <a style={ linkStyle }
+                       className='sk-notification-close'
+                       onClick={ this.props.actions.hideSettingsNotification }>&times;</a>
                 </p>
             </div>
             );

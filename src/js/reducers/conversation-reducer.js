@@ -1,20 +1,33 @@
-import { ADD_MESSAGE, MESSAGES_CLEARED, SET_CONVERSATION, RESET_CONVERSATION } from 'actions/conversation-actions';
+import * as ConversationActions from 'actions/conversation-actions';
 import { RESET } from 'actions/common-actions';
 
 const INITIAL_STATE = {
-    messages: []
+    messages: [],
+    unreadCount: 0
 };
 
 export function ConversationReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case RESET:
-        case RESET_CONVERSATION:
+        case ConversationActions.RESET_CONVERSATION:
             return Object.assign({}, INITIAL_STATE);
-        case SET_CONVERSATION:
+        case ConversationActions.SET_CONVERSATION:
             return Object.assign({}, action.conversation);
-        case ADD_MESSAGE:
+        case ConversationActions.ADD_MESSAGE:
             return Object.assign({}, state, {
                 messages: [...state.messages, action.message]
+            });
+        case ConversationActions.REMOVE_MESSAGE:
+            return Object.assign({}, state, {
+                messages: [...state.messages.filter((message) => message._id !== action.id)]
+            });
+        case ConversationActions.INCREMENT_UNREAD_COUNT:
+            return Object.assign({}, state, {
+                unreadCount: state.unreadCount + 1
+            });
+        case ConversationActions.RESET_UNREAD_COUNT:
+            return Object.assign({}, state, {
+                unreadCount: 0
             });
         default:
             return state;
