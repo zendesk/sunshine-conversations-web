@@ -14,20 +14,24 @@ export class ConversationComponent extends Component {
     scrollTimeouts = [];
 
     onTouchStart = () => {
-        const node = findDOMNode(this);
-        const top = node.scrollTop;
-        const totalScroll = node.scrollHeight;
-        const currentScroll = top + node.offsetHeight;
+        // in embedded we need to let user scroll past the conversation
+        if (!this.props.embedded) {
+            const node = findDOMNode(this);
+            const top = node.scrollTop;
+            const totalScroll = node.scrollHeight;
+            const currentScroll = top + node.offsetHeight;
 
 
-        // this bit of code makes sure there's always something to scroll
-        // in the conversation view so the page behind won't start scrolling
-        // when hitting top or bottom.
-        if (top === 0) {
-            node.scrollTop = 1;
-        } else if (currentScroll === totalScroll) {
-            node.scrollTop = top - 1;
+            // this bit of code makes sure there's always something to scroll
+            // in the conversation view so the page behind won't start scrolling
+            // when hitting top or bottom.
+            if (top === 0) {
+                node.scrollTop = 1;
+            } else if (currentScroll === totalScroll) {
+                node.scrollTop = top - 1;
+            }
         }
+
     };
 
     scrollToBottom = () => {
@@ -53,7 +57,9 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const messages = this.props.conversation.messages.map((message, index) => <MessageComponent key={ index } onLoad={this.scrollToBottom} {...message} />);
+        const messages = this.props.conversation.messages.map((message, index) => <MessageComponent key={ index }
+                                                                                                    onLoad={ this.scrollToBottom }
+                                                                                                    {...message} />);
 
         const logoStyle = isMobile.apple.device ? {
             paddingBottom: 10
@@ -67,11 +73,15 @@ export class ConversationComponent extends Component {
                      className='sk-intro'
                      dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.introText) }></div>
                 <div className='sk-messages-container'>
-                    <div ref='messages' className='sk-messages'>
+                    <div ref='messages'
+                         className='sk-messages'>
                         { messages }
                     </div>
-                    <div className='sk-logo' ref='logo' style={logoStyle}>
-                        <a href='https://smooch.io/?utm_source=widget' target='_blank'><span>In-App Messaging by</span> <img className='sk-image'
+                    <div className='sk-logo'
+                         ref='logo'
+                         style={ logoStyle }>
+                        <a href='https://smooch.io/?utm_source=widget'
+                           target='_blank'><span>In-App Messaging by</span> <img className='sk-image'
                                                                                                                              src={ require('images/logo_webwidget.png') }
                                                                                                                              srcSet={ `${require('images/logo_webwidget.png')} 1x, ${require('images/logo_webwidget_2x.png')} 2x` }
                                                                                                                              alt='Smooch' /></a>
@@ -85,6 +95,7 @@ export class ConversationComponent extends Component {
 export const Conversation = connect((state) => {
     return {
         ui: state.ui,
-        conversation: state.conversation
+        conversation: state.conversation,
+        embedded: state.appState.embedded
     };
 })(ConversationComponent);
