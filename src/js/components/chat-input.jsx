@@ -133,7 +133,8 @@ export class ChatInputComponent extends Component {
         }
 
         const imageUploadButton = this.props.imageUploadEnabled ?
-            <ImageUpload ref='imageUpload' /> : null;
+            <ImageUpload ref='imageUpload'
+                         accentColor={ this.props.settings.accentColor } /> : null;
 
         const inputContainerClasses = ['input-container'];
 

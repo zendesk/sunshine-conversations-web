@@ -9,6 +9,10 @@ export class ImageUpload extends Component {
         this.onImageChange = this.onImageChange.bind(this);
     }
 
+    state = {
+      imageButtonHovered: false
+    };
+
     onImageChange(e) {
         e.preventDefault();
         const files = this.refs.fileInput.files;
@@ -25,8 +29,28 @@ export class ImageUpload extends Component {
         });
     }
 
+    onMouseOver() {
+        this.setState({
+            imageButtonHovered: true
+        });
+    }
+
+    onMouseOut() {
+        this.setState({
+            imageButtonHovered: false
+        });
+    }
+
     render() {
-        return <label className='btn btn-sk-link image-upload'>
+        const style = {};
+
+        if (this.props.accentColor && this.state.imageButtonHovered) {
+            style.color = `#${this.props.accentColor}`;
+        }
+        return <label className='btn btn-sk-link image-upload'
+                      onMouseOver={ () => this.onMouseOver() }
+                      onMouseOut={ () => this.onMouseOut() }
+                      style={ style }>
                    <form ref='imageUploadForm'
                          onSubmit={ preventDefault }>
                        <input type='file'
