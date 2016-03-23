@@ -6,6 +6,7 @@ const INITIAL_STATE = {
     settingsNotificationVisible: false,
     widgetOpened: null,
     settingsEnabled: true,
+    imageUploadEnabled: true,
     readOnlyEmail: false,
     embedded: false,
     serverURL: 'https://api.smooch.io/',
@@ -25,6 +26,17 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
         case AppStateActions.DISABLE_SETTINGS:
             return Object.assign({}, state, {
                 settingsEnabled: false
+            });
+
+
+        case AppStateActions.ENABLE_IMAGE_UPLOAD:
+            return Object.assign({}, state, {
+                imageUploadEnabled: true
+            });
+
+        case AppStateActions.DISABLE_IMAGE_UPLOAD:
+            return Object.assign({}, state, {
+                imageUploadEnabled: false
             });
 
         case AppStateActions.SET_EMAIL_READONLY:

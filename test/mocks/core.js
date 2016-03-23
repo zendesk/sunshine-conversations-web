@@ -12,7 +12,8 @@ export function createMock(sinon) {
 
         conversations: {
             sendMessage: sinon.stub(),
-            get: sinon.stub()
+            get: sinon.stub(),
+            uploadImage: sinon.stub()
         },
 
         stripe: {

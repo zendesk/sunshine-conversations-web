@@ -34,11 +34,19 @@ export class NotificationComponent extends Component {
     }
 
     render() {
+        const linkStyle = {
+            cursor: 'pointer'
+        };
         return (
-            <div key='content' className='sk-notification' onClick={ this.props.actions.hideSettingsNotification }>
+            <div key='content'
+                 className='sk-notification'
+                 onClick={ this.props.actions.hideSettingsNotification }>
                 <p>
-                    <span ref='text' dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.settingsNotificationText) }></span>
-                    <a href='#' className='sk-notification-close' onClick={ this.props.actions.hideSettingsNotification }>&times;</a>
+                    <span ref='text'
+                          dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.settingsNotificationText) }></span>
+                    <a style={ linkStyle }
+                       className='sk-notification-close'
+                       onClick={ this.props.actions.hideSettingsNotification }>&times;</a>
                 </p>
             </div>
             );

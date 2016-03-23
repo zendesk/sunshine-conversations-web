@@ -30,7 +30,7 @@ export class ConversationComponent extends Component {
         }
     };
 
-    scrollToBottom() {
+    scrollToBottom = () => {
         const timeout = setTimeout(() => {
             const container = findDOMNode(this);
             const logo = this.refs.logo;
@@ -38,7 +38,7 @@ export class ConversationComponent extends Component {
             container.scrollTop = scrollTop;
         });
         this.scrollTimeouts.push(timeout);
-    }
+    };
 
     componentDidMount() {
         this.scrollToBottom();
@@ -53,7 +53,7 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const messages = this.props.conversation.messages.map((message) => <MessageComponent key={ message._id } {...message} />);
+        const messages = this.props.conversation.messages.map((message, index) => <MessageComponent key={ index } onLoad={this.scrollToBottom} {...message} />);
 
         const logoStyle = isMobile.apple.device ? {
             paddingBottom: 10

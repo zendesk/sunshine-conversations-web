@@ -9,12 +9,39 @@
     background-color: white;
     z-index: 1;
 
+    .image-upload {
+        height: @footer-height;
+        width: @footer-height - 10px;
+        color: #b2b2b2;
+        display: inline-block;
+        padding: 15px 10px;
+
+        &:hover {
+            color: #00aeff;
+        }
+
+        input[type="file"] {
+            position: fixed;
+            top: -1000px;
+        }
+    }
+
+    form {
+        display: inline-block;
+    }
+
     .input-container {
         width: 100%;
-        padding: 5px 0 5px @input-horizontal-margin;
-        float: left;
+        padding: 5px 0;
+        display: inline-block;
+
+        &.no-upload {
+            padding: 5px 0 5px @input-horizontal-margin;
+        }
+
         .message-input {
             width: 100%;
+            -webkit-appearance: none;
 
             &::-ms-clear {
                 display: none;
