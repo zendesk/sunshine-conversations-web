@@ -71,6 +71,7 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | userId | Yes | - | User's id |
 | properties | Yes | - | An object with all properties you want to set on your user |
 | emailCaptureEnabled | Yes | `false` | Enables prompt for email after the first user's message. You can retrieve that email in Slack using `/sk !profile`. We are aware of this limitation and are working on improving it. |
+| imageUploadEnabled | Yes | `true` | Enables the image upload feature. |
 | embedded | Yes | False | Tells the widget it will be embedded. (see Embedded section below) |
 | customText | Yes | See the example below | Strings used in the widget UI. You can use these to either customize the text or translate it. |
 

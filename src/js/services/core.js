@@ -1,4 +1,4 @@
-import Smooch from 'smooch-core';
+import { Smooch } from 'smooch-core/lib/smooch';
 import { store } from 'stores/app-store';
 import urljoin from 'urljoin';
 

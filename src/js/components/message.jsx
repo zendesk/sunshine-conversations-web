@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 
+import { TextMessage } from 'components/text-message';
+import { ImageMessage } from 'components/image-message';
 import { ActionComponent } from 'components/action';
 
-import { createMarkup, autolink, escapeHtml } from 'utils/html';
 
 export class MessageComponent extends Component {
     static defaultProps = {
@@ -23,29 +24,14 @@ export class MessageComponent extends Component {
                  src={ this.props.avatarUrl } />
             );
 
-        let text = this.props.text.split('\n').map((item, index) => {
-            if (!item.trim()) {
-                return;
-            }
+        const message = this.props.mediaUrl ?
+            <ImageMessage {...this.props} /> :
+            <TextMessage {...this.props} />;
 
-            const linkOptions = {
-                target: '_blank',
-                class: 'link',
-            };
-
-            if (!isAppUser && this.props.linkColor) {
-                linkOptions.style = `color: #${this.props.linkColor}`
-            }
-
-            const innerHtml = createMarkup(autolink(escapeHtml(item), linkOptions));
-
-            return <span key={ index }><span dangerouslySetInnerHTML={ innerHtml }></span>
-                   <br/>
-                   </span>;
-        });
+        const containerClass = [this.props.mediaUrl ? 'sk-msg-image' : 'sk-msg'];
 
         if (this.props.actions.length > 0) {
-            text = <span className='has-actions'>{ text }</span>;
+            containerClass.push('has-actions');
         }
 
         const style = {};
@@ -59,9 +45,9 @@ export class MessageComponent extends Component {
                        <div className='sk-from'>
                            { isAppUser ? '' : this.props.name }
                        </div>
-                       <div className='sk-msg'
+                       <div className={ containerClass.join(' ') }
                             style={ style }>
-                           { text }
+                           { message }
                            { actions }
                        </div>
                    </div>

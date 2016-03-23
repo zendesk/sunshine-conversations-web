@@ -1,15 +1,19 @@
 import sinon from 'sinon';
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
+
 import { mockAppStore } from 'test/utils/redux';
+import { mockComponent } from 'test/utils/react';
 
 import { ChatInputComponent } from 'components/chat-input.jsx';
+import { ImageUpload } from 'components/image-upload.jsx';
 
 const conversationService = require('services/conversation-service');
 
 const sandbox = sinon.sandbox.create();
 
 const props = {
+    imageUploadEnabled: true,
     ui: {
         text: {
             inputPlaceholder: 'Placeholder',
@@ -30,9 +34,15 @@ describe('ChatInput', () => {
     var serviceSendMessageStub;
 
     beforeEach(() => {
+
+        mockComponent(sandbox, ImageUpload, 'div', {
+            className: 'image-upload'
+        });
+
         onChangeSpy = sandbox.spy(ChatInputComponent.prototype, 'onChange');
         onSendMessageSpy = sandbox.spy(ChatInputComponent.prototype, 'onSendMessage');
 
+        sandbox.stub(conversationService, 'uploadImage').resolves();
         resetUnreadCountStub = sandbox.stub(conversationService, 'resetUnreadCount');
         serviceSendMessageStub = sandbox.stub(conversationService, 'sendMessage');
 
@@ -163,6 +173,23 @@ describe('ChatInput', () => {
             component.state.text.should.eq('');
 
             serviceSendMessageStub.should.have.been.calledWith('this is a value!');
+        });
+    });
+
+    describe('Image upload button', () => {
+        [true, false].forEach((imageUploadEnabled) => {
+            let component;
+            const componentProps = Object.assign({}, props, {
+                imageUploadEnabled
+            });
+
+            beforeEach(() => {
+                component = TestUtils.renderIntoDocument(<ChatInputComponent {...componentProps} />);
+            });
+
+            it(`should${imageUploadEnabled ? '' : 'not'} display the image upload button`, () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'image-upload').length.should.be.eq(imageUploadEnabled ? 1 : 0);
+            });
         });
     });
 });

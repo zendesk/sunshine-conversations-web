@@ -27,8 +27,7 @@ module.exports = function(options) {
         'jsx': options.hotComponents ? ['react-hot-loader', 'babel-loader'] : 'babel-loader',
         'js': {
             loader: 'babel-loader',
-            include: [path.join(__dirname, 'src/js'), path.join(__dirname, 'test')],
-            exclude: [/node_modules/]
+            include: [path.join(__dirname, 'src/js'), path.join(__dirname, 'test')]
         },
         'json': 'json-loader',
         'txt': 'raw-loader',
@@ -116,7 +115,6 @@ module.exports = function(options) {
     }
 
     if (options.minimize) {
-
         plugins.push(
             new webpack.optimize.UglifyJsPlugin({
                 compressor: {

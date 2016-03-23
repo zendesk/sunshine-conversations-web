@@ -45,9 +45,9 @@ export function update(props) {
     } else {
         previousValue = immediateUpdate(pendingUserProps);
         waitForSave = true;
-        pendingUserProps = {};
 
         setTimeout(() => {
+            previousValue = immediateUpdate(pendingUserProps);
             waitForSave = false;
         }, waitDelay);
     }

@@ -31,9 +31,16 @@ export class Observable {
     trigger(event, options) {
         const map = this[listeners];
         if (map.has(event)) {
-            map.get(event).forEach((handler) => handler(options));
+            // use setTimeout to execute the handler after the current
+            // execution stack is cleared. That way, any hooks won't block the
+            // widget execution
+            map.get(event).forEach((handler) => setTimeout(handler(options)));
         }
     }
 }
 
 export const observable = new Observable();
+
+export function preventDefault(e) {
+    e.preventDefault();
+}

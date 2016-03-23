@@ -7,11 +7,13 @@ import debounce from 'lodash.debounce';
 import { sendMessage, resetUnreadCount } from 'services/conversation-service';
 import { store } from 'stores/app-store';
 
+import { ImageUpload } from 'components/image-upload';
+
 export class ChatInputComponent extends Component {
     static defaultProps = {
         settings: {}
     };
-    
+
     constructor(...args) {
         super(...args);
 
@@ -42,9 +44,23 @@ export class ChatInputComponent extends Component {
 
     resizeInput(attempt = 0) {
         const node = findDOMNode(this);
-        if (node.offsetWidth - this.refs.button.offsetWidth > 0) {
+
+        const nodeRect = node.getBoundingClientRect();
+        const buttonRect = this.refs.button.getBoundingClientRect();
+
+        // floor widget width and ceil button width to ensure button fits in widget
+        const nodeWidth = Math.floor(nodeRect.width);
+        let buttonsWidth = Math.ceil(buttonRect.width);
+
+        if (this.refs.imageUpload) {
+            const imageUploadRect = findDOMNode(this.refs.imageUpload).getBoundingClientRect();
+            const imageUploadWith = Math.ceil(imageUploadRect.width);
+            buttonsWidth += imageUploadWith;
+        }
+
+        if (node.offsetWidth - buttonsWidth > 0) {
             this.setState({
-                inputContainerWidth: node.offsetWidth - this.refs.button.offsetWidth
+                inputContainerWidth: nodeWidth - buttonsWidth
             });
         } else {
             // let's try it 10 times (so, 1 sec)
@@ -53,9 +69,9 @@ export class ChatInputComponent extends Component {
                     this.resizeInput(attempt + 1);
                 }, 100);
             } else {
-                // otherwise, let's hope 80% won't break it and won't look too silly
+                // otherwise, let's hope 70% won't break it and won't look too silly
                 this.setState({
-                    inputContainerWidth: '80%'
+                    inputContainerWidth: '70%'
                 });
             }
         }
@@ -74,7 +90,7 @@ export class ChatInputComponent extends Component {
     }
 
     componentDidMount() {
-        this.resizeInput();
+        setTimeout(() => this.resizeInput());
         window.addEventListener('resize', this._debouncedResize);
     }
 
@@ -116,11 +132,21 @@ export class ChatInputComponent extends Component {
                          </a>;
         }
 
+        const imageUploadButton = this.props.imageUploadEnabled ?
+            <ImageUpload ref='imageUpload' /> : null;
+
+        const inputContainerClasses = ['input-container'];
+
+        if (!this.props.imageUploadEnabled) {
+            inputContainerClasses.push('no-upload');
+        }
+
         return (
             <div id='sk-footer'>
+                { imageUploadButton }
                 <form onSubmit={ this.onSendMessage }
                       action='#'>
-                    <div className='input-container'
+                    <div className={ inputContainerClasses.join(' ') }
                          style={ containerStyle }>
                         <input ref='input'
                                placeholder={ this.props.ui.text.inputPlaceholder }
@@ -140,7 +166,8 @@ export class ChatInputComponent extends Component {
 export const ChatInput = connect((state) => {
     return {
         ui: state.ui,
-        settings: state.app.settings && state.app.settings.web
+        settings: state.app.settings && state.app.settings.web,
+        imageUploadEnabled: state.appState.imageUploadEnabled
     };
 }, undefined, undefined, {
     withRef: true

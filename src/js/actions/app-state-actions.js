@@ -13,6 +13,8 @@ export const SET_SERVER_URL = 'SET_SERVER_URL';
 export const SET_EMAIL_READONLY = 'SET_EMAIL_READONLY';
 export const UNSET_EMAIL_READONLY = 'UNSET_EMAIL_READONLY';
 export const SET_EMBEDDED = 'SET_EMBEDDED';
+export const ENABLE_IMAGE_UPLOAD = 'ENABLE_IMAGE_UPLOAD';
+export const DISABLE_IMAGE_UPLOAD = 'DISABLE_IMAGE_UPLOAD';
 
 export function toggleWidget() {
     return {
@@ -53,6 +55,18 @@ export function enableSettings() {
 export function disableSettings() {
     return {
         type: DISABLE_SETTINGS
+    };
+}
+
+export function enableImageUpload() {
+    return {
+        type: ENABLE_IMAGE_UPLOAD
+    };
+}
+
+export function disableImageUpload() {
+    return {
+        type: DISABLE_IMAGE_UPLOAD
     };
 }
 
