@@ -66,7 +66,7 @@ export class ConversationComponent extends Component {
                                      accentColor={ this.props.settings.accentColor }
                                      linkColor={ this.props.settings.linkColor }
                                      onLoad={ this.scrollToBottom }
-                                     {...message} />
+                                     {...message} />;
         });
 
         const logoStyle = isMobile.apple.device ? {
@@ -104,10 +104,7 @@ export const Conversation = connect((state) => {
     return {
         ui: state.ui,
         conversation: state.conversation,
-<<<<<<< HEAD
-        settings: state.app.settings && state.app.settings.web
-=======
+        settings: state.app.settings && state.app.settings.web,
         embedded: state.appState.embedded
->>>>>>> 8afc1d48a2992ef3eda58e3c7638a569bfdf1fa2
     };
 })(ConversationComponent);
