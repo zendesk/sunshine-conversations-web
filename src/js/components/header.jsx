@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { toggleWidget, showSettings, hideSettings } from 'actions/app-state-actions';
+import { toggleWidget } from 'services/app-service';
+import { showSettings, hideSettings } from 'actions/app-state-actions';
 
 export class HeaderComponent extends Component {
     constructor(props) {
@@ -23,19 +24,12 @@ export class HeaderComponent extends Component {
     }
 
     render() {
-        let {settingsEnabled, settingsVisible, widgetOpened} = this.props.appState;
-        let {settingsHeaderText, headerText} = this.props.ui.text;
+        const {settingsEnabled, settingsVisible, widgetOpened, embedded} = this.props.appState;
+        const {settingsHeaderText, headerText} = this.props.ui.text;
 
-        let unreadTimestamp = this.props.appState.messageReadTimestamp;
+        const unreadMessagesCount = this.props.conversation.unreadCount;
 
-        let unreadMessagesCount = unreadTimestamp <= 0 ? 0 : this.props.conversation.messages.reduce((count, message) => {
-            if (message.role !== 'appUser' && unreadTimestamp <= message.received) {
-                return count + 1;
-            }
-            return count;
-        }, 0);
-
-        let unreadBadge = !settingsVisible && unreadMessagesCount > 0 ? (
+        const unreadBadge = !settingsVisible && unreadMessagesCount > 0 ? (
             <div id='sk-badge'>
                 { unreadMessagesCount }
             </div>
@@ -53,19 +47,23 @@ export class HeaderComponent extends Component {
             </div>
             ) : null;
 
-        const closeHandle = widgetOpened ? (
-            <div className='sk-close-handle sk-close-hidden'>
-                <i className='fa fa-times'></i>
-            </div>
-            ) : (
-            <div className='sk-show-handle sk-appear-hidden'>
-                <i className='fa fa-arrow-up'></i>
-            </div>
-            );
+        let closeHandle = null;
+        if (!embedded) {
+            closeHandle = widgetOpened ? (
+                <div className='sk-close-handle sk-close-hidden'>
+                    <i className='fa fa-times'></i>
+                </div>
+                ) : (
+                <div className='sk-show-handle sk-appear-hidden'>
+                    <i className='fa fa-arrow-up'></i>
+                </div>
+                );
+        }
 
         const settingsTextStyle = {
             display: 'inline-block',
-            height: 30
+            height: 30,
+            cursor: 'pointer'
         };
 
         const settingsText = <div style={ settingsTextStyle } onClick={ this.hideSettings }>
@@ -73,7 +71,7 @@ export class HeaderComponent extends Component {
                              </div>;
 
         return (
-            <div id={ settingsVisible ? 'sk-settings-header' : 'sk-header' } onClick={ this.actions.toggleWidget }>
+            <div id={ settingsVisible ? 'sk-settings-header' : 'sk-header' } onClick={ !embedded && toggleWidget }>
                 { settingsButton }
                 { backButton }
                 { settingsVisible ? settingsText : headerText }
@@ -95,7 +93,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators({
-            toggleWidget,
             showSettings,
             hideSettings
         }, dispatch)

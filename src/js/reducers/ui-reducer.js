@@ -13,8 +13,10 @@ const INITIAL_STATE = {
         settingsSaveButtonText: 'Save',
         settingsHeaderText: 'Email Settings',
         settingsNotificationText: 'In case we\'re slow to respond you can <a href data-ui-settings-link>leave us your email</a>.',
-        actionPaymentError: 'An error occurred while processing the card. <br> Please try again or use a different card.', 
-        actionPaymentCompleted: 'Payment Completed'
+        actionPaymentError: 'An error occurred while processing the card. <br> Please try again or use a different card.',
+        actionPaymentCompleted: 'Payment Completed',
+        messageError: 'An error occured while sending your message. Please try again.',
+        invalidFileError: 'Sorry, but only images are supported currently. Please choose a file with a supported extension (jpg, jpeg, png, gif, or bmp).'
     }
 };
 

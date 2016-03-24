@@ -22,19 +22,19 @@ export class ActionComponent extends Component {
             hasToken: true
         });
 
-        let user = store.getState().user;
-        let promises = [];
+        const user = store.getState().user;
+        const promises = [];
         if (!user.email) {
             promises.push(immediateUpdate({
                 email: token.email
             }));
         }
 
-        let transactionPromise = createTransaction(this.props._id, token.id).then(() => {
+        const transactionPromise = createTransaction(this.props._id, token.id).then(() => {
             this.setState({
                 state: 'paid'
             });
-        }).catch((err) => {
+        }).catch(() => {
             this.setState({
                 state: 'offered'
             });
@@ -60,16 +60,21 @@ export class ActionComponent extends Component {
     }
 
     render() {
-        let publicKeys = store.getState().app.publicKeys;
+        const publicKeys = store.getState().app.publicKeys;
+
+        let style = {};
+        if (this.props.accentColor) {
+            style.backgroundColor = style.borderColor = `#${this.props.accentColor}`;
+        }
 
         // the public key is necessary to use with Checkout
         // use the link fallback if this happens
         if (this.props.type === 'buy' && publicKeys.stripe) {
-            let user = store.getState().user;
+            const user = store.getState().user;
 
             // let's change this when we support other providers
-            let stripeAccount = store.getState().app.stripe;
-            let actionState = this.state.state;
+            const stripeAccount = store.getState().app.stripe;
+            const actionState = this.state.state;
             if (actionState === 'offered') {
                 return (
                     <StripeCheckout componentClass='div'
@@ -82,30 +87,40 @@ export class ActionComponent extends Component {
                                     name={ stripeAccount.appName }
                                     image={ stripeAccount.iconUrl }
                                     closed={ this.onStripeClose.bind(this) }>
-                        <button className='btn btn-sk-primary' onClick={ this.onStripeClick.bind(this) }>
+                        <button className='btn btn-sk-primary'
+                                onClick={ this.onStripeClick.bind(this) }
+                                style={ style }>
                             { this.props.text }
                         </button>
                     </StripeCheckout>
                     );
             } else {
-                let text = actionState === 'paid' ?
+                const text = actionState === 'paid' ?
                     store.getState().ui.text.actionPaymentCompleted :
                     <LoadingComponent />;
 
+                if (actionState === 'paid') {
+                    style = {};
+                }
+
                 return (
                     <div className='sk-action'>
-                        <div className={ `btn btn-sk-action-${actionState}` }>
+                        <div className={ `btn btn-sk-action-${actionState}` }
+                             style={ style }>
                             { text }
                         </div>
                     </div>
                     );
             }
         } else {
-            let isJavascript = this.props.uri.startsWith('javascript:');
+            const isJavascript = this.props.uri.startsWith('javascript:');
 
             return (
                 <div className='sk-action'>
-                    <a className='btn btn-sk-primary' href={ this.props.uri } target={ isJavascript ? '_self' : '_blank' }>
+                    <a className='btn btn-sk-primary'
+                       href={ this.props.uri }
+                       target={ isJavascript ? '_self' : '_blank' }
+                       style={ style }>
                         { this.props.text }
                     </a>
                 </div>
