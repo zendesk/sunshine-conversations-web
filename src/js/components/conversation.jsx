@@ -7,6 +7,10 @@ import { createMarkup } from 'utils/html';
 import { MessageComponent } from 'components/message.jsx';
 
 export class ConversationComponent extends Component {
+    static defaultProps = {
+        settings: {}
+    };
+
     state = {
         logoIsAnchored: true
     };
@@ -57,9 +61,13 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const messages = this.props.conversation.messages.map((message, index) => <MessageComponent key={ index }
-                                                                                                    onLoad={ this.scrollToBottom }
-                                                                                                    {...message} />);
+        const messages = this.props.conversation.messages.map((message, index) => {
+            return <MessageComponent key={ index }
+                                     accentColor={ this.props.settings.accentColor }
+                                     linkColor={ this.props.settings.linkColor }
+                                     onLoad={ this.scrollToBottom }
+                                     {...message} />;
+        });
 
         const logoStyle = isMobile.apple.device ? {
             paddingBottom: 10
@@ -96,6 +104,7 @@ export const Conversation = connect((state) => {
     return {
         ui: state.ui,
         conversation: state.conversation,
+        settings: state.app.settings && state.app.settings.web,
         embedded: state.appState.embedded
     };
 })(ConversationComponent);
