@@ -7,7 +7,7 @@ import { store } from 'stores/app-store';
 
 import { setAuth, resetAuth } from 'actions/auth-actions';
 import * as userActions from 'actions/user-actions';
-import { setPublicKeys, setStripeInfo } from 'actions/app-actions';
+import { setPublicKeys, setStripeInfo, setAppSettings } from 'actions/app-actions';
 import { updateText } from 'actions/ui-actions';
 import { resetConversation } from 'actions/conversation-actions';
 import * as AppStateActions from 'actions/app-state-actions';
@@ -172,6 +172,7 @@ export class Smooch {
             }
         }).then((loginResponse) => {
             store.dispatch(userActions.setUser(loginResponse.appUser));
+            store.dispatch(setAppSettings(loginResponse.app.settings));
 
             monitorUrlChanges(() => {
                 updateNowViewing(getDeviceId());

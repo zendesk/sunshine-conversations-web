@@ -62,6 +62,11 @@ export class ActionComponent extends Component {
     render() {
         const publicKeys = store.getState().app.publicKeys;
 
+        let style = {};
+        if (this.props.accentColor) {
+            style.backgroundColor = style.borderColor = `#${this.props.accentColor}`;
+        }
+
         // the public key is necessary to use with Checkout
         // use the link fallback if this happens
         if (this.props.type === 'buy' && publicKeys.stripe) {
@@ -82,7 +87,9 @@ export class ActionComponent extends Component {
                                     name={ stripeAccount.appName }
                                     image={ stripeAccount.iconUrl }
                                     closed={ this.onStripeClose.bind(this) }>
-                        <button className='btn btn-sk-primary' onClick={ this.onStripeClick.bind(this) }>
+                        <button className='btn btn-sk-primary'
+                                onClick={ this.onStripeClick.bind(this) }
+                                style={ style }>
                             { this.props.text }
                         </button>
                     </StripeCheckout>
@@ -92,9 +99,14 @@ export class ActionComponent extends Component {
                     store.getState().ui.text.actionPaymentCompleted :
                     <LoadingComponent />;
 
+                if (actionState === 'paid') {
+                    style = {};
+                }
+
                 return (
                     <div className='sk-action'>
-                        <div className={ `btn btn-sk-action-${actionState}` }>
+                        <div className={ `btn btn-sk-action-${actionState}` }
+                             style={ style }>
                             { text }
                         </div>
                     </div>
@@ -105,7 +117,10 @@ export class ActionComponent extends Component {
 
             return (
                 <div className='sk-action'>
-                    <a className='btn btn-sk-primary' href={ this.props.uri } target={ isJavascript ? '_self' : '_blank' }>
+                    <a className='btn btn-sk-primary'
+                       href={ this.props.uri }
+                       target={ isJavascript ? '_self' : '_blank' }
+                       style={ style }>
                         { this.props.text }
                     </a>
                 </div>

@@ -6,6 +6,10 @@ import { immediateUpdate } from 'services/user-service';
 import { hideSettings } from 'actions/app-state-actions';
 
 export class SettingsComponent extends Component {
+    static defaultProps = {
+        settings: {}
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -52,11 +56,18 @@ export class SettingsComponent extends Component {
     render() {
         const hasError = this.state.hasError;
 
+        const style = {};
+
+        if (this.props.settings.accentColor) {
+            style.backgroundColor = style.borderColor = `#${this.props.settings.accentColor}`;
+        }
+
         const button = this.props.appState.readOnlyEmail ? null : <div className='input-group'>
                                                                       <button ref='button'
                                                                               disabled={ hasError }
                                                                               type='button'
                                                                               className='btn btn-sk-primary'
+                                                                              style={ style }
                                                                               onClick={ this.save }>
                                                                           { this.props.ui.text.settingsSaveButtonText }
                                                                       </button>
@@ -89,7 +100,8 @@ export const Settings = connect((state) => {
     return {
         ui: state.ui,
         appState: state.appState,
-        user: state.user
+        user: state.user,
+        settings: state.app.settings && state.app.settings.web
     };
 }, (dispatch) => {
     return {

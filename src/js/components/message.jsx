@@ -13,6 +13,7 @@ export class MessageComponent extends Component {
     render() {
         const actions = this.props.actions.map((action) => {
             return <ActionComponent key={ action._id }
+                                    accentColor={ this.props.accentColor }
                                     {...action} />;
         });
 
@@ -29,8 +30,13 @@ export class MessageComponent extends Component {
 
         const containerClass = [this.props.mediaUrl ? 'sk-msg-image' : 'sk-msg'];
 
-        if(this.props.actions.length > 0) {
+        if (this.props.actions.length > 0) {
             containerClass.push('has-actions');
+        }
+
+        const style = {};
+        if (isAppUser && this.props.accentColor) {
+            style.backgroundColor = style.borderLeftColor = `#${this.props.accentColor}`;
         }
 
         return <div className={ 'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row') }>
@@ -39,7 +45,8 @@ export class MessageComponent extends Component {
                        <div className='sk-from'>
                            { isAppUser ? '' : this.props.name }
                        </div>
-                       <div className={ containerClass.join(' ') }>
+                       <div className={ containerClass.join(' ') }
+                            style={ style }>
                            { message }
                            { actions }
                        </div>
