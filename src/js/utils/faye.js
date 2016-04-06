@@ -37,7 +37,7 @@ export function initFaye() {
             }
         });
 
-        return faye.subscribe('/conversations/' + state.conversation._id, (message) => {
+        return faye.subscribe('/v1/conversations/' + state.conversation._id, (message) => {
             store.dispatch(addMessage(message));
             store.dispatch(incrementUnreadCount());
         });
