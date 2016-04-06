@@ -61,13 +61,15 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const messages = this.props.conversation.messages.map((message, index) => {
-            return <MessageComponent key={ index }
-                                     accentColor={ this.props.settings.accentColor }
-                                     linkColor={ this.props.settings.linkColor }
-                                     onLoad={ this.scrollToBottom }
-                                     {...message} />;
-        });
+        const messages = this.props.conversation.messages
+            .sort((a, b) => a.received - b.received)
+            .map((message, index) => {
+                return <MessageComponent key={ index }
+                                         accentColor={ this.props.settings.accentColor }
+                                         linkColor={ this.props.settings.linkColor }
+                                         onLoad={ this.scrollToBottom }
+                                         {...message} />;
+            });
 
         const logoStyle = isMobile.apple.device ? {
             paddingBottom: 10
