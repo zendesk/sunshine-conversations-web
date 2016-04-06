@@ -6,6 +6,16 @@ const INITIAL_STATE = {
     unreadCount: 0
 };
 
+function addMessage(messages, message) {
+    const existingMessage = messages.find((m) => m._id === message._id);
+
+    if (existingMessage) {
+        return messages;
+    }
+
+    return [...messages, message];
+}
+
 export function ConversationReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case RESET:
@@ -15,7 +25,7 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             return Object.assign({}, action.conversation);
         case ConversationActions.ADD_MESSAGE:
             return Object.assign({}, state, {
-                messages: [...state.messages, action.message]
+                messages: addMessage(state.messages, action.message)
             });
         case ConversationActions.REMOVE_MESSAGE:
             return Object.assign({}, state, {
