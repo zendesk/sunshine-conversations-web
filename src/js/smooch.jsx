@@ -86,7 +86,6 @@ function onStoreChange({messages, unreadCount}) {
                 lastTriggeredMessageTimestamp = message.received;
             });
         }
-
     }
 }
 
