@@ -19,7 +19,7 @@ import { getAccount } from 'services/stripe-service';
 import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, updateNowViewing, immediateUpdate as immediateUpdateUser } from 'services/user-service';
 import { getConversation, sendMessage, connectFaye, disconnectFaye, handleConversationUpdated } from 'services/conversation-service';
 
-import { observable } from 'utils/events';
+import { observable, observeStore } from 'utils/events';
 import { storage } from 'utils/storage';
 import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges } from 'utils/dom';
 import { isImageUploadSupported } from 'utils/media';
@@ -73,6 +73,22 @@ observable.on('message:received', (message) => {
     observable.trigger('message', message);
 });
 
+let lastTriggeredMessageTimestamp = 0;
+let unsubscribeFromStore;
+
+function onStoreChange({messages, unreadCount}) {
+    if (messages.length > 0) {
+        if (unreadCount > 0) {
+            // only handle non-user messages
+            const filteredMessages = messages.filter((message) => message.role !== 'appUser');
+            filteredMessages.slice(-unreadCount).filter((message) => message.received > lastTriggeredMessageTimestamp).forEach((message) => {
+                observable.trigger('message:received', message);
+                lastTriggeredMessageTimestamp = message.received;
+            });
+        }
+    }
+}
+
 export class Smooch {
     get VERSION() {
         return VERSION;
@@ -124,6 +140,8 @@ export class Smooch {
             store.dispatch(AppStateActions.setServerURL(props.serviceUrl));
         }
 
+        unsubscribeFromStore = observeStore(store, ({conversation}) => conversation, onStoreChange);
+
         return this.login(props.userId, props.jwt, pick(props, EDITABLE_PROPERTIES));
     }
 
@@ -155,6 +173,7 @@ export class Smooch {
             appToken: this.appToken
         }));
 
+        lastTriggeredMessageTimestamp = 0;
         return login({
             userId: userId,
             device: {
@@ -260,6 +279,7 @@ export class Smooch {
         }
 
         stopMonitoringUrlChanges();
+        unsubscribeFromStore();
 
         delete this.appToken;
         delete this._container;
