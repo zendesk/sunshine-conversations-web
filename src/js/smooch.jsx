@@ -83,10 +83,10 @@ function onStoreChange({messages, unreadCount}) {
             const filteredMessages = messages.filter((message) => message.role !== 'appUser');
             filteredMessages.slice(-unreadCount).filter((message) => message.received > lastTriggeredMessageTimestamp).forEach((message) => {
                 observable.trigger('message:received', message);
+                lastTriggeredMessageTimestamp = message.received;
             });
         }
-        
-        lastTriggeredMessageTimestamp = messages[messages.length - 1].received;
+
     }
 }
 
