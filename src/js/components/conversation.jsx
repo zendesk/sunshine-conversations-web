@@ -62,7 +62,18 @@ export class ConversationComponent extends Component {
 
     render() {
         const messages = this.props.conversation.messages
-            .sort((a, b) => a.received - b.received)
+            .sort((a, b) => {
+                // received is undefined when it's the temp message from the user
+                if(!a.received) {
+                    return 1;
+                }
+
+                if(!b.received) {
+                    return -1;
+                }
+
+                return a.received - b.received;
+            })
             .map((message, index) => {
                 return <MessageComponent key={ index }
                                          accentColor={ this.props.settings.accentColor }
