@@ -1,7 +1,6 @@
 import { Client } from 'faye';
 import urljoin from 'urljoin';
 
-import { observable } from 'utils/events';
 import { store } from 'stores/app-store';
 import { addMessage, incrementUnreadCount } from 'actions/conversation-actions';
 import { getConversation } from 'services/conversation-service';
@@ -41,7 +40,6 @@ export function initFaye() {
         return faye.subscribe('/conversations/' + state.conversation._id, (message) => {
             store.dispatch(addMessage(message));
             store.dispatch(incrementUnreadCount());
-            observable.trigger('message:received', message);
         });
     }
 }

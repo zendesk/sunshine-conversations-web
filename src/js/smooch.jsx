@@ -76,15 +76,18 @@ observable.on('message:received', (message) => {
 let lastTriggeredMessageTimestamp = 0;
 let unsubscribeFromStore;
 
-function onStoreChange(messages) {
-    console.log('changed!')
-    messages.filter((message) => message.received > lastTriggeredMessageTimestamp).forEach((message) => {
-        if (message.role !== 'appUser') {
-            observable.trigger('message:received', message);
+function onStoreChange({messages, unreadCount}) {
+    if (messages.length > 0) {
+        if (unreadCount > 0) {
+            // only handle non-user messages
+            const filteredMessages = messages.filter((message) => message.role !== 'appUser');
+            filteredMessages.slice(-unreadCount).filter((message) => message.received > lastTriggeredMessageTimestamp).forEach((message) => {
+                observable.trigger('message:received', message);
+            });
         }
-
-        lastTriggeredMessageTimestamp = message.received;
-    });
+        
+        lastTriggeredMessageTimestamp = messages[messages.length - 1].received;
+    }
 }
 
 export class Smooch {
@@ -138,7 +141,7 @@ export class Smooch {
             store.dispatch(AppStateActions.setServerURL(props.serviceUrl));
         }
 
-        unsubscribeFromStore = observeStore(store, state => state.conversation.messages, onStoreChange.bind(this));
+        unsubscribeFromStore = observeStore(store, ({conversation}) => conversation, onStoreChange);
 
         return this.login(props.userId, props.jwt, pick(props, EDITABLE_PROPERTIES));
     }
