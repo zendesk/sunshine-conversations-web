@@ -6,7 +6,7 @@ const INITIAL_STATE = {
     unreadCount: 0
 };
 
-const sortMessage = (messages) => messages.sort((a, b) => {
+const sortMessages = (messages) => messages.sort((a, b) => {
     // received is undefined when it's the temp message from the user
     if (!a.received) {
         return 1;
@@ -26,7 +26,7 @@ const addMessage = (messages, message) => {
         return messages;
     }
 
-    return sortMessage([...messages, message]);
+    return sortMessages([...messages, message]);
 };
 
 export function ConversationReducer(state = INITIAL_STATE, action) {
@@ -38,7 +38,7 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             const {messages, ...rest} = action.conversation;
             return Object.assign({}, {
                 ...rest,
-                messages: sortMessage(messages)
+                messages: sortMessages(messages)
             });
         case ConversationActions.ADD_MESSAGE:
             return Object.assign({}, state, {
