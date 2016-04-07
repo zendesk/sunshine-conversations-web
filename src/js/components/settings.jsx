@@ -58,8 +58,8 @@ export class SettingsComponent extends Component {
 
         const style = {};
 
-        if (this.props.settings.accentColor) {
-            style.backgroundColor = style.borderColor = `#${this.props.settings.accentColor}`;
+        if (this.props.settings.linkColor) {
+            style.backgroundColor = style.borderColor = `#${this.props.settings.linkColor}`;
         }
 
         const button = this.props.appState.readOnlyEmail ? null : <div className='input-group'>

@@ -13,7 +13,7 @@ export class MessageComponent extends Component {
     render() {
         const actions = this.props.actions.map((action) => {
             return <ActionComponent key={ action._id }
-                                    accentColor={ this.props.accentColor }
+                                    buttonColor={ this.props.linkColor }
                                     {...action} />;
         });
 

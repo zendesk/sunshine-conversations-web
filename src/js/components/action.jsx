@@ -63,8 +63,8 @@ export class ActionComponent extends Component {
         const publicKeys = store.getState().app.publicKeys;
 
         let style = {};
-        if (this.props.accentColor) {
-            style.backgroundColor = style.borderColor = `#${this.props.accentColor}`;
+        if (this.props.buttonColor) {
+            style.backgroundColor = style.borderColor = `#${this.props.buttonColor}`;
         }
 
         // the public key is necessary to use with Checkout
