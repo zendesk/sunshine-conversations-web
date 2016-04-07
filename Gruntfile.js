@@ -57,7 +57,7 @@ module.exports = function(grunt) {
                 upload: [{
                     src: 'dist/smooch.js',
                     dest: 'smooch.min.js'
-                },{
+                }, {
                     src: 'dist/smooch.js.map',
                     dest: 'smooch.js.map'
                 }]
@@ -188,6 +188,25 @@ module.exports = function(grunt) {
         var fullVersion = grunt.option('version');
         var versionType = grunt.option('versionType');
         var globalVersion;
+
+        // unless the version or increment is explicitly set, let's try
+        // to figure out what is the next version
+        if (!fullVersion && !versionType) {
+            const currentVersion = require('./package.json').version;
+            const nextPatchVersion = semver.inc(currentVersion, 'patch');
+            const nextMinorVersion = semver.inc(currentVersion, 'minor');
+            const nextMajorVersion = semver.inc(currentVersion, 'major');
+
+            fullVersion = [nextPatchVersion, nextMinorVersion, nextMajorVersion].find((version) => {
+                try {
+                    grunt.file.read('release_notes/v' + version + '.md');
+                    return true;
+                }
+                catch (err) {
+                    return false;
+                }
+            });
+        }
 
         files.forEach(function(file) {
             var version = null;
