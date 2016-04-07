@@ -6,15 +6,28 @@ const INITIAL_STATE = {
     unreadCount: 0
 };
 
-function addMessage(messages, message) {
+const sortMessage = (messages) => messages.sort((a, b) => {
+    // received is undefined when it's the temp message from the user
+    if (!a.received) {
+        return 1;
+    }
+
+    if (!b.received) {
+        return -1;
+    }
+
+    return a.received - b.received;
+});
+
+const addMessage = (messages, message) => {
     const existingMessage = messages.find((m) => m._id === message._id);
 
     if (existingMessage) {
         return messages;
     }
 
-    return [...messages, message];
-}
+    return sortMessage([...messages, message]);
+};
 
 export function ConversationReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
@@ -22,7 +35,11 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
         case ConversationActions.RESET_CONVERSATION:
             return Object.assign({}, INITIAL_STATE);
         case ConversationActions.SET_CONVERSATION:
-            return Object.assign({}, action.conversation);
+            const {messages, ...rest} = action.conversation;
+            return Object.assign({}, {
+                ...rest,
+                messages: sortMessage(messages)
+            });
         case ConversationActions.ADD_MESSAGE:
             return Object.assign({}, state, {
                 messages: addMessage(state.messages, action.message)
