@@ -189,15 +189,15 @@ module.exports = function(grunt) {
         var versionType = grunt.option('versionType');
         var globalVersion;
 
-        // unless the version or increment is explicitely set, let's try
+        // unless the version or increment is explicitly set, let's try
         // to figure out what is the next version
         if (!fullVersion && !versionType) {
-            var currentVersion = require('./package.json').version;
-            var nextPatchVersion = semver.inc(currentVersion, 'patch');
-            var nextMinorVersion = semver.inc(currentVersion, 'minor');
-            var nextMajorVersion = semver.inc(currentVersion, 'major');
+            const currentVersion = require('./package.json').version;
+            const nextPatchVersion = semver.inc(currentVersion, 'patch');
+            const nextMinorVersion = semver.inc(currentVersion, 'minor');
+            const nextMajorVersion = semver.inc(currentVersion, 'major');
 
-            fullVersion = [nextPatchVersion, nextMinorVersion, nextMajorVersion].find(function(version) {
+            fullVersion = [nextPatchVersion, nextMinorVersion, nextMajorVersion].find((version) => {
                 try {
                     grunt.file.read('release_notes/v' + version + '.md');
                     return true;
