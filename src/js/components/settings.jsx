@@ -6,6 +6,10 @@ import { immediateUpdate } from 'services/user-service';
 import { hideSettings } from 'actions/app-state-actions';
 
 export class SettingsComponent extends Component {
+    static defaultProps = {
+        settings: {}
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -28,7 +32,7 @@ export class SettingsComponent extends Component {
         e.preventDefault();
 
         // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
-        const regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+        const regex = /^(([^<>()[\]\\.,;:\s@\']+(\.[^<>()[\]\\.,;:\s@\']+)*)|(\'.+\'))@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
         const email = this.state.email;
 
@@ -50,42 +54,45 @@ export class SettingsComponent extends Component {
     }
 
     render() {
-        let hasError = this.state.hasError;
+        const hasError = this.state.hasError;
 
-        let button = this.props.appState.readOnlyEmail ? null : (
-            <div className="input-group">
-                <button ref="button"
-                        disabled={ hasError }
-                        type="button"
-                        className="btn btn-sk-primary"
-                        onClick={ this.save }>
-                    { this.props.ui.text.settingsSaveButtonText }
-                </button>
-            </div>
-            );
+        const style = {};
 
-        return (
-            <div className="sk-settings">
-                <div className="settings-wrapper">
-                    <p ref="description">
-                        { this.props.appState.readOnlyEmail ? this.props.ui.text.settingsReadOnlyText : this.props.ui.text.settingsText }
-                    </p>
-                    <form onSubmit={ this.save }>
-                        <div className={ hasError ? 'input-group has-error' : 'input-group' }>
-                            <i className="fa fa-envelope-o before-icon"></i>
-                            <input disabled={ this.props.appState.readOnlyEmail }
-                                   ref="input"
-                                   type="text"
-                                   placeholder={ this.props.ui.text.settingsInputPlaceholder }
-                                   className="input email-input"
-                                   onChange={ this.onChange }
-                                   defaultValue={ this.props.user.email } />
-                        </div>
-                        { button }
-                    </form>
-                </div>
-            </div>
-            );
+        if (this.props.settings.linkColor) {
+            style.backgroundColor = style.borderColor = `#${this.props.settings.linkColor}`;
+        }
+
+        const button = this.props.appState.readOnlyEmail ? null : <div className='input-group'>
+                                                                      <button ref='button'
+                                                                              disabled={ hasError }
+                                                                              type='button'
+                                                                              className='btn btn-sk-primary'
+                                                                              style={ style }
+                                                                              onClick={ this.save }>
+                                                                          { this.props.ui.text.settingsSaveButtonText }
+                                                                      </button>
+                                                                  </div>;
+
+        return <div className='sk-settings'>
+                   <div className='settings-wrapper'>
+                       <p ref='description'>
+                           { this.props.appState.readOnlyEmail ? this.props.ui.text.settingsReadOnlyText : this.props.ui.text.settingsText }
+                       </p>
+                       <form onSubmit={ this.save }>
+                           <div className={ hasError ? 'input-group has-error' : 'input-group' }>
+                               <i className='fa fa-envelope-o before-icon'></i>
+                               <input disabled={ this.props.appState.readOnlyEmail }
+                                      ref='input'
+                                      type='email'
+                                      placeholder={ this.props.ui.text.settingsInputPlaceholder }
+                                      className='input email-input'
+                                      onChange={ this.onChange }
+                                      defaultValue={ this.props.user.email } />
+                           </div>
+                           { button }
+                       </form>
+                   </div>
+               </div>;
     }
 }
 
@@ -93,7 +100,8 @@ export const Settings = connect((state) => {
     return {
         ui: state.ui,
         appState: state.appState,
-        user: state.user
+        user: state.user,
+        settings: state.app.settings && state.app.settings.web
     };
 }, (dispatch) => {
     return {

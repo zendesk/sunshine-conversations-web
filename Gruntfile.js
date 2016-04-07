@@ -94,7 +94,7 @@ module.exports = function(grunt) {
                 bump: false,
                 commit: true,
                 push: false,
-                remote: 'https://github.com/smooch/smooch-js.git',
+                remote: 'git@github.com:smooch/smooch-js.git',
                 github: {
                     repo: 'smooch/smooch-js',
                     accessTokenVar: 'GITHUB_ACCESS_TOKEN',
@@ -140,8 +140,7 @@ module.exports = function(grunt) {
             addDist: {
                 cmd: function() {
                     return [
-                        'git add --force dist/smooch.js',
-                        'git add --force dist/smooch.min.js'
+                        'git add --force dist/smooch.js'
                     ].join(' && ');
                 }
             },

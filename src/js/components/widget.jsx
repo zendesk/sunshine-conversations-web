@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import isMobile from 'ismobilejs';
 
 import { Header } from 'components/header';
 import { Conversation } from 'components/conversation';
@@ -10,26 +12,54 @@ import { ErrorNotification } from 'components/error-notification';
 import { ChatInput } from 'components/chat-input';
 
 export class WidgetComponent extends Component {
+    onTouchStart = (e) => {
+        // the behavior is problematic only on iOS devices
+        if(this.refs.input && isMobile.apple.device) {
+            const component = this.refs.input.getWrappedInstance();
+            const node = findDOMNode(component);
+
+            // only blur if touching outside of the footer
+            if(!node.contains(e.target)) {
+                component.blur();
+            }
+        }
+    };
 
     render() {
         const settingsComponent = this.props.appState.settingsVisible ? <Settings /> : null;
-        const footer = this.props.appState.settingsVisible ? null : <ChatInput />;
+        const footer = this.props.appState.settingsVisible ? null : <ChatInput ref='input' />;
 
-        // We check for `undefined` explicitely because it means the widget is in it's default state
-        // It was never opened nor closed. `sk-appear` and `sk-close` expect to be in one or the other state
-        // for their animations. The animation can go from undefined to `sk-appear`, `sk-appear` to `sk-close`, and
-        // `sk-close` to `sk-appear`. If it starts with `sk-close`, it starts by being opened and animates to close state.
-        let className = typeof this.props.appState.widgetOpened === 'undefined' ? '' :
-            this.props.appState.widgetOpened ? 'sk-appear' : 'sk-close';
+        const classNames = [];
 
-        let notification = this.props.appState.errorNotificationMessage ?
+        if (this.props.appState.embedded) {
+            classNames.push('sk-embedded');
+        } else {
+            // `widgetOpened` can have 3 values: `true`, `false`, and `undefined`.
+            // `undefined` is basically the default state where the widget was never
+            // opened or closed and not visibility class is applied to the widget
+            if (this.props.appState.widgetOpened === true) {
+                classNames.push('sk-appear');
+            } else if (this.props.appState.widgetOpened === false) {
+                classNames.push('sk-close');
+            }
+        }
+
+        if (isMobile.apple.device) {
+            classNames.push('sk-ios-device');
+        }
+
+        const className = classNames.join(' ');
+
+        const notification = this.props.appState.errorNotificationMessage ?
             <ErrorNotification message={ this.props.appState.errorNotificationMessage } /> :
             this.props.appState.settingsNotificationVisible ?
                 <Notification /> :
                 null;
 
         return (
-            <div id='sk-container' className={ className }>
+            <div id='sk-container'
+                 className={ className }
+                 onTouchStart={ this.onTouchStart }>
                 <div id='sk-wrapper'>
                     <Header />
                     <ReactCSSTransitionGroup component='div'
