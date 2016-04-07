@@ -1,5 +1,6 @@
 import { store } from 'stores/app-store';
 import { addMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction } from 'actions/conversation-actions';
+import { updateUser } from 'actions/user-actions';
 import { showSettingsNotification, showErrorNotification } from 'actions/app-state-actions';
 import { setFayeSubscription, unsetFayeSubscription } from 'actions/faye-actions';
 import { core } from 'services/core';
@@ -55,6 +56,12 @@ export function sendMessage(text) {
         const user = store.getState().user;
 
         return core().conversations.sendMessage(user._id, message).then((response) => {
+            if (!user.conversationStarted) {
+                store.dispatch(updateUser({
+                    conversationStarted: true
+                }));
+            }
+
             store.dispatch(setConversation(response.conversation));
             observable.trigger('message:sent', response.message);
             return response;
