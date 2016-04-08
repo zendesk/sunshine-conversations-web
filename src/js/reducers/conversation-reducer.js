@@ -20,7 +20,12 @@ const sortMessages = (messages) => messages.sort((a, b) => {
 });
 
 const addMessage = (messages, message) => {
-    const existingMessage = messages.find((m) => m._id === message._id);
+    let existingMessage = messages.find((m) => m._id === message._id);
+
+    // let's try to match against recently sent messages instead
+    if (!existingMessage) {
+        existingMessage = messages.find((m) => !m._id && m.text === message.text && m.role === message.role);
+    }
 
     if (existingMessage) {
         return messages;
@@ -35,10 +40,8 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
         case ConversationActions.RESET_CONVERSATION:
             return Object.assign({}, INITIAL_STATE);
         case ConversationActions.SET_CONVERSATION:
-            const {messages, ...rest} = action.conversation;
-            return Object.assign({}, {
-                ...rest,
-                messages: sortMessages(messages)
+            return Object.assign({}, action.conversation, {
+                messages: sortMessages(action.conversation.messages)
             });
         case ConversationActions.ADD_MESSAGE:
             return Object.assign({}, state, {
