@@ -23,7 +23,9 @@ const addMessage = (messages, message) => {
     let existingMessage = messages.find((m) => m._id === message._id);
 
     // let's try to match against recently sent messages instead
-    if (!existingMessage) {
+    // also, restrict that to user messages since those from
+    // appMakers will always have an id.
+    if (!existingMessage && message.role === 'appUser') {
         existingMessage = messages.find((m) => !m._id && m.text === message.text && m.role === message.role);
     }
 
