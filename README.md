@@ -73,7 +73,7 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | emailCaptureEnabled | Yes | `false` | Enables prompt for email after the first user's message. You can retrieve that email in Slack using `/sk !profile`. We are aware of this limitation and are working on improving it. |
 | imageUploadEnabled | Yes | `true` | Enables the image upload feature. |
 | embedded | Yes | False | Tells the widget it will be embedded. (see Embedded section below) |
-| customText | Yes | See the example below | Strings used in the widget UI. You can use these to either customize the text or translate it. |
+| customText | Yes | See the example below | Strings used in the widget UI. You can use these to either customize the text or translate it. If something is between `{}`, it's a variable and needs to stay in your customized text if you want to use it. |
 
 ```javascript
 var skPromise = Smooch.init({
@@ -99,7 +99,12 @@ var skPromise = Smooch.init({
         settingsInputPlaceholder: 'Your email address',
         settingsSaveButtonText: 'Save',
         settingsHeaderText: 'Email Settings',
-        settingsNotificationText: 'In case we\'re slow to respond you can <a href="#" data-ui-settings-link>leave us your email</a>.'
+        settingsNotificationText: 'In case we\'re slow to respond you can <a href data-ui-settings-link>leave us your email</a>.',
+        actionPaymentError: 'An error occurred while processing the card. <br> Please try again or use a different card.',
+        actionPaymentCompleted: 'Payment Completed',
+        messageError: 'An error occured while sending your message. Please try again.',
+        invalidFileError: 'Sorry, but only images are supported currently. Please choose a file with a supported extension (jpg, jpeg, png, gif, or bmp).',
+        messageIndicatorTitle: '{name} said...'
     }
 });
 

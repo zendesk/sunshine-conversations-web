@@ -16,7 +16,8 @@ const INITIAL_STATE = {
         actionPaymentError: 'An error occurred while processing the card. <br> Please try again or use a different card.',
         actionPaymentCompleted: 'Payment Completed',
         messageError: 'An error occured while sending your message. Please try again.',
-        invalidFileError: 'Sorry, but only images are supported currently. Please choose a file with a supported extension (jpg, jpeg, png, gif, or bmp).'
+        invalidFileError: 'Sorry, but only images are supported currently. Please choose a file with a supported extension (jpg, jpeg, png, gif, or bmp).',
+        messageIndicatorTitle: '{name} said...'
     }
 };
 
