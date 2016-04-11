@@ -21,7 +21,7 @@ import { getConversation, sendMessage, connectFaye, disconnectFaye, handleConver
 
 import { observable, observeStore } from 'utils/events';
 import { storage } from 'utils/storage';
-import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges } from 'utils/dom';
+import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState } from 'utils/dom';
 import { isImageUploadSupported } from 'utils/media';
 
 import { Root } from './root';
@@ -139,9 +139,9 @@ export class Smooch {
         if (props.serviceUrl) {
             store.dispatch(AppStateActions.setServerURL(props.serviceUrl));
         }
-
         unsubscribeFromStore = observeStore(store, ({conversation}) => conversation, onStoreChange);
 
+        monitorBrowserState();
         return this.login(props.userId, props.jwt, pick(props, EDITABLE_PROPERTIES));
     }
 
@@ -279,6 +279,7 @@ export class Smooch {
         }
 
         stopMonitoringUrlChanges();
+        stopMonitoringBrowserState();
         unsubscribeFromStore();
 
         delete this.appToken;
