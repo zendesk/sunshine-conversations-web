@@ -14,7 +14,18 @@ export class MessageIndicatorComponent extends Component {
         if (!this.blinkInterval) {
             const fn = () => {
                 const {unreadCount, messages, messageIndicatorTitle} = this.props;
-                const {currentTitle, initialDocumentTitle} = this.state;
+                const {currentTitle} = this.state;
+                let {initialDocumentTitle} = this.state;
+                
+                if (document.title !== initialDocumentTitle && !document.title.endsWith(messageIndicatorTitle.replace('{name}', ''))) {
+                    // document title changed for something we don't control, this is the new initial title
+                    this.setState({
+                        initialDocumentTitle: document.title
+                    });
+
+                    initialDocumentTitle = document.title;
+                }
+
                 if (currentTitle === initialDocumentTitle && unreadCount > 0) {
                     const filteredMessages = messages.filter((message) => message.role !== 'appUser');
                     const lastMessageAuthor = filteredMessages[filteredMessages.length - 1].name;
