@@ -33,6 +33,7 @@ module.exports = function(options) {
         'txt': 'raw-loader',
         'png|jpg|jpeg|gif|svg': 'url-loader?limit=10000',
         'woff|woff2': 'url-loader?limit=100000',
+        'mp3': 'url-loader',
         'ttf|eot': 'file-loader'
     };
     var cssLoader = options.minimize ? 'css-loader?insertAt=top' : 'css-loader?insertAt=top&localIdentName=[path][name]---[local]---[hash:base64:5]';
