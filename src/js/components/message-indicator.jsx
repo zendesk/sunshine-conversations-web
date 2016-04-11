@@ -14,7 +14,7 @@ export class MessageIndicatorComponent extends Component {
     blinkTitle() {
         if (!this.blinkInterval) {
             const fn = () => {
-                const {unreadCount, messages, messageIndicatorTitle} = this.props;
+                const {unreadCount, messageIndicatorTitleSingular, messageIndicatorTitlePlural} = this.props;
                 const {currentTitle, lastSetTitle} = this.state;
                 let {initialDocumentTitle} = this.state;
 
@@ -30,18 +30,14 @@ export class MessageIndicatorComponent extends Component {
                 }
 
                 if (currentTitle === initialDocumentTitle && unreadCount > 0) {
-                    let name = '';
 
-                    for (let i = messages.length - 1; i >= 0 && !name; --i) {
-                        const message = messages[i];
-                        if (message.role !== 'appUser') {
-                            name = message.name;
-                        }
-                    }
+                    const newTitle = unreadCount === 1 ?
+                        messageIndicatorTitleSingular :
+                        messageIndicatorTitlePlural;
 
                     this.setState({
-                        currentTitle: messageIndicatorTitle.replace('{name}', name),
-                        lastSetTitle: messageIndicatorTitle.replace('{name}', name)
+                        currentTitle: newTitle.replace('{count}', unreadCount),
+                        lastSetTitle: newTitle.replace('{count}', unreadCount)
                     });
                 } else {
                     this.setState({
@@ -94,9 +90,10 @@ export class MessageIndicatorComponent extends Component {
     }
 }
 
-export const MessageIndicator = connect(({conversation, ui: {text: {messageIndicatorTitle}}}) => {
+export const MessageIndicator = connect(({conversation: {unreadCount}, ui: {text: {messageIndicatorTitleSingular, messageIndicatorTitlePlural}}}) => {
     return {
-        ...conversation,
-        messageIndicatorTitle
+        unreadCount,
+        messageIndicatorTitleSingular,
+        messageIndicatorTitlePlural
     };
 })(MessageIndicatorComponent);

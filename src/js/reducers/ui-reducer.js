@@ -17,7 +17,8 @@ const INITIAL_STATE = {
         actionPaymentCompleted: 'Payment Completed',
         messageError: 'An error occured while sending your message. Please try again.',
         invalidFileError: 'Sorry, but only images are supported currently. Please choose a file with a supported extension (jpg, jpeg, png, gif, or bmp).',
-        messageIndicatorTitle: '{name} said...'
+        messageIndicatorTitleSingular: '({count}) New message',
+        messageIndicatorTitlePlural: '({count}) New messages'
     }
 };
 
