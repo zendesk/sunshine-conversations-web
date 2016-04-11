@@ -6,6 +6,7 @@ const INITIAL_STATE = {
     settingsNotificationVisible: false,
     widgetOpened: null,
     settingsEnabled: true,
+    notificationSoundEnabled: true,
     imageUploadEnabled: true,
     readOnlyEmail: false,
     embedded: false,

@@ -23,6 +23,7 @@ import { observable, observeStore } from 'utils/events';
 import { storage } from 'utils/storage';
 import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState } from 'utils/dom';
 import { isImageUploadSupported } from 'utils/media';
+import { playNotificationSound } from 'utils/sound';
 
 import { Root } from './root';
 
@@ -76,6 +77,15 @@ observable.on('message:received', (message) => {
 let lastTriggeredMessageTimestamp = 0;
 let unsubscribeFromStore;
 
+function handleNotificationSound() {
+    const {appState: {notificationSoundEnabled}, browser: {hasFocus}} = store.getState();
+
+    if(notificationSoundEnabled && !hasFocus) {
+        playNotificationSound();
+    }
+}
+
+
 function onStoreChange({messages, unreadCount}) {
     if (messages.length > 0) {
         if (unreadCount > 0) {
@@ -84,6 +94,7 @@ function onStoreChange({messages, unreadCount}) {
             filteredMessages.slice(-unreadCount).filter((message) => message.received > lastTriggeredMessageTimestamp).forEach((message) => {
                 observable.trigger('message:received', message);
                 lastTriggeredMessageTimestamp = message.received;
+                handleNotificationSound();
             });
         }
     }
