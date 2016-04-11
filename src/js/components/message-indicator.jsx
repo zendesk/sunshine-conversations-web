@@ -61,6 +61,13 @@ export class MessageIndicatorComponent extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.cancelBlinking();
+
+        // do it manually because `DocumentTitle` will be unmounted
+        document.title = this.state.initialDocumentTitle;
+    }
+
     render() {
         return <DocumentTitle title={ this.state.currentTitle } />;
     }
