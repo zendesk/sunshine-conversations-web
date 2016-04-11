@@ -7,31 +7,41 @@ const BLINKING_INTERVAL = 1500;
 export class MessageIndicatorComponent extends Component {
     state = {
         initialDocumentTitle: global.document ? document.title : '',
-        currentTitle: global.document ? document.title : ''
+        currentTitle: global.document ? document.title : '',
+        lastSetTitle: ''
     };
 
     blinkTitle() {
         if (!this.blinkInterval) {
             const fn = () => {
                 const {unreadCount, messages, messageIndicatorTitle} = this.props;
-                const {currentTitle} = this.state;
+                const {currentTitle, lastSetTitle} = this.state;
                 let {initialDocumentTitle} = this.state;
-                
-                if (document.title !== initialDocumentTitle && !document.title.endsWith(messageIndicatorTitle.replace('{name}', ''))) {
+
+                const title = document.title;
+
+                if (title !== initialDocumentTitle && title !== lastSetTitle) {
                     // document title changed for something we don't control, this is the new initial title
                     this.setState({
-                        initialDocumentTitle: document.title
+                        initialDocumentTitle: title
                     });
 
-                    initialDocumentTitle = document.title;
+                    initialDocumentTitle = title;
                 }
 
                 if (currentTitle === initialDocumentTitle && unreadCount > 0) {
-                    const filteredMessages = messages.filter((message) => message.role !== 'appUser');
-                    const lastMessageAuthor = filteredMessages[filteredMessages.length - 1].name;
+                    let name = '';
+
+                    for (let i = messages.length - 1; i >= 0 && !name; --i) {
+                        const message = messages[i];
+                        if (message.role !== 'appUser') {
+                            name = message.name;
+                        }
+                    }
 
                     this.setState({
-                        currentTitle: messageIndicatorTitle.replace('{name}', lastMessageAuthor)
+                        currentTitle: messageIndicatorTitle.replace('{name}', name),
+                        lastSetTitle: messageIndicatorTitle.replace('{name}', name)
                     });
                 } else {
                     this.setState({
