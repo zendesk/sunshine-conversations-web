@@ -10,16 +10,17 @@ import { Settings } from 'components/settings';
 import { Notification } from 'components/notification';
 import { ErrorNotification } from 'components/error-notification';
 import { ChatInput } from 'components/chat-input';
+import { MessageIndicator } from 'components/message-indicator';
 
 export class WidgetComponent extends Component {
     onTouchStart = (e) => {
         // the behavior is problematic only on iOS devices
-        if(this.refs.input && isMobile.apple.device) {
+        if (this.refs.input && isMobile.apple.device) {
             const component = this.refs.input.getWrappedInstance();
             const node = findDOMNode(component);
 
             // only blur if touching outside of the footer
-            if(!node.contains(e.target)) {
+            if (!node.contains(e.target)) {
                 component.blur();
             }
         }
@@ -60,6 +61,7 @@ export class WidgetComponent extends Component {
             <div id='sk-container'
                  className={ className }
                  onTouchStart={ this.onTouchStart }>
+                <MessageIndicator />
                 <div id='sk-wrapper'>
                     <Header />
                     <ReactCSSTransitionGroup component='div'

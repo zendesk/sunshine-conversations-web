@@ -45,6 +45,7 @@
     "lodash.pick": "4.1.0",
     "react": "0.14.7",
     "react-addons-css-transition-group": "0.14.7",
+    "react-document-title": "2.0.1",
     "react-dom": "0.14.7",
     "react-imageloader": "2.1.0",
     "react-redux": "4.4.1",
