@@ -3,6 +3,7 @@ import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import isMobile from 'ismobilejs';
+import debounce from 'lodash.debounce';
 
 import { Header } from 'components/header';
 import { Conversation } from 'components/conversation';
@@ -12,8 +13,11 @@ import { ErrorNotification } from 'components/error-notification';
 import { ChatInput } from 'components/chat-input';
 import { MessageIndicator } from 'components/message-indicator';
 
+import { resetUnreadCount } from 'services/conversation-service';
+
 export class WidgetComponent extends Component {
     onTouchStart = (e) => {
+        resetUnreadCount();
         // the behavior is problematic only on iOS devices
         if (this.refs.input && isMobile.apple.device) {
             const component = this.refs.input.getWrappedInstance();
@@ -25,6 +29,16 @@ export class WidgetComponent extends Component {
             }
         }
     };
+
+    onClick = () => {
+        resetUnreadCount();
+    };
+
+    onWheel = debounce(() => {
+        resetUnreadCount();
+    }, 250, {
+        leading: true
+    });
 
     render() {
         const settingsComponent = this.props.appState.settingsVisible ? <Settings /> : null;
@@ -60,7 +74,9 @@ export class WidgetComponent extends Component {
         return (
             <div id='sk-container'
                  className={ className }
-                 onTouchStart={ this.onTouchStart }>
+                 onTouchStart={ this.onTouchStart }
+                 onClick={ this.onClick }
+                 onWheel={ this.onWheel }>
                 <MessageIndicator />
                 <div id='sk-wrapper'>
                     <Header />
