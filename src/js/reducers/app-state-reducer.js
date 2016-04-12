@@ -6,7 +6,7 @@ const INITIAL_STATE = {
     settingsNotificationVisible: false,
     widgetOpened: null,
     settingsEnabled: true,
-    notificationSoundEnabled: true,
+    soundNotificationEnabled: true,
     imageUploadEnabled: true,
     readOnlyEmail: false,
     embedded: false,
@@ -29,7 +29,6 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
                 settingsEnabled: false
             });
 
-
         case AppStateActions.ENABLE_IMAGE_UPLOAD:
             return Object.assign({}, state, {
                 imageUploadEnabled: true
@@ -38,6 +37,16 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
         case AppStateActions.DISABLE_IMAGE_UPLOAD:
             return Object.assign({}, state, {
                 imageUploadEnabled: false
+            });
+
+        case AppStateActions.ENABLE_SOUND_NOTIFICATION:
+            return Object.assign({}, state, {
+                soundNotificationEnabled: true
+            });
+
+        case AppStateActions.DISABLE_SOUND_NOTIFICATION:
+            return Object.assign({}, state, {
+                soundNotificationEnabled: false
             });
 
         case AppStateActions.SET_EMAIL_READONLY:

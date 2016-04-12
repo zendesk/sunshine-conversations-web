@@ -23,7 +23,7 @@ import { observable, observeStore } from 'utils/events';
 import { storage } from 'utils/storage';
 import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState } from 'utils/dom';
 import { isImageUploadSupported } from 'utils/media';
-import { playNotificationSound } from 'utils/sound';
+import { playNotificationSound, isAudioSupported } from 'utils/sound';
 
 import { Root } from './root';
 
@@ -78,9 +78,9 @@ let lastTriggeredMessageTimestamp = 0;
 let unsubscribeFromStore;
 
 function handleNotificationSound() {
-    const {appState: {notificationSoundEnabled}, browser: {hasFocus}} = store.getState();
+    const {appState: {soundNotificationEnabled}, browser: {hasFocus}} = store.getState();
 
-    if(notificationSoundEnabled && !hasFocus) {
+    if (soundNotificationEnabled && !hasFocus) {
         playNotificationSound();
     }
 }
@@ -116,6 +116,7 @@ export class Smooch {
     init(props) {
         props = {
             imageUploadEnabled: true,
+            soundNotificationEnabled: true,
             ...props
         };
 
@@ -133,6 +134,12 @@ export class Smooch {
             store.dispatch(AppStateActions.enableSettings());
         } else {
             store.dispatch(AppStateActions.disableSettings());
+        }
+
+        if (props.soundNotificationEnabled && isAudioSupported()) {
+            store.dispatch(AppStateActions.enableSoundNotification());
+        } else {
+            store.dispatch(AppStateActions.disableSoundNotification());
         }
 
         if (props.imageUploadEnabled && isImageUploadSupported()) {
