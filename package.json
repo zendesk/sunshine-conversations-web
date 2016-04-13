@@ -52,7 +52,7 @@
     "react-spinkit": "1.1.4",
     "react-stripe-checkout": "1.7.2",
     "redux": "3.3.1",
-    "smooch-core": "1.1.2",
+    "smooch-core": "1.2.2",
     "urljoin": "0.1.5",
     "uuid": "2.0.1"
   },

@@ -14,13 +14,14 @@ import { LoadingComponent } from 'components/loading.jsx';
 
 const stripeService = require('services/stripe-service');
 const userService = require('services/user-service');
+const conversationService = require('services/conversation-service');
 
 const sandbox = sinon.sandbox.create();
 
 function getNormalProps(props = {}) {
     const defaultProps = {
         _id: 'action id',
-        type: 'action',
+        type: 'link',
         text: 'action text',
         uri: 'action uri'
     };
@@ -36,6 +37,17 @@ function getBuyProps(props = {}) {
         uri: 'action uri',
         currency: 'usd',
         state: 'offered'
+    };
+
+    return Object.assign(defaultProps, props);
+}
+
+function getPostbackProps(props = {}) {
+    const defaultProps = {
+        _id: 'postback id',
+        type: 'postback',
+        text: 'postback text',
+        payload: 'postback payload'
     };
 
     return Object.assign(defaultProps, props);
@@ -80,6 +92,9 @@ describe('Action', () => {
 
         sandbox.stub(userService, 'immediateUpdate');
         userService.immediateUpdate.resolves();
+
+        sandbox.stub(conversationService, 'postPostback');
+        conversationService.postPostback.resolves();
     });
 
     afterEach(() => {
@@ -202,6 +217,25 @@ describe('Action', () => {
             link.textContent = 'action text';
             link.href = 'fallback uri';
             link.target = '_blank';
+        });
+    });
+
+    describe('postback action', () => {
+        const props = getPostbackProps();
+
+        beforeEach(() => {
+            component = TestUtils.renderIntoDocument(<ActionComponent {...props} />);
+            componentNode = ReactDOM.findDOMNode(component);
+        });
+
+        it('should render a postback', () => {
+            componentNode.textContent.should.eq('postback text');
+        });
+
+        it('should call the postPostback action on button click', () => {
+            const button = TestUtils.findRenderedDOMComponentWithTag(component, 'button');
+            TestUtils.Simulate.click(button);
+            conversationService.postPostback.should.have.been.calledOnce;
         });
     });
 
