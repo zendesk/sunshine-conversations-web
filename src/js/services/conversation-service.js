@@ -166,5 +166,7 @@ export function handleConversationUpdated() {
 
 export function postPostback(actionId) {
     const {user} = store.getState();
-    return core().conversations.postPostback(user._id, actionId);
+    return core().conversations.postPostback(user._id, actionId).catch(() => {
+        store.dispatch(showErrorNotification(store.getState().ui.text.actionPostbackError));
+    });
 }

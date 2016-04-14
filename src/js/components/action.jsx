@@ -25,12 +25,12 @@ export class ActionComponent extends Component {
 
         postPostback(this.props._id).then(() => {
             this.setState({
-                state: 'paid'
+                state: ''
             });
         })
         .catch(() => {
             this.setState({
-                state: 'offered'
+                state: ''
             });
         });
     };
