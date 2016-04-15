@@ -3,6 +3,8 @@ export const OPEN_WIDGET = 'OPEN_WIDGET';
 export const CLOSE_WIDGET = 'CLOSE_WIDGET';
 export const ENABLE_SETTINGS = 'ENABLE_SETTINGS';
 export const DISABLE_SETTINGS = 'DISABLE_SETTINGS';
+export const ENABLE_SOUND_NOTIFICATION = 'ENABLE_SOUND_NOTIFICATION';
+export const DISABLE_SOUND_NOTIFICATION = 'DISABLE_SOUND_NOTIFICATION';
 export const SHOW_SETTINGS = 'SHOW_SETTINGS';
 export const HIDE_SETTINGS = 'HIDE_SETTINGS';
 export const SHOW_SETTINGS_NOTIFICATION = 'SHOW_SETTINGS_NOTIFICATION';
@@ -67,6 +69,18 @@ export function enableImageUpload() {
 export function disableImageUpload() {
     return {
         type: DISABLE_IMAGE_UPLOAD
+    };
+}
+
+export function enableSoundNotification() {
+    return {
+        type: ENABLE_SOUND_NOTIFICATION
+    };
+}
+
+export function disableSoundNotification() {
+    return {
+        type: DISABLE_SOUND_NOTIFICATION
     };
 }
 

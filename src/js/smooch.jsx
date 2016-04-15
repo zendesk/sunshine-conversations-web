@@ -21,8 +21,9 @@ import { getConversation, sendMessage, connectFaye, disconnectFaye, handleConver
 
 import { observable, observeStore } from 'utils/events';
 import { storage } from 'utils/storage';
-import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges } from 'utils/dom';
+import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState } from 'utils/dom';
 import { isImageUploadSupported } from 'utils/media';
+import { playNotificationSound, isAudioSupported } from 'utils/sound';
 
 import { Root } from './root';
 
@@ -46,7 +47,7 @@ function renderWidget(container) {
 function renderLink() {
     const el = document.createElement('div');
 
-    render(<a href='https://smooch.io?utm_source=widget'>In app messaging by smooch</a>, el);
+    render(<a href='https://smooch.io?utm_source=widget'>Messaging by smooch.io</a>, el);
 
     waitForPage().then(() => {
         document.body.appendChild(el);
@@ -76,6 +77,15 @@ observable.on('message:received', (message) => {
 let lastTriggeredMessageTimestamp = 0;
 let unsubscribeFromStore;
 
+function handleNotificationSound() {
+    const {appState: {soundNotificationEnabled}, browser: {hasFocus}} = store.getState();
+
+    if (soundNotificationEnabled && !hasFocus) {
+        playNotificationSound();
+    }
+}
+
+
 function onStoreChange({messages, unreadCount}) {
     if (messages.length > 0) {
         if (unreadCount > 0) {
@@ -84,6 +94,7 @@ function onStoreChange({messages, unreadCount}) {
             filteredMessages.slice(-unreadCount).filter((message) => message.received > lastTriggeredMessageTimestamp).forEach((message) => {
                 observable.trigger('message:received', message);
                 lastTriggeredMessageTimestamp = message.received;
+                handleNotificationSound();
             });
         }
     }
@@ -105,6 +116,7 @@ export class Smooch {
     init(props) {
         props = {
             imageUploadEnabled: true,
+            soundNotificationEnabled: true,
             ...props
         };
 
@@ -124,6 +136,12 @@ export class Smooch {
             store.dispatch(AppStateActions.disableSettings());
         }
 
+        if (props.soundNotificationEnabled && isAudioSupported()) {
+            store.dispatch(AppStateActions.enableSoundNotification());
+        } else {
+            store.dispatch(AppStateActions.disableSoundNotification());
+        }
+
         if (props.imageUploadEnabled && isImageUploadSupported()) {
             store.dispatch(AppStateActions.enableImageUpload());
         } else {
@@ -139,9 +157,9 @@ export class Smooch {
         if (props.serviceUrl) {
             store.dispatch(AppStateActions.setServerURL(props.serviceUrl));
         }
-
         unsubscribeFromStore = observeStore(store, ({conversation}) => conversation, onStoreChange);
 
+        monitorBrowserState();
         return this.login(props.userId, props.jwt, pick(props, EDITABLE_PROPERTIES));
     }
 
@@ -279,6 +297,7 @@ export class Smooch {
         }
 
         stopMonitoringUrlChanges();
+        stopMonitoringBrowserState();
         unsubscribeFromStore();
 
         delete this.appToken;

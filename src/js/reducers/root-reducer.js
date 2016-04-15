@@ -7,6 +7,7 @@ import { AuthReducer } from 'reducers/auth-reducer';
 import { UserReducer } from 'reducers/user-reducer';
 import { FayeReducer } from 'reducers/faye-reducer';
 import { AppReducer } from 'reducers/app-reducer';
+import { BrowserReducer } from 'reducers/browser-reducer';
 
 export const RootReducer = combineReducers({
     conversation: ConversationReducer,
@@ -15,5 +16,6 @@ export const RootReducer = combineReducers({
     app: AppReducer,
     auth: AuthReducer,
     user: UserReducer,
-    faye: FayeReducer
+    faye: FayeReducer,
+    browser: BrowserReducer
 });

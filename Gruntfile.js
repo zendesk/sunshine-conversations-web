@@ -61,6 +61,12 @@ module.exports = function(grunt) {
                     src: 'dist/smooch.js.map',
                     dest: 'smooch.js.map'
                 }]
+            },
+            media: {
+                upload: [{
+                    src: 'dist/*.mp3',
+                    dest: '/'
+                }]
             }
         },
 
@@ -255,7 +261,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['clean', 'exec:build']);
     grunt.registerTask('dev', ['concurrent:dev']);
 
-    grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig', 's3:js', 'maxcdn']);
+    grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig', 's3:js', 's3:media', 'maxcdn']);
     grunt.registerTask('default', ['dev']);
 
     grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist']);
