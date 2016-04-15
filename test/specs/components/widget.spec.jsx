@@ -24,7 +24,15 @@ const defaultProps = {
         widgetOpened: false,
         settingsVisible: false
     },
-    app: {}
+    app: {},
+    conversation: {
+        unreadCount: 0
+    },
+    ui: {
+        text: {
+            messageIndicatorTitle: ''
+        }
+    }
 };
 
 

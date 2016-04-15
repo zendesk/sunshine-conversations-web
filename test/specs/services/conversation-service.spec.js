@@ -266,7 +266,7 @@ describe('Conversation service', () => {
                 mockedStore = mockAppStore(sandbox, {
                     user: {
                         _id: '1',
-                        conversationStarted: true
+                        conversationStarted: false
                     },
                     appState: {
                         settingsEnabled: true
@@ -294,6 +294,17 @@ describe('Conversation service', () => {
                     });
 
                     utilsFaye.initFaye.should.have.been.calledOnce;
+                });
+            });
+
+            it('should set conversationStarted to true', () => {
+                return conversationService.sendMessage('message').then(() => {
+                    mockedStore.dispatch.should.have.been.calledWith({
+                        type: 'UPDATE_USER',
+                        properties: {
+                            conversationStarted: true
+                        }
+                    });
                 });
             });
         });

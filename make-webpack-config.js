@@ -33,6 +33,7 @@ module.exports = function(options) {
         'txt': 'raw-loader',
         'png|jpg|jpeg|gif|svg': 'url-loader?limit=10000',
         'woff|woff2': 'url-loader?limit=100000',
+        'mp3': 'url-loader?limit=1',
         'ttf|eot': 'file-loader'
     };
     var cssLoader = options.minimize ? 'css-loader?insertAt=top' : 'css-loader?insertAt=top&localIdentName=[path][name]---[local]---[hash:base64:5]';
@@ -65,7 +66,7 @@ module.exports = function(options) {
     var root = path.join(__dirname, 'src');
     var publicPath = options.devServer ?
         'http://' + config.SERVER_HOST + '/_assets/' :
-        '/_assets/';
+        'https://cdn.smooch.io/';
 
     var output = {
         path: path.join(__dirname, 'dist'),
