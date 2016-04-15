@@ -8,11 +8,19 @@ import { createMarkup } from 'utils/html';
 import { hideSettingsNotification, showSettings } from 'actions/app-state-actions';
 
 export class NotificationComponent extends Component {
+    static defaultProps = {
+        settings: {}
+    };
+
     bindHandler() {
-        let node = findDOMNode(this);
-        let linkNode = node.querySelector('[data-ui-settings-link]');
+        const node = findDOMNode(this);
+        const linkNode = node.querySelector('[data-ui-settings-link]');
         if (linkNode) {
             linkNode.onclick = this.onLinkClick.bind(this);
+
+            if (this.props.settings.linkColor) {
+                linkNode.style = `color: #${this.props.settings.linkColor}`;
+            }
         }
     }
 
@@ -34,11 +42,19 @@ export class NotificationComponent extends Component {
     }
 
     render() {
+        const linkStyle = {
+            cursor: 'pointer'
+        };
         return (
-            <div key='content' className='sk-notification' onClick={ this.props.actions.hideSettingsNotification }>
+            <div key='content'
+                 className='sk-notification'
+                 onClick={ this.props.actions.hideSettingsNotification }>
                 <p>
-                    <span ref='text' dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.settingsNotificationText) }></span>
-                    <a href='#' className='sk-notification-close' onClick={ this.props.actions.hideSettingsNotification }>&times;</a>
+                    <span ref='text'
+                          dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.settingsNotificationText) }></span>
+                    <a style={ linkStyle }
+                       className='sk-notification-close'
+                       onClick={ this.props.actions.hideSettingsNotification }>&times;</a>
                 </p>
             </div>
             );
@@ -47,7 +63,8 @@ export class NotificationComponent extends Component {
 
 export const Notification = connect((state) => {
     return {
-        ui: state.ui
+        ui: state.ui,
+        settings: state.app.settings && state.app.settings.web
     };
 }, (dispatch) => {
     return {

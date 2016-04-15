@@ -5,7 +5,7 @@ import TestUtils from 'react-addons-test-utils';
 
 import { Provider } from 'react-redux';
 import { mockComponent } from 'test/utils/react';
-import { getMockedStore } from 'test/utils/redux';
+import { createMockedStore } from 'test/utils/redux';
 
 import { HeaderComponent } from 'components/header.jsx';
 import { SettingsComponent } from 'components/settings.jsx';
@@ -23,6 +23,15 @@ const defaultProps = {
     appState: {
         widgetOpened: false,
         settingsVisible: false
+    },
+    app: {},
+    conversation: {
+        unreadCount: 0
+    },
+    ui: {
+        text: {
+            messageIndicatorTitle: ''
+        }
     }
 };
 
@@ -57,7 +66,7 @@ describe('Widget', () => {
 
     describe('is closed', () => {
         const props = Object.assign({}, defaultProps);
-        store = getMockedStore(sandbox, props);
+        store = createMockedStore(sandbox, props);
 
         beforeEach(() => {
             component = TestUtils.renderIntoDocument(<Provider store={ store }>
@@ -77,7 +86,7 @@ describe('Widget', () => {
                 widgetOpened: true
             }
         });
-        store = getMockedStore(sandbox, props);
+        store = createMockedStore(sandbox, props);
 
         beforeEach(() => {
             component = TestUtils.renderIntoDocument(<Provider store={ store }>
@@ -97,7 +106,7 @@ describe('Widget', () => {
                 widgetOpened: true
             }
         });
-        store = getMockedStore(sandbox, props);
+        store = createMockedStore(sandbox, props);
 
         beforeEach(() => {
             component = TestUtils.renderIntoDocument(<Provider store={ store }>
@@ -128,7 +137,7 @@ describe('Widget', () => {
                 settingsVisible: true
             }
         });
-        store = getMockedStore(sandbox, props);
+        store = createMockedStore(sandbox, props);
 
         beforeEach(() => {
             component = TestUtils.renderIntoDocument(<Provider store={ store }>

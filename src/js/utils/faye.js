@@ -2,8 +2,8 @@ import { Client } from 'faye';
 import urljoin from 'urljoin';
 
 import { store } from 'stores/app-store';
-import { addMessage } from 'actions/conversation-actions';
-import { updateReadTimestamp, getReadTimestamp } from 'services/conversation-service';
+import { addMessage, incrementUnreadCount } from 'actions/conversation-actions';
+import { getConversation } from 'services/conversation-service';
 
 export function initFaye() {
     const state = store.getState();
@@ -29,11 +29,19 @@ export function initFaye() {
             }
         });
 
-        return faye.subscribe('/conversations/' + state.conversation._id, (message) => {
-            if (message && message.role !== 'appUser' && getReadTimestamp() === 0) {
-                updateReadTimestamp(message.received);
+        faye.on('transport:up', function() {
+            const user = store.getState().user;
+
+            if (user.conversationStarted) {
+                getConversation();
             }
+        });
+
+        return faye.subscribe(`/v1/conversations/${state.conversation._id}`, (message) => {
             store.dispatch(addMessage(message));
+            if (message.role !== 'appUser') {
+                store.dispatch(incrementUnreadCount());
+            }
         });
     }
 }

@@ -1,9 +1,8 @@
 import sinon from 'sinon';
 import React from 'react';
-import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
-import { mockComponent, scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId } from 'test/utils/react';
+import { mockComponent } from 'test/utils/react';
 
 import { ConversationComponent } from 'components/conversation.jsx';
 import { MessageComponent } from 'components/message.jsx';
@@ -37,7 +36,6 @@ const props = {
 describe('Conversation', () => {
 
     var component;
-    var componentNode;
 
     beforeEach(() => {
         // mock it, we don't care about the rendering of those, they are covered in separate tests
@@ -46,7 +44,6 @@ describe('Conversation', () => {
         });
 
         component = TestUtils.renderIntoDocument(<ConversationComponent {...props} />);
-        componentNode = ReactDOM.findDOMNode(component);
     });
 
     afterEach(() => {

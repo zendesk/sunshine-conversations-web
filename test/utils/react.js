@@ -14,7 +14,7 @@ export function scryRenderedDOMComponentsWithAttribute(tree, attr, value = '') {
 }
 
 export function findRenderedDOMComponentsWithId(tree, id) {
-    let components = scryRenderedDOMComponentsWithId(tree, id);
+    const components = scryRenderedDOMComponentsWithId(tree, id);
     return components.length > 0 ? components[0] : undefined;
 }
 
