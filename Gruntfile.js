@@ -246,7 +246,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('publish', 'Publishes a build to github and NPM, accepting a version as argument', function(version) {
         if (!version || ['major', 'minor', 'patch'].indexOf(version) > -1) {
-            grunt.option('versionType', version || 'patch');
+            grunt.option('versionType', version);
         } else {
             grunt.option('version', version);
         }
