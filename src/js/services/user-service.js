@@ -92,5 +92,13 @@ export function updateNowViewing(deviceId) {
 }
 
 function immediateUpdateDevice(deviceId, device) {
-    return core().appUsers.updateDevice(store.getState().user._id, deviceId, device);
+    return core().appUsers.updateDevice(store.getState().user._id, deviceId, device).then((response) => {
+        if (response.conversationUpdated) {
+            return handleConversationUpdated().then(() => {
+                return response;
+            });
+        }
+
+        return response;
+    });
 }
