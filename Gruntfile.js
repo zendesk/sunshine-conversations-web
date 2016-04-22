@@ -57,9 +57,15 @@ module.exports = function(grunt) {
                 upload: [{
                     src: 'dist/smooch.js',
                     dest: 'smooch.min.js'
-                },{
+                }, {
                     src: 'dist/smooch.js.map',
                     dest: 'smooch.js.map'
+                }]
+            },
+            media: {
+                upload: [{
+                    src: 'dist/*.mp3',
+                    dest: '/'
                 }]
             }
         },
@@ -94,7 +100,7 @@ module.exports = function(grunt) {
                 bump: false,
                 commit: true,
                 push: false,
-                remote: 'https://github.com/smooch/smooch-js.git',
+                remote: 'git@github.com:smooch/smooch-js.git',
                 github: {
                     repo: 'smooch/smooch-js',
                     accessTokenVar: 'GITHUB_ACCESS_TOKEN',
@@ -140,8 +146,7 @@ module.exports = function(grunt) {
             addDist: {
                 cmd: function() {
                     return [
-                        'git add --force dist/smooch.js',
-                        'git add --force dist/smooch.min.js'
+                        'git add --force dist/smooch.js'
                     ].join(' && ');
                 }
             },
@@ -190,6 +195,25 @@ module.exports = function(grunt) {
         var versionType = grunt.option('versionType');
         var globalVersion;
 
+        // unless the version or increment is explicitly set, let's try
+        // to figure out what is the next version
+        if (!fullVersion && !versionType) {
+            const currentVersion = require('./package.json').version;
+            const nextPatchVersion = semver.inc(currentVersion, 'patch');
+            const nextMinorVersion = semver.inc(currentVersion, 'minor');
+            const nextMajorVersion = semver.inc(currentVersion, 'major');
+
+            fullVersion = [nextPatchVersion, nextMinorVersion, nextMajorVersion].find((version) => {
+                try {
+                    grunt.file.read('release_notes/v' + version + '.md');
+                    return true;
+                }
+                catch (err) {
+                    return false;
+                }
+            });
+        }
+
         files.forEach(function(file) {
             var version = null;
             var content = grunt.file.read(file).replace(VERSION_REGEXP, function(match, prefix, parsedVersion, suffix) {
@@ -222,7 +246,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('publish', 'Publishes a build to github and NPM, accepting a version as argument', function(version) {
         if (!version || ['major', 'minor', 'patch'].indexOf(version) > -1) {
-            grunt.option('versionType', version || 'patch');
+            grunt.option('versionType', version);
         } else {
             grunt.option('version', version);
         }
@@ -237,7 +261,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['clean', 'exec:build']);
     grunt.registerTask('dev', ['concurrent:dev']);
 
-    grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig', 's3:js', 'maxcdn']);
+    grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig', 's3:js', 's3:media', 'maxcdn']);
     grunt.registerTask('default', ['dev']);
 
     grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist']);

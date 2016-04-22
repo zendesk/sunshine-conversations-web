@@ -1,20 +1,19 @@
 import sinon from 'sinon';
-import { getMock } from 'test/mocks/core';
+import { createMock } from 'test/mocks/core';
 import * as coreService from 'services/core';
 import { login } from 'services/auth-service';
 
 describe('Auth service', () => {
     var sandbox;
     var coreMock;
-    var coreStub;
 
     before(() => {
         sandbox = sinon.sandbox.create();
     });
 
     beforeEach(() => {
-        coreMock = getMock(sandbox);
-        coreStub = sandbox.stub(coreService, 'core', () => {
+        coreMock = createMock(sandbox);
+        sandbox.stub(coreService, 'core', () => {
             return coreMock;
         });
         coreMock.appUsers.init.resolves();
@@ -26,7 +25,7 @@ describe('Auth service', () => {
 
     describe('login', () => {
         it('should call smooch-core init api', () => {
-            let props = {
+            const props = {
                 id: 'some-id'
             };
 
