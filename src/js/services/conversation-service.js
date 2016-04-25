@@ -163,3 +163,10 @@ export function handleConversationUpdated() {
 
     return Promise.resolve();
 }
+
+export function postPostback(actionId) {
+    const {user} = store.getState();
+    return core().conversations.postPostback(user._id, actionId).catch(() => {
+        store.dispatch(showErrorNotification(store.getState().ui.text.actionPostbackError));
+    });
+}
