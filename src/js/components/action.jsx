@@ -4,6 +4,7 @@ import StripeCheckout from 'react-stripe-checkout';
 import { store } from 'stores/app-store';
 import { createTransaction } from 'services/stripe-service';
 import { immediateUpdate } from 'services/user-service';
+import { postPostback } from 'services/conversation-service';
 
 import { LoadingComponent } from 'components/loading';
 
@@ -16,6 +17,23 @@ export class ActionComponent extends Component {
             hasToken: false
         };
     }
+
+    onPostbackClick = () => {
+        this.setState({
+            state: 'processing'
+        });
+
+        postPostback(this.props._id).then(() => {
+            this.setState({
+                state: ''
+            });
+        })
+        .catch(() => {
+            this.setState({
+                state: ''
+            });
+        });
+    };
 
     onStripeToken(token) {
         this.setState({
@@ -112,6 +130,20 @@ export class ActionComponent extends Component {
                     </div>
                     );
             }
+        } else if (this.props.type === 'postback') {
+            const text = this.state.state === 'processing' ?
+                <LoadingComponent /> :
+                this.props.text;
+
+            return (
+                <div className='sk-action'>
+                    <button className='btn btn-sk-primary'
+                            style={ style }
+                            onClick={ this.onPostbackClick }>
+                            { text }
+                    </button>
+                </div>
+                );
         } else {
             const isJavascript = this.props.uri.startsWith('javascript:');
 
