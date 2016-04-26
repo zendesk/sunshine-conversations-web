@@ -1,0 +1,31 @@
+html.sk-widget-opened {
+    &,
+    body {
+        @media (max-width: @screen-sm-min) {
+            overflow: hidden;
+            position: relative;
+            height: 100%;
+            width: 100%;
+            -webkit-overflow-scrolling: auto;
+            #sk-holder {
+                #sk-container {
+                    #sk-header {
+                        #sk-settings-handle {
+                            height: 40px;
+                            width: 40px;
+                            right: 40px;
+                        }
+                        .sk-close-handle {
+                            height: 40px;
+                            width: 40px;
+                            right: 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+#sk-container.sk-ios-device {
+    -webkit-text-size-adjust: 100%;
+}

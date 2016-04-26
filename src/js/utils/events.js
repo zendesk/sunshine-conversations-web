@@ -7,7 +7,7 @@ export class Observable {
     }
 
     on(event, handler) {
-        let map = this[listeners];
+        const map = this[listeners];
         if (!map.has(event)) {
             map.set(event, new Set());
         }
@@ -16,32 +16,47 @@ export class Observable {
     }
 
     off(event, handler) {
-        let map = this[listeners];
+        const map = this[listeners];
         if (map.has(event)) {
-            map.get(event).delete(handler);
+            if (handler) {
+                map.get(event).delete(handler);
+            } else {
+                map.get(event).clear();
+            }
+        } else {
+            map.clear();
         }
     }
 
     trigger(event, options) {
-        let map = this[listeners];
+        const map = this[listeners];
         if (map.has(event)) {
-            map.get(event).forEach(handler => handler(options));
+            // use setTimeout to execute the handler after the current
+            // execution stack is cleared. That way, any hooks won't block the
+            // widget execution
+            map.get(event).forEach((handler) => setTimeout(handler(options)));
         }
     }
 }
+
+export const observable = new Observable();
 
 export function observeStore(store, select, onChange) {
     let currentState;
 
     function handleChange() {
-        let nextState = select(store.getState());
+        const nextState = select(store.getState());
         if (nextState !== currentState) {
             currentState = nextState;
             onChange(currentState);
         }
     }
 
-    let unsubscribe = store.subscribe(handleChange);
+    const unsubscribe = store.subscribe(handleChange);
     handleChange();
     return unsubscribe;
+}
+
+export function preventDefault(e) {
+    e.preventDefault();
 }
