@@ -47,7 +47,7 @@ describe('Smooch', () => {
 
     beforeEach(() => {
         smooch = new Smooch();
-        smooch._el = 'el';
+        smooch._container = '_container';
         sandbox.stub(document.body, 'appendChild');
         sandbox.stub(document.body, 'removeChild');
         sandbox.stub(document, 'addEventListener', (eventName, cb) => {
@@ -371,13 +371,23 @@ describe('Smooch', () => {
             disconnectFayeStub = sandbox.stub(conversationService, 'disconnectFaye');
         });
 
-        it('should reset store state and remove el', () => {
+        it('should reset store state and remove the container', () => {
             smooch.destroy();
             mockedStore.dispatch.should.have.been.calledWith({
                 type: 'RESET'
             });
 
             document.body.removeChild.should.have.been.calledOnce;
+        });
+
+        it('should not remove the container from body if it is undefined', () => {
+            delete smooch._container;
+            smooch.destroy();
+            mockedStore.dispatch.should.have.been.calledWith({
+                type: 'RESET'
+            });
+
+            document.body.removeChild.should.not.have.been.calledOnce;
         });
     });
 

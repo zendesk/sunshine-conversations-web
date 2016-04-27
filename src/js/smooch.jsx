@@ -282,17 +282,21 @@ export class Smooch {
     }
 
     destroy() {
+        if (!this.appToken) {
+            console.warn('Smooch.destroy was called before Smooch.init was called properly.');
+        }
+
         const {embedded} = store.getState().appState;
         disconnectFaye();
         store.dispatch(reset());
-        if (process.env.NODE_ENV !== 'test') {
+        if (process.env.NODE_ENV !== 'test' && this._container) {
             unmountComponentAtNode(this._container);
         }
 
         if (embedded) {
             // retain the embed mode
             store.dispatch(AppStateActions.setEmbedded(true));
-        } else {
+        } else if (this._container) {
             document.body.removeChild(this._container);
         }
 
