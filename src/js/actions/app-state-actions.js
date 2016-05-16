@@ -18,8 +18,6 @@ export const SET_EMBEDDED = 'SET_EMBEDDED';
 export const ENABLE_IMAGE_UPLOAD = 'ENABLE_IMAGE_UPLOAD';
 export const DISABLE_IMAGE_UPLOAD = 'DISABLE_IMAGE_UPLOAD';
 
-const NOTIFICATION_HIDE_DELAY = 5000;
-
 export function toggleWidget() {
     return {
         type: TOGGLE_WIDGET
@@ -99,14 +97,8 @@ export function unsetEmailReadonly() {
 }
 
 export function showSettingsNotification() {
-    return (dispatch) => {
-        dispatch({
-            type: SHOW_SETTINGS_NOTIFICATION
-        });
-
-        setTimeout(() => {
-            dispatch(hideSettingsNotification());
-        }, NOTIFICATION_HIDE_DELAY);
+    return {
+        type: SHOW_SETTINGS_NOTIFICATION
     };
 }
 
@@ -126,13 +118,13 @@ export function setServerURL(url) {
 export function showErrorNotification(message) {
     return (dispatch) => {
         setTimeout(() => {
-            dispatch({
-                type: HIDE_ERROR_NOTIFICATION,
-                message
-            });
-        }, NOTIFICATION_HIDE_DELAY);
+            dispatch(hideErrorNotification(message));
+        }, 10000);
 
-        dispatch(hideErrorNotification(message));
+        dispatch({
+            type: SHOW_ERROR_NOTIFICATION,
+            message
+        });
     };
 }
 
