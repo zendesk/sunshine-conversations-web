@@ -52,6 +52,7 @@
     "react-spinkit": "1.1.4",
     "react-stripe-checkout": "1.7.2",
     "redux": "3.3.1",
+    "redux-thunk": "2.1.0",
     "smooch-core": "1.2.0",
     "urljoin": "0.1.5",
     "uuid": "2.0.1"
