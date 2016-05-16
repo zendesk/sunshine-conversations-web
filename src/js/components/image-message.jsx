@@ -24,7 +24,7 @@ export class ImageMessage extends Component {
     render() {
         const preloader = () => {
             return <div className='preloader-container'>
-                       <ImageLoading accentColor={ this.props.accentColor } />
+                       <ImageLoading color={ this.props.accentColor } />
                        { this.state.oldMediaUrl ?
                              <img src={ this.state.oldMediaUrl } /> :
                              null }
@@ -38,7 +38,7 @@ export class ImageMessage extends Component {
 
         if (this.props.status === 'sending') {
             return <div className='image-container'>
-                       <ImageLoading accentColor={ this.props.accentColor } />
+                       <ImageLoading color={ this.props.accentColor } />
                        { image }
                    </div>;
         }

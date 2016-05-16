@@ -1,10 +1,10 @@
 import React from 'react';
 
-export function ImageLoading({accentColor} = {}) {
+export function ImageLoading({color} = {}) {
     const bounceStyle = {};
 
-    if (accentColor) {
-        bounceStyle.backgroundColor = `#${accentColor}`;
+    if (color) {
+        bounceStyle.backgroundColor = `#${color}`;
     }
 
     return <div className='image-overlay'>
