@@ -1,4 +1,5 @@
 import sinon from 'sinon';
+
 import { createMock } from 'test/mocks/core';
 import { mockAppStore } from 'test/utils/redux';
 import * as coreService from 'services/core';
@@ -7,7 +8,6 @@ import * as utilsMedia from 'utils/media';
 import * as userService from 'services/user-service';
 import * as conversationService from 'services/conversation-service';
 import { SHOW_SETTINGS_NOTIFICATION, SHOW_ERROR_NOTIFICATION } from 'actions/app-state-actions';
-
 
 describe('Conversation service', () => {
     var sandbox;
@@ -474,7 +474,7 @@ describe('Conversation service', () => {
 
                 it('should show an error notification', () => {
                     return conversationService.uploadImage({}).catch(() => {
-                        mockedStore.dispatch.should.have.been.calledWith({
+                        mockedStore.getActions().should.include({
                             type: SHOW_ERROR_NOTIFICATION,
                             message: 'invalidFileError'
                         });
