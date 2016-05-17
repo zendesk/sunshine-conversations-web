@@ -1,4 +1,5 @@
 import loadImage from 'lib/load-image';
+const _ = require('underscore');
 
 export function isImageUploadSupported() {
     // check for features used in the image upload
@@ -55,5 +56,18 @@ export function resizeImage(file) {
         });
     }).then((canvas) => {
         return canvas.toDataURL('image/jpeg');
+    });
+}
+
+export function mergeMessages(response, storeMessages, message) {
+    const responseMessages = response.conversation.messages;
+    const messages = _.filter(
+        _.unique(
+            _.union(responseMessages, storeMessages),
+            '_id'),
+        (m) => m._id !== message._id);
+
+    return Object.assign({}, response.conversation, {
+        messages: messages
     });
 }
