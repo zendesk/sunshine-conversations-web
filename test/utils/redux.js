@@ -1,4 +1,5 @@
-import { createStore } from 'redux';
+import { applyMiddleware, compose, createStore } from 'redux';
+import thunkMiddleware from 'redux-thunk';
 
 const AppStore = require('stores/app-store');
 const store = AppStore.store;
@@ -12,7 +13,11 @@ function restoreAppStore() {
 }
 
 export function createMockedStore(sinon, mockedState = {}) {
-    const store = createStore(() => mockedState);
+    const createStoreWithMiddleware = compose(
+        applyMiddleware(thunkMiddleware)
+    )(createStore);
+
+    const store = createStoreWithMiddleware(() => mockedState);
 
     sinon.spy(store, 'dispatch');
     store.restore = restoreAppStore;
