@@ -19,7 +19,9 @@ export function createMockedStore(sinon, mockedState = {}) {
 
     sinon.spy(store, 'dispatch');
     store.restore = restoreAppStore;
-    store.subscribe = () => Function();
+    store.subscribe = sinon.spy(() => {
+        return function() {};
+    });
     return store;
 }
 
