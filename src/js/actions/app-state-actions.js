@@ -118,7 +118,7 @@ export function setServerURL(url) {
 export function showErrorNotification(message) {
     return (dispatch) => {
         setTimeout(() => {
-            dispatch(hideErrorNotification(message));
+            dispatch(hideErrorNotification());
         }, 10000);
 
         dispatch({
@@ -128,10 +128,9 @@ export function showErrorNotification(message) {
     };
 }
 
-export function hideErrorNotification(message) {
+export function hideErrorNotification() {
     return {
-        type: HIDE_ERROR_NOTIFICATION,
-        message
+        type: HIDE_ERROR_NOTIFICATION
     };
 }
 
