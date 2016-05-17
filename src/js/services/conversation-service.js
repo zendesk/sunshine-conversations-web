@@ -8,7 +8,6 @@ import { immediateUpdate } from 'services/user-service';
 import { initFaye } from 'utils/faye';
 import { observable } from 'utils/events';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported, mergeMessages } from 'utils/media';
-const _ = require('underscore');
 
 export function handleFirstUserMessage(response) {
     const state = store.getState();
