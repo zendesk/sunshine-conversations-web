@@ -45,7 +45,14 @@ const replaceMessage = (messages, query, newMessage) => {
 
     const index = messages.indexOf(existingMessage);
 
-    return [...messages.slice(0, index), newMessage, ...messages.slice(index + 1)].reduce((previousValue, currentValue) => uniqueMessages(previousValue, currentValue), []);
+    // get rid of duplicate values
+    return [...messages.slice(0, index), newMessage, ...messages.slice(index + 1)].reduce((filteredMessages, nextMessage) => {
+        const message = filteredMessages.find((m) => isEqual(m, nextMessage));
+        if (message) {
+            return filteredMessages;
+        }
+        return [...filteredMessages, nextMessage];
+    }, []);
 };
 
 const isEqual = (a, b) => {
@@ -68,19 +75,16 @@ const isEqual = (a, b) => {
     return false;
 };
 
-// Function to remove duplicate messages
-const uniqueMessages = (previousValue, currentValue) => {
-    const message = previousValue.find((m) => isEqual(m, currentValue));
-    if (message) {
-        return previousValue;
-    }
-    return [...previousValue, currentValue];
-};
-
 const mergeMessages = (a, b) => {
     // concat will make a union out of both arrays
     // reduce will return a new array, the function used in the reduction strips out duplicates
-    return a.concat(b).reduce((previousValue, currentValue) => uniqueMessages(previousValue, currentValue), []);
+    return a.concat(b).reduce((filteredMessages, nextMessage) => {
+        const message = filteredMessages.find((m) => isEqual(m, nextMessage));
+        if (message) {
+            return filteredMessages;
+        }
+        return [...filteredMessages, nextMessage];
+    }, []);
 };
 
 
