@@ -62,7 +62,7 @@ export class ConversationComponent extends Component {
 
     render() {
         const messages = this.props.conversation.messages.map((message, index) => {
-            return <MessageComponent key={ index }
+            return <MessageComponent key={ message._id || message._tempId || Math.random() }
                                      accentColor={ this.props.settings.accentColor }
                                      linkColor={ this.props.settings.linkColor }
                                      onLoad={ this.scrollToBottom }
