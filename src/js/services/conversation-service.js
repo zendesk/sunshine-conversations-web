@@ -7,7 +7,7 @@ import { core } from 'services/core';
 import { immediateUpdate } from 'services/user-service';
 import { initFaye } from 'utils/faye';
 import { observable } from 'utils/events';
-import { resizeImage, getBlobFromDataUrl, isFileTypeSupported, mergeMessages } from 'utils/media';
+import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from 'utils/media';
 
 export function handleFirstUserMessage(response) {
     const state = store.getState();
@@ -95,9 +95,7 @@ export function uploadImage(file) {
             return core().conversations.uploadImage(user._id, blob, {
                 role: 'appUser'
             }).then((response) => {
-                // Merge messages from response with messages from store state
-                const conversation = mergeMessages(response, store.getState().conversation.messages, message);
-                store.dispatch(setConversation(conversation));
+                store.dispatch(setConversation(response.conversation));
                 observable.trigger('message:sent', response.message);
                 return response;
             }).catch(() => {

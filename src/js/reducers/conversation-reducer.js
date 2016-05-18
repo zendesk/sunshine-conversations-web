@@ -36,6 +36,35 @@ const addMessage = (messages, message) => {
     return sortMessages([...messages, message]);
 };
 
+const mergeMessages = (responseMessages, storeMessages) => {
+
+    // Last messages received from response and from store
+    const lastResponseMessage = responseMessages[responseMessages.length - 1];
+    const lastStoreMessage = storeMessages[storeMessages.length - 1];
+
+    // Remove 'sending' image since it's been received
+    if (lastResponseMessage.received && lastStoreMessage && lastStoreMessage.status && lastStoreMessage.status === 'sending') {
+
+        // Merge messages and remove duplicates
+        let responseMessageIds = [];
+        for (var i = 0; i < responseMessages.length; i++) {
+            if (responseMessages[i]._id) {
+                responseMessageIds.push(responseMessages[i]._id);
+            }
+        }
+        let messages = responseMessages.concat(storeMessages.filter((storeMessage) => {
+            return responseMessageIds.indexOf(storeMessage._id) < 0;
+        }));
+
+        // Remove 'sending' image
+        return messages.filter((m) => {
+            return m._id !== lastStoreMessage._id;
+        });
+    }
+
+    return responseMessages;
+};
+
 export function ConversationReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case RESET:
@@ -43,7 +72,7 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             return Object.assign({}, INITIAL_STATE);
         case ConversationActions.SET_CONVERSATION:
             return Object.assign({}, action.conversation, {
-                messages: sortMessages(action.conversation.messages)
+                messages: sortMessages(mergeMessages(action.conversation.messages, state.messages))
             });
         case ConversationActions.ADD_MESSAGE:
             return Object.assign({}, state, {
