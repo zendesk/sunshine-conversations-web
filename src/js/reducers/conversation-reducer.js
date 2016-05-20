@@ -69,8 +69,12 @@ const isEqual = (a, b) => {
 
 const mergeMessages = (a, b) => {
     // concat will make a union out of both arrays
+    return removeDuplicates(a.concat(b));
+};
+
+const removeDuplicates = (array) => {
     // reduce will return a new array, the function used in the reduction strips out duplicates
-    return a.concat(b).reduce((filteredMessages, nextMessage) => {
+    return array.reduce((filteredMessages, nextMessage) => {
         const message = filteredMessages.find((m) => isEqual(m, nextMessage));
         if (message) {
             return filteredMessages;
@@ -78,7 +82,6 @@ const mergeMessages = (a, b) => {
         return [...filteredMessages, nextMessage];
     }, []);
 };
-
 
 export function ConversationReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
