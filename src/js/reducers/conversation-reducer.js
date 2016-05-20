@@ -44,15 +44,7 @@ const replaceMessage = (messages, query, newMessage) => {
     }
 
     const index = messages.indexOf(existingMessage);
-
-    // get rid of duplicate values
-    return [...messages.slice(0, index), newMessage, ...messages.slice(index + 1)].reduce((filteredMessages, nextMessage) => {
-        const message = filteredMessages.find((m) => isEqual(m, nextMessage));
-        if (message) {
-            return filteredMessages;
-        }
-        return [...filteredMessages, nextMessage];
-    }, []);
+    return [...messages.slice(0, index), newMessage, ...messages.slice(index + 1)];
 };
 
 const isEqual = (a, b) => {
