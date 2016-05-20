@@ -6,22 +6,22 @@ const INITIAL_STATE = {
     unreadCount: 0
 };
 
-const sortMessages = (messages) => messages.sort((a, b) => {
+const sortMessages = (messages) => messages.sort((messageA, messageB) => {
     // received is undefined when it's the temp message from the user
-    if (!a.received && !b.received) {
+    if (!messageA.received && !messageB.received) {
         // `_tempSent` is a local only prop
-        return a._tempSent - b._tempSent;
+        return messageA._tempSent - messageB._tempSent;
     }
 
-    if (!a.received) {
+    if (!messageA.received) {
         return 1;
     }
 
-    if (!b.received) {
+    if (!messageB.received) {
         return -1;
     }
 
-    return a.received - b.received;
+    return messageA.received - messageB.received;
 });
 
 const addMessage = (messages, message) => {
@@ -47,18 +47,18 @@ const replaceMessage = (messages, query, newMessage) => {
     return [...messages.slice(0, index), newMessage, ...messages.slice(index + 1)];
 };
 
-const isEqual = (a, b) => {
-    if (a._id && b._id && a._id === b._id) {
+const isEqual = (messageA, messageB) => {
+    if (messageA._id && messageB._id && messageA._id === messageB._id) {
         return true;
     }
 
-    if (!a._id || !b._id) {
-        if (a.role === b.role) {
-            if (a.text && b.text && a.text === b.text) {
+    if (!messageA._id || !messageB._id) {
+        if (messageA.role === messageB.role) {
+            if (messageA.text && messageB.text && messageA.text === messageB.text) {
                 return true;
             }
 
-            if (a.mediaType === b.mediaType && a.mediaUrl === b.mediaUrl) {
+            if (messageA.mediaType === messageB.mediaType && messageA.mediaUrl === messageB.mediaUrl) {
                 return true;
             }
         }
@@ -67,14 +67,14 @@ const isEqual = (a, b) => {
     return false;
 };
 
-const mergeMessages = (a, b) => {
+const mergeMessages = (messagesA, messagesB) => {
     // concat will make a union out of both arrays
-    return removeDuplicates(a.concat(b));
+    return removeDuplicates(messagesA.concat(messagesB));
 };
 
-const removeDuplicates = (array) => {
+const removeDuplicates = (messages) => {
     // reduce will return a new array, the function used in the reduction strips out duplicates
-    return array.reduce((filteredMessages, nextMessage) => {
+    return messages.reduce((filteredMessages, nextMessage) => {
         const message = filteredMessages.find((m) => isEqual(m, nextMessage));
         if (message) {
             return filteredMessages;
