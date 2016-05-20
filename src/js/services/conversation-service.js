@@ -64,7 +64,6 @@ export function sendMessage(text) {
             store.dispatch(replaceMessage({
                 _tempId: message._tempId
             }, response.message));
-            store.dispatch(setConversation(response.conversation));
 
             observable.trigger('message:sent', response.message);
             return response;
@@ -101,7 +100,6 @@ export function uploadImage(file) {
                 store.dispatch(replaceMessage({
                     _tempId: message._tempId
                 }, response.message));
-                store.dispatch(setConversation(response.conversation));
                 observable.trigger('message:sent', response.message);
                 return response;
             }).catch(() => {
