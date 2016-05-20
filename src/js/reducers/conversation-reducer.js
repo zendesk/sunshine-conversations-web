@@ -9,8 +9,8 @@ const INITIAL_STATE = {
 const sortMessages = (messages) => messages.sort((a, b) => {
     // received is undefined when it's the temp message from the user
     if (!a.received && !b.received) {
-        // `sent` is a local only prop
-        return a.sent - b.sent;
+        // `_tempSent` is a local only prop
+        return a._tempSent - b._tempSent;
     }
 
     if (!a.received) {

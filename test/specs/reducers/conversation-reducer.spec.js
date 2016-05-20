@@ -25,7 +25,7 @@ const UPLOADING_IMAGE = {
     role: 'appUser',
     status: 'sending',
     _tempId: 0.8288994217337065,
-    sent: '2016-05-19T18:33:10.788Z'
+    _tempSent: '2016-05-19T18:33:10.788Z'
 };
 const RECEIVED_IMAGE = {
     text: 'some_media_url',

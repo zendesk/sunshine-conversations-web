@@ -47,7 +47,7 @@ export function sendMessage(text) {
             role: 'appUser',
             text,
             _tempId: Math.random(),
-            sent: new Date()
+            _tempSent: new Date()
         };
 
         store.dispatch(addMessage(message));
@@ -86,7 +86,7 @@ export function uploadImage(file) {
                 role: 'appUser',
                 status: 'sending',
                 _tempId: Math.random(),
-                sent: new Date()
+                _tempSent: new Date()
             };
 
             store.dispatch(addMessage(message));
@@ -102,8 +102,7 @@ export function uploadImage(file) {
                 }, response.message));
                 observable.trigger('message:sent', response.message);
                 return response;
-            }).catch((err) => {
-                console.log(err);
+            }).catch(() => {
                 store.dispatch(showErrorNotification(store.getState().ui.text.messageError));
                 store.dispatch(removeMessage({
                     _tempId: message._tempId
