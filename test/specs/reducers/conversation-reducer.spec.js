@@ -18,6 +18,14 @@ const MESSAGE_2 = {
     name: 'Calm Chimpanzee',
     _id: '789101'
 };
+const MESSAGE_TO_ADD = {
+    text: 'hey there!',
+    role: 'appUser',
+    received: 234.678,
+    authorId: '8a9445dadad4862c2322db52',
+    name: 'Calm Chimpanzee',
+    _tempId: '123498001'
+};
 const MESSAGES = [MESSAGE_1, MESSAGE_2];
 const UPLOADING_IMAGE = {
     mediaUrl: 'data:image/jpeg',
@@ -81,12 +89,12 @@ describe('Conversation reducer', () => {
         it('should add message', () => {
             const beforeState = INITIAL_STATE;
             const afterState = {
-                messages: [MESSAGE_1],
+                messages: [MESSAGE_TO_ADD],
                 unreadCount: 0
             };
             ConversationReducer(beforeState, {
                 type: ADD_MESSAGE,
-                message: MESSAGE_1
+                message: MESSAGE_TO_ADD
             }).should.eql(afterState);
         });
 
@@ -97,11 +105,11 @@ describe('Conversation reducer', () => {
             };
             const afterState = ConversationReducer(beforeState, {
                 type: ADD_MESSAGE,
-                message: MESSAGE_2
+                message: MESSAGE_TO_ADD
             });
             afterState.messages.length.should.eq(3);
             afterState.messages[0].should.eql(MESSAGE_1);
-            afterState.messages[1].should.eql(MESSAGE_2);
+            afterState.messages[1].should.eql(MESSAGE_TO_ADD);
             afterState.messages[2].should.eql(UPLOADING_IMAGE);
         });
     });
