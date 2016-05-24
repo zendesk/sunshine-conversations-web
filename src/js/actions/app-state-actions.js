@@ -116,21 +116,16 @@ export function setServerURL(url) {
 }
 
 export function showErrorNotification(message) {
-    return (dispatch) => {
-        setTimeout(() => {
-            dispatch(hideErrorNotification());
-        }, 10000);
-
-        dispatch({
-            type: SHOW_ERROR_NOTIFICATION,
-            message
-        });
+    return {
+        type: SHOW_ERROR_NOTIFICATION,
+        message
     };
 }
 
-export function hideErrorNotification() {
+export function hideErrorNotification(message) {
     return {
-        type: HIDE_ERROR_NOTIFICATION
+        type: HIDE_ERROR_NOTIFICATION,
+        message
     };
 }
 
