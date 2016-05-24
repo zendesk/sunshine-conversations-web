@@ -39,7 +39,7 @@ export function initFaye() {
         });
 
         return faye.subscribe(`/v1/conversations/${state.conversation._id}`, (message) => {
-            if (!message.source.id || message.source.id !== getDeviceId()) {
+            if (message.source.id !== getDeviceId()) {
                 store.dispatch(addMessage(message));
             }
             if (message.role !== 'appUser') {
