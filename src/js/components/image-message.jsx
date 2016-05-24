@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import ImageLoader from 'react-imageloader';
 
-import { ImageLoading } from 'components/image-loading';
+import {ImageLoading} from 'components/image-loading';
+
 
 export class ImageMessage extends Component {
     static propTypes = {
-        mediaUrl: React.PropTypes.string.isRequired,
-        accentColor: React.PropTypes.string
+        mediaUrl: React.PropTypes.string.isRequired
     };
 
     state = {};
@@ -24,7 +24,7 @@ export class ImageMessage extends Component {
     render() {
         const preloader = () => {
             return <div className='preloader-container'>
-                       <ImageLoading color={ this.props.accentColor } />
+                       <ImageLoading />
                        { this.state.oldMediaUrl ?
                              <img src={ this.state.oldMediaUrl } /> :
                              null }
@@ -38,7 +38,7 @@ export class ImageMessage extends Component {
 
         if (this.props.status === 'sending') {
             return <div className='image-container'>
-                       <ImageLoading color={ this.props.accentColor } />
+                       <ImageLoading />
                        { image }
                    </div>;
         }
