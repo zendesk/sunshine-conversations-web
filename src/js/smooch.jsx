@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
+import uuid from 'uuid';
 import pick from 'lodash.pick';
 
 import { store } from 'stores/app-store';
@@ -19,10 +20,10 @@ import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, updateNowViewing
 import { getConversation, sendMessage, connectFaye, disconnectFaye, handleConversationUpdated } from 'services/conversation-service';
 
 import { observable, observeStore } from 'utils/events';
+import { storage } from 'utils/storage';
 import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState } from 'utils/dom';
 import { isImageUploadSupported } from 'utils/media';
 import { playNotificationSound, isAudioSupported } from 'utils/sound';
-import { getDeviceId } from 'utils/device';
 
 import { Root } from './root';
 
@@ -54,6 +55,16 @@ function renderLink() {
     });
 
     return el;
+}
+
+function getDeviceId() {
+    const SK_STORAGE = 'sk_deviceid';
+    const deviceId = storage.getItem(SK_STORAGE) ||
+    uuid.v4().replace(/-/g, '');
+
+    storage.setItem(SK_STORAGE, deviceId);
+
+    return deviceId;
 }
 
 observable.on('message:sent', (message) => {

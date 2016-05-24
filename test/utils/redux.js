@@ -1,5 +1,4 @@
-import thunkMiddleware from 'redux-thunk';
-import configureStore from 'redux-mock-store';
+import { createStore } from 'redux';
 
 const AppStore = require('stores/app-store');
 const store = AppStore.store;
@@ -13,15 +12,10 @@ function restoreAppStore() {
 }
 
 export function createMockedStore(sinon, mockedState = {}) {
-    const middlewares = [thunkMiddleware];
-    const mockStore = configureStore(middlewares);
-    const store = mockStore(mockedState);
+    const store = createStore(() => mockedState);
 
     sinon.spy(store, 'dispatch');
     store.restore = restoreAppStore;
-    store.subscribe = sinon.spy(() => {
-        return function() {};
-    });
     return store;
 }
 
