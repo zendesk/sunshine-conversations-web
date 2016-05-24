@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
-import uuid from 'uuid';
 import pick from 'lodash.pick';
 
 import { store } from 'stores/app-store';

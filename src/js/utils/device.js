@@ -1,3 +1,4 @@
+import uuid from 'uuid';
 import { storage } from 'utils/storage';
 
 export function getDeviceId() {

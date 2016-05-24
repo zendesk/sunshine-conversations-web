@@ -4,6 +4,7 @@ import { mockAppStore } from 'test/utils/redux';
 import * as coreService from 'services/core';
 import * as utilsFaye from 'utils/faye';
 import * as utilsMedia from 'utils/media';
+import * as utilsDevice from 'utils/device';
 import * as userService from 'services/user-service';
 import * as conversationService from 'services/conversation-service';
 import { SHOW_SETTINGS_NOTIFICATION, SHOW_ERROR_NOTIFICATION } from 'actions/app-state-actions';
@@ -52,6 +53,7 @@ describe('Conversation service', () => {
         sandbox.stub(utilsMedia, 'isFileTypeSupported');
         sandbox.stub(utilsMedia, 'resizeImage');
         sandbox.stub(utilsMedia, 'getBlobFromDataUrl').returns('this-is-a-blob');
+        sandbox.stub(utilsDevice, 'getDeviceId').returns('1234');
     });
 
     afterEach(() => {
@@ -344,7 +346,8 @@ describe('Conversation service', () => {
                     userService.immediateUpdate.should.have.been.calledOnce;
 
                     coreMock.conversations.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
-                        role: 'appUser'
+                        role: 'appUser',
+                        deviceId: '1234'
                     });
 
                     utilsFaye.initFaye.should.not.have.been.called;
