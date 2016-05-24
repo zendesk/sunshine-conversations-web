@@ -1,5 +1,4 @@
 export const ADD_MESSAGE = 'ADD_MESSAGE';
-export const REPLACE_MESSAGE = 'REPLACE_MESSAGE';
 export const REMOVE_MESSAGE = 'REMOVE_MESSAGE';
 export const RESET_CONVERSATION = 'RESET_CONVERSATION';
 export const SET_CONVERSATION = 'SET_CONVERSATION';
@@ -28,18 +27,10 @@ export function addMessage(props) {
     };
 }
 
-export function replaceMessage(queryProps, message) {
-    return {
-        type: REPLACE_MESSAGE,
-        queryProps,
-        message
-    };
-}
-
-export function removeMessage(queryProps) {
+export function removeMessage(props) {
     return {
         type: REMOVE_MESSAGE,
-        queryProps
+        id: props.id
     };
 }
 
