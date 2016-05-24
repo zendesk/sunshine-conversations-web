@@ -8,6 +8,7 @@ import { immediateUpdate } from 'services/user-service';
 import { initFaye } from 'utils/faye';
 import { observable } from 'utils/events';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from 'utils/media';
+import { getDeviceId } from 'utils/device';
 
 export function handleFirstUserMessage(response) {
     const state = store.getState();
@@ -47,7 +48,8 @@ export function sendMessage(text) {
             role: 'appUser',
             text,
             _tempId: Math.random(),
-            _tempSent: new Date()
+            _tempSent: new Date(),
+            deviceId: getDeviceId()
         };
 
         store.dispatch(addMessage(message));
@@ -95,7 +97,8 @@ export function uploadImage(file) {
             const blob = getBlobFromDataUrl(dataUrl);
 
             return core().conversations.uploadImage(user._id, blob, {
-                role: 'appUser'
+                role: 'appUser',
+                deviceId: getDeviceId()
             }).then((response) => {
                 store.dispatch(replaceMessage({
                     _tempId: message._tempId
