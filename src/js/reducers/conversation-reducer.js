@@ -73,14 +73,18 @@ const mergeMessages = (messagesA, messagesB) => {
 };
 
 const removeDuplicates = (messages) => {
-    // reduce will return a new array, the function used in the reduction strips out duplicates
-    return messages.reduce((filteredMessages, nextMessage) => {
-        const message = filteredMessages.find((m) => isEqual(m, nextMessage));
-        if (message) {
-            return filteredMessages;
+    let messagesNoDuplicates = [];
+    let messagesHash = {};
+
+    messages.forEach((message) => {
+        let key = message._id + message.role + message.mediaType;
+        if (!(key in messagesHash)) {
+            messagesHash[key] = message;
+            messagesNoDuplicates.push(message);
         }
-        return [...filteredMessages, nextMessage];
-    }, []);
+    });
+
+    return messagesNoDuplicates;
 };
 
 export function ConversationReducer(state = INITIAL_STATE, action) {
