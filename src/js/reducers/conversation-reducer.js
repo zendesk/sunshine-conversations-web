@@ -48,11 +48,12 @@ const replaceMessage = (messages, query, newMessage) => {
 };
 
 const isEqual = (messageA, messageB) => {
+    // _tempId is a property of messages sent by the appUser
     if (messageA._id && messageB._tempId && messageA._id === messageB._tempId) {
         return true;
     }
 
-    if (!messageA._id || !messageB._tempId) {
+    if (!messageA._id && !messageB._id || !messageA._id && !messageB._tempId) {
         if (messageA.role === messageB.role) {
             if (messageA.text && messageB.text && messageA.text === messageB.text) {
                 return true;

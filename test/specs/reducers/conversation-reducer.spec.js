@@ -18,13 +18,20 @@ const MESSAGE_2 = {
     name: 'Calm Chimpanzee',
     _id: '789101'
 };
-const MESSAGE_TO_ADD = {
+const MESSAGE_FROM_APP_USER = {
     text: 'hey there!',
     role: 'appUser',
     received: 234.678,
     authorId: '8a9445dadad4862c2322db52',
     name: 'Calm Chimpanzee',
     _tempId: '123498001'
+};
+const MESSAGE_FROM_APP_MAKER = {
+    text: 'hello',
+    role: 'appMaker',
+    received: '123124214124.1242',
+    authorId: '435nkglksdgf',
+    name: 'Chloe'
 };
 const MESSAGES = [MESSAGE_1, MESSAGE_2];
 const UPLOADING_IMAGE = {
@@ -89,12 +96,12 @@ describe('Conversation reducer', () => {
         it('should add message', () => {
             const beforeState = INITIAL_STATE;
             const afterState = {
-                messages: [MESSAGE_TO_ADD],
+                messages: [MESSAGE_FROM_APP_USER],
                 unreadCount: 0
             };
             ConversationReducer(beforeState, {
                 type: ADD_MESSAGE,
-                message: MESSAGE_TO_ADD
+                message: MESSAGE_FROM_APP_USER
             }).should.eql(afterState);
         });
 
@@ -105,12 +112,27 @@ describe('Conversation reducer', () => {
             };
             const afterState = ConversationReducer(beforeState, {
                 type: ADD_MESSAGE,
-                message: MESSAGE_TO_ADD
+                message: MESSAGE_FROM_APP_USER
             });
             afterState.messages.length.should.eq(3);
             afterState.messages[0].should.eql(MESSAGE_1);
-            afterState.messages[1].should.eql(MESSAGE_TO_ADD);
+            afterState.messages[1].should.eql(MESSAGE_FROM_APP_USER);
             afterState.messages[2].should.eql(UPLOADING_IMAGE);
+        });
+
+        it('should add appMaker message', () => {
+            const beforeState = {
+                messages: MESSAGES,
+                unreadCount: 0
+            };
+            const afterState = ConversationReducer(beforeState, {
+                type: ADD_MESSAGE,
+                message: MESSAGE_FROM_APP_MAKER
+            });
+            afterState.messages.length.should.eq(3);
+            afterState.messages[0].should.eql(MESSAGE_1);
+            afterState.messages[1].should.eql(MESSAGE_2);
+            afterState.messages[2].should.eql(MESSAGE_FROM_APP_MAKER);
         });
     });
 
