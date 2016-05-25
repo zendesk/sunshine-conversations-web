@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import StripeCheckout from 'react-stripe-checkout';
 
-import { store } from 'stores/app-store';
-import { createTransaction } from 'services/stripe-service';
-import { immediateUpdate } from 'services/user-service';
-import { postPostback } from 'services/conversation-service';
+import { store } from '../stores/app-store';
+import { createTransaction } from '../services/stripe-service';
+import { immediateUpdate } from '../services/user-service';
+import { postPostback } from '../services/conversation-service';
 
-import { LoadingComponent } from 'components/loading';
+import { LoadingComponent } from './loading';
 
 export class ActionComponent extends Component {
     constructor(...args) {

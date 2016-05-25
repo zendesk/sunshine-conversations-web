@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Widget } from 'components/widget.jsx';
 import { Provider } from 'react-redux';
+
+import { Widget } from './components/widget.jsx';
 
 export class Root extends Component {
     render() {

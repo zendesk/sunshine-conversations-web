@@ -1,10 +1,10 @@
 import { Client } from 'faye';
 import urljoin from 'urljoin';
 
-import { store } from 'stores/app-store';
-import { addMessage, incrementUnreadCount } from 'actions/conversation-actions';
-import { getConversation } from 'services/conversation-service';
-import { getDeviceId } from 'utils/device';
+import { store } from '../stores/app-store';
+import { addMessage, incrementUnreadCount } from '../actions/conversation-actions';
+import { getConversation } from '../services/conversation-service';
+import { getDeviceId } from './device';
 
 export function initFaye() {
     const state = store.getState();

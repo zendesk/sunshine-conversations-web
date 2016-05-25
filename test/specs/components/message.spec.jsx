@@ -2,10 +2,10 @@ import sinon from 'sinon';
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
 
-import { mockComponent } from 'test/utils/react';
+import { mockComponent } from '../../utils/react';
 
-import { MessageComponent } from 'components/message.jsx';
-import { ActionComponent } from 'components/action.jsx';
+import { MessageComponent } from '../../../src/js/components/message';
+import { ActionComponent } from '../../../src/js/components/action';
 
 const sandbox = sinon.sandbox.create();
 

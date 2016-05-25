@@ -4,10 +4,10 @@ import { findDOMNode } from 'react-dom';
 import isMobile from 'ismobilejs';
 import debounce from 'lodash.debounce';
 
-import { sendMessage, resetUnreadCount } from 'services/conversation-service';
-import { store } from 'stores/app-store';
+import { sendMessage, resetUnreadCount } from '../services/conversation-service';
+import { store } from '../stores/app-store';
 
-import { ImageUpload } from 'components/image-upload';
+import { ImageUpload } from './image-upload';
 
 export class ChatInputComponent extends Component {
     static defaultProps = {

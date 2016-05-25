@@ -3,8 +3,8 @@ import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import isMobile from 'ismobilejs';
 
-import { createMarkup } from 'utils/html';
-import { MessageComponent } from 'components/message.jsx';
+import { createMarkup } from '../utils/html';
+import { MessageComponent } from './message';
 
 export class ConversationComponent extends Component {
     static defaultProps = {

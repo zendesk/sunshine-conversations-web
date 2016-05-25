@@ -1,14 +1,15 @@
 import sinon from 'sinon';
 
-import { createMock } from 'test/mocks/core';
-import { mockAppStore } from 'test/utils/redux';
-import * as coreService from 'services/core';
-import * as utilsFaye from 'utils/faye';
-import * as utilsMedia from 'utils/media';
-import * as utilsDevice from 'utils/device';
-import * as userService from 'services/user-service';
-import * as conversationService from 'services/conversation-service';
-import { SHOW_SETTINGS_NOTIFICATION, SHOW_ERROR_NOTIFICATION } from 'actions/app-state-actions';
+import { createMock } from '../../mocks/core';
+import { mockAppStore } from '../../utils/redux';
+
+import * as utilsDevice from '../../../src/js/utils/device';
+import * as utilsFaye from '../../../src/js/utils/faye';
+import * as utilsMedia from '../../../src/js/utils/media';
+import * as conversationService from '../../../src/js/services/conversation-service';
+import * as coreService from '../../../src/js/services/core';
+import * as userService from '../../../src/js/services/user-service';
+import { SHOW_SETTINGS_NOTIFICATION, SHOW_ERROR_NOTIFICATION } from '../../../src/js/actions/app-state-actions';
 
 describe('Conversation service', () => {
     var sandbox;

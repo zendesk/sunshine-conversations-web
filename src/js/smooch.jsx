@@ -2,27 +2,27 @@ import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import pick from 'lodash.pick';
 
-import { store } from 'stores/app-store';
+import { store } from './stores/app-store';
 
-import { setAuth, resetAuth } from 'actions/auth-actions';
-import * as userActions from 'actions/user-actions';
-import { setPublicKeys, setStripeInfo, setAppSettings } from 'actions/app-actions';
-import { updateText } from 'actions/ui-actions';
-import { resetConversation } from 'actions/conversation-actions';
-import * as AppStateActions from 'actions/app-state-actions';
-import { reset } from 'actions/common-actions';
+import { setAuth, resetAuth } from './actions/auth-actions';
+import * as userActions from './actions/user-actions';
+import { setPublicKeys, setStripeInfo, setAppSettings } from './actions/app-actions';
+import { updateText } from './actions/ui-actions';
+import { resetConversation } from './actions/conversation-actions';
+import * as AppStateActions from './actions/app-state-actions';
+import { reset } from './actions/common-actions';
 
-import { openWidget, closeWidget } from 'services/app-service';
-import { login } from 'services/auth-service';
-import { getAccount } from 'services/stripe-service';
-import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, updateNowViewing, immediateUpdate as immediateUpdateUser } from 'services/user-service';
-import { getConversation, sendMessage, connectFaye, disconnectFaye, handleConversationUpdated } from 'services/conversation-service';
+import { openWidget, closeWidget } from './services/app-service';
+import { login } from './services/auth-service';
+import { getAccount } from './services/stripe-service';
+import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, updateNowViewing, immediateUpdate as immediateUpdateUser } from './services/user-service';
+import { getConversation, sendMessage, connectFaye, disconnectFaye, handleConversationUpdated } from './services/conversation-service';
 
-import { observable, observeStore } from 'utils/events';
-import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState } from 'utils/dom';
-import { isImageUploadSupported } from 'utils/media';
-import { playNotificationSound, isAudioSupported } from 'utils/sound';
-import { getDeviceId } from 'utils/device';
+import { observable, observeStore } from './utils/events';
+import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState } from './utils/dom';
+import { isImageUploadSupported } from './utils/media';
+import { playNotificationSound, isAudioSupported } from './utils/sound';
+import { getDeviceId } from './utils/device';
 
 import { Root } from './root';
 

@@ -1,5 +1,6 @@
 import sinon from 'sinon';
-import { storage } from 'utils/storage';
+
+import { storage } from '../../../src/js/utils/storage';
 
 describe('Storage', () => {
     beforeEach(() => {

@@ -1,8 +1,9 @@
 import sinon from 'sinon';
 import { Client } from 'faye';
-import { mockAppStore } from 'test/utils/redux';
-import * as utilsFaye from 'utils/faye';
-import * as conversationService from 'services/conversation-service';
+
+import { mockAppStore } from '../../utils/redux';
+import * as utilsFaye from '../../../src/js/utils/faye';
+import * as conversationService from '../../../src/js/services/conversation-service';
 
 const state = {
     user: {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { createMarkup, autolink, escapeHtml } from 'utils/html';
+import { createMarkup, autolink, escapeHtml } from '../utils/html';
 
 export class TextMessage extends Component {
     static propTypes = {

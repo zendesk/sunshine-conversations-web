@@ -1,4 +1,4 @@
-import { core } from 'services/core';
+import { core } from './core';
 
 export function login(props) {
     return core().appUsers.init(props);
