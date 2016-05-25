@@ -1,7 +1,6 @@
 var path = require('path');
 var fs = require('fs');
 var webpack = require('webpack');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var StatsPlugin = require('stats-webpack-plugin');
 var loadersByExtension = require('./webpack/lib/loadersByExtension');
 
@@ -98,7 +97,7 @@ module.exports = function(options) {
         if (Array.isArray(stylesheetLoader)) {
             stylesheetLoader = stylesheetLoader.join('!');
         }
-        
+
         stylesheetLoaders[ext] = 'style/useable!' + stylesheetLoader;
     });
 
