@@ -56,15 +56,12 @@ const RECEIVED_IMAGE = {
 describe('Conversation reducer', () => {
 
     describe('SET_CONVERSATION action', () => {
-        it('should merge state and stores messages', () => {
-            const beforeState = {
-                unreadCount: 5,
-                messages: [MESSAGE_1]
-            };
+        it('should set state conversation with messages from action', () => {
+            const beforeState = INITIAL_STATE;
             const afterState = ConversationReducer(beforeState, {
                 type: SET_CONVERSATION,
                 conversation: {
-                    messages: [MESSAGE_2],
+                    messages: MESSAGES,
                     appUsers: [],
                     appMakers: []
                 }
@@ -82,7 +79,7 @@ describe('Conversation reducer', () => {
             const afterState = ConversationReducer(beforeState, {
                 type: SET_CONVERSATION,
                 conversation: {
-                    messages: [MESSAGE_1],
+                    messages: [...MESSAGES, MESSAGE_1],
                     appUsers: [],
                     appMakers: []
                 }

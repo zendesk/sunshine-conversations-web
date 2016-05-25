@@ -25,15 +25,8 @@ const sortMessages = (messages) => messages.sort((messageA, messageB) => {
 });
 
 const addMessage = (messages, message) => {
-    const existingMessage = messages.find((m) => isEqual(m, message));
-
-    if (existingMessage) {
-        return messages;
-    }
-
     return sortMessages([...messages, message]);
 };
-
 
 const matchMessage = (message, queryProps) => Object.keys(queryProps).every((key) => message[key] === queryProps[key]);
 
@@ -47,38 +40,12 @@ const replaceMessage = (messages, query, newMessage) => {
     return [...messages.slice(0, index), newMessage, ...messages.slice(index + 1)];
 };
 
-const isEqual = (messageA, messageB) => {
-    // _tempId is a property of messages sent by the appUser
-    if (messageA._id && messageB._tempId && messageA._id === messageB._tempId) {
-        return true;
-    }
-
-    if (!messageA._id && !messageB._id || !messageA._id && !messageB._tempId) {
-        if (messageA.role === messageB.role) {
-            if (messageA.text && messageB.text && messageA.text === messageB.text) {
-                return true;
-            }
-
-            if (messageA.mediaType === messageB.mediaType && messageA.mediaUrl === messageB.mediaUrl) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-};
-
-const mergeMessages = (messagesA, messagesB) => {
-    // concat will make a union out of both arrays
-    return removeDuplicates(messagesA.concat(messagesB));
-};
-
 const removeDuplicates = (messages) => {
-    let messagesNoDuplicates = [];
-    let messagesHash = {};
+    const messagesNoDuplicates = [];
+    const messagesHash = {};
 
     messages.forEach((message) => {
-        let key = message._id + message.role + message.mediaType;
+        const key = message._id + message.rosle + message.mediaType;
         if (!(key in messagesHash)) {
             messagesHash[key] = message;
             messagesNoDuplicates.push(message);
@@ -95,7 +62,7 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             return Object.assign({}, INITIAL_STATE);
         case ConversationActions.SET_CONVERSATION:
             return Object.assign({}, action.conversation, {
-                messages: sortMessages(mergeMessages(state.messages, action.conversation.messages))
+                messages: sortMessages(removeDuplicates(action.conversation.messages))
             });
         case ConversationActions.ADD_MESSAGE:
             return Object.assign({}, state, {
