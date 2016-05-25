@@ -53,15 +53,8 @@ module.exports = function(options) {
     ];
     var alias = {};
 
-    if (options.test) {
-        Object.assign(alias, {
-            test: __dirname + '/test',
-            bootstrapTest: 'test/bootstrap'
-        });
-    }
-
     var externals = [];
-    var modulesDirectories = ['node_modules', 'src', 'src/js'];
+    var modulesDirectories = ['node_modules'];
     var extensions = ['', '.web.js', '.js', '.jsx'];
     var root = path.join(__dirname, 'src');
     var publicPath = options.devServer ?
