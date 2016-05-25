@@ -98,15 +98,9 @@ module.exports = function(options) {
         if (Array.isArray(stylesheetLoader)) {
             stylesheetLoader = stylesheetLoader.join('!');
         }
-        if (options.separateStylesheet) {
-            stylesheetLoaders[ext] = ExtractTextPlugin.extract('style-loader', stylesheetLoader);
-        } else {
-            stylesheetLoaders[ext] = 'style-loader!' + stylesheetLoader;
-        }
+        
+        stylesheetLoaders[ext] = 'style/useable!' + stylesheetLoader;
     });
-    if (options.separateStylesheet) {
-        plugins.push(new ExtractTextPlugin('[name].css' + (options.longTermCaching ? '?[contenthash]' : '')));
-    }
 
     if (options.minimize) {
         plugins.push(
