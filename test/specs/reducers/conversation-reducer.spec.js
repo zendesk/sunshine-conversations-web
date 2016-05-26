@@ -60,13 +60,21 @@ const MESSAGE_FROM_DIFFERENT_APP_MAKER = {
     name: 'Not Chloe',
     _id: '23452346'
 };
-const UPLOADING_IMAGE = {
+const UPLOADING_IMAGE_1 = {
     mediaUrl: 'data:image/jpeg',
     mediaType: 'image/jpeg',
     role: 'appUser',
     status: 'sending',
     _tempId: 0.8288994217337065,
     _tempSent: '2016-05-19T18:33:10.788Z'
+};
+const UPLOADING_IMAGE_2 = {
+    mediaUrl: 'data:image/jpeg',
+    mediaType: 'image/jpeg',
+    role: 'appUser',
+    status: 'sending',
+    _tempId: 0.901823905092145,
+    _tempSent: '2016-05-19T19:34:10.788Z'
 };
 const RECEIVED_IMAGE = {
     text: 'some_media_url',
@@ -144,7 +152,7 @@ describe('Conversation reducer', () => {
 
         it('should keep uploading image at the end of the messages array', () => {
             const beforeState = {
-                messages: [MESSAGE_1, UPLOADING_IMAGE],
+                messages: [MESSAGE_1, UPLOADING_IMAGE_1],
                 unreadCount: 0
             };
             const afterState = ConversationReducer(beforeState, {
@@ -154,7 +162,7 @@ describe('Conversation reducer', () => {
             afterState.messages.length.should.eq(3);
             afterState.messages[0].should.eql(MESSAGE_1);
             afterState.messages[1].should.eql(MESSAGE_FROM_APP_USER);
-            afterState.messages[2].should.eql(UPLOADING_IMAGE);
+            afterState.messages[2].should.eql(UPLOADING_IMAGE_1);
         });
 
         it('should add appMaker message', () => {
@@ -214,24 +222,24 @@ describe('Conversation reducer', () => {
     describe('REPLACE_MESSAGE action', () => {
         it('should replace uploading image with received image', () => {
             const beforeState = {
-                messages: [MESSAGE_1, UPLOADING_IMAGE],
+                messages: [MESSAGE_1, UPLOADING_IMAGE_1],
                 unreadCount: 0
             };
             const afterState = ConversationReducer(beforeState, {
                 type: REPLACE_MESSAGE,
                 message: RECEIVED_IMAGE,
                 queryProps: {
-                    _tempId: UPLOADING_IMAGE._tempId
+                    _tempId: UPLOADING_IMAGE_1._tempId
                 }
             });
             afterState.messages.length.should.eq(2);
-            afterState.messages[1].should.not.eql(UPLOADING_IMAGE);
+            afterState.messages[1].should.not.eql(UPLOADING_IMAGE_1);
             afterState.messages[1].should.eql(RECEIVED_IMAGE);
         });
 
         it('should not remove anything if message to be removed does not exist', () => {
             const beforeState = {
-                messages: [MESSAGE_1, UPLOADING_IMAGE],
+                messages: [MESSAGE_1, UPLOADING_IMAGE_1],
                 unreadCount: 0
             };
             const afterState = ConversationReducer(beforeState, {
@@ -243,6 +251,23 @@ describe('Conversation reducer', () => {
             });
             afterState.messages.length.should.eq(2);
             afterState.should.eql(beforeState);
+        });
+
+        it('should keep uploading images at bottom', () => {
+            const beforeState = {
+                messages: [UPLOADING_IMAGE_2, UPLOADING_IMAGE_1],
+                unreadCount: 0
+            };
+            const afterState = ConversationReducer(beforeState, {
+                type: REPLACE_MESSAGE,
+                message: RECEIVED_IMAGE,
+                queryProps: {
+                    _tempId: UPLOADING_IMAGE_1._tempId
+                }
+            });
+            afterState.messages.length.should.eq(2);
+            afterState.messages[0].should.eql(RECEIVED_IMAGE);
+            afterState.messages[1].should.eql(UPLOADING_IMAGE_2);
         });
     });
 
