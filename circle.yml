@@ -1,6 +1,10 @@
 machine:
   node:
     version: 6.2.0
+
+dependencies:
+  pre:
+    - npm install -g grunt-cli
 test:
     override:
         - npm run test:ci
