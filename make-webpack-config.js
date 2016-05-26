@@ -154,7 +154,7 @@ module.exports = function(options) {
         output: output,
         target: 'web',
         module: {
-            loaders: [loadersByExtension(loaders)].concat(loadersByExtension(stylesheetLoaders)).concat(additionalLoaders)
+            loaders: loadersByExtension(loaders).concat(loadersByExtension(stylesheetLoaders)).concat(additionalLoaders)
         },
         devtool: options.devtool,
         debug: options.debug,
