@@ -72,8 +72,8 @@ module.exports = function(options) {
         filename: '[name].js' + (options.longTermCaching ? '?[chunkhash]' : ''),
         chunkFilename: (options.devServer ? '[id].js' : '[name].js') + (options.longTermCaching ? '?[chunkhash]' : ''),
         sourceMapFilename: '[file].map',
-        library: options.assetsOnly ? undefined: 'Smooch',
-        libraryTarget: options.assetsOnly ? undefined: 'umd',
+        library: options.assetsOnly ? undefined : 'Smooch',
+        libraryTarget: options.assetsOnly ? 'commonjs2' : 'umd',
         umdNamedDefine: true,
         pathinfo: options.debug
     };
@@ -83,9 +83,6 @@ module.exports = function(options) {
     ];
 
     var plugins = [
-        new webpack.DefinePlugin({
-            VERSION: JSON.stringify(VERSION)
-        }),
         new webpack.PrefetchPlugin('react'),
         new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment')
     ];

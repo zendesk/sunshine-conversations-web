@@ -1,6 +1,7 @@
 import { Smooch } from 'smooch-core/lib/smooch';
 import urljoin from 'urljoin';
 
+import { VERSION } from '../constants/version';
 import { store } from '../stores/app-store';
 
 export function core() {

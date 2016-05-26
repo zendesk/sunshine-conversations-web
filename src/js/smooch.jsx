@@ -23,8 +23,9 @@ import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowse
 import { isImageUploadSupported } from './utils/media';
 import { playNotificationSound, isAudioSupported } from './utils/sound';
 import { getDeviceId } from './utils/device';
-
 import { stylesheet } from './utils/assets';
+
+import { VERSION } from './constants/version';
 
 import { Root } from './root';
 

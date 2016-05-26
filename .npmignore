@@ -1,8 +1,7 @@
-dist/stats.json
+dist/
 bower_components/
 release_notes/
 test/
-lib/
 grunt-aws.json
 grunt-maxcdn.json
 *.sublime-project
@@ -25,5 +24,6 @@ make-webpack-config.js
 webpack-dev-server.config.js
 webpack-hot-dev-server.config.js
 webpack-production.config.js
+webpack-assets.config.js
 webpack-test.config.js
 webpack.config.js
