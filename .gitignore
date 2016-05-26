@@ -4,6 +4,7 @@ bower_components
 tmp
 dist/
 lib/
+!webpack/lib/
 grunt-aws.json
 grunt-maxcdn.json
 *.sublime-workspace
