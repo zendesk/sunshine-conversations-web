@@ -9,8 +9,8 @@ const INITIAL_STATE = {
 const sortMessages = (messages) => messages.sort((messageA, messageB) => {
     // received is undefined when it's the temp message from the user
     if (!messageA.received && !messageB.received) {
-        // `_tempSent` is a local only prop
-        return messageA._tempSent - messageB._tempSent;
+        // `_clientSent` is a local only prop
+        return messageA._clientSent - messageB._clientSent;
     }
 
     if (!messageA.received) {
@@ -25,15 +25,8 @@ const sortMessages = (messages) => messages.sort((messageA, messageB) => {
 });
 
 const addMessage = (messages, message) => {
-    const existingMessage = messages.find((m) => isEqual(m, message));
-
-    if (existingMessage) {
-        return messages;
-    }
-
     return sortMessages([...messages, message]);
 };
-
 
 const matchMessage = (message, queryProps) => Object.keys(queryProps).every((key) => message[key] === queryProps[key]);
 
@@ -43,41 +36,23 @@ const replaceMessage = (messages, query, newMessage) => {
         return messages;
     }
 
+    if (existingMessage._clientId) {
+        newMessage = {
+            ...newMessage,
+            _clientId: existingMessage._clientId
+        };
+    }
+
     const index = messages.indexOf(existingMessage);
     return [...messages.slice(0, index), newMessage, ...messages.slice(index + 1)];
 };
 
-const isEqual = (messageA, messageB) => {
-    if (messageA._id && messageB._tempId && messageA._id === messageB._tempId) {
-        return true;
-    }
-
-    if (!messageA._id || !messageB._tempId) {
-        if (messageA.role === messageB.role) {
-            if (messageA.text && messageB.text && messageA.text === messageB.text) {
-                return true;
-            }
-
-            if (messageA.mediaType === messageB.mediaType && messageA.mediaUrl === messageB.mediaUrl) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-};
-
-const mergeMessages = (messagesA, messagesB) => {
-    // concat will make a union out of both arrays
-    return removeDuplicates(messagesA.concat(messagesB));
-};
-
 const removeDuplicates = (messages) => {
-    let messagesNoDuplicates = [];
-    let messagesHash = {};
+    const messagesNoDuplicates = [];
+    const messagesHash = {};
 
     messages.forEach((message) => {
-        let key = message._id + message.role + message.mediaType;
+        const key = message._id + message.role + message.mediaType;
         if (!(key in messagesHash)) {
             messagesHash[key] = message;
             messagesNoDuplicates.push(message);
@@ -94,7 +69,7 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             return Object.assign({}, INITIAL_STATE);
         case ConversationActions.SET_CONVERSATION:
             return Object.assign({}, action.conversation, {
-                messages: sortMessages(mergeMessages(state.messages, action.conversation.messages))
+                messages: sortMessages(removeDuplicates(action.conversation.messages))
             });
         case ConversationActions.ADD_MESSAGE:
             return Object.assign({}, state, {
@@ -102,7 +77,7 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             });
         case ConversationActions.REPLACE_MESSAGE:
             return Object.assign({}, state, {
-                messages: replaceMessage(state.messages, action.queryProps, action.message)
+                messages: sortMessages(replaceMessage(state.messages, action.queryProps, action.message))
             });
         case ConversationActions.REMOVE_MESSAGE:
             return Object.assign({}, state, {

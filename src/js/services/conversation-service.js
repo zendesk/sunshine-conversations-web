@@ -47,8 +47,8 @@ export function sendMessage(text) {
         const message = {
             role: 'appUser',
             text,
-            _tempId: Math.random(),
-            _tempSent: new Date(),
+            _clientId: Math.random(),
+            _clientSent: new Date(),
             deviceId: getDeviceId()
         };
 
@@ -64,7 +64,7 @@ export function sendMessage(text) {
             }
 
             store.dispatch(replaceMessage({
-                _tempId: message._tempId
+                _clientId: message._clientId
             }, response.message));
 
             observable.trigger('message:sent', response.message);
@@ -87,8 +87,8 @@ export function uploadImage(file) {
                 mediaType: 'image/jpeg',
                 role: 'appUser',
                 status: 'sending',
-                _tempId: Math.random(),
-                _tempSent: new Date()
+                _clientId: Math.random(),
+                _clientSent: new Date()
             };
 
             store.dispatch(addMessage(message));
@@ -101,14 +101,14 @@ export function uploadImage(file) {
                 deviceId: getDeviceId()
             }).then((response) => {
                 store.dispatch(replaceMessage({
-                    _tempId: message._tempId
+                    _clientId: message._clientId
                 }, response.message));
                 observable.trigger('message:sent', response.message);
                 return response;
             }).catch(() => {
                 store.dispatch(showErrorNotification(store.getState().ui.text.messageError));
                 store.dispatch(removeMessage({
-                    _tempId: message._tempId
+                    _clientId: message._clientId
                 }));
 
             });
