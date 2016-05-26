@@ -1,5 +1,5 @@
 import { ConversationReducer } from '../../../src/js/reducers/conversation-reducer';
-import { ADD_MESSAGE, REPLACE_MESSAGE, RESET_CONVERSATION, SET_CONVERSATION, RESET_UNREAD_COUNT, INCREMENT_UNREAD_COUNT } from '../../../src/js/actions/conversation-actions';
+import { ADD_MESSAGE, REPLACE_MESSAGE, RESET_CONVERSATION, REMOVE_MESSAGE, SET_CONVERSATION, RESET_UNREAD_COUNT, INCREMENT_UNREAD_COUNT } from '../../../src/js/actions/conversation-actions';
 
 const INITIAL_STATE = ConversationReducer(undefined, {});
 const MESSAGE_1 = {
