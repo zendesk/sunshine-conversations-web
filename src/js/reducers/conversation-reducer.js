@@ -45,7 +45,7 @@ const removeDuplicates = (messages) => {
     const messagesHash = {};
 
     messages.forEach((message) => {
-        const key = message._id + message.rosle + message.mediaType;
+        const key = message._id + message.role + message.mediaType;
         if (!(key in messagesHash)) {
             messagesHash[key] = message;
             messagesNoDuplicates.push(message);
