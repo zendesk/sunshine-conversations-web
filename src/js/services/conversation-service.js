@@ -58,14 +58,16 @@ export function sendMessage(text) {
 
         return core().conversations.sendMessage(user._id, message).then((response) => {
             if (!user.conversationStarted) {
+                // use setConversation to set the conversation id in the store
+                store.dispatch(setConversation(response.conversation));
                 store.dispatch(updateUser({
                     conversationStarted: true
                 }));
+            } else {
+                store.dispatch(replaceMessage({
+                    _clientId: message._clientId
+                }, response.message));
             }
-
-            store.dispatch(replaceMessage({
-                _clientId: message._clientId
-            }, response.message));
 
             observable.trigger('message:sent', response.message);
             return response;
@@ -100,9 +102,18 @@ export function uploadImage(file) {
                 role: 'appUser',
                 deviceId: getDeviceId()
             }).then((response) => {
-                store.dispatch(replaceMessage({
-                    _clientId: message._clientId
-                }, response.message));
+                if (!user.conversationStarted) {
+                    // use setConversation to set the conversation id in the store
+                    store.dispatch(setConversation(response.conversation));
+                    store.dispatch(updateUser({
+                        conversationStarted: true
+                    }));
+                } else {
+                    store.dispatch(replaceMessage({
+                        _clientId: message._clientId
+                    }, response.message));
+                }
+
                 observable.trigger('message:sent', response.message);
                 return response;
             }).catch(() => {
