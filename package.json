@@ -27,12 +27,14 @@
     "dev-server": "webpack-dev-server --config webpack-dev-server.config.js --colors --port 2992 --inline  --no-info",
     "hot-dev-server": "webpack-dev-server --config webpack-hot-dev-server.config.js --hot --colors --port 2992 --inline --no-info",
     "build": "webpack --config webpack-production.config.js --progress --profile --colors",
+    "build:assets": "webpack --config webpack-assets.config.js --progress --profile --colors",
+    "build:npm": "rm -rf lib/ && npm run babelify && npm run build:assets && rm -f lib/utils/*.mp3",
     "start-dev": "node dev-server/server-development",
     "start": "node dev-server/server-production",
     "lint": "eslint . --ext=js --ext=jsx",
-    "babelify": "babel -d lib/ src/"
+    "babelify": "babel -d lib/ src/js/"
   },
-  "main": "dist/smooch.js",
+  "main": "lib/main.js",
   "homepage": "https://smooch.io",
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {

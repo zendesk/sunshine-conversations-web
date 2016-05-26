@@ -24,9 +24,13 @@ import { isImageUploadSupported } from './utils/media';
 import { playNotificationSound, isAudioSupported } from './utils/sound';
 import { getDeviceId } from './utils/device';
 
+import { stylesheet } from './utils/assets';
+
 import { Root } from './root';
 
+
 function renderWidget(container) {
+    stylesheet.use();
     if (container) {
         render(<Root store={ store } />, container);
         return container;
@@ -297,6 +301,7 @@ export class Smooch {
         delete this._container;
         observable.trigger('destroy');
         observable.off();
+        stylesheet.unuse();
     }
 
     open() {
