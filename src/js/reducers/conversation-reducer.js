@@ -70,7 +70,7 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             });
         case ConversationActions.REPLACE_MESSAGE:
             return Object.assign({}, state, {
-                messages: replaceMessage(state.messages, action.queryProps, action.message)
+                messages: sortMessages(replaceMessage(state.messages, action.queryProps, action.message))
             });
         case ConversationActions.REMOVE_MESSAGE:
             return Object.assign({}, state, {
