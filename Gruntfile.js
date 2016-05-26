@@ -150,11 +150,21 @@ module.exports = function(grunt) {
                     ].join(' && ');
                 }
             },
+            addLib: {
+                cmd: function() {
+                    return [
+                        'git add --force lib/'
+                    ].join(' && ');
+                }
+            },
             clean: {
                 cmd: 'rm -rf dist/'
             },
             build: {
                 cmd: 'npm run build'
+            },
+            buildNpm: {
+                cmd: 'npm run build:npm'
             },
             hotDevServer: {
                 cmd: 'npm run hot-dev-server'
@@ -254,17 +264,13 @@ module.exports = function(grunt) {
         grunt.task.run('branchCheck', 'publish:prepare', 'publish:release', 'publish:cleanup');
     });
 
-    grunt.registerTask('build', ['clean', 'exec:build']);
-    grunt.registerTask('dev', ['concurrent:dev']);
-
-
-    grunt.registerTask('build', ['clean', 'exec:build']);
+    grunt.registerTask('build', ['clean', 'exec:build', 'exec:buildNpm']);
     grunt.registerTask('dev', ['concurrent:dev']);
 
     grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig', 's3:js', 's3:media', 'maxcdn']);
     grunt.registerTask('default', ['dev']);
 
-    grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist']);
+    grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist', 'exec:addLib']);
     grunt.registerTask('publish:release', ['release']);
     grunt.registerTask('publish:cleanup', ['exec:cleanRelease', 'exec:push']);
 
