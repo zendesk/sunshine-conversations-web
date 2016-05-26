@@ -1,7 +1,8 @@
 dist/
-bower_components/
 release_notes/
 test/
+src/
+dev-server/
 grunt-aws.json
 grunt-maxcdn.json
 *.sublime-project
