@@ -9,8 +9,8 @@ const INITIAL_STATE = {
 const sortMessages = (messages) => messages.sort((messageA, messageB) => {
     // received is undefined when it's the temp message from the user
     if (!messageA.received && !messageB.received) {
-        // `_tempSent` is a local only prop
-        return messageA._tempSent - messageB._tempSent;
+        // `_clientSent` is a local only prop
+        return messageA._clientSent - messageB._clientSent;
     }
 
     if (!messageA.received) {
@@ -34,6 +34,13 @@ const replaceMessage = (messages, query, newMessage) => {
     const existingMessage = messages.find((message) => matchMessage(message, query));
     if (!existingMessage) {
         return messages;
+    }
+
+    if (existingMessage._clientId) {
+        newMessage = {
+            ...newMessage,
+            _clientId: existingMessage._clientId
+        };
     }
 
     const index = messages.indexOf(existingMessage);

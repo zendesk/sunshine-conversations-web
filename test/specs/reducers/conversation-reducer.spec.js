@@ -25,7 +25,7 @@ const MESSAGE_FROM_APP_USER = {
     received: 234.678,
     authorId: '8a9445dadad4862c2322db52',
     name: 'Calm Chimpanzee',
-    _tempId: '123498001'
+    _clientId: '123498001'
 };
 const MESSAGE_FROM_APP_MAKER_1 = {
     text: 'hello',
@@ -65,16 +65,16 @@ const UPLOADING_IMAGE_1 = {
     mediaType: 'image/jpeg',
     role: 'appUser',
     status: 'sending',
-    _tempId: 0.8288994217337065,
-    _tempSent: '2016-05-19T18:33:10.788Z'
+    _clientId: 0.8288994217337065,
+    _clientSent: '2016-05-19T18:33:10.788Z'
 };
 const UPLOADING_IMAGE_2 = {
     mediaUrl: 'data:image/jpeg',
     mediaType: 'image/jpeg',
     role: 'appUser',
     status: 'sending',
-    _tempId: 0.901823905092145,
-    _tempSent: '2016-05-19T19:34:10.788Z'
+    _clientId: 0.901823905092145,
+    _clientSent: '2016-05-19T19:34:10.788Z'
 };
 const RECEIVED_IMAGE = {
     text: 'some_media_url',
@@ -229,12 +229,15 @@ describe('Conversation reducer', () => {
                 type: REPLACE_MESSAGE,
                 message: RECEIVED_IMAGE,
                 queryProps: {
-                    _tempId: UPLOADING_IMAGE_1._tempId
+                    _clientId: UPLOADING_IMAGE_1._clientId
                 }
             });
             afterState.messages.length.should.eq(2);
             afterState.messages[1].should.not.eql(UPLOADING_IMAGE_1);
-            afterState.messages[1].should.eql(RECEIVED_IMAGE);
+            afterState.messages[1].should.eql({
+                ...RECEIVED_IMAGE,
+                _clientId: UPLOADING_IMAGE_1._clientId
+            });
         });
 
         it('should not remove anything if message to be removed does not exist', () => {
@@ -246,7 +249,7 @@ describe('Conversation reducer', () => {
                 type: REPLACE_MESSAGE,
                 message: RECEIVED_IMAGE,
                 queryProps: {
-                    _tempId: 1234
+                    _clientId: 1234
                 }
             });
             afterState.messages.length.should.eq(2);
@@ -262,11 +265,14 @@ describe('Conversation reducer', () => {
                 type: REPLACE_MESSAGE,
                 message: RECEIVED_IMAGE,
                 queryProps: {
-                    _tempId: UPLOADING_IMAGE_1._tempId
+                    _clientId: UPLOADING_IMAGE_1._clientId
                 }
             });
             afterState.messages.length.should.eq(2);
-            afterState.messages[0].should.eql(RECEIVED_IMAGE);
+            afterState.messages[0].should.eql({
+                ...RECEIVED_IMAGE,
+                _clientId: UPLOADING_IMAGE_1._clientId
+            });
             afterState.messages[1].should.eql(UPLOADING_IMAGE_2);
         });
     });
@@ -280,7 +286,7 @@ describe('Conversation reducer', () => {
             const afterState = ConversationReducer(beforeState, {
                 type: REMOVE_MESSAGE,
                 queryProps: {
-                    _tempId: MESSAGE_FROM_APP_USER._tempId
+                    _clientId: MESSAGE_FROM_APP_USER._clientId
                 }
             });
             afterState.messages.length.should.eq(0);
