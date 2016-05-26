@@ -104,7 +104,7 @@
     "grunt-s3": "0.2.0-alpha.3",
     "imports-loader": "0.6.5",
     "json-loader": "0.5.4",
-    "karma": "0.13.19",
+    "karma": "0.13.22",
     "karma-chai": "0.1.0",
     "karma-chrome-launcher": "0.1.12",
     "karma-junit-reporter": "0.2.2",
@@ -137,7 +137,7 @@
     "webpack-cli": "1.0.0",
     "webpack-dev-server": "1.14.0"
   },
-  "peerDependencies":{
+  "peerDependencies": {
     "babel-polyfill": "6.9.0",
     "babel-runtime": "6.9.0",
     "react": "0.14.7",

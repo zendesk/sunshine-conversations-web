@@ -44,7 +44,7 @@ module.exports = function(options) {
     };
     var additionalLoaders = [
         {
-            test: /\.js$/,
+            test: /load-image/,
             loader: 'imports?define=>false'
         }
     ];
