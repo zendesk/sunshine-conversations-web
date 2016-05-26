@@ -41,7 +41,7 @@ Smooch.init({appToken: 'your_app_token'});
 #### Notes about Webpack
 Since not all Smooch JS dependencies are "webpack-friendly", you might want to tweak your config a bit.
 
-You might want to disable AMD support for `blueimp-load-image` by adding the following snippet to your loaders :
+You will need to disable AMD support for `blueimp-load-image` by adding the following snippet to your loaders :
 
 ```javascript
 {
@@ -58,7 +58,6 @@ new webpack.NormalModuleReplacementPlugin(/\/iconv-loader$/, 'node-noop')
 
 You will need to install `node-noop` in your project.
 See https://github.com/andris9/encoding/issues/16
-
 
 ### Bower
 
