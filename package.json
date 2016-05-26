@@ -59,13 +59,13 @@
     "uuid": "2.0.1"
   },
   "engines": {
-    "node": "4.2.6",
-    "npm": "3.6.0"
+    "node": ">=4.2.6",
+    "npm": ">=3.6.0"
   },
   "devDependencies": {
     "aws-sdk": "2.1.35",
     "babel": "6.5.2",
-    "babel-cli": "6.5.1",
+    "babel-cli": "6.9.0",
     "babel-core": "6.9.0",
     "babel-eslint": "5.0.0",
     "babel-loader": "6.2.4",
