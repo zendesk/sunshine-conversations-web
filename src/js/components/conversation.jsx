@@ -61,8 +61,8 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const messages = this.props.conversation.messages.map((message, index) => {
-            return <MessageComponent key={ index }
+        const messages = this.props.conversation.messages.map((message) => {
+            return <MessageComponent key={ message._clientId || message._id }
                                      accentColor={ this.props.settings.accentColor }
                                      linkColor={ this.props.settings.linkColor }
                                      onLoad={ this.scrollToBottom }
