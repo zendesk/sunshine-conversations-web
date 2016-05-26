@@ -4,6 +4,7 @@ import urljoin from 'urljoin';
 import { store } from 'stores/app-store';
 import { addMessage, incrementUnreadCount } from 'actions/conversation-actions';
 import { getConversation } from 'services/conversation-service';
+import { getDeviceId } from 'utils/device';
 
 export function initFaye() {
     const state = store.getState();
@@ -38,7 +39,9 @@ export function initFaye() {
         });
 
         return faye.subscribe(`/v1/conversations/${state.conversation._id}`, (message) => {
-            store.dispatch(addMessage(message));
+            if (message.source.id !== getDeviceId()) {
+                store.dispatch(addMessage(message));
+            }
             if (message.role !== 'appUser') {
                 store.dispatch(incrementUnreadCount());
             }
