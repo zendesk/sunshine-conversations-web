@@ -6,34 +6,60 @@ const INITIAL_STATE = {
     unreadCount: 0
 };
 
-const sortMessages = (messages) => messages.sort((a, b) => {
+const sortMessages = (messages) => messages.sort((messageA, messageB) => {
     // received is undefined when it's the temp message from the user
-    if (!a.received) {
+    if (!messageA.received && !messageB.received) {
+        // `_clientSent` is a local only prop
+        return messageA._clientSent - messageB._clientSent;
+    }
+
+    if (!messageA.received) {
         return 1;
     }
 
-    if (!b.received) {
+    if (!messageB.received) {
         return -1;
     }
 
-    return a.received - b.received;
+    return messageA.received - messageB.received;
 });
 
 const addMessage = (messages, message) => {
-    let existingMessage = messages.find((m) => m._id === message._id);
+    return sortMessages([...messages, message]);
+};
 
-    // let's try to match against recently sent messages instead
-    // also, restrict that to user messages since those from
-    // appMakers will always have an id.
-    if (!existingMessage && message.role === 'appUser') {
-        existingMessage = messages.find((m) => !m._id && m.text === message.text && m.role === message.role);
-    }
+const matchMessage = (message, queryProps) => Object.keys(queryProps).every((key) => message[key] === queryProps[key]);
 
-    if (existingMessage) {
+const replaceMessage = (messages, query, newMessage) => {
+    const existingMessage = messages.find((message) => matchMessage(message, query));
+    if (!existingMessage) {
         return messages;
     }
 
-    return sortMessages([...messages, message]);
+    if (existingMessage._clientId) {
+        newMessage = {
+            ...newMessage,
+            _clientId: existingMessage._clientId
+        };
+    }
+
+    const index = messages.indexOf(existingMessage);
+    return [...messages.slice(0, index), newMessage, ...messages.slice(index + 1)];
+};
+
+const removeDuplicates = (messages) => {
+    const messagesNoDuplicates = [];
+    const messagesHash = {};
+
+    messages.forEach((message) => {
+        const key = message._id + message.role + message.mediaType;
+        if (!(key in messagesHash)) {
+            messagesHash[key] = message;
+            messagesNoDuplicates.push(message);
+        }
+    });
+
+    return messagesNoDuplicates;
 };
 
 export function ConversationReducer(state = INITIAL_STATE, action) {
@@ -43,15 +69,19 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             return Object.assign({}, INITIAL_STATE);
         case ConversationActions.SET_CONVERSATION:
             return Object.assign({}, action.conversation, {
-                messages: sortMessages(action.conversation.messages)
+                messages: sortMessages(removeDuplicates(action.conversation.messages))
             });
         case ConversationActions.ADD_MESSAGE:
             return Object.assign({}, state, {
                 messages: addMessage(state.messages, action.message)
             });
+        case ConversationActions.REPLACE_MESSAGE:
+            return Object.assign({}, state, {
+                messages: sortMessages(replaceMessage(state.messages, action.queryProps, action.message))
+            });
         case ConversationActions.REMOVE_MESSAGE:
             return Object.assign({}, state, {
-                messages: [...state.messages.filter((message) => message._id !== action.id)]
+                messages: [...state.messages.filter((message) => !matchMessage(message, action.queryProps))]
             });
         case ConversationActions.INCREMENT_UNREAD_COUNT:
             return Object.assign({}, state, {

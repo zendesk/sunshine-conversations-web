@@ -1,5 +1,5 @@
 import { store } from 'stores/app-store';
-import { addMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction } from 'actions/conversation-actions';
+import { addMessage, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction } from 'actions/conversation-actions';
 import { updateUser } from 'actions/user-actions';
 import { showSettingsNotification, showErrorNotification } from 'actions/app-state-actions';
 import { setFayeSubscription, unsetFayeSubscription } from 'actions/faye-actions';
@@ -8,6 +8,7 @@ import { immediateUpdate } from 'services/user-service';
 import { initFaye } from 'utils/faye';
 import { observable } from 'utils/events';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from 'utils/media';
+import { getDeviceId } from 'utils/device';
 
 export function handleFirstUserMessage(response) {
     const state = store.getState();
@@ -43,12 +44,12 @@ export function sendChain(sendFn) {
 
 export function sendMessage(text) {
     return sendChain(() => {
-        // add an id just to please React
-        // this message will be replaced by the real one on the server response
         const message = {
-            _id: Math.random(),
             role: 'appUser',
-            text
+            text,
+            _clientId: Math.random(),
+            _clientSent: new Date(),
+            deviceId: getDeviceId()
         };
 
         store.dispatch(addMessage(message));
@@ -57,17 +58,23 @@ export function sendMessage(text) {
 
         return core().conversations.sendMessage(user._id, message).then((response) => {
             if (!user.conversationStarted) {
+                // use setConversation to set the conversation id in the store
+                store.dispatch(setConversation(response.conversation));
                 store.dispatch(updateUser({
                     conversationStarted: true
                 }));
+            } else {
+                store.dispatch(replaceMessage({
+                    _clientId: message._clientId
+                }, response.message));
             }
 
-            store.dispatch(setConversation(response.conversation));
             observable.trigger('message:sent', response.message);
             return response;
         });
     });
 }
+
 
 export function uploadImage(file) {
     if (!isFileTypeSupported(file.type)) {
@@ -77,14 +84,13 @@ export function uploadImage(file) {
 
     return resizeImage(file).then((dataUrl) => {
         return sendChain(() => {
-            // add an id just to please React
-            // this message will be replaced by the real one on the server response
             const message = {
                 mediaUrl: dataUrl,
                 mediaType: 'image/jpeg',
-                _id: Math.random(),
                 role: 'appUser',
-                status: 'sending'
+                status: 'sending',
+                _clientId: Math.random(),
+                _clientSent: new Date()
             };
 
             store.dispatch(addMessage(message));
@@ -93,15 +99,27 @@ export function uploadImage(file) {
             const blob = getBlobFromDataUrl(dataUrl);
 
             return core().conversations.uploadImage(user._id, blob, {
-                role: 'appUser'
+                role: 'appUser',
+                deviceId: getDeviceId()
             }).then((response) => {
-                store.dispatch(setConversation(response.conversation));
+                if (!user.conversationStarted) {
+                    // use setConversation to set the conversation id in the store
+                    store.dispatch(setConversation(response.conversation));
+                    store.dispatch(updateUser({
+                        conversationStarted: true
+                    }));
+                } else {
+                    store.dispatch(replaceMessage({
+                        _clientId: message._clientId
+                    }, response.message));
+                }
+
                 observable.trigger('message:sent', response.message);
                 return response;
             }).catch(() => {
                 store.dispatch(showErrorNotification(store.getState().ui.text.messageError));
                 store.dispatch(removeMessage({
-                    id: message._id
+                    _clientId: message._clientId
                 }));
 
             });
