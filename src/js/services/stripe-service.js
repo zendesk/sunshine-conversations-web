@@ -1,6 +1,6 @@
-import { store } from 'stores/app-store';
-import { core } from 'services/core';
-import { showErrorNotification } from 'actions/app-state-actions';
+import { store } from '../stores/app-store';
+import { showErrorNotification } from '../actions/app-state-actions';
+import { core } from './core';
 
 export function createTransaction(actionId, token) {
     const user = store.getState().user;

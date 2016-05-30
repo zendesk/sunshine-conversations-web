@@ -1,33 +1,37 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
-import uuid from 'uuid';
 import pick from 'lodash.pick';
 
-import { store } from 'stores/app-store';
+import { store } from './stores/app-store';
 
-import { setAuth, resetAuth } from 'actions/auth-actions';
-import * as userActions from 'actions/user-actions';
-import { setPublicKeys, setStripeInfo, setAppSettings } from 'actions/app-actions';
-import { updateText } from 'actions/ui-actions';
-import { resetConversation } from 'actions/conversation-actions';
-import * as AppStateActions from 'actions/app-state-actions';
-import { reset } from 'actions/common-actions';
+import { setAuth, resetAuth } from './actions/auth-actions';
+import * as userActions from './actions/user-actions';
+import { setPublicKeys, setStripeInfo, setAppSettings } from './actions/app-actions';
+import { updateText } from './actions/ui-actions';
+import { resetConversation } from './actions/conversation-actions';
+import * as AppStateActions from './actions/app-state-actions';
+import { reset } from './actions/common-actions';
 
-import { openWidget, closeWidget } from 'services/app-service';
-import { login } from 'services/auth-service';
-import { getAccount } from 'services/stripe-service';
-import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, updateNowViewing, immediateUpdate as immediateUpdateUser } from 'services/user-service';
-import { getConversation, sendMessage, connectFaye, disconnectFaye, handleConversationUpdated } from 'services/conversation-service';
+import { openWidget, closeWidget } from './services/app-service';
+import { login } from './services/auth-service';
+import { getAccount } from './services/stripe-service';
+import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, updateNowViewing, immediateUpdate as immediateUpdateUser } from './services/user-service';
+import { getConversation, sendMessage, connectFaye, disconnectFaye, handleConversationUpdated } from './services/conversation-service';
 
-import { observable, observeStore } from 'utils/events';
-import { storage } from 'utils/storage';
-import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState } from 'utils/dom';
-import { isImageUploadSupported } from 'utils/media';
-import { playNotificationSound, isAudioSupported } from 'utils/sound';
+import { observable, observeStore } from './utils/events';
+import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState } from './utils/dom';
+import { isImageUploadSupported } from './utils/media';
+import { playNotificationSound, isAudioSupported } from './utils/sound';
+import { getDeviceId } from './utils/device';
+import { stylesheet } from './utils/assets';
+
+import { VERSION } from './constants/version';
 
 import { Root } from './root';
 
+
 function renderWidget(container) {
+    stylesheet.use();
     if (container) {
         render(<Root store={ store } />, container);
         return container;
@@ -47,7 +51,7 @@ function renderWidget(container) {
 function renderLink() {
     const el = document.createElement('div');
 
-    render(<a href='https://smooch.io?utm_source=widget'>Messaging by smooch.io</a>, el);
+    render(<a href='https://smooch.io/live-web-chat/?utm_source=widget'>Messaging by smooch.io</a>, el);
 
     waitForPage().then(() => {
         document.body.appendChild(el);
@@ -55,16 +59,6 @@ function renderLink() {
     });
 
     return el;
-}
-
-function getDeviceId() {
-    const SK_STORAGE = 'sk_deviceid';
-    const deviceId = storage.getItem(SK_STORAGE) ||
-    uuid.v4().replace(/-/g, '');
-
-    storage.setItem(SK_STORAGE, deviceId);
-
-    return deviceId;
 }
 
 observable.on('message:sent', (message) => {
@@ -308,6 +302,7 @@ export class Smooch {
         delete this._container;
         observable.trigger('destroy');
         observable.off();
+        stylesheet.unuse();
     }
 
     open() {

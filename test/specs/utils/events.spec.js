@@ -1,5 +1,6 @@
 import sinon from 'sinon';
-import { Observable } from 'utils/events';
+
+import { Observable } from '../../../src/js/utils/events';
 
 const sandbox = sinon.sandbox.create();
 

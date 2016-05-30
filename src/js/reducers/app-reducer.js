@@ -1,5 +1,5 @@
-import { SET_PUBLIC_KEYS, RESET_APP, SET_STRIPE_INFO, SET_APP_SETTINGS } from 'actions/app-actions';
-import { RESET } from 'actions/common-actions';
+import { SET_PUBLIC_KEYS, RESET_APP, SET_STRIPE_INFO, SET_APP_SETTINGS } from '../actions/app-actions';
+import { RESET } from '../actions/common-actions';
 
 const INITIAL_STATE = {
     settings: {

@@ -3,18 +3,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
-
-import { mockAppStore } from 'test/utils/redux';
-import { mockComponent } from 'test/utils/react';
-
 import StripeCheckout from 'react-stripe-checkout';
 
-import { ActionComponent } from 'components/action.jsx';
-import { LoadingComponent } from 'components/loading.jsx';
+import { mockAppStore } from '../../utils/redux';
+import { mockComponent } from '../../utils/react';
 
-const stripeService = require('services/stripe-service');
-const userService = require('services/user-service');
-const conversationService = require('services/conversation-service');
+import { ActionComponent } from '../../../src/js/components/action.jsx';
+import { LoadingComponent } from '../../../src/js/components/loading.jsx';
+
+const stripeService = require('../../../src/js/services/stripe-service');
+const userService = require('../../../src/js/services/user-service');
+const conversationService = require('../../../src/js/services/conversation-service');
 
 const sandbox = sinon.sandbox.create();
 

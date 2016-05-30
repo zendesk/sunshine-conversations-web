@@ -1,6 +1,7 @@
 import isMobile from 'ismobilejs';
-import { store } from 'stores/app-store';
-import { hasFocus } from 'actions/browser-actions';
+
+import { store } from '../stores/app-store';
+import { hasFocus } from '../actions/browser-actions';
 
 const pushState = window.history && window.history.pushState;
 const replaceState = window.history && window.history.replaceState;

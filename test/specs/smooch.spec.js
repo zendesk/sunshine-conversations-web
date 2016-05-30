@@ -1,9 +1,11 @@
 import sinon from 'sinon';
-import { Smooch } from 'smooch.jsx';
-import * as authService from 'services/auth-service';
-import * as conversationService from 'services/conversation-service';
-import * as userService from 'services/user-service';
-import { mockAppStore } from 'test/utils/redux';
+
+import { mockAppStore } from '../utils/redux';
+
+import { Smooch } from '../../src/js/smooch';
+import * as authService from '../../src/js/services/auth-service';
+import * as conversationService from '../../src/js/services/conversation-service';
+import * as userService from '../../src/js/services/user-service';
 
 const defaultState = {
     user: {

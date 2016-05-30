@@ -1,8 +1,9 @@
 import deepEqual from 'deep-equal';
-import { store } from 'stores/app-store';
-import { core } from 'services/core';
-import { setUser } from 'actions/user-actions';
-import { handleConversationUpdated } from 'services/conversation-service';
+
+import { store } from '../stores/app-store';
+import { setUser } from '../actions/user-actions';
+import { core } from './core';
+import { handleConversationUpdated } from './conversation-service';
 
 let waitForSave = false;
 const waitDelay = 5000; // ms

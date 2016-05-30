@@ -1,4 +1,4 @@
-import { isFileTypeSupported } from 'utils/media';
+import { isFileTypeSupported } from '../../../src/js/utils/media';
 
 describe('isFileTypeSupported', () => {
     it('should be true for supported types', () => {

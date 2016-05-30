@@ -1,9 +1,11 @@
 import sinon from 'sinon';
-import { createMock } from 'test/mocks/core';
-import { mockAppStore } from 'test/utils/redux';
-import * as coreService from 'services/core';
-import * as userService from 'services/user-service';
-import * as conversationService from 'services/conversation-service';
+
+import { createMock } from '../../mocks/core';
+import { mockAppStore } from '../../utils/redux';
+
+import * as coreService from '../../../src/js/services/core';
+import * as userService from '../../../src/js/services/user-service';
+import * as conversationService from '../../../src/js/services/conversation-service';
 
 describe('User service', () => {
     var sandbox;
