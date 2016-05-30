@@ -3,8 +3,9 @@ import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import isMobile from 'ismobilejs';
 
-import { createMarkup } from 'utils/html';
-import { MessageComponent } from 'components/message.jsx';
+import { createMarkup } from '../utils/html';
+import { MessageComponent } from './message';
+import { logo, logo2x } from '../utils/assets';
 
 export class ConversationComponent extends Component {
     static defaultProps = {
@@ -90,9 +91,9 @@ export class ConversationComponent extends Component {
                          style={ logoStyle }>
                         <a href='https://smooch.io/live-web-chat/?utm_source=widget'
                            target='_blank'><span>Messaging by</span> <img className='sk-image'
-                                                                                                                             src={ require('images/logo_webwidget.png') }
-                                                                                                                             srcSet={ `${require('images/logo_webwidget.png')} 1x, ${require('images/logo_webwidget_2x.png')} 2x` }
-                                                                                                                             alt='smooch.io' /></a>
+                                                                                                                      src={ logo }
+                                                                                                                      srcSet={ `${logo} 1x, ${logo2x} 2x` }
+                                                                                                                      alt='smooch.io' /></a>
                     </div>
                 </div>
             </div>

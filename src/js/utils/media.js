@@ -1,4 +1,4 @@
-import loadImage from 'lib/load-image';
+import loadImage from '../lib/load-image';
 
 export function isImageUploadSupported() {
     // check for features used in the image upload

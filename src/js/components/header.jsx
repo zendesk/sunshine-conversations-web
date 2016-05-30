@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { toggleWidget } from 'services/app-service';
-import { showSettings, hideSettings } from 'actions/app-state-actions';
+import { toggleWidget } from '../services/app-service';
+import { showSettings, hideSettings } from '../actions/app-state-actions';
 
 export class HeaderComponent extends Component {
     constructor(props) {

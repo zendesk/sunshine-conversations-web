@@ -1,16 +1,15 @@
-var path = require('path');
-var fs = require('fs');
-var webpack = require('webpack');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var StatsPlugin = require('stats-webpack-plugin');
-var loadersByExtension = require('./webpack/lib/loadersByExtension');
+const path = require('path');
+const fs = require('fs');
+const webpack = require('webpack');
+const StatsPlugin = require('stats-webpack-plugin');
+const loadersByExtension = require('./webpack/lib/loadersByExtension');
 
 module.exports = function(options) {
-    var VERSION = require('./package.json').version;
-    var PACKAGE_NAME = require('./package.json').name;
-    var LICENSE = fs.readFileSync('LICENSE', 'utf8');
+    const VERSION = require('./package.json').version;
+    const PACKAGE_NAME = require('./package.json').name;
+    const LICENSE = fs.readFileSync('LICENSE', 'utf8');
 
-    var config = require('./config/default/config.json');
+    const config = require('./config/default/config.json');
 
     try {
         Object.assign(config, require('./config/config.json'));
@@ -19,7 +18,9 @@ module.exports = function(options) {
         // do nothing
     }
 
-    var entry = {
+    var entry = options.assetsOnly ? {
+        assets: './src/js/utils/assets'
+    } : {
         smooch: ['./src/js/utils/polyfills', './src/js/main']
     };
 
@@ -43,25 +44,22 @@ module.exports = function(options) {
     };
     var additionalLoaders = [
         {
-            test: /\.js$/,
+            test: /load-image/,
             loader: 'imports?define=>false'
-        },
-        {
-            test: /src\/js\/main/,
-            loader: 'expose?Smooch'
         }
     ];
-    var alias = {};
 
-    if (options.test) {
-        Object.assign(alias, {
-            test: __dirname + '/test',
-            bootstrapTest: 'test/bootstrap'
+    if (!options.assetsOnly) {
+        additionalLoaders.push({
+            test: /src\/js\/main/,
+            loader: 'expose?Smooch'
         });
     }
 
+    var alias = {};
+
     var externals = [];
-    var modulesDirectories = ['node_modules', 'src', 'src/js'];
+    var modulesDirectories = ['node_modules'];
     var extensions = ['', '.web.js', '.js', '.jsx'];
     var root = path.join(__dirname, 'src');
     var publicPath = options.devServer ?
@@ -69,13 +67,13 @@ module.exports = function(options) {
         'https://cdn.smooch.io/';
 
     var output = {
-        path: path.join(__dirname, 'dist'),
+        path: options.outputPath || path.join(__dirname, 'dist'),
         publicPath: publicPath,
         filename: '[name].js' + (options.longTermCaching ? '?[chunkhash]' : ''),
         chunkFilename: (options.devServer ? '[id].js' : '[name].js') + (options.longTermCaching ? '?[chunkhash]' : ''),
         sourceMapFilename: '[file].map',
-        library: 'Smooch',
-        libraryTarget: 'umd',
+        library: options.assetsOnly ? undefined : 'Smooch',
+        libraryTarget: options.assetsOnly ? 'commonjs2' : 'umd',
         umdNamedDefine: true,
         pathinfo: options.debug
     };
@@ -85,15 +83,12 @@ module.exports = function(options) {
     ];
 
     var plugins = [
-        new webpack.DefinePlugin({
-            VERSION: JSON.stringify(VERSION)
-        }),
         new webpack.PrefetchPlugin('react'),
         new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment')
     ];
 
 
-    if (!options.test) {
+    if (!options.test && !options.assetsOnly) {
         plugins.push(new StatsPlugin('stats.json', {
             chunkModules: true,
             exclude: excludeFromStats
@@ -105,15 +100,9 @@ module.exports = function(options) {
         if (Array.isArray(stylesheetLoader)) {
             stylesheetLoader = stylesheetLoader.join('!');
         }
-        if (options.separateStylesheet) {
-            stylesheetLoaders[ext] = ExtractTextPlugin.extract('style-loader', stylesheetLoader);
-        } else {
-            stylesheetLoaders[ext] = 'style-loader!' + stylesheetLoader;
-        }
+
+        stylesheetLoaders[ext] = 'style/useable!' + stylesheetLoader;
     });
-    if (options.separateStylesheet) {
-        plugins.push(new ExtractTextPlugin('[name].css' + (options.longTermCaching ? '?[contenthash]' : '')));
-    }
 
     if (options.minimize) {
         plugins.push(
@@ -142,6 +131,14 @@ module.exports = function(options) {
                 }
             })
         );
+    } else if (options.assetsOnly) {
+        plugins.push(
+            new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: JSON.stringify('test')
+                }
+            })
+        );
     } else {
         plugins.push(
             new webpack.DefinePlugin({
@@ -157,7 +154,7 @@ module.exports = function(options) {
         output: output,
         target: 'web',
         module: {
-            loaders: [loadersByExtension(loaders)].concat(loadersByExtension(stylesheetLoaders)).concat(additionalLoaders)
+            loaders: loadersByExtension(loaders).concat(loadersByExtension(stylesheetLoaders)).concat(additionalLoaders)
         },
         devtool: options.devtool,
         debug: options.debug,

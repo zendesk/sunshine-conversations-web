@@ -2,17 +2,17 @@ import sinon from 'sinon';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
-
 import { Provider } from 'react-redux';
-import { mockComponent } from 'test/utils/react';
-import { createMockedStore } from 'test/utils/redux';
 
-import { HeaderComponent } from 'components/header.jsx';
-import { SettingsComponent } from 'components/settings.jsx';
-import { ConversationComponent } from 'components/conversation.jsx';
-import { ChatInputComponent } from 'components/chat-input.jsx';
-import { NotificationComponent } from 'components/notification.jsx';
-import { WidgetComponent } from 'components/widget.jsx';
+import { mockComponent } from '../../utils/react';
+import { createMockedStore } from '../../utils/redux';
+
+import { HeaderComponent } from '../../../src/js/components/header';
+import { SettingsComponent } from '../../../src/js/components/settings';
+import { ConversationComponent } from '../../../src/js/components/conversation';
+import { ChatInputComponent } from '../../../src/js/components/chat-input';
+import { NotificationComponent } from '../../../src/js/components/notification';
+import { WidgetComponent } from '../../../src/js/components/widget';
 
 const sandbox = sinon.sandbox.create();
 

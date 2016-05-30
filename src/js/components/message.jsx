@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
-import { TextMessage } from 'components/text-message';
-import { ImageMessage } from 'components/image-message';
-import { ActionComponent } from 'components/action';
+import { TextMessage } from './text-message';
+import { ImageMessage } from './image-message';
+import { ActionComponent } from './action';
 
 
 export class MessageComponent extends Component {
