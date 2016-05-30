@@ -1,8 +1,8 @@
-import { store } from 'stores/app-store';
-import * as AppStateActions from 'actions/app-state-actions';
-import { observable } from 'utils/events';
-import { preventMobilePageScroll, allowMobilePageScroll } from 'utils/dom';
-import { resetUnreadCount } from 'services/conversation-service';
+import { store } from '../stores/app-store';
+import * as AppStateActions from '../actions/app-state-actions';
+import { observable } from '../utils/events';
+import { preventMobilePageScroll, allowMobilePageScroll } from '../utils/dom';
+import { resetUnreadCount } from './conversation-service';
 
 
 

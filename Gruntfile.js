@@ -112,9 +112,7 @@ module.exports = function(grunt) {
         exec: {
             createRelease: {
                 cmd: function() {
-                    return [
-                        'git checkout -b r/' + this.option('globalVersion')
-                    ].join(' && ');
+                    return 'git checkout -b r/' + this.option('globalVersion');
                 }
             },
             cleanRelease: {
@@ -128,9 +126,7 @@ module.exports = function(grunt) {
             },
             commitFiles: {
                 cmd: function() {
-                    return [
-                        'git commit -am "Release v' + this.option('globalVersion') + ' [ci skip]"'
-                    ].join(' && ');
+                    return 'git commit -am "Release v' + this.option('globalVersion') + ' [ci skip]"';
                 }
             },
             push: {
@@ -144,17 +140,19 @@ module.exports = function(grunt) {
                 }
             },
             addDist: {
-                cmd: function() {
-                    return [
-                        'git add --force dist/smooch.js'
-                    ].join(' && ');
-                }
+                cmd: 'git add --force dist/smooch.js'
+            },
+            addLib: {
+                cmd: 'git add --force lib/'
             },
             clean: {
                 cmd: 'rm -rf dist/'
             },
             build: {
                 cmd: 'npm run build'
+            },
+            buildNpm: {
+                cmd: 'npm run build:npm'
             },
             hotDevServer: {
                 cmd: 'npm run hot-dev-server'
@@ -190,7 +188,7 @@ module.exports = function(grunt) {
     grunt.registerTask('versionBump', function() {
         var semver = require('semver');
         var VERSION_REGEXP = /(\bversion[\'\"]?\s*[:=]\s*[\'\"])([\da-z\.-]+)([\'\"])/i;
-        var files = ['package.json', 'bower.json'];
+        var files = ['package.json', 'bower.json', 'src/js/constants/version.js'];
         var fullVersion = grunt.option('version');
         var versionType = grunt.option('versionType');
         var globalVersion;
@@ -254,17 +252,13 @@ module.exports = function(grunt) {
         grunt.task.run('branchCheck', 'publish:prepare', 'publish:release', 'publish:cleanup');
     });
 
-    grunt.registerTask('build', ['clean', 'exec:build']);
-    grunt.registerTask('dev', ['concurrent:dev']);
-
-
-    grunt.registerTask('build', ['clean', 'exec:build']);
+    grunt.registerTask('build', ['clean', 'exec:build', 'exec:buildNpm']);
     grunt.registerTask('dev', ['concurrent:dev']);
 
     grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig', 's3:js', 's3:media', 'maxcdn']);
     grunt.registerTask('default', ['dev']);
 
-    grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist']);
+    grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist', 'exec:addLib']);
     grunt.registerTask('publish:release', ['release']);
     grunt.registerTask('publish:cleanup', ['exec:cleanRelease', 'exec:push']);
 

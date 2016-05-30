@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ImageLoader from 'react-imageloader';
 
-import { ImageLoading } from 'components/image-loading';
+import { ImageLoading } from './image-loading';
 
 export class ImageMessage extends Component {
     static propTypes = {

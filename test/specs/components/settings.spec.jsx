@@ -2,8 +2,8 @@ import sinon from 'sinon';
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
 
-import { SettingsComponent } from 'components/settings.jsx';
-import * as userService from 'services/user-service';
+import { SettingsComponent } from '../../../src/js/components/settings';
+import * as userService from '../../../src/js/services/user-service';
 
 const sandbox = sinon.sandbox.create();
 const defaultProps = {

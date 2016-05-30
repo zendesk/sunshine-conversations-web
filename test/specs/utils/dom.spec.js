@@ -1,4 +1,4 @@
-import { monitorUrlChanges, stopMonitoringUrlChanges } from 'utils/dom';
+import { monitorUrlChanges, stopMonitoringUrlChanges } from '../../../src/js/utils/dom';
 
 describe('monitorUrlChanges', () => {
     it('should monitor hash changes and call callback', (done) => {

@@ -1,8 +1,9 @@
 import sinon from 'sinon';
-import { openWidget, closeWidget, toggleWidget } from 'services/app-service';
-import { mockAppStore } from 'test/utils/redux';
-import { OPEN_WIDGET, CLOSE_WIDGET } from 'actions/app-state-actions';
-import { observable } from 'utils/events';
+
+import { openWidget, closeWidget, toggleWidget } from '../../../src/js/services/app-service';
+import { mockAppStore } from '../../utils/redux';
+import { OPEN_WIDGET, CLOSE_WIDGET } from '../../../src/js/actions/app-state-actions';
+import { observable } from '../../../src/js/utils/events';
 
 describe('App Service', () => {
     let mockedStore;

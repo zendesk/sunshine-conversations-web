@@ -1,7 +1,7 @@
 import thunkMiddleware from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 
-const AppStore = require('stores/app-store');
+const AppStore = require('../../src/js/stores/app-store');
 const store = AppStore.store;
 
 function restoreAppStore() {

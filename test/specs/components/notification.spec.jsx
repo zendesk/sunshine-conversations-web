@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
-import { NotificationComponent } from 'components/notification.jsx';
+import { NotificationComponent } from '../../../src/js/components/notification';
 
 const sandbox = sinon.sandbox.create();
 const defaultProps = {
