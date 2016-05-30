@@ -5,6 +5,7 @@ tmp
 dist/
 lib/
 !webpack/lib/
+!src/js/lib/
 grunt-aws.json
 grunt-maxcdn.json
 *.sublime-workspace
