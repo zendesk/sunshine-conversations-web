@@ -40,16 +40,15 @@
             position: relative;
 
             .sk-msg, .sk-msg-image {
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
-                font-size: 14px;
+                font-size: 16px;
                 line-height: 20px;
                 position: relative;
-                border-radius: 4px;
+                border-radius: 16px;
                 border-left-color: @sk-blue;
 
                 .imageloader {
                     display: block;
-                    border-radius: 4px;
+                    border-radius: inherit;
                     overflow: hidden;
                 }
 
@@ -64,6 +63,7 @@
 
                 .image-container {
                     position: relative;
+                    border-radius: inherit;
                 }
 
                 .image-overlay {
@@ -94,21 +94,6 @@
             .sk-msg {
                 padding: 8px 12px;
                 .word-break();
-
-                /* CSS Arrows Please */
-                &:after {
-                    bottom: 11px;
-                    border: solid transparent;
-                    content: " ";
-                    height: 0;
-                    width: 0;
-                    position: absolute;
-                    pointer-events: none;
-                    border-color: rgba(0, 174, 255, 0);
-                    border-left-color: inherit;
-                    border-width: 6px;
-                    margin-top: -6px;
-                }
                 .has-actions {
                     margin-bottom: 5px;
                     display: inline-block;
@@ -118,12 +103,12 @@
                 }
             }
             .sk-from {
-                position: absolute;
                 white-space: nowrap;
                 top: -20px;
                 font-size: 12px;
-                color: #797979;
+                color: #b0b0b0;
                 font-weight: 500;
+                padding-left: 12px;
             }
             .sk-action {
                 margin-bottom: 5px;
@@ -148,8 +133,8 @@
                 display: inline-block;
 
                 .sk-msg, .sk-msg-image {
-                    background-color: white;
-                    color: #333;
+                    background-color: #f4f4f4;
+                    color: #424242;
                     max-width: 200px;
 
                     &:after {
@@ -166,8 +151,13 @@
                 width: 35px;
                 border-radius: 50%;
                 margin-right: 10px;
-                margin-bottom: -14px;
+                margin-bottom: -11px;
                 display: inline-block;
+            }
+            .sk-msg-avatar-placeholder {
+                width: 35px;
+                display: inline-block;
+                margin-right: 10px;
             }
         }
         &.sk-right-row {
@@ -187,6 +177,10 @@
                 a.link, a.link:visited {
                     color: white;
                 }
+            }
+
+            .sk-msg-image {
+                background-color: transparent;
             }
         }
         &:last-child {
