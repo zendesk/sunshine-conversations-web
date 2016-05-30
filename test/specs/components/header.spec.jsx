@@ -3,9 +3,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
-import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId } from 'test/utils/react';
-import * as appService from 'services/app-service';
-import { HeaderComponent } from 'components/header.jsx';
+import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId } from '../../utils/react';
+import * as appService from '../../../src/js/services/app-service';
+import { HeaderComponent } from '../../../src/js/components/header';
 
 const sandbox = sinon.sandbox.create();
 let props;

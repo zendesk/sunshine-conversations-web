@@ -1,5 +1,5 @@
-import { SET_FAYE_SUBSCRIPTION, UNSET_FAYE_SUBSCRIPTION } from 'actions/faye-actions';
-import { RESET } from 'actions/common-actions';
+import { SET_FAYE_SUBSCRIPTION, UNSET_FAYE_SUBSCRIPTION } from '../actions/faye-actions';
+import { RESET } from '../actions/common-actions';
 
 const INITIAL_STATE = {};
 

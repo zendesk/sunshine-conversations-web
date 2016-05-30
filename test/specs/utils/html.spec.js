@@ -1,4 +1,4 @@
-import { createMarkup, autolink, escapeHtml } from 'utils/html';
+import { createMarkup, autolink, escapeHtml } from '../../../src/js/utils/html';
 
 describe('createMarkup', () => {
     it('should wrap the give value', () => {

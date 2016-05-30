@@ -1,5 +1,5 @@
-import * as AppStateActions from 'actions/app-state-actions';
-import { RESET } from 'actions/common-actions';
+import * as AppStateActions from '../actions/app-state-actions';
+import { RESET } from '../actions/common-actions';
 
 const INITIAL_STATE = {
     settingsVisible: false,

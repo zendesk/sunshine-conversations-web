@@ -1,14 +1,14 @@
-import { store } from 'stores/app-store';
-import { addMessage, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction } from 'actions/conversation-actions';
-import { updateUser } from 'actions/user-actions';
-import { showSettingsNotification, showErrorNotification } from 'actions/app-state-actions';
-import { setFayeSubscription, unsetFayeSubscription } from 'actions/faye-actions';
-import { core } from 'services/core';
-import { immediateUpdate } from 'services/user-service';
-import { initFaye } from 'utils/faye';
-import { observable } from 'utils/events';
-import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from 'utils/media';
-import { getDeviceId } from 'utils/device';
+import { store } from '../stores/app-store';
+import { addMessage, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction } from '../actions/conversation-actions';
+import { updateUser } from '../actions/user-actions';
+import { showSettingsNotification, showErrorNotification } from '../actions/app-state-actions';
+import { setFayeSubscription, unsetFayeSubscription } from '../actions/faye-actions';
+import { core } from './core';
+import { immediateUpdate } from './user-service';
+import { initFaye } from '../utils/faye';
+import { observable } from '../utils/events';
+import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
+import { getDeviceId } from '../utils/device';
 
 export function handleFirstUserMessage(response) {
     const state = store.getState();

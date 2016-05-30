@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { immediateUpdate } from 'services/user-service';
-import { hideSettings } from 'actions/app-state-actions';
+import { immediateUpdate } from '../services/user-service';
+import { hideSettings } from '../actions/app-state-actions';
 
 export class SettingsComponent extends Component {
     static defaultProps = {

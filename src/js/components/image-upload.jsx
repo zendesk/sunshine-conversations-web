@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { uploadImage } from 'services/conversation-service';
+import { uploadImage } from '../services/conversation-service';
 
-import { preventDefault } from 'utils/events';
+import { preventDefault } from '../utils/events';
 
 export class ImageUpload extends Component {
     constructor(...args) {
