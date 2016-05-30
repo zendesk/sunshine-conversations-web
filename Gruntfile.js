@@ -112,9 +112,7 @@ module.exports = function(grunt) {
         exec: {
             createRelease: {
                 cmd: function() {
-                    return [
-                        'git checkout -b r/' + this.option('globalVersion')
-                    ].join(' && ');
+                    return 'git checkout -b r/' + this.option('globalVersion');
                 }
             },
             cleanRelease: {
@@ -128,9 +126,7 @@ module.exports = function(grunt) {
             },
             commitFiles: {
                 cmd: function() {
-                    return [
-                        'git commit -am "Release v' + this.option('globalVersion') + ' [ci skip]"'
-                    ].join(' && ');
+                    return 'git commit -am "Release v' + this.option('globalVersion') + ' [ci skip]"';
                 }
             },
             push: {
@@ -144,18 +140,10 @@ module.exports = function(grunt) {
                 }
             },
             addDist: {
-                cmd: function() {
-                    return [
-                        'git add --force dist/smooch.js'
-                    ].join(' && ');
-                }
+                cmd: 'git add --force dist/smooch.js'
             },
             addLib: {
-                cmd: function() {
-                    return [
-                        'git add --force lib/'
-                    ].join(' && ');
-                }
+                cmd: 'git add --force lib/'
             },
             clean: {
                 cmd: 'rm -rf dist/'
