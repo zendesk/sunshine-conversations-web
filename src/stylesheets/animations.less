@@ -53,6 +53,7 @@
 @-webkit-keyframes sk-close-frames {
     0% {
         bottom: 0;
+        top: @widget-close-top;
     }
     100% {
         bottom: @widget-close-bottom;
@@ -61,9 +62,11 @@
 @keyframes sk-close-frames {
     0% {
         bottom: 0;
+        top: inherit;
     }
     100% {
         bottom: @widget-close-bottom;
+        top: @widget-close-top;
     }
 }
 
@@ -75,4 +78,8 @@
 
     -webkit-touch-callout: none;
      -khtml-user-select: none;
+}
+
+.sk-init {
+    top: @widget-close-top;
 }

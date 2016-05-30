@@ -56,6 +56,8 @@ export class WidgetComponent extends Component {
                 classNames.push('sk-appear');
             } else if (this.props.appState.widgetOpened === false) {
                 classNames.push('sk-close');
+            } else {
+                classNames.push('sk-init');
             }
         }
 
