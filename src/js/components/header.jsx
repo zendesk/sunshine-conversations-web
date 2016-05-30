@@ -70,7 +70,7 @@ export class HeaderComponent extends Component {
                                  { settingsHeaderText }
                              </div>;
         const headerStyle = {};
-        if (this.props.settings.accentColor) {
+        if (this.props.settings && this.props.settings.accentColor) {
             headerStyle.backgroundColor = `#${this.props.settings.accentColor}`;
         }
 
