@@ -52,7 +52,7 @@
     "react-stripe-checkout": "1.7.2",
     "redux": "3.3.1",
     "redux-thunk": "2.1.0",
-    "smooch-core": "1.2.0",
+    "smooch-core": "1.2.1",
     "urljoin": "0.1.5",
     "uuid": "2.0.1"
   },
@@ -138,9 +138,9 @@
     "webpack-dev-server": "1.14.0"
   },
   "peerDependencies": {
-    "babel-polyfill": "6.9.0",
-    "babel-runtime": "6.9.0",
-    "react": "0.14.7",
-    "react-dom": "0.14.7"
+    "babel-polyfill": "6.9.x",
+    "babel-runtime": "6.9.x",
+    "react": "0.14.x",
+    "react-dom": "0.14.x"
   }
 }
