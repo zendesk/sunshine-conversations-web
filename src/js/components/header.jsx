@@ -75,7 +75,7 @@ export class HeaderComponent extends Component {
         }
 
         return (
-            <div id={ settingsVisible ? 'sk-settings-header' : 'sk-header' } style={ headerStyle } onClick={ !embedded && toggleWidget }>
+            <div id={ settingsVisible ? 'sk-settings-header' : 'sk-header' } style={ headerStyle } onClick={ !embedded && toggleWidget } className='sk-header-wrapper'>
                 { settingsButton }
                 { backButton }
                 { settingsVisible ? settingsText : headerText }
