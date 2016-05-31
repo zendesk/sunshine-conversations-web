@@ -26,7 +26,7 @@ const sortMessages = (messages) => messages.sort((messageA, messageB) => {
 
 const addMessage = (messages, message) => {
     const messagesLength = messages.length;
-    if (messagesLength > 1) {
+    if (messagesLength > 0) {
         const previousMessage = messages[messagesLength - 1];
         const messageAuthor = message.role === 'appUser' ? message.role : message.name;
         const previousMessageAuthor = previousMessage.role === 'appUser' ? previousMessage.role : previousMessage.name;
@@ -95,7 +95,7 @@ const assignGroups = (messages) => {
         if (lastAuthor === author) {
                 if (index > 0) {
                    messages[index - 1].lastInGroup = false;
-                    message.lastInGroup = true;
+                   message.lastInGroup = true;
                 }
             } else {
                 message.firstInGroup = true;
