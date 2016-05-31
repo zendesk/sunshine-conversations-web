@@ -62,31 +62,7 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const processedMessages = [...this.props.conversation.messages];
-        let lastAuthor;
-        processedMessages.forEach((message, index) => {
-            const author = message.role === 'appUser' ? message.role : `${message.role}_${message.name}`;
-
-            if (!lastAuthor) {
-                lastAuthor = author;
-                message.firstInGroup = true;
-                message.lastInGroup = true;
-            }
-
-            if (lastAuthor === author) {
-                if (index > 0) {
-                    processedMessages[index - 1].lastInGroup = false;
-                    message.lastInGroup = true;
-                }
-            } else {
-                message.firstInGroup = true;
-                message.lastInGroup = true;
-            }
-
-            lastAuthor = author;
-        });
-
-        const messages = processedMessages.map((message) => {
+        const messages = [...this.props.conversation.messages].map((message) => {
 
             return <MessageComponent key={ message._clientId || message._id }
                                      accentColor={ this.props.settings.accentColor }
