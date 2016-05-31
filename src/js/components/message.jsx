@@ -19,8 +19,9 @@ export class MessageComponent extends Component {
 
         const isAppUser = this.props.role === 'appUser';
 
+        const avatarClass = this.props.mediaUrl ? ['sk-msg-avatar', 'sk-msg-avatar-img'] : ['sk-msg-avatar'];
         const avatar = isAppUser ? null : (
-            <img className='sk-msg-avatar'
+            <img className={ avatarClass.join(' ') }
                  src={ this.props.avatarUrl } />
             );
         const avatarPlaceHolder = isAppUser ? null : (<div className='sk-msg-avatar-placeholder'/>);
