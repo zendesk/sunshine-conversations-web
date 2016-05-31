@@ -28,8 +28,8 @@ const addMessage = (messages, message) => {
     const messagesLength = messages.length;
     if (messagesLength > 1) {
         const previousMessage = messages[messagesLength - 1];
-        const messageAuthor = message.role === 'appUser' ? message.role : `${message.role}_${message.name}`;
-        const previousMessageAuthor = previousMessage.role === 'appUser' ? previousMessage.role : `${previousMessage.role}_${previousMessage.name}`;
+        const messageAuthor = message.role === 'appUser' ? message.role : message.name;
+        const previousMessageAuthor = previousMessage.role === 'appUser' ? previousMessage.role : previousMessage.name;
         if (messageAuthor !== previousMessageAuthor) {
             message.firstInGroup = true;
             message.lastInGroup = true;
@@ -84,7 +84,7 @@ const removeDuplicates = (messages) => {
 const assignGroups = (messages) => {
     let lastAuthor;
     messages.forEach((message, index) => {
-        const author = message.role === 'appUser' ? message.role : `${message.role}_${message.name}`;
+        const author = message.role === 'appUser' ? message.role : message.name;
 
         if (!lastAuthor) {
                 lastAuthor = author;
