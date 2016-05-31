@@ -105,7 +105,7 @@
                     text-decoration: underline;
                 }
                 &.sk-msg-appmaker-first {
-                border-bottom-left-radius: 2px;
+                    border-bottom-left-radius: 2px;
                 }
                 &.sk-msg-appmaker-middle {
                     border-bottom-left-radius: 2px;
@@ -210,6 +210,28 @@
 
             .sk-msg-image {
                 background-color: transparent;
+                &.sk-msg-appmaker-first {
+                    border-bottom-left-radius: 2px;
+                }
+                &.sk-msg-appmaker-middle {
+                    border-bottom-left-radius: 2px;
+                    border-top-left-radius: 2px;
+                }
+                &.sk-msg-appmaker-last {
+                    border-top-left-radius: 2px;
+                    margin-bottom: 3px;
+                }
+                &.sk-msg-appuser-first {
+                    border-bottom-right-radius: 2px;
+                }
+                &.sk-msg-appuser-middle {
+                    border-bottom-right-radius: 2px;
+                    border-top-right-radius: 2px;
+                }
+                &.sk-msg-appuser-last {
+                    border-top-right-radius: 2px;
+                    margin-bottom: 3px;
+                }
             }
         }
         &:last-child {
@@ -251,4 +273,5 @@
             vertical-align: baseline;
         }
     }
+
 }

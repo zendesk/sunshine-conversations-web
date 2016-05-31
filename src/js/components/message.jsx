@@ -42,26 +42,26 @@ export class MessageComponent extends Component {
           if (isAppUser && this.props.accentColor) {
             style.backgroundColor = style.borderLeftColor = `#${this.props.accentColor}`;
           }
-          if (this.props.firstInGroup && !this.props.lastInGroup) {
-            if (isAppUser) {
-              containerClass.push('sk-msg-appuser-first');
-            } else {
-              containerClass.push('sk-msg-appmaker-first');
-            }
+        }
+        if (this.props.firstInGroup && !this.props.lastInGroup) {
+          if (isAppUser) {
+            containerClass.push('sk-msg-appuser-first');
+          } else {
+            containerClass.push('sk-msg-appmaker-first');
           }
-          if (this.props.lastInGroup && !this.props.firstInGroup) {
-            if (isAppUser) {
-              containerClass.push('sk-msg-appuser-last');
-            } else {
-              containerClass.push('sk-msg-appmaker-last');
-            }
+        }
+        if (this.props.lastInGroup && !this.props.firstInGroup) {
+          if (isAppUser) {
+            containerClass.push('sk-msg-appuser-last');
+          } else {
+            containerClass.push('sk-msg-appmaker-last');
           }
-          if (!this.props.firstInGroup && !this.props.lastInGroup) {
-            if (isAppUser) {
-              containerClass.push('sk-msg-appuser-middle');
-            } else {
-              containerClass.push('sk-msg-appmaker-middle');
-            }
+        }
+        if (!this.props.firstInGroup && !this.props.lastInGroup) {
+          if (isAppUser) {
+            containerClass.push('sk-msg-appuser-middle');
+          } else {
+            containerClass.push('sk-msg-appmaker-middle');
           }
         }
 
