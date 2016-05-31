@@ -70,9 +70,9 @@ export class MessageComponent extends Component {
                        </div>;
 
         return <div className={ 'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row') }>
+                   {!isAppUser && this.props.firstInGroup ? fromName : ''}
                    { this.props.lastInGroup ? avatar : avatarPlaceHolder }
                    <div className='sk-msg-wrapper'>
-                       {!isAppUser && this.props.firstInGroup ? fromName : ''}
                        <div className={ containerClass.join(' ') }
                             style={ style }>
                            { message }
