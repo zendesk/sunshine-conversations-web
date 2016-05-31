@@ -25,6 +25,23 @@ const sortMessages = (messages) => messages.sort((messageA, messageB) => {
 });
 
 const addMessage = (messages, message) => {
+    const messagesLength = messages.length;
+    if (messagesLength > 1) {
+        const previousMessage = messages[messagesLength - 1];
+        const messageAuthor = message.role === 'appUser' ? message.role : `${message.role}_${message.name}`;
+        const previousMessageAuthor = previousMessage.role === 'appUser' ? previousMessage.role : `${previousMessage.role}_${previousMessage.name}`;
+        if (messageAuthor !== previousMessageAuthor) {
+            message.firstInGroup = true;
+            message.lastInGroup = true;
+        } else {
+            message.lastInGroup = true;
+            previousMessage.lastInGroup = false;
+            messages[messagesLength - 1] = previousMessage;
+        }
+    } else {
+        message.firstInGroup = true;
+        message.lastInGroup = true;
+    }
     return sortMessages([...messages, message]);
 };
 
@@ -39,7 +56,9 @@ const replaceMessage = (messages, query, newMessage) => {
     if (existingMessage._clientId) {
         newMessage = {
             ...newMessage,
-            _clientId: existingMessage._clientId
+            _clientId: existingMessage._clientId,
+            lastInGroup: existingMessage.lastInGroup,
+            firstInGroup: existingMessage.firstInGroup
         };
     }
 
@@ -62,6 +81,32 @@ const removeDuplicates = (messages) => {
     return messagesNoDuplicates;
 };
 
+const assignGroups = (messages) => {
+    let lastAuthor;
+    messages.forEach((message, index) => {
+        const author = message.role === 'appUser' ? message.role : `${message.role}_${message.name}`;
+
+        if (!lastAuthor) {
+                lastAuthor = author;
+                message.firstInGroup = true;
+                message.lastInGroup = true;
+            }
+
+        if (lastAuthor === author) {
+                if (index > 0) {
+                   messages[index - 1].lastInGroup = false;
+                    message.lastInGroup = true;
+                }
+            } else {
+                message.firstInGroup = true;
+                message.lastInGroup = true;
+            }
+
+        lastAuthor = author;
+    });
+    return messages;
+};
+
 export function ConversationReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case RESET:
@@ -69,7 +114,7 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             return Object.assign({}, INITIAL_STATE);
         case ConversationActions.SET_CONVERSATION:
             return Object.assign({}, action.conversation, {
-                messages: sortMessages(removeDuplicates(action.conversation.messages))
+                messages: assignGroups(sortMessages(removeDuplicates(action.conversation.messages)))
             });
         case ConversationActions.ADD_MESSAGE:
             return Object.assign({}, state, {
