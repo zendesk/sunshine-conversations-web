@@ -35,6 +35,8 @@
 
     .sk-row {
         clear: both;
+        padding-bottom: 0px;
+        padding-top: 2px;
 
         .sk-msg-wrapper {
             max-width: 100%;
@@ -44,7 +46,7 @@
                 font-size: @font-size-base;
                 line-height: 1.25;
                 position: relative;
-                border-radius: 16px;
+                border-radius: 14px;
                 border-left-color: @sk-blue;
 
                 .imageloader {
@@ -102,6 +104,28 @@
                 a.link {
                     text-decoration: underline;
                 }
+                &.sk-msg-appmaker-first {
+                border-bottom-left-radius: 2px;
+                }
+                &.sk-msg-appmaker-middle {
+                    border-bottom-left-radius: 2px;
+                    border-top-left-radius: 2px;
+                }
+                &.sk-msg-appmaker-last {
+                    border-top-left-radius: 2px;
+                    margin-bottom: 3px;
+                }
+                &.sk-msg-appuser-first {
+                    border-bottom-right-radius: 2px;
+                }
+                &.sk-msg-appuser-middle {
+                    border-bottom-right-radius: 2px;
+                    border-top-right-radius: 2px;
+                }
+                &.sk-msg-appuser-last {
+                    border-top-right-radius: 2px;
+                    margin-bottom: 3px;
+                }
             }
             .sk-from {
                 white-space: nowrap;
@@ -129,8 +153,6 @@
             }
         }
         &.sk-left-row {
-            padding-top: 30px;
-
             .sk-msg-wrapper {
                 display: inline-block;
 
@@ -164,8 +186,6 @@
             }
         }
         &.sk-right-row {
-            padding-top: 10px;
-
             .sk-msg, .sk-msg-image {
                 background-color: @sk-blue;
                 float: right;

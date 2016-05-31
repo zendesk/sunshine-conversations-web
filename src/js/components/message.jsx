@@ -23,7 +23,7 @@ export class MessageComponent extends Component {
             <img className='sk-msg-avatar'
                  src={ this.props.avatarUrl } />
             );
-        const avatarPlaceHolder = isAppUser? null : (<div className='sk-msg-avatar-placeholder'/>);
+        const avatarPlaceHolder = isAppUser ? null : (<div className='sk-msg-avatar-placeholder'/>);
 
         const message = this.props.mediaUrl ?
             <ImageMessage {...this.props} /> :
@@ -38,49 +38,37 @@ export class MessageComponent extends Component {
         const style = {};
 
         if (!this.props.mediaUrl) {
-          style.borderTopLeftRadius = style.borderTopRightRadius = style.borderBottomLeftRadius = style.borderBottomRightRadius = 16;
           if (isAppUser && this.props.accentColor) {
             style.backgroundColor = style.borderLeftColor = `#${this.props.accentColor}`;
           }
           if (this.props.firstInGroup && !this.props.lastInGroup) {
             if (isAppUser) {
-              style.borderBottomRightRadius = 2;
+              containerClass.push('sk-msg-appuser-first');
             } else {
-              style.borderBottomLeftRadius = 2;
+              containerClass.push('sk-msg-appmaker-first');
             }
           }
           if (this.props.lastInGroup && !this.props.firstInGroup) {
             if (isAppUser) {
-              style.borderTopRightRadius = 2;
+              containerClass.push('sk-msg-appuser-last');
             } else {
-              style.borderTopLeftRadius = 2;
+              containerClass.push('sk-msg-appmaker-last');
             }
           }
           if (!this.props.firstInGroup && !this.props.lastInGroup) {
             if (isAppUser) {
-              style.borderBottomRightRadius = style.borderTopRightRadius = 2;
+              containerClass.push('sk-msg-appuser-middle');
             } else {
-              style.borderBottomLeftRadius = style.borderTopLeftRadius = 2;
+              containerClass.push('sk-msg-appmaker-middle');
             }
           }
         }
-        
-        if (this.props.lastInGroup) {
-          style.marginBottom = 3;
-        }
-
-        const styleRow = {
-          paddingBottom: 0,
-          paddingTop: 2
-        };
-
 
         const fromName = <div className='sk-from'>
                            { isAppUser ? '' : this.props.name }
                        </div>;
 
-        return <div className={ 'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row') }
-                    style={ styleRow }>
+        return <div className={ 'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row') }>
                    { this.props.lastInGroup ? avatar : avatarPlaceHolder }
                    <div className='sk-msg-wrapper'>
                        {!isAppUser && this.props.firstInGroup ? fromName : ''}
