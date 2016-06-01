@@ -12,7 +12,7 @@ export class MessageComponent extends Component {
     };
 
     componentDidMount() {
-        if (this.props.actions.length == 0) {
+        if (this.props.actions.length === 0) {
             this._restyleBubble();
         }
     }
