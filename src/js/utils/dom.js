@@ -91,3 +91,13 @@ export function stopMonitoringBrowserState() {
     window.removeEventListener('focus', onWindowFocus);
     window.removeEventListener('blur', onWindowBlur);
 }
+
+export function getElementProperties(element) {
+    return {
+        width: element.offsetWidth || 0,
+        height: element.offsetHeight || 0,
+        paddingLeft: window.getComputedStyle(element, null).getPropertyValue('padding-left'),
+        paddingRight: window.getComputedStyle(element, null).getPropertyValue('padding-right'),
+        fontSize: window.getComputedStyle(element, null).getPropertyValue('font-size')
+    };
+}

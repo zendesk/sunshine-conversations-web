@@ -4,16 +4,7 @@ import { TextMessage } from './text-message';
 import { ImageMessage } from './image-message';
 import { ActionComponent } from './action';
 import { findDOMNode } from 'react-dom';
-
-const getElementProperties = (element) => {
-    return {
-        width: element.offsetWidth || 0,
-        height: element.offsetHeight || 0,
-        paddingLeft: window.getComputedStyle(element, null).getPropertyValue('padding-left'),
-        paddingRight: window.getComputedStyle(element, null).getPropertyValue('padding-right'),
-        fontSize: window.getComputedStyle(element, null).getPropertyValue('font-size')
-    };
-};
+import { getElementProperties } from '../utils/dom';
 
 export class MessageComponent extends Component {
     static defaultProps = {
