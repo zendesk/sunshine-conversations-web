@@ -101,9 +101,7 @@ function onStoreChange({messages, unreadCount}) {
 }
 
 export class Smooch {
-    get VERSION() {
-        return VERSION;
-    }
+    VERSION = VERSION
 
     on() {
         return observable.on(...arguments);
