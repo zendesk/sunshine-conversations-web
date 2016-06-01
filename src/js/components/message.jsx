@@ -3,12 +3,41 @@ import React, { Component } from 'react';
 import { TextMessage } from './text-message';
 import { ImageMessage } from './image-message';
 import { ActionComponent } from './action';
+import { findDOMNode } from 'react-dom';
 
+const getElementProperties = (element) => {
+    return {
+        width: element.offsetWidth || 0,
+        height: element.offsetHeight || 0,
+        paddingLeft: window.getComputedStyle(element, null).getPropertyValue('padding-left'),
+        paddingRight: window.getComputedStyle(element, null).getPropertyValue('padding-right'),
+        fontSize: window.getComputedStyle(element, null).getPropertyValue('font-size')
+    };
+};
 
 export class MessageComponent extends Component {
     static defaultProps = {
         actions: []
     };
+
+    componentDidMount() {
+        if (this.props.actions.length == 0) {
+            this._restyleBubble();
+        }
+    }
+
+    _restyleBubble() {
+        const bubble = findDOMNode(this.refs.messageContent);
+        if (bubble) {
+            const messageElement = bubble.firstChild;
+            const messageProperties = getElementProperties(messageElement);
+            const bubbleProperties = getElementProperties(bubble);
+            const multiLineCheck = parseInt(bubbleProperties.fontSize) * 2;
+            if (messageProperties.height > multiLineCheck && messageProperties.width < bubbleProperties.width) {
+                bubble.style.width = (messageProperties.width + parseInt(bubbleProperties.paddingLeft) + parseInt(bubbleProperties.paddingRight)) + 'px';
+            }
+        }
+    }
 
     render() {
         const actions = this.props.actions.map((action) => {
