@@ -52,20 +52,18 @@
 }
 @-webkit-keyframes sk-close-frames {
     0% {
-        bottom: 0;
-        top: @widget-close-top;
+        top: 25vh;
+
     }
     100% {
-        bottom: @widget-close-bottom;
+        top: @widget-close-top;
     }
 }
 @keyframes sk-close-frames {
     0% {
-        bottom: 0;
-        top: inherit;
+        top: 25vh;
     }
     100% {
-        bottom: @widget-close-bottom;
         top: @widget-close-top;
     }
 }
@@ -80,6 +78,6 @@
      -khtml-user-select: none;
 }
 
-.sk-init {
+.sk-init, .sk-close {
     top: @widget-close-top;
 }
