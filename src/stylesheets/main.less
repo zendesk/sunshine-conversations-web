@@ -48,6 +48,10 @@
             background: @background-color;
             width: @widget-width;
             height: @widget-height;
+            max-height: 640px;
+            min-height: 420px;
+            max-width: 410px;
+            min-width: 330px;
             position: relative;
             border-radius: 10px 10px 0 0;
         }
@@ -64,7 +68,13 @@
             }
             #sk-wrapper {
                 width: 100%;
+                max-width: 100%;
             }
+        }
+        .input {
+            background-color: white;
+            border: 1px solid white;
+            padding: 0px;
         }
     }
     @media (max-width: @screen-sm-min) {
@@ -88,6 +98,7 @@
     #sk-settings-header {
         cursor: default;
         border-radius: 0;
+        height: 50px;
         .sk-close-handle,
         .sk-show-handle {
             display: none;
@@ -105,6 +116,7 @@
     }
     #sk-footer {
         box-shadow: none;
+        height: 50px;
     }
     .sk-settings {
         width: 100%;

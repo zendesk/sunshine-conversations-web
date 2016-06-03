@@ -52,18 +52,19 @@
 }
 @-webkit-keyframes sk-close-frames {
     0% {
-        bottom: 0;
+        top: 25vh;
+
     }
     100% {
-        bottom: @widget-close-bottom;
+        top: @widget-close-top;
     }
 }
 @keyframes sk-close-frames {
     0% {
-        bottom: 0;
+        top: 25vh;
     }
     100% {
-        bottom: @widget-close-bottom;
+        top: @widget-close-top;
     }
 }
 
@@ -75,4 +76,8 @@
 
     -webkit-touch-callout: none;
      -khtml-user-select: none;
+}
+
+.sk-init, .sk-close {
+    top: @widget-close-top;
 }

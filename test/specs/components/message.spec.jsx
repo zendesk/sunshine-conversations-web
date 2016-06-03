@@ -66,8 +66,7 @@ describe('Message', () => {
         });
 
         it('should not put an author name on the message', () => {
-            const fromNode = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-from');
-            fromNode.textContent.should.be.eq('');
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-from').length.should.eq(0);
         });
 
         it('should not contain any actions', () => {
@@ -87,24 +86,24 @@ describe('Message', () => {
                 name: 'Smooch',
                 avatarUrl: 'http://some-image.url'
             });
+            const firstMessageProps = Object.assign({}, props, {
+                        firstInGroup: true
+            });
+            const lastMessageProps = Object.assign({}, props, {
+                        lastInGroup: true
+                    });
+            const firstMessageComponent = TestUtils.renderIntoDocument(<MessageComponent {...firstMessageProps} />);
+            const lastMessageComponent = TestUtils.renderIntoDocument(<MessageComponent {...lastMessageProps} />);
 
             beforeEach(() => {
                 component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
-            });
 
-            it('should have an avatar', () => {
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-msg-avatar').length.should.be.eq(1);
             });
 
             it('should be on the left', () => {
                 const row = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-row');
                 row.className.indexOf('sk-left-row').should.be.gte(0);
                 row.className.indexOf('sk-right-row').should.be.eq(-1);
-            });
-
-            it('should put an author name on the message', () => {
-                const fromNode = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-from');
-                fromNode.textContent.should.be.eq(props.name);
             });
 
             it('should not contain any actions', () => {
@@ -114,6 +113,27 @@ describe('Message', () => {
             it('should contains the given text', () => {
                 const message = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-msg');
                 message.textContent.should.eq(props.text);
+            });
+
+            describe('avatar', () => {
+                it('should not display on first message', () => {
+                    TestUtils.scryRenderedDOMComponentsWithClass(firstMessageComponent, 'sk-msg-avatar').length.should.eq(0);
+                });
+
+                it('should display on last message', () => {
+                    TestUtils.scryRenderedDOMComponentsWithClass(lastMessageComponent, 'sk-msg-avatar').length.should.eq(1);
+                });
+            });
+
+
+            describe('author name', () => {
+                it('should display on first message', () => {
+                    const fromNode = TestUtils.findRenderedDOMComponentWithClass(firstMessageComponent, 'sk-from');
+                    fromNode.textContent.should.be.eq(props.name);
+                });
+                it('should not display on last message', () => {
+                    TestUtils.scryRenderedDOMComponentsWithClass(lastMessageComponent, 'sk-from').length.should.eq(0);
+                });
             });
         });
 
@@ -140,19 +160,10 @@ describe('Message', () => {
                 component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
             });
 
-            it('should have an avatar', () => {
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-msg-avatar').length.should.be.eq(1);
-            });
-
             it('should be on the left', () => {
                 const row = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-row');
                 row.className.indexOf('sk-left-row').should.be.gte(0);
                 row.className.indexOf('sk-right-row').should.be.eq(-1);
-            });
-
-            it('should put an author name on the message', () => {
-                const fromNode = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-from');
-                fromNode.textContent.should.be.eq(props.name);
             });
 
             it('should contain any actions', () => {
