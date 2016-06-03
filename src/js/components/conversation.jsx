@@ -62,7 +62,7 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const messages = [...this.props.conversation.messages].map((message) => {
+        const messages = this.props.conversation.messages.map((message) => {
 
             return <MessageComponent key={ message._clientId || message._id }
                                      accentColor={ this.props.settings.accentColor }
@@ -92,9 +92,9 @@ export class ConversationComponent extends Component {
                          style={ logoStyle }>
                         <a href='https://smooch.io/live-web-chat/?utm_source=widget'
                            target='_blank'><span>Messaging by</span> <img className='sk-image'
-                                                                                                                      src={ logo }
-                                                                                                                      srcSet={ `${logo} 1x, ${logo2x} 2x` }
-                                                                                                                      alt='smooch.io' /></a>
+                                                                                                                                    src={ logo }
+                                                                                                                                    srcSet={ `${logo} 1x, ${logo2x} 2x` }
+                                                                                                                                    alt='smooch.io' /></a>
                     </div>
                 </div>
             </div>
