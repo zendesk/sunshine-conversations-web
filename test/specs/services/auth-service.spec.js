@@ -1,7 +1,8 @@
 import sinon from 'sinon';
-import { createMock } from 'test/mocks/core';
-import * as coreService from 'services/core';
-import { login } from 'services/auth-service';
+
+import { createMock } from '../../mocks/core';
+import * as coreService from '../../../src/js/services/core';
+import { login } from '../../../src/js/services/auth-service';
 
 describe('Auth service', () => {
     var sandbox;

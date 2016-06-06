@@ -1,5 +1,5 @@
-import { SET_USER, RESET_USER, UPDATE_USER } from 'actions/user-actions';
-import { RESET } from 'actions/common-actions';
+import { SET_USER, RESET_USER, UPDATE_USER } from '../actions/user-actions';
+import { RESET } from '../actions/common-actions';
 
 const INITIAL_STATE = {};
 

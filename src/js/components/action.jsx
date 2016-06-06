@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import StripeCheckout from 'react-stripe-checkout';
 
-import { store } from 'stores/app-store';
-import { createTransaction } from 'services/stripe-service';
-import { immediateUpdate } from 'services/user-service';
-import { postPostback } from 'services/conversation-service';
+import { store } from '../stores/app-store';
+import { createTransaction } from '../services/stripe-service';
+import { immediateUpdate } from '../services/user-service';
+import { postPostback } from '../services/conversation-service';
 
-import { LoadingComponent } from 'components/loading';
+import { LoadingComponent } from './loading';
 
 export class ActionComponent extends Component {
     constructor(...args) {
@@ -131,7 +131,8 @@ export class ActionComponent extends Component {
                     );
             }
         } else if (this.props.type === 'postback') {
-            const text = this.state.state === 'processing' ?
+            const isProcessing = this.state.state === 'processing';
+            const text = isProcessing ?
                 <LoadingComponent /> :
                 this.props.text;
 
@@ -139,7 +140,7 @@ export class ActionComponent extends Component {
                 <div className='sk-action'>
                     <button className='btn btn-sk-primary'
                             style={ style }
-                            onClick={ this.onPostbackClick }>
+                            onClick={ !isProcessing && this.onPostbackClick }>
                             { text }
                     </button>
                 </div>

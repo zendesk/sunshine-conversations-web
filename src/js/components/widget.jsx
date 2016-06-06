@@ -5,15 +5,15 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import isMobile from 'ismobilejs';
 import debounce from 'lodash.debounce';
 
-import { Header } from 'components/header';
-import { Conversation } from 'components/conversation';
-import { Settings } from 'components/settings';
-import { Notification } from 'components/notification';
-import { ErrorNotification } from 'components/error-notification';
-import { ChatInput } from 'components/chat-input';
-import { MessageIndicator } from 'components/message-indicator';
+import { Header } from './header';
+import { Conversation } from './conversation';
+import { Settings } from './settings';
+import { Notification } from './notification';
+import { ErrorNotification } from './error-notification';
+import { ChatInput } from './chat-input';
+import { MessageIndicator } from './message-indicator';
 
-import { resetUnreadCount } from 'services/conversation-service';
+import { resetUnreadCount } from '../services/conversation-service';
 
 export class WidgetComponent extends Component {
     onTouchStart = (e) => {
@@ -56,6 +56,8 @@ export class WidgetComponent extends Component {
                 classNames.push('sk-appear');
             } else if (this.props.appState.widgetOpened === false) {
                 classNames.push('sk-close');
+            } else {
+                classNames.push('sk-init');
             }
         }
 

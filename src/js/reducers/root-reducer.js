@@ -1,13 +1,13 @@
 import { combineReducers } from 'redux';
 
-import { ConversationReducer } from 'reducers/conversation-reducer';
-import { UIReducer } from 'reducers/ui-reducer';
-import { AppStateReducer } from 'reducers/app-state-reducer';
-import { AuthReducer } from 'reducers/auth-reducer';
-import { UserReducer } from 'reducers/user-reducer';
-import { FayeReducer } from 'reducers/faye-reducer';
-import { AppReducer } from 'reducers/app-reducer';
-import { BrowserReducer } from 'reducers/browser-reducer';
+import { ConversationReducer } from './conversation-reducer';
+import { UIReducer } from './ui-reducer';
+import { AppStateReducer } from './app-state-reducer';
+import { AuthReducer } from './auth-reducer';
+import { UserReducer } from './user-reducer';
+import { FayeReducer } from './faye-reducer';
+import { AppReducer } from './app-reducer';
+import { BrowserReducer } from './browser-reducer';
 
 export const RootReducer = combineReducers({
     conversation: ConversationReducer,

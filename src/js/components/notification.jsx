@@ -3,9 +3,9 @@ import { findDOMNode } from 'react-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { createMarkup } from 'utils/html';
+import { createMarkup } from '../utils/html';
 
-import { hideSettingsNotification, showSettings } from 'actions/app-state-actions';
+import { hideSettingsNotification, showSettings } from '../actions/app-state-actions';
 
 export class NotificationComponent extends Component {
     static defaultProps = {

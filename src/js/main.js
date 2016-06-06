@@ -1,4 +1,3 @@
-require('../stylesheets/main.less');
-var Smooch = require('smooch.jsx').Smooch;
+const Smooch = require('./smooch').Smooch;
 
 module.exports = new Smooch();

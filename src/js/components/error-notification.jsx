@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { createMarkup } from 'utils/html';
-import { preventDefault } from 'utils/events';
+import { createMarkup } from '../utils/html';
+import { preventDefault } from '../utils/events';
 
-import { hideErrorNotification } from 'actions/app-state-actions';
+import { hideErrorNotification } from '../actions/app-state-actions';
 
 export class ErrorNotificationComponent extends Component {
     render() {
