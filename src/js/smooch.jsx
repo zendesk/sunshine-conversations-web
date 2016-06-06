@@ -69,7 +69,6 @@ observable.on('message:received', (message) => {
 });
 
 let lastTriggeredMessageTimestamp = 0;
-let initialStoreChange = true;
 let unsubscribeFromStore;
 
 function handleNotificationSound() {
@@ -89,19 +88,16 @@ function onStoreChange({messages, unreadCount}) {
             filteredMessages.slice(-unreadCount).filter((message) => message.received > lastTriggeredMessageTimestamp).forEach((message) => {
                 observable.trigger('message:received', message);
                 lastTriggeredMessageTimestamp = message.received;
-
-                if (initialStoreChange) {
-                    initialStoreChange = false;
-                } else {
-                    handleNotificationSound();
-                }
+                handleNotificationSound();
             });
         }
     }
 }
 
 export class Smooch {
-    VERSION = VERSION
+    get VERSION() {
+        return VERSION;
+    }
 
     on() {
         return observable.on(...arguments);
@@ -190,8 +186,6 @@ export class Smooch {
         }));
 
         lastTriggeredMessageTimestamp = 0;
-        initialStoreChange = true;
-
         return login({
             userId: userId,
             device: {
