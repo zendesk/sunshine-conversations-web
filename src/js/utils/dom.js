@@ -82,6 +82,7 @@ function onWindowBlur() {
 }
 
 export function monitorBrowserState() {
+    store.dispatch(hasFocus(document.hasFocus()));
     window.addEventListener('focus', onWindowFocus);
     window.addEventListener('blur', onWindowBlur);
 }
@@ -89,4 +90,15 @@ export function monitorBrowserState() {
 export function stopMonitoringBrowserState() {
     window.removeEventListener('focus', onWindowFocus);
     window.removeEventListener('blur', onWindowBlur);
+}
+
+export function getElementProperties(element) {
+    const style = window.getComputedStyle(element, null);
+    return {
+        width: element.offsetWidth || 0,
+        height: element.offsetHeight || 0,
+        paddingLeft: style.getPropertyValue('padding-left'),
+        paddingRight: style.getPropertyValue('padding-right'),
+        fontSize: style.getPropertyValue('font-size')
+    };
 }

@@ -1,7 +1,7 @@
-@background-color: rgba(240, 240, 240, 0.97);
+@background-color: #fff;
 
-@widget-height: 420px;
-@widget-width: 330px;
+@widget-height: 75vh;
+@widget-width: 30vw;
 
 @main-region-height-mobile: ~"calc(100% - @{footer-height} - @{header-height} - 2* @{header-padding})";
 
@@ -9,11 +9,13 @@
 @header-padding: 6px;
 @footer-height: 45px;
 
-@widget-close-bottom: -@widget-height + @header-height + 2 *@header-padding;
+@header-extra-height: (@header-height + 2 * @header-padding);
+@widget-close-bottom: calc(~"@{header-extra-height} - @{widget-height}");
+@widget-close-top: calc(~"100% - @{header-extra-height}");
 
 @conversation-intro-height: 60px;
-@remaining-height: (@header-height + 2 * @header-padding) + @footer-height;
-@conversation-height: calc(@widget-height - @remaining-height);
+@remaining-height: @header-extra-height + @footer-height;
+@conversation-height: calc(~"100% - @{remaining-height}");
 @conversation-height-mobile: ~"calc(100%  - @{remaining-height})";
 @conversation-width-mobile: 100%;
 
@@ -23,4 +25,11 @@
 @input-horizontal-padding: 9px;
 
 @sk-blue: #00aeff;
-@font-size-base: 13px;
+@font-size-base: 14px;
+
+@widget-max-height: 640px;
+@widget-min-height: 420px;
+@widget-max-width: 410px;
+@widget-min-width: 330px;
+@large-desktop-height: 835px;
+@widget-close-top-lg: calc(~"100% - @{widget-max-height}");

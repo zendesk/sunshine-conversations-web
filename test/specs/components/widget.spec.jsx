@@ -24,7 +24,11 @@ const defaultProps = {
         widgetOpened: false,
         settingsVisible: false
     },
-    app: {},
+    app: {
+        settings: {
+            accentColor: '#009933'
+        }
+    },
     conversation: {
         unreadCount: 0
     },

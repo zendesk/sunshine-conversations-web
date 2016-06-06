@@ -49,21 +49,45 @@
 
     -webkit-animation-fill-mode: forwards;
             animation-fill-mode: forwards;
+
+    @media (min-height: @large-desktop-height) {
+        -webkit-animation: sk-close-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-close-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
+    }
 }
 @-webkit-keyframes sk-close-frames {
     0% {
-        bottom: 0;
+        top: 25vh;
+
     }
     100% {
-        bottom: @widget-close-bottom;
+        top: @widget-close-top;
     }
 }
 @keyframes sk-close-frames {
     0% {
-        bottom: 0;
+        top: 25vh;
     }
     100% {
-        bottom: @widget-close-bottom;
+        top: @widget-close-top;
+    }
+}
+
+@-webkit-keyframes sk-close-frames-lg {
+    0% {
+        top: @widget-close-top-lg;
+    }
+    100% {
+        top: @widget-close-top;
+    }
+}
+
+@keyframes sk-close-frames-lg {
+    0% {
+        top: @widget-close-top-lg;
+    }
+    100% {
+        top: @widget-close-top;
     }
 }
 
@@ -75,4 +99,8 @@
 
     -webkit-touch-callout: none;
      -khtml-user-select: none;
+}
+
+.sk-init, .sk-close {
+    top: @widget-close-top;
 }

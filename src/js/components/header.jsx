@@ -69,9 +69,13 @@ export class HeaderComponent extends Component {
         const settingsText = <div style={ settingsTextStyle } onClick={ this.hideSettings }>
                                  { settingsHeaderText }
                              </div>;
+        const headerStyle = {};
+        if (this.props.settings && this.props.settings.accentColor) {
+            headerStyle.backgroundColor = `#${this.props.settings.accentColor}`;
+        }
 
         return (
-            <div id={ settingsVisible ? 'sk-settings-header' : 'sk-header' } onClick={ !embedded && toggleWidget }>
+            <div id={ settingsVisible ? 'sk-settings-header' : 'sk-header' } style={ headerStyle } onClick={ !embedded && toggleWidget } className='sk-header-wrapper'>
                 { settingsButton }
                 { backButton }
                 { settingsVisible ? settingsText : headerText }
@@ -86,7 +90,8 @@ function mapStateToProps(state) {
     return {
         ui: state.ui,
         appState: state.appState,
-        conversation: state.conversation
+        conversation: state.conversation,
+        settings: state.app.settings.web
     };
 }
 
