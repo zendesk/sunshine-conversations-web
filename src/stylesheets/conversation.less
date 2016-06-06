@@ -12,7 +12,7 @@
 
     .sk-intro {
         color: #b0b0b0;
-        font-size: 12px;
+        font-size: 13px;
         line-height: 1.3;
     }
 
@@ -26,6 +26,7 @@
     .sk-intro {
         top: 0;
         padding: 15px;
+        text-align: center;
     }
 
     .sk-messages {
@@ -34,22 +35,46 @@
 
     .sk-row {
         clear: both;
+        padding-bottom: 0px;
+        padding-top: 2px;
 
         .sk-msg-wrapper {
             max-width: 100%;
             position: relative;
 
             .sk-msg, .sk-msg-image {
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
-                font-size: 14px;
-                line-height: 20px;
+                font-size: @font-size-base;
+                line-height: 1.25;
                 position: relative;
-                border-radius: 4px;
+                border-radius: 14px;
                 border-left-color: @sk-blue;
+
+                &.sk-msg-appmaker-first {
+                    border-bottom-left-radius: 2px;
+                }
+                &.sk-msg-appmaker-middle {
+                    border-bottom-left-radius: 2px;
+                    border-top-left-radius: 2px;
+                }
+                &.sk-msg-appmaker-last {
+                    border-top-left-radius: 2px;
+                    margin-bottom: 3px;
+                }
+                &.sk-msg-appuser-first {
+                    border-bottom-right-radius: 2px;
+                }
+                &.sk-msg-appuser-middle {
+                    border-bottom-right-radius: 2px;
+                    border-top-right-radius: 2px;
+                }
+                &.sk-msg-appuser-last {
+                    border-top-right-radius: 2px;
+                    margin-bottom: 3px;
+                }
 
                 .imageloader {
                     display: block;
-                    border-radius: 4px;
+                    border-radius: inherit;
                     overflow: hidden;
                 }
 
@@ -64,6 +89,7 @@
 
                 .image-container {
                     position: relative;
+                    border-radius: inherit;
                 }
 
                 .image-overlay {
@@ -92,23 +118,8 @@
                 }
             }
             .sk-msg {
-                padding: 8px 12px;
+                padding: 7px 12px 8px 12px;
                 .word-break();
-
-                /* CSS Arrows Please */
-                &:after {
-                    bottom: 11px;
-                    border: solid transparent;
-                    content: " ";
-                    height: 0;
-                    width: 0;
-                    position: absolute;
-                    pointer-events: none;
-                    border-color: rgba(0, 174, 255, 0);
-                    border-left-color: inherit;
-                    border-width: 6px;
-                    margin-top: -6px;
-                }
                 .has-actions {
                     margin-bottom: 5px;
                     display: inline-block;
@@ -116,14 +127,6 @@
                 a.link {
                     text-decoration: underline;
                 }
-            }
-            .sk-from {
-                position: absolute;
-                white-space: nowrap;
-                top: -20px;
-                font-size: 12px;
-                color: #797979;
-                font-weight: 500;
             }
             .sk-action {
                 margin-bottom: 5px;
@@ -137,19 +140,20 @@
                 }
 
                 a.btn {
-                  display: block;
+                    display: block;
+                    border-radius: 7px;
+                    margin-right: 8px;
+                    margin-left: 8px;
                 }
             }
         }
         &.sk-left-row {
-            padding-top: 30px;
-
             .sk-msg-wrapper {
                 display: inline-block;
 
                 .sk-msg, .sk-msg-image {
-                    background-color: white;
-                    color: #333;
+                    background-color: #f4f4f4;
+                    color: #424242;
                     max-width: 200px;
 
                     &:after {
@@ -163,16 +167,23 @@
                 }
             }
             .sk-msg-avatar {
-                width: 35px;
+                width: 31px;
                 border-radius: 50%;
-                margin-right: 10px;
-                margin-bottom: -14px;
+                margin-right: 5px;
+                margin-bottom: -11px;
                 display: inline-block;
+                margin-left: 9px;
+                &.sk-msg-avatar-img {
+                    margin-bottom: 0px;
+                }
+            }
+            .sk-msg-avatar-placeholder {
+                width: 35px;
+                display: inline-block;
+                margin-right: 10px;
             }
         }
         &.sk-right-row {
-            padding-top: 10px;
-
             .sk-msg, .sk-msg-image {
                 background-color: @sk-blue;
                 float: right;
@@ -188,6 +199,10 @@
                     color: white;
                 }
             }
+
+            .sk-msg-image {
+                background-color: transparent;
+            }
         }
         &:last-child {
             padding-bottom: 10px;
@@ -199,7 +214,7 @@
     &::-webkit-scrollbar-track {
         border-radius: 10px;
         box-shadow: inset 0 -6px 0 0 @background-color, inset 0 6px 0 0 @background-color;
-        background-color: rgba(230, 230, 230, 0.97);
+        background-color: #f4f4f4;
     }
     &::-webkit-scrollbar {
         width: 8px;
@@ -227,5 +242,15 @@
             width: 87px;
             vertical-align: baseline;
         }
+    }
+    .sk-from {
+        white-space: nowrap;
+        top: -20px;
+        font-size: 11px;
+        color: #b0b0b0;
+        font-weight: 500;
+        padding-left: 12px;
+        margin-bottom: 2px;
+        margin-left: 45px;
     }
 }
