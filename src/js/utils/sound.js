@@ -1,3 +1,5 @@
+import { soundNotification } from './assets';
+
 let notificationSoundPlaying = false;
 let currentAudio;
 
@@ -29,7 +31,7 @@ function unloadAudio() {
 
 export function playNotificationSound() {
     if (isAudioSupported() && !notificationSoundPlaying) {
-        currentAudio = new Audio(require('assets/new-message.mp3'));
+        currentAudio = new Audio(soundNotification);
         currentAudio.addEventListener('playing', onNotificationPlaying);
         currentAudio.addEventListener('pause', onNotificationPause);
         currentAudio.addEventListener('ended', onNotificationEnded);

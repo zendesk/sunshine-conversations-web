@@ -1,5 +1,5 @@
-import { SET_HAS_FOCUS } from 'actions/browser-actions';
-import { RESET } from 'actions/common-actions';
+import { SET_HAS_FOCUS } from '../actions/browser-actions';
+import { RESET } from '../actions/common-actions';
 
 const INITIAL_STATE = {
     hasFocus: false

@@ -3,9 +3,8 @@ import React from 'react';
 import { findDOMNode } from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
-import { ImageUpload } from 'components/image-upload.jsx';
-
-const conversationService = require('services/conversation-service');
+import { ImageUpload } from '../../../src/js/components/image-upload';
+const conversationService = require('../../../src/js/services/conversation-service');
 
 const sandbox = sinon.sandbox.create();
 
