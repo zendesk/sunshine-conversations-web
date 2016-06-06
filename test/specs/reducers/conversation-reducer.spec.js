@@ -236,9 +236,7 @@ describe('Conversation reducer', () => {
             afterState.messages[1].should.not.eql(UPLOADING_IMAGE_1);
             afterState.messages[1].should.eql({
                 ...RECEIVED_IMAGE,
-                _clientId: UPLOADING_IMAGE_1._clientId,
-                firstInGroup: undefined,
-                lastInGroup: false
+                _clientId: UPLOADING_IMAGE_1._clientId
             });
         });
 
@@ -273,9 +271,7 @@ describe('Conversation reducer', () => {
             afterState.messages.length.should.eq(2);
             afterState.messages[0].should.eql({
                 ...RECEIVED_IMAGE,
-                _clientId: UPLOADING_IMAGE_1._clientId,
-                firstInGroup: undefined,
-                lastInGroup: false
+                _clientId: UPLOADING_IMAGE_1._clientId
             });
             afterState.messages[1].should.eql(UPLOADING_IMAGE_2);
         });

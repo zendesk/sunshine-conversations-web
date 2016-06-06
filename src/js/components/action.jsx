@@ -131,8 +131,7 @@ export class ActionComponent extends Component {
                     );
             }
         } else if (this.props.type === 'postback') {
-            const isProcessing = this.state.state === 'processing';
-            const text = isProcessing ?
+            const text = this.state.state === 'processing' ?
                 <LoadingComponent /> :
                 this.props.text;
 
@@ -140,7 +139,7 @@ export class ActionComponent extends Component {
                 <div className='sk-action'>
                     <button className='btn btn-sk-primary'
                             style={ style }
-                            onClick={ !isProcessing && this.onPostbackClick }>
+                            onClick={ this.onPostbackClick }>
                             { text }
                     </button>
                 </div>
