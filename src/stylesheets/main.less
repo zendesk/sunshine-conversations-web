@@ -48,10 +48,10 @@
             background: @background-color;
             width: @widget-width;
             height: @widget-height;
-            max-height: 640px;
-            min-height: 420px;
-            max-width: 410px;
-            min-width: 330px;
+            max-height: @widget-max-height;
+            min-height: @widget-min-height;
+            max-width: @widget-max-width;
+            min-width: @widget-min-width;
             position: relative;
             border-radius: 10px 10px 0 0;
         }
@@ -64,6 +64,7 @@
                 &,
                 #sk-wrapper {
                     height: 100%;
+                    max-height: 100%;
                 }
             }
             #sk-wrapper {
@@ -122,7 +123,6 @@
         width: 100%;
     }
 }
-
 
 
 @import "mobile.less";
