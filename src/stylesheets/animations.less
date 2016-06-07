@@ -8,6 +8,11 @@
 
     -webkit-animation-fill-mode: forwards;
             animation-fill-mode: forwards;
+
+    @media (min-width: @screen-lg-min) {
+        -webkit-animation: sk-appear-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-appear-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
+    }
 }
 
 .sk-appear #sk-handle {
@@ -24,7 +29,7 @@
 
 @-webkit-keyframes sk-appear-frames {
     0% {
-        bottom: @widget-close-bottom;
+        bottom: @widget-close-bottom-md;
     }
     100% {
         bottom: 0;
@@ -32,7 +37,24 @@
 }
 @keyframes sk-appear-frames {
     0% {
-        bottom: @widget-close-bottom;
+        bottom: @widget-close-bottom-md;
+    }
+    100% {
+        bottom: 0;
+    }
+}
+
+@-webkit-keyframes sk-appear-frames-lg {
+    0% {
+        bottom: @widget-close-bottom-lg;
+    }
+    100% {
+        bottom: 0;
+    }
+}
+@keyframes sk-appear-frames-lg {
+    0% {
+        bottom: @widget-close-bottom-lg;
     }
     100% {
         bottom: 0;
@@ -40,7 +62,7 @@
 }
 
 .sk-close {
-    bottom: @widget-close-bottom;
+    bottom: @widget-close-bottom-md;
 
     -webkit-animation: sk-close-frames .4s cubic-bezier(.62, .28, .23, .99);
             animation: sk-close-frames .4s cubic-bezier(.62, .28, .23, .99);
@@ -50,44 +72,45 @@
     -webkit-animation-fill-mode: forwards;
             animation-fill-mode: forwards;
 
-    @media (min-height: @large-desktop-height) {
+    @media (min-width: @screen-lg-min) {
+        bottom: @widget-close-bottom-lg;
         -webkit-animation: sk-close-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
                 animation: sk-close-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
     }
 }
 @-webkit-keyframes sk-close-frames {
     0% {
-        top: 25vh;
+        bottom: 0;
 
     }
     100% {
-        top: @widget-close-top;
+        bottom: @widget-close-bottom-md;
     }
 }
 @keyframes sk-close-frames {
     0% {
-        top: 25vh;
+        bottom: 0;
     }
     100% {
-        top: @widget-close-top;
+        bottom: @widget-close-bottom-md;
     }
 }
 
 @-webkit-keyframes sk-close-frames-lg {
     0% {
-        top: @widget-close-top-lg;
+        bottom: 0;
+
     }
     100% {
-        top: @widget-close-top;
+        bottom: @widget-close-bottom-lg
     }
 }
-
 @keyframes sk-close-frames-lg {
     0% {
-        top: @widget-close-top-lg;
+        bottom: 0;
     }
     100% {
-        top: @widget-close-top;
+        bottom: @widget-close-bottom-lg;
     }
 }
 
@@ -101,6 +124,6 @@
      -khtml-user-select: none;
 }
 
-.sk-init, .sk-close {
+.sk-init {
     top: @widget-close-top;
 }
