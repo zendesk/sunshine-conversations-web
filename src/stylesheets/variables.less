@@ -1,7 +1,12 @@
 @background-color: #fff;
 
-@widget-height: 75vh;
-@widget-width: 30vw;
+@widget-height-md: 420px;
+@widget-height-lg: 640px;
+@widget-height-sm: 100%;
+
+@widget-width-md: 330px;
+@widget-width-lg: 410px;
+@widget-width-sm: 100%;
 
 @main-region-height-mobile: ~"calc(100% - @{footer-height} - @{header-height} - 2* @{header-padding})";
 
@@ -10,6 +15,9 @@
 @footer-height: 45px;
 
 @header-extra-height: (@header-height + 2 * @header-padding);
+@widget-close-bottom-md: -@widget-height-md + @header-extra-height;
+@widget-close-bottom-lg: -@widget-height-lg + @header-extra-height;
+@widget-close-bottom-sm: calc(~" @{header-extra-height} - @{widget-height-sm}");
 @widget-close-bottom: calc(~"@{header-extra-height} - @{widget-height}");
 @widget-close-top: calc(~"100% - @{header-extra-height}");
 
