@@ -36,7 +36,6 @@
     @import "reset.less";
     #sk-container {
         position: fixed;
-        bottom: @widget-close-bottom;
         right: 10px;
         margin-bottom: -1px;
         box-shadow: 0 0 24px rgba(0,0,0,0.15);
@@ -46,14 +45,18 @@
         .container();
         #sk-wrapper {
             background: @background-color;
-            width: @widget-width;
-            height: @widget-height;
-            max-height: @widget-max-height;
-            min-height: @widget-min-height;
-            max-width: @widget-max-width;
-            min-width: @widget-min-width;
+            width: @widget-width-md;
+            height: @widget-height-md;
             position: relative;
             border-radius: 10px 10px 0 0;
+            @media (min-width: @screen-lg-min) {
+                width: @widget-width-lg;
+                height: @widget-height-lg;
+            }
+            @media (max-width: @screen-sm-min) {
+                width: @widget-width-sm;
+                height: @widget-height-sm;
+            }
         }
         @media (max-width: @screen-sm-min) {
             right: 0;
@@ -78,10 +81,6 @@
             padding: 0px;
         }
     }
-    @media (max-width: @screen-sm-min) {
-        width: 100%;
-        height: auto;
-    }
 }
 #sk-container.sk-embedded {
     @import "loading.less";
@@ -99,7 +98,6 @@
     #sk-settings-header {
         cursor: default;
         border-radius: 0;
-        height: 50px;
         .sk-close-handle,
         .sk-show-handle {
             display: none;
@@ -121,6 +119,7 @@
     }
     .sk-settings {
         width: 100%;
+        height: @widget-height-md;
     }
 }
 
