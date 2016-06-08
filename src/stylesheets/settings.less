@@ -15,12 +15,17 @@
     @media (max-width: @screen-sm-min) {
         width: @widget-width-sm;
     }
-    
-
 
     .settings-wrapper {
         padding: 20px;
         box-sizing: border-box;
+        width: @widget-width-md;
+        @media (min-width: @screen-lg-min) {
+            width: @widget-width-lg;
+        }
+        @media (max-width: @screen-sm-min) {
+            width: @widget-width-sm;
+        }
 
         .input-group {
             position: relative;
