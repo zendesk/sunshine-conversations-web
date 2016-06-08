@@ -53,6 +53,10 @@
                 width: @widget-width-lg;
                 height: @widget-height-lg;
             }
+            @media (max-width: @screen-sm-min) {
+                width: @widget-width-sm;
+                height: @widget-height-sm;
+            }
         }
         @media (max-width: @screen-sm-min) {
             right: 0;
@@ -76,10 +80,6 @@
             border: 1px solid white;
             padding: 0px;
         }
-    }
-    @media (max-width: @screen-sm-min) {
-        width: 100%;
-        height: auto;
     }
 }
 #sk-container.sk-embedded {
