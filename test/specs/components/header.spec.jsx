@@ -44,8 +44,7 @@ describe('Header', () => {
                             headerText: 'Header',
                             settingsHeaderText: 'Settings'
                         }
-                    },
-                    settings: {}
+                    }
                 };
                 header = TestUtils.renderIntoDocument(<HeaderComponent {...props} />);
                 headerNode = ReactDOM.findDOMNode(header);
@@ -99,8 +98,7 @@ describe('Header', () => {
                         headerText: 'Header',
                         settingsHeaderText: 'Settings'
                     }
-                },
-                settings: {}
+                }
             };
             header = TestUtils.renderIntoDocument(<HeaderComponent {...props} />);
             headerNode = ReactDOM.findDOMNode(header);
@@ -158,8 +156,7 @@ describe('Header', () => {
                         headerText: 'Header',
                         settingsHeaderText: 'Settings'
                     }
-                },
-                settings: {}
+                }
             };
             header = TestUtils.renderIntoDocument(<HeaderComponent {...props} />);
             headerNode = ReactDOM.findDOMNode(header);
@@ -224,8 +221,7 @@ describe('Header', () => {
                         headerText: 'Header',
                         settingsHeaderText: 'Settings'
                     }
-                },
-                settings: {}
+                }
             };
             header = TestUtils.renderIntoDocument(<HeaderComponent {...props} />);
             headerNode = ReactDOM.findDOMNode(header);
@@ -289,8 +285,7 @@ describe('Header', () => {
                         headerText: 'Header',
                         settingsHeaderText: 'Settings'
                     }
-                },
-                settings: {}
+                }
             };
             header = TestUtils.renderIntoDocument(<HeaderComponent {...props} />);
             headerNode = ReactDOM.findDOMNode(header);
@@ -354,8 +349,7 @@ describe('Header', () => {
                         headerText: 'Header',
                         settingsHeaderText: 'Settings'
                     }
-                },
-                settings: {}
+                }
             };
             header = TestUtils.renderIntoDocument(<HeaderComponent {...props} />);
             headerNode = ReactDOM.findDOMNode(header);

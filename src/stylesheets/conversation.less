@@ -30,7 +30,7 @@
     }
 
     .sk-messages {
-        padding: 0 15px 0 15px;
+        padding: 0 15px 0 5px;
     }
 
     .sk-row {
@@ -48,13 +48,16 @@
                 position: relative;
                 border-radius: 14px;
                 border-left-color: @sk-blue;
+                margin-bottom: 10px;
 
                 &.sk-msg-appmaker-first {
                     border-bottom-left-radius: 2px;
+                    margin-bottom: 0px;
                 }
                 &.sk-msg-appmaker-middle {
                     border-bottom-left-radius: 2px;
                     border-top-left-radius: 2px;
+                    margin-bottom: 0px;
                 }
                 &.sk-msg-appmaker-last {
                     border-top-left-radius: 2px;
@@ -62,14 +65,15 @@
                 }
                 &.sk-msg-appuser-first {
                     border-bottom-right-radius: 2px;
+                    margin-bottom: 0px;
                 }
                 &.sk-msg-appuser-middle {
                     border-bottom-right-radius: 2px;
                     border-top-right-radius: 2px;
+                    margin-bottom: 0px;
                 }
                 &.sk-msg-appuser-last {
                     border-top-right-radius: 2px;
-                    margin-bottom: 3px;
                 }
 
                 .imageloader {
@@ -152,8 +156,8 @@
                 display: inline-block;
 
                 .sk-msg, .sk-msg-image {
-                    background-color: #f4f4f4;
-                    color: #424242;
+                    background-color: @sk-light-grey;
+                    color: @sk-darker-grey;
                     max-width: 200px;
 
                     &:after {
@@ -214,7 +218,7 @@
     &::-webkit-scrollbar-track {
         border-radius: 10px;
         box-shadow: inset 0 -6px 0 0 @background-color, inset 0 6px 0 0 @background-color;
-        background-color: #f4f4f4;
+        background-color: @sk-light-grey;
     }
     &::-webkit-scrollbar {
         width: 8px;
@@ -226,7 +230,6 @@
         background-color: rgba(210, 210, 210, 0.97);
     }
     .sk-logo {
-        padding-top: 10px;
         margin-bottom: 10px;
         margin-left: @logo-margin;
 
