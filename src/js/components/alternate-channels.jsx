@@ -18,7 +18,7 @@ export class AlternateChannels extends Component {
         return <div className='available-channels'>
                    <div className='channel-list'>
                        { items.map(({channel, details}) => {
-                             return <img id={ channel }
+                             return <img id={ channel.type }
                                          className='channel-icon'
                                          key={ channel.type }
                                          onClick={ this.onChannelClick }

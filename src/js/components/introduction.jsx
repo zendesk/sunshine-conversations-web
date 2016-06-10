@@ -1,19 +1,47 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import debounce from 'lodash.debounce';
 
 import { AlternateChannels } from './alternate-channels';
 import { createMarkup } from '../utils/html';
+import { findDOMNode } from 'react-dom';
 import { defaultAppIcon, defaultAppIcon2x } from '../constants/assets';
 import { getAppChannelDetails } from '../utils/app';
+import { setIntroHeight } from '../actions/app-state-actions';
 
 class IntroductionComponent extends Component {
     static propTypes = {
         app: PropTypes.object.isRequired,
-        integrations: PropTypes.array.isRequired
+        integrations: PropTypes.array.isRequired,
+        dispatch: PropTypes.func.isRequired
     }
 
     static contextTypes = {
         ui: PropTypes.object
+    }
+
+    constructor(...args) {
+        super(...args);
+
+        this._debounceHeightCalculation = debounce(this.calculateIntroHeight.bind(this), 150);
+    }
+
+    componentDidMount() {
+        setTimeout(() => this.calculateIntroHeight());
+        window.addEventListener('resize', this._debounceHeightCalculation);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this._debounceHeightCalculation);
+    }
+
+    calculateIntroHeight() {
+        const node = findDOMNode(this);
+
+        const nodeRect = node.getBoundingClientRect();
+        const nodeHeight = Math.floor(nodeRect.height);
+
+        this.props.dispatch(setIntroHeight(nodeHeight));
     }
 
     render() {

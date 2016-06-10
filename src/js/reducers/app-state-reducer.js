@@ -12,7 +12,8 @@ const INITIAL_STATE = {
     embedded: false,
     serverURL: 'https://api.smooch.io/',
     notificationMessage: null,
-    errorNotificationMessage: null
+    errorNotificationMessage: null,
+    introHeight: 158
 };
 
 export function AppStateReducer(state = INITIAL_STATE, action) {
@@ -70,56 +71,73 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             return Object.assign({}, state, {
                 widgetOpened: true
             });
+
         case AppStateActions.CLOSE_WIDGET:
             return Object.assign({}, state, {
                 widgetOpened: false,
                 settingsVisible: false
             });
+
         case AppStateActions.SHOW_SETTINGS:
             return Object.assign({}, state, {
                 settingsVisible: true
             });
+
         case AppStateActions.HIDE_SETTINGS:
             return Object.assign({}, state, {
                 settingsVisible: false
             });
+
         case AppStateActions.SHOW_CHANNEL_PAGE:
             return Object.assign({}, state, {
                 visibleChannelType: action.channelType
             });
+
         case AppStateActions.HIDE_CHANNEL_PAGE:
             return Object.assign({}, state, {
                 visibleChannelType: undefined
             });
+
         case AppStateActions.SHOW_NOTIFICATION:
             return Object.assign({}, state, {
                 errorNotificationMessage: null,
                 notificationMessage: action.message
             });
+
         case AppStateActions.HIDE_NOTIFICATION:
             return Object.assign({}, state, {
                 notificationMessage: null,
                 errorNotificationMessage: null
             });
+
         case AppStateActions.SET_SERVER_URL:
             return Object.assign({}, state, {
                 serverURL: action.url
             });
+
         case AppStateActions.SHOW_ERROR_NOTIFICATION:
             return Object.assign({}, state, {
                 notificationMessage: null,
                 errorNotificationMessage: action.message
             });
+
         case AppStateActions.HIDE_ERROR_NOTIFICATION:
             return Object.assign({}, state, {
                 notificationMessage: null,
                 errorNotificationMessage: null
             });
+
         case AppStateActions.SET_EMBEDDED:
             return Object.assign({}, state, {
                 embedded: action.value,
                 widgetOpened: action.value ? true : state.widgetOpened
             });
+
+        case AppStateActions.SET_INTRO_HEIGHT:
+            return Object.assign({}, state, {
+                introHeight: action.value
+            });
+
         default:
             return state;
     }

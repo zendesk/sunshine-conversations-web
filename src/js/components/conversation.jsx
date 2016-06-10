@@ -3,7 +3,6 @@ import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import isMobile from 'ismobilejs';
 
-import { createMarkup } from '../utils/html';
 import { MessageComponent } from './message';
 import { logo, logo2x } from '../constants/assets';
 import { Introduction } from './introduction';
@@ -76,12 +75,19 @@ export class ConversationComponent extends Component {
             paddingBottom: 10
         } : undefined;
 
+        const {introHeight} = this.props;
+
+        const messagesContainerStyle = {
+            maxHeight: `calc(100% - ${introHeight + 10} px)`
+        };
+
         return (
             <div id='sk-conversation'
                  ref='container'
                  onTouchStart={ this.onTouchStart }>
                 <Introduction/>
-                <div className='sk-messages-container'>
+                <div className='sk-messages-container'
+                     style={ messagesContainerStyle }>
                     <div ref='messages'
                          className='sk-messages'>
                         { messages }
@@ -106,6 +112,7 @@ export const Conversation = connect((state) => {
         ui: state.ui,
         conversation: state.conversation,
         settings: state.app.settings && state.app.settings.web,
-        embedded: state.appState.embedded
+        embedded: state.appState.embedded,
+        introHeight: state.appState.introHeight
     };
 })(ConversationComponent);

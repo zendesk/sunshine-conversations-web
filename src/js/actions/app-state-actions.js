@@ -19,6 +19,7 @@ export const ENABLE_IMAGE_UPLOAD = 'ENABLE_IMAGE_UPLOAD';
 export const DISABLE_IMAGE_UPLOAD = 'DISABLE_IMAGE_UPLOAD';
 export const SHOW_CHANNEL_PAGE = 'SHOW_CHANNEL_PAGE';
 export const HIDE_CHANNEL_PAGE = 'HIDE_CHANNEL_PAGE';
+export const SET_INTRO_HEIGHT = 'SET_INTRO_HEIGHT';
 
 export function toggleWidget() {
     return {
@@ -154,5 +155,12 @@ export function showChannelPage(channelType) {
 export function hideChannelPage() {
     return {
         type: HIDE_CHANNEL_PAGE
+    };
+}
+
+export function setIntroHeight(value) {
+    return {
+        type: SET_INTRO_HEIGHT,
+        value
     };
 }
