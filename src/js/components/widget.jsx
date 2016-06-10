@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
@@ -8,6 +8,7 @@ import debounce from 'lodash.debounce';
 import { Header } from './header';
 import { Conversation } from './conversation';
 import { Settings } from './settings';
+import { Channel } from './channels/channel';
 import { Notification } from './notification';
 import { ErrorNotification } from './error-notification';
 import { ChatInput } from './chat-input';
@@ -16,6 +17,12 @@ import { MessageIndicator } from './message-indicator';
 import { resetUnreadCount } from '../services/conversation-service';
 
 export class WidgetComponent extends Component {
+    static childContextTypes = {
+        app: PropTypes.object,
+        settings: PropTypes.object,
+        ui: PropTypes.object
+    };
+
     onTouchStart = (e) => {
         resetUnreadCount();
         // the behavior is problematic only on iOS devices
@@ -39,6 +46,14 @@ export class WidgetComponent extends Component {
     }, 250, {
         leading: true
     });
+
+    getChildContext() {
+        return {
+            app: this.props.app,
+            settings: this.props.settings,
+            ui: this.props.ui
+        };
+    }
 
     render() {
         const settingsComponent = this.props.appState.settingsVisible ? <Settings /> : null;
@@ -69,8 +84,8 @@ export class WidgetComponent extends Component {
 
         const notification = this.props.appState.errorNotificationMessage ?
             <ErrorNotification message={ this.props.appState.errorNotificationMessage } /> :
-            this.props.appState.settingsNotificationVisible ?
-                <Notification /> :
+            this.props.appState.notificationMessage ?
+                <Notification message={ this.props.appState.notificationMessage } /> :
                 null;
 
         return (
@@ -99,6 +114,7 @@ export class WidgetComponent extends Component {
                                              transitionLeaveTimeout={ 250 }>
                         { settingsComponent }
                     </ReactCSSTransitionGroup>
+                    <Channel />
                     <Conversation />
                     { footer }
                 </div>
@@ -107,8 +123,11 @@ export class WidgetComponent extends Component {
     }
 }
 
-export const Widget = connect((state) => {
+export const Widget = connect(({appState, app, ui}) => {
     return {
-        appState: state.appState
+        appState,
+        app,
+        settings: app.settings.web,
+        ui
     };
 })(WidgetComponent);

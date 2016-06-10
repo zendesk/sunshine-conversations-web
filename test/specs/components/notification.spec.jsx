@@ -6,41 +6,33 @@ import TestUtils from 'react-addons-test-utils';
 import { NotificationComponent } from '../../../src/js/components/notification';
 
 const sandbox = sinon.sandbox.create();
-const defaultProps = {
-    appState: {
-        settingsNotificationVisible: false
-    },
-    ui: {
-        text: {
-            settingsNotificationText: 'Intro text'
-        }
-    }
-};
 
 
 describe('Notification', () => {
 
-    var component;
-    var componentNode;
+    let component;
+    let componentNode;
+    let defaultProps;
+
+    beforeEach(() => {
+        defaultProps = {
+            message: 'This is a text <a data-ui-settings-link>with a link</a>!',
+            actions: {
+                hideNotification: sandbox.spy(),
+                showSettings: sandbox.spy()
+            }
+        };
+    });
 
     afterEach(() => {
         sandbox.restore();
     });
 
     describe('text with link', () => {
-        var props = Object.assign({}, defaultProps, {
-            ui: {
-                text: {
-                    settingsNotificationText: 'This is a text <a data-ui-settings-link>with a link</a>!'
-                }
-            },
-            actions: {
-                hideSettingsNotification: sandbox.spy(),
-                showSettings: sandbox.spy()
-            }
-        });
+        var props;
 
         beforeEach(() => {
+            props = Object.assign({}, defaultProps);
             sandbox.stub(NotificationComponent.prototype, 'onLinkClick');
             sandbox.spy(NotificationComponent.prototype, 'bindHandler');
             component = TestUtils.renderIntoDocument(<NotificationComponent {...props} />);
@@ -48,7 +40,7 @@ describe('Notification', () => {
         });
 
         it('should render a link and should bind the click handler', () => {
-            var linkNode = componentNode.querySelector('[data-ui-settings-link]');
+            const linkNode = componentNode.querySelector('[data-ui-settings-link]');
             linkNode.should.exists;
             component.bindHandler.should.have.been.calledOnce;
 
@@ -62,22 +54,12 @@ describe('Notification', () => {
 
 
     describe('text without link', () => {
-        var props = Object.assign({}, defaultProps, {
-            appState: {
-                settingsNotificationVisible: true
-            },
-            ui: {
-                text: {
-                    settingsNotificationText: 'This is a text without a link!'
-                }
-            },
-            actions: {
-                hideSettingsNotification: sandbox.spy(),
-                showSettings: sandbox.spy()
-            }
-        });
+        var props;
 
         beforeEach(() => {
+            props = Object.assign({}, defaultProps, {
+                message: 'This is a text without a link!'
+            });
             sandbox.stub(NotificationComponent.prototype, 'onLinkClick');
             sandbox.spy(NotificationComponent.prototype, 'bindHandler');
             component = TestUtils.renderIntoDocument(<NotificationComponent {...props} />);
@@ -92,22 +74,10 @@ describe('Notification', () => {
     });
 
     describe('onLinkClick', () => {
-        var props = Object.assign({}, defaultProps, {
-            appState: {
-                settingsNotificationVisible: true
-            },
-            ui: {
-                text: {
-                    settingsNotificationText: 'This is a text without a link!'
-                }
-            },
-            actions: {
-                hideSettingsNotification: sandbox.spy(),
-                showSettings: sandbox.spy()
-            }
-        });
+        var props;
 
         beforeEach(() => {
+            props = Object.assign({}, defaultProps);
             component = TestUtils.renderIntoDocument(<NotificationComponent {...props} />);
             componentNode = ReactDOM.findDOMNode(component);
         });
@@ -118,7 +88,7 @@ describe('Notification', () => {
                 stopPropagation: () => true
             });
 
-            props.actions.hideSettingsNotification.should.have.been.calledOnce;
+            props.actions.hideNotification.should.have.been.calledOnce;
             props.actions.showSettings.should.have.been.calledOnce;
         });
 

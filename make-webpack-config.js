@@ -19,7 +19,7 @@ module.exports = function(options) {
     }
 
     var entry = options.assetsOnly ? {
-        assets: './src/js/utils/assets'
+        assets: './src/js/constants/assets'
     } : {
         smooch: ['./src/js/utils/polyfills', './src/js/main']
     };

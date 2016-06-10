@@ -1,0 +1,3 @@
+export const ANIMATION_TIMINGS = {
+    PAGE_TRANSITION: 250
+};

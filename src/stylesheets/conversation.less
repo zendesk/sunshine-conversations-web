@@ -10,10 +10,49 @@
         height: @conversation-height-mobile;
     }
 
-    .sk-intro {
-        color: #b0b0b0;
-        font-size: 13px;
-        line-height: 1.3;
+    .sk-intro-section {
+        background-color: #EFEFEF;
+        padding: 18px 18px 22px 18px;
+        border-bottom: solid 1px #DBDBDB;
+
+        .app-name {
+            color: #464646;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .intro-text {
+            color: @sk-intro-text;
+            font-size: 12px;
+            line-height: 1.3;
+            margin-top: 14px;
+        }
+
+        .app-icon {
+            float: left;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .app-name, .intro-text {
+            margin-left: 68px;
+        }
+
+        .available-channels {
+            margin-top: 22px;
+            text-align: center;
+            color: @sk-intro-text;
+
+            .channel-icon {
+                cursor: pointer;
+                margin-right: 13px;
+
+                &:last-child {
+                   margin-right: 0;
+                }
+            }
+        }
     }
 
     .sk-messages-container {
@@ -21,12 +60,6 @@
         bottom: 0;
         width: 100%;
         max-height: ~"calc(100% - @{conversation-intro-height})";
-    }
-
-    .sk-intro {
-        top: 0;
-        padding: 15px;
-        text-align: center;
     }
 
     .sk-messages {
@@ -250,7 +283,7 @@
         white-space: nowrap;
         top: -20px;
         font-size: 11px;
-        color: #b0b0b0;
+        color: @sk-intro-text;
         font-weight: 500;
         padding-left: 12px;
         margin-bottom: 2px;

@@ -3,7 +3,7 @@ import { RESET } from '../actions/common-actions';
 
 const INITIAL_STATE = {
     settingsVisible: false,
-    settingsNotificationVisible: false,
+    visibleChannelType: null,
     widgetOpened: null,
     settingsEnabled: true,
     soundNotificationEnabled: true,
@@ -11,6 +11,7 @@ const INITIAL_STATE = {
     readOnlyEmail: false,
     embedded: false,
     serverURL: 'https://api.smooch.io/',
+    notificationMessage: null,
     errorNotificationMessage: null
 };
 
@@ -82,13 +83,23 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             return Object.assign({}, state, {
                 settingsVisible: false
             });
-        case AppStateActions.SHOW_SETTINGS_NOTIFICATION:
+        case AppStateActions.SHOW_CHANNEL_PAGE:
             return Object.assign({}, state, {
-                settingsNotificationVisible: true
+                visibleChannelType: action.channelType
             });
-        case AppStateActions.HIDE_SETTINGS_NOTIFICATION:
+        case AppStateActions.HIDE_CHANNEL_PAGE:
             return Object.assign({}, state, {
-                settingsNotificationVisible: false
+                visibleChannelType: undefined
+            });
+        case AppStateActions.SHOW_NOTIFICATION:
+            return Object.assign({}, state, {
+                errorNotificationMessage: null,
+                notificationMessage: action.message
+            });
+        case AppStateActions.HIDE_NOTIFICATION:
+            return Object.assign({}, state, {
+                notificationMessage: null,
+                errorNotificationMessage: null
             });
         case AppStateActions.SET_SERVER_URL:
             return Object.assign({}, state, {
@@ -96,12 +107,12 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             });
         case AppStateActions.SHOW_ERROR_NOTIFICATION:
             return Object.assign({}, state, {
-                settingsNotificationVisible: false,
+                notificationMessage: null,
                 errorNotificationMessage: action.message
             });
         case AppStateActions.HIDE_ERROR_NOTIFICATION:
             return Object.assign({}, state, {
-                settingsNotificationVisible: false,
+                notificationMessage: null,
                 errorNotificationMessage: null
             });
         case AppStateActions.SET_EMBEDDED:

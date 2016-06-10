@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 
 import { createMarkup } from '../utils/html';
 
-import { hideSettingsNotification, showSettings } from '../actions/app-state-actions';
+import { hideNotification, showChannelPage } from '../actions/app-state-actions';
 
 export class NotificationComponent extends Component {
     static defaultProps = {
@@ -37,8 +37,8 @@ export class NotificationComponent extends Component {
         e.preventDefault();
         e.stopPropagation();
 
-        this.props.actions.hideSettingsNotification();
-        this.props.actions.showSettings();
+        this.props.actions.hideNotification();
+        this.props.actions.showChannelPage('messenger');
     }
 
     render() {
@@ -48,13 +48,13 @@ export class NotificationComponent extends Component {
         return (
             <div key='content'
                  className='sk-notification'
-                 onClick={ this.props.actions.hideSettingsNotification }>
+                 onClick={ this.props.actions.hideNotification }>
                 <p>
                     <span ref='text'
-                          dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.settingsNotificationText) }></span>
+                          dangerouslySetInnerHTML={ createMarkup(this.props.message) }></span>
                     <a style={ linkStyle }
                        className='sk-notification-close'
-                       onClick={ this.props.actions.hideSettingsNotification }>&times;</a>
+                       onClick={ this.props.actions.hideNotification }>&times;</a>
                 </p>
             </div>
             );
@@ -63,14 +63,14 @@ export class NotificationComponent extends Component {
 
 export const Notification = connect((state) => {
     return {
-        ui: state.ui,
+        message: state.appState.notificationMessage,
         settings: state.app.settings && state.app.settings.web
     };
 }, (dispatch) => {
     return {
         actions: bindActionCreators({
-            hideSettingsNotification,
-            showSettings
+            hideNotification,
+            showChannelPage
         }, dispatch)
     };
 })(NotificationComponent);

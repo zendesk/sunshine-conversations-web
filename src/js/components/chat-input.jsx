@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { findDOMNode } from 'react-dom';
 import isMobile from 'ismobilejs';
@@ -10,8 +10,9 @@ import { store } from '../stores/app-store';
 import { ImageUpload } from './image-upload';
 
 export class ChatInputComponent extends Component {
-    static defaultProps = {
-        settings: {}
+    static contextTypes = {
+        settings: PropTypes.object,
+        ui: PropTypes.object
     };
 
     constructor(...args) {
@@ -102,6 +103,7 @@ export class ChatInputComponent extends Component {
         const containerStyle = {
             width: this.state.inputContainerWidth
         };
+        const {settings, ui} = this.context;
 
         let sendButton;
 
@@ -111,8 +113,8 @@ export class ChatInputComponent extends Component {
         if (this.state.text.trim()) {
             buttonClassNames.push('active');
 
-            if (this.props.settings.accentColor) {
-                buttonStyle.color = `#${this.props.settings.accentColor}`;
+            if (settings.accentColor) {
+                buttonStyle.color = `#${settings.accentColor}`;
             }
         }
 
@@ -122,19 +124,19 @@ export class ChatInputComponent extends Component {
             sendButton = <span ref='button'
                                className={ buttonClassNames.join(' ') }
                                onTouchStart={ this.onSendMessage }
-                               style={ buttonStyle }>{ this.props.ui.text.sendButtonText }</span>;
+                               style={ buttonStyle }>{ ui.text.sendButtonText }</span>;
         } else {
             sendButton = <a ref='button'
                             className={ buttonClassNames.join(' ') }
                             onClick={ this.onSendMessage }
                             style={ buttonStyle }>
-                             { this.props.ui.text.sendButtonText }
+                             { ui.text.sendButtonText }
                          </a>;
         }
 
         const imageUploadButton = this.props.imageUploadEnabled ?
             <ImageUpload ref='imageUpload'
-                         accentColor={ this.props.settings.accentColor } /> : null;
+                         accentColor={ settings.accentColor } /> : null;
 
         const inputContainerClasses = ['input-container'];
 
@@ -150,12 +152,12 @@ export class ChatInputComponent extends Component {
                     <div className={ inputContainerClasses.join(' ') }
                          style={ containerStyle }>
                         <input ref='input'
-                               placeholder={ this.props.ui.text.inputPlaceholder }
+                               placeholder={ ui.text.inputPlaceholder }
                                className='input message-input'
                                onChange={ this.onChange }
                                onFocus={ this.onFocus }
                                value={ this.state.text }
-                               title={ this.props.ui.text.sendButtonText }></input>
+                               title={ ui.text.sendButtonText }></input>
                     </div>
                     { sendButton }
                 </form>
@@ -166,8 +168,6 @@ export class ChatInputComponent extends Component {
 
 export const ChatInput = connect((state) => {
     return {
-        ui: state.ui,
-        settings: state.app.settings && state.app.settings.web,
         imageUploadEnabled: state.appState.imageUploadEnabled
     };
 }, undefined, undefined, {

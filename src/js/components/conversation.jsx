@@ -5,7 +5,8 @@ import isMobile from 'ismobilejs';
 
 import { createMarkup } from '../utils/html';
 import { MessageComponent } from './message';
-import { logo, logo2x } from '../utils/assets';
+import { logo, logo2x } from '../constants/assets';
+import { Introduction } from './introduction';
 
 export class ConversationComponent extends Component {
     static defaultProps = {
@@ -79,9 +80,7 @@ export class ConversationComponent extends Component {
             <div id='sk-conversation'
                  ref='container'
                  onTouchStart={ this.onTouchStart }>
-                <div ref='intro'
-                     className='sk-intro'
-                     dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.introText) }></div>
+                <Introduction/>
                 <div className='sk-messages-container'>
                     <div ref='messages'
                          className='sk-messages'>

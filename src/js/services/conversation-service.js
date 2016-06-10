@@ -1,11 +1,11 @@
 import { store } from '../stores/app-store';
 import { addMessage, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction } from '../actions/conversation-actions';
 import { updateUser } from '../actions/user-actions';
-import { showSettingsNotification, showErrorNotification } from '../actions/app-state-actions';
-import { setFayeSubscription, unsetFayeSubscription } from '../actions/faye-actions';
+import { showNotification, showErrorNotification } from '../actions/app-state-actions';
+import { unsetFayeSubscriptions } from '../actions/faye-actions';
 import { core } from './core';
 import { immediateUpdate } from './user-service';
-import { initFaye } from '../utils/faye';
+import { subscribeConversation, subscribeUser } from '../utils/faye';
 import { observable } from '../utils/events';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
 import { getDeviceId } from '../utils/device';
@@ -17,7 +17,7 @@ export function handleFirstUserMessage(response) {
 
         if (appUserMessageCount === 1) {
             // should only be one message from the app user
-            store.dispatch(showSettingsNotification());
+            store.dispatch(showNotification(store.getState().ui.text.settingsNotificationText));
         }
     }
 
@@ -29,7 +29,7 @@ export function sendChain(sendFn) {
 
     if (store.getState().user.conversationStarted) {
         return promise
-            .then(connectFaye)
+            .then(connectFayeConversation)
             .then(sendFn)
             .then(handleFirstUserMessage);
     }
@@ -39,7 +39,7 @@ export function sendChain(sendFn) {
     return promise
         .then(sendFn)
         .then(handleFirstUserMessage)
-        .then(connectFaye);
+        .then(connectFayeConversation);
 }
 
 export function sendMessage(text) {
@@ -137,22 +137,38 @@ export function getConversation() {
     });
 }
 
-export function connectFaye() {
-    let subscription = store.getState().faye.subscription;
-    if (!subscription) {
-        subscription = initFaye();
-        store.dispatch(setFayeSubscription(subscription));
+export function connectFayeConversation() {
+    const {conversationSubscription} = store.getState().faye;
+
+    if (!conversationSubscription) {
+        return subscribeConversation();
     }
 
-    return subscription;
+    return Promise.resolve();
+}
+
+export function connectFayeUser() {
+    const {userSubscription} = store.getState().faye;
+
+    if (!userSubscription) {
+        return subscribeUser();
+    }
+
+    return Promise.resolve();
 }
 
 export function disconnectFaye() {
-    const subscription = store.getState().faye.subscription;
-    if (subscription) {
-        subscription.cancel();
-        store.dispatch(unsetFayeSubscription());
+    const {conversationSubscription, userSubscription} = store.getState().faye;
+
+    if (conversationSubscription) {
+        conversationSubscription.cancel();
     }
+
+    if (userSubscription) {
+        userSubscription.cancel();
+    }
+
+    store.dispatch(unsetFayeSubscriptions());
 }
 
 export function resetUnreadCount() {
@@ -173,7 +189,7 @@ export function handleConversationUpdated() {
     if (!subscription) {
         return getConversation()
             .then((response) => {
-                return connectFaye().then(() => {
+                return connectFayeConversation().then(() => {
                     return response;
                 });
             });

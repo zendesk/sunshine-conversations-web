@@ -168,7 +168,7 @@ describe('Widget', () => {
         describe('shown', () => {
             const props = Object.assign({}, defaultProps, {
                 appState: {
-                    settingsNotificationVisible: true
+                    notificationMessage: 'this is a notification message'
                 }
             });
 
@@ -185,7 +185,7 @@ describe('Widget', () => {
         describe('hidden', () => {
             const props = Object.assign({}, defaultProps, {
                 appState: {
-                    settingsNotificationVisible: false
+                    notificationMessage: null
                 }
             });
 

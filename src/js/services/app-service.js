@@ -1,8 +1,11 @@
 import { store } from '../stores/app-store';
 import * as AppStateActions from '../actions/app-state-actions';
-import { observable } from '../utils/events';
 import { preventMobilePageScroll, allowMobilePageScroll } from '../utils/dom';
-import { resetUnreadCount } from './conversation-service';
+import { resetUnreadCount, connectFayeUser } from './conversation-service';
+import { observable } from '../utils/events';
+import { hasLinkableChannels, isChannelLinked } from '../utils/user';
+import { getIntegration } from '../utils/app';
+import { CHANNELS_DETAILS } from '../constants/channels';
 
 
 
@@ -36,4 +39,47 @@ export function toggleWidget() {
             openWidget();
         }
     }
+}
+
+function connectToFayeUser() {
+    const {app: {integrations: appChannels, settings}, user: {clients}} = store.getState();
+
+    if (hasLinkableChannels(appChannels, clients, settings.web)) {
+        return connectFayeUser();
+    }
+
+    return Promise.resolve();
+}
+
+export function showSettings() {
+    return connectToFayeUser().then(() => {
+        store.dispatch(AppStateActions.showSettings());
+    });
+}
+
+export function hideSettings() {
+    store.dispatch(AppStateActions.hideSettings());
+}
+
+export function showChannelPage(channelType) {
+    const {user, app: {integrations}} = store.getState();
+    const isLinked = isChannelLinked(user.clients, channelType);
+
+    if (isLinked) {
+        const channelDetails = CHANNELS_DETAILS[channelType];
+        const appChannel = getIntegration(integrations, channelType);
+        const link = channelDetails.getLink(user, appChannel);
+        if (link) {
+            window.open(link);
+            return Promise.resolve();
+        }
+    }
+
+    return connectToFayeUser().then(() => {
+        store.dispatch(AppStateActions.showChannelPage(channelType));
+    });
+}
+
+export function hideChannelPage() {
+    store.dispatch(AppStateActions.hideChannelPage());
 }

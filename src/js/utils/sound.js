@@ -1,4 +1,4 @@
-import { soundNotification } from './assets';
+import { soundNotification } from '../constants/assets';
 
 let notificationSoundPlaying = false;
 let currentAudio;

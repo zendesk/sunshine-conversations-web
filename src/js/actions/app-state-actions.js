@@ -7,8 +7,8 @@ export const ENABLE_SOUND_NOTIFICATION = 'ENABLE_SOUND_NOTIFICATION';
 export const DISABLE_SOUND_NOTIFICATION = 'DISABLE_SOUND_NOTIFICATION';
 export const SHOW_SETTINGS = 'SHOW_SETTINGS';
 export const HIDE_SETTINGS = 'HIDE_SETTINGS';
-export const SHOW_SETTINGS_NOTIFICATION = 'SHOW_SETTINGS_NOTIFICATION';
-export const HIDE_SETTINGS_NOTIFICATION = 'HIDE_SETTINGS_NOTIFICATION';
+export const SHOW_NOTIFICATION = 'SHOW_NOTIFICATION';
+export const HIDE_NOTIFICATION = 'HIDE_NOTIFICATION';
 export const SHOW_ERROR_NOTIFICATION = 'SHOW_ERROR_NOTIFICATION';
 export const HIDE_ERROR_NOTIFICATION = 'HIDE_ERROR_NOTIFICATION';
 export const SET_SERVER_URL = 'SET_SERVER_URL';
@@ -17,6 +17,8 @@ export const UNSET_EMAIL_READONLY = 'UNSET_EMAIL_READONLY';
 export const SET_EMBEDDED = 'SET_EMBEDDED';
 export const ENABLE_IMAGE_UPLOAD = 'ENABLE_IMAGE_UPLOAD';
 export const DISABLE_IMAGE_UPLOAD = 'DISABLE_IMAGE_UPLOAD';
+export const SHOW_CHANNEL_PAGE = 'SHOW_CHANNEL_PAGE';
+export const HIDE_CHANNEL_PAGE = 'HIDE_CHANNEL_PAGE';
 
 export function toggleWidget() {
     return {
@@ -96,15 +98,16 @@ export function unsetEmailReadonly() {
     };
 }
 
-export function showSettingsNotification() {
+export function showNotification(message) {
     return {
-        type: SHOW_SETTINGS_NOTIFICATION
+        type: SHOW_NOTIFICATION,
+        message
     };
 }
 
-export function hideSettingsNotification() {
+export function hideNotification() {
     return {
-        type: HIDE_SETTINGS_NOTIFICATION
+        type: HIDE_NOTIFICATION
     };
 }
 
@@ -138,5 +141,18 @@ export function setEmbedded(value) {
     return {
         type: SET_EMBEDDED,
         value
+    };
+}
+
+export function showChannelPage(channelType) {
+    return {
+        type: SHOW_CHANNEL_PAGE,
+        channelType
+    };
+}
+
+export function hideChannelPage() {
+    return {
+        type: HIDE_CHANNEL_PAGE
     };
 }
