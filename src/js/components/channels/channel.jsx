@@ -21,7 +21,7 @@ export class ChannelComponent extends Component {
         }
 
         const channelPages = getAppChannelDetails(appChannels).map(({channel, details}) => {
-            if (isChannelLinked(clients, channel.type)) {
+            if (!details.Component || isChannelLinked(clients, channel.type)) {
                 return null;
             }
 

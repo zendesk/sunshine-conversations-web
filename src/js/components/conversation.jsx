@@ -78,7 +78,7 @@ export class ConversationComponent extends Component {
         const {introHeight} = this.props;
 
         const messagesContainerStyle = {
-            maxHeight: `calc(100% - ${introHeight + 10} px)`
+            maxHeight: `calc(100% - ${introHeight + 10}px)`
         };
 
         return (

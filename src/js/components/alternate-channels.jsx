@@ -8,8 +8,7 @@ export class AlternateChannels extends Component {
     }
 
     onChannelClick(event) {
-        const channel = event.target.id;
-        showChannelPage(channel);
+        showChannelPage(event.target.id);
     }
 
     render() {

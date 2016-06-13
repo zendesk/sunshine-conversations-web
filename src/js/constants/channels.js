@@ -2,7 +2,6 @@ import { integrations as integrationsAssets } from '../constants/assets';
 import { MessengerChannelContent } from '../components/channels/messenger-channel-content';
 import { EmailChannelContent } from '../components/channels/email-channel-content';
 import { TwilioChannelContent } from '../components/channels/twilio-channel-content';
-import { TelegramChannelContent } from '../components/channels/telegram-channel-content';
 import { WeChatChannelContent } from '../components/channels/wechat-channel-content';
 import { LineChannelContent } from '../components/channels/line-channel-content';
 
@@ -39,9 +38,7 @@ export const CHANNELS_DETAILS = {
         description: 'To talk to us using Telegram, add our bot:',
         isLinkable: false,
         ...integrationsAssets.telegram,
-        Component: TelegramChannelContent,
-        getLink: () => {
-        }
+        getLink: (appUser, channel, linked) => `https://telegram.me/${channel.username}${!linked ? '?start=' + appUser._id : ''}`
     },
     wechat: {
         name: 'WeChat',

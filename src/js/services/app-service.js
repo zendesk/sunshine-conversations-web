@@ -7,8 +7,6 @@ import { hasLinkableChannels, isChannelLinked } from '../utils/user';
 import { getIntegration } from '../utils/app';
 import { CHANNELS_DETAILS } from '../constants/channels';
 
-
-
 export function openWidget() {
     const {embedded} = store.getState().appState;
     if (!embedded) {
@@ -63,12 +61,13 @@ export function hideSettings() {
 
 export function showChannelPage(channelType) {
     const {user, app: {integrations}} = store.getState();
-    const isLinked = isChannelLinked(user.clients, channelType);
+    const openLink = !CHANNELS_DETAILS[channelType].Component || isChannelLinked(user.clients, channelType);
 
-    if (isLinked) {
+    if (openLink) {
         const channelDetails = CHANNELS_DETAILS[channelType];
         const appChannel = getIntegration(integrations, channelType);
-        const link = channelDetails.getLink(user, appChannel);
+        const link = channelDetails.getLink(user, appChannel, isChannelLinked(user.clients, channelType));
+
         if (link) {
             window.open(link);
             return Promise.resolve();

@@ -48,7 +48,6 @@ class IntroductionComponent extends Component {
         const {app, integrations} = this.props;
         const {ui: {text}} = this.context;
         const channelDetailsList = getAppChannelDetails(integrations);
-
         const channelsAvailable = channelDetailsList.length > 0;
         const introText = channelsAvailable ? `${text.introText} ${text.introAppText}` : text.introText;
 
