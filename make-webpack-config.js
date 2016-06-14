@@ -32,8 +32,8 @@ module.exports = function(options) {
         },
         'json': 'json-loader',
         'txt': 'raw-loader',
-        'png|jpg|jpeg|gif|svg': 'url-loader?limit=10000',
-        'woff|woff2': 'url-loader?limit=100000',
+        'png|jpg|jpeg|gif|svg': 'url-loader?limit=1',
+        'woff|woff2': 'url-loader?limit=1',
         'mp3': 'url-loader?limit=1',
         'ttf|eot': 'file-loader'
     };
