@@ -1,12 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import debounce from 'lodash.debounce';
+import { findDOMNode } from 'react-dom';
 
 import { AlternateChannels } from './alternate-channels';
 import { createMarkup } from '../utils/html';
-import { findDOMNode } from 'react-dom';
-import { defaultAppIcon, defaultAppIcon2x } from '../constants/assets';
 import { getAppChannelDetails } from '../utils/app';
+import { DefaultAppIcon } from './default-app-icon';
 import { setIntroHeight } from '../actions/app-state-actions';
 
 class IntroductionComponent extends Component {
@@ -17,7 +17,8 @@ class IntroductionComponent extends Component {
     }
 
     static contextTypes = {
-        ui: PropTypes.object
+        ui: PropTypes.object,
+        settings: PropTypes.object
     }
 
     constructor(...args) {
@@ -46,15 +47,15 @@ class IntroductionComponent extends Component {
 
     render() {
         const {app, integrations} = this.props;
-        const {ui: {text}} = this.context;
+        const {ui: {text}, settings: {accentColor}} = this.context;
         const channelDetailsList = getAppChannelDetails(integrations);
         const channelsAvailable = channelDetailsList.length > 0;
         const introText = channelsAvailable ? `${text.introText} ${text.introAppText}` : text.introText;
 
         return <div className='sk-intro-section'>
-                   <img className='app-icon'
-                        src={ app.iconUrl || defaultAppIcon }
-                        srcSet={ `${app.iconUrl || defaultAppIcon} 1x, ${app.iconUrl || defaultAppIcon2x} 2x` } />
+                   { app.iconUrl ? <img className='app-icon'
+                                        src={ app.iconUrl } />
+                         : <DefaultAppIcon color={ accentColor } /> }
                    <div className='app-name'>
                        { app.name || 'Smooch Technologies Inc.' }
                    </div>
