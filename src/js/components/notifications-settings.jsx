@@ -15,14 +15,31 @@ export class ChannelItem extends Component {
         icon2x: PropTypes.string.isRequired
     };
 
+    static contextTypes = {
+        settings: PropTypes.object
+    };
+
     onClick = () => {
         showChannelPage(this.props.id);
     }
 
     render() {
         const {name, icon, icon2x, linked} = this.props;
+        const {settings} = this.context;
 
-        return <div className='channel-item'
+        const itemRightStyle = linked && settings.linkColor ? {
+            color: `#${settings.linkColor}`
+        } : null;
+
+        const classNames = [
+            'channel-item'
+        ];
+
+        if (linked) {
+            classNames.push('channel-item-linked');
+        }
+
+        return <div className={ classNames.join(' ') }
                     onClick={ this.onClick }>
                    <div className='channel-item-header'>
                        <img className='channel-item-icon'
@@ -31,8 +48,9 @@ export class ChannelItem extends Component {
                        <div className='channel-item-name'>
                            { name }
                        </div>
-                       <div className='channel-item-right'>
-                           { linked ? 'Open' : '>' }
+                       <div className='channel-item-right'
+                            style={ itemRightStyle }>
+                           { linked ? 'Open' : <i className='fa fa-angle-right' /> }
                        </div>
                    </div>
                </div>;

@@ -39,7 +39,7 @@ export class HeaderComponent extends Component {
         const settingsButton = widgetOpened && settingsEnabled && !settingsMode ? (
             <div id='sk-settings-handle'
                  onClick={ this.showSettings }>
-                <i className='fa fa-gear'></i>
+                <i className='fa fa-ellipsis-h'></i>
             </div>
             ) : null;
 

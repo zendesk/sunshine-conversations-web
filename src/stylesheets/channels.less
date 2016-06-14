@@ -8,7 +8,7 @@
     background-color: white;
     overflow: hidden;
     opacity: 1;
-    font-size: 13px;
+    font-size: 12px;
     text-align: center;
 
     &.sk-channel-visible {
@@ -22,21 +22,23 @@
     }
 
     .content-wrapper {
-        padding: 40px;
+        padding: 50px 40px;
     }
 
     .channel-header {
         .channel-icon {
-            margin-bottom: 40px;
+            margin-bottom: 50px;
             height: 65px;
         }
         .channel-name {
+            font-size: 15px;
+            color: @settings-header-color;
             font-weight: 600;
             margin-bottom: 10px;
         }
         .channel-description {
-            margin-bottom: 20px;
-            color: #b0b0b0;
+            margin-bottom: 30px;
+            color: @sk-base-text-color;
         }
     }
 
@@ -46,6 +48,18 @@
 
         a, a:visited {
             color: @sk-blue;
+        }
+    }
+
+    .fb-send-to-messenger {
+        margin-left: 54px;
+
+        @media (max-width: @widget-min-width) {
+            margin-left: 0;
+        }
+
+        @media (min-width: @screen-lg-min) {
+            margin-left: 90px;
         }
     }
 }
