@@ -35,7 +35,7 @@ export const CHANNELS_DETAILS = {
     telegram: {
         name: 'Telegram',
         description: 'To talk to us using Telegram, add our bot:',
-        isLinkable: false,
+        isLinkable: true,
         ...integrationsAssets.telegram,
         getURL: (appUser, channel, linked) => `https://telegram.me/${channel.username}${!linked ? '?start=' + appUser._id : ''}`
     },
