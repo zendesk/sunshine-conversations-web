@@ -62,15 +62,16 @@ export function hideSettings() {
 export function showChannelPage(channelType) {
     const {user, app: {integrations}} = store.getState();
     const channelDetails = CHANNELS_DETAILS[channelType];
-    const openLink = channelDetails.getURL && (!channelDetails.Component || isChannelLinked(user.clients, channelType));
+    const isLinked = isChannelLinked(user.clients, channelType);
+    const openLink = channelDetails.getURL && (!channelDetails.Component || isLinked);
 
     if (openLink) {
         const appChannel = getIntegration(integrations, channelType);
-        const link = channelDetails.getURL(user, appChannel, isChannelLinked(user.clients, channelType));
+        const link = channelDetails.getURL(user, appChannel, isLinked);
 
         if (link) {
             window.open(link);
-            return Promise.resolve();
+            return isLinked || !channelDetails.isLinkable ? Promise.resolve() : connectToFayeUser();
         }
     }
 
