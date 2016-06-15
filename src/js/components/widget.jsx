@@ -9,14 +9,22 @@ import { Header } from './header';
 import { Conversation } from './conversation';
 import { Settings } from './settings';
 import { Channel } from './channels/channel';
-import { Notification } from './notification';
 import { ErrorNotification } from './error-notification';
 import { ChatInput } from './chat-input';
 import { MessageIndicator } from './message-indicator';
 
 import { resetUnreadCount } from '../services/conversation-service';
+import { hasChannels } from '../utils/app';
 
 export class WidgetComponent extends Component {
+    static propTypes = {
+        smoochId: PropTypes.string,
+        app: PropTypes.object.isRequired,
+        settings: PropTypes.object.isRequired,
+        ui: PropTypes.object.isRequired,
+        appState: PropTypes.object.isRequired
+    };
+
     static childContextTypes = {
         app: PropTypes.object,
         settings: PropTypes.object,
@@ -56,20 +64,27 @@ export class WidgetComponent extends Component {
     }
 
     render() {
-        const settingsComponent = this.props.appState.settingsVisible ? <Settings /> : null;
-        const footer = this.props.appState.settingsVisible ? null : <ChatInput ref='input' />;
+        const {appState, settings, smoochId} = this.props;
+
+        const settingsComponent = appState.settingsVisible ? <Settings /> : null;
+
+        // if no user set in store or the app has no channels,
+        // no need to render the channel page manager 
+        const channelsComponent = smoochId && hasChannels(settings) ? <Channel /> : null;
+
+        const footer = appState.settingsVisible ? null : <ChatInput ref='input' />;
 
         const classNames = [];
 
-        if (this.props.appState.embedded) {
+        if (appState.embedded) {
             classNames.push('sk-embedded');
         } else {
             // `widgetOpened` can have 3 values: `true`, `false`, and `undefined`.
             // `undefined` is basically the default state where the widget was never
             // opened or closed and not visibility class is applied to the widget
-            if (this.props.appState.widgetOpened === true) {
+            if (appState.widgetOpened === true) {
                 classNames.push('sk-appear');
-            } else if (this.props.appState.widgetOpened === false) {
+            } else if (appState.widgetOpened === false) {
                 classNames.push('sk-close');
             } else {
                 classNames.push('sk-init');
@@ -82,11 +97,8 @@ export class WidgetComponent extends Component {
 
         const className = classNames.join(' ');
 
-        const notification = this.props.appState.errorNotificationMessage ?
-            <ErrorNotification message={ this.props.appState.errorNotificationMessage } /> :
-            this.props.appState.notificationMessage ?
-                <Notification message={ this.props.appState.notificationMessage } /> :
-                null;
+        const notification = appState.errorNotificationMessage ?
+            <ErrorNotification message={ appState.errorNotificationMessage } /> : null;
 
         return (
             <div id='sk-container'
@@ -114,7 +126,7 @@ export class WidgetComponent extends Component {
                                              transitionLeaveTimeout={ 250 }>
                         { settingsComponent }
                     </ReactCSSTransitionGroup>
-                    <Channel />
+                    { channelsComponent }
                     <Conversation />
                     { footer }
                 </div>
@@ -123,11 +135,22 @@ export class WidgetComponent extends Component {
     }
 }
 
-export const Widget = connect(({appState, app, ui}) => {
+export const Widget = connect(({appState: {
+    settingsVisible,
+    widgetOpened,
+    errorNotificationMessage
+}, app, ui, user}) => {
+    // only extract what is needed from appState as this is something that might
+    // mutate a lot
     return {
-        appState,
+        appState: {
+            settingsVisible,
+            widgetOpened,
+            errorNotificationMessage
+        },
         app,
         settings: app.settings.web,
-        ui
+        ui,
+        smoochId: user._id
     };
 })(WidgetComponent);

@@ -1,11 +1,12 @@
 import { store } from '../stores/app-store';
+import { showConnectNotification } from '../services/app-service';
 import { addMessage, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction } from '../actions/conversation-actions';
 import { updateUser } from '../actions/user-actions';
-import { showNotification, showErrorNotification } from '../actions/app-state-actions';
+import { showErrorNotification } from '../actions/app-state-actions';
 import { unsetFayeSubscriptions } from '../actions/faye-actions';
 import { core } from './core';
 import { immediateUpdate } from './user-service';
-import { subscribeConversation, subscribeUser } from '../utils/faye';
+import { disconnectClient, subscribeConversation, subscribeUser } from '../utils/faye';
 import { observable } from '../utils/events';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
 import { getDeviceId } from '../utils/device';
@@ -16,8 +17,7 @@ export function handleFirstUserMessage(response) {
         const appUserMessageCount = state.conversation.messages.filter((message) => message.role === 'appUser').length;
 
         if (appUserMessageCount === 1) {
-            // should only be one message from the app user
-            store.dispatch(showNotification(store.getState().ui.text.settingsNotificationText));
+            showConnectNotification();
         }
     }
 
@@ -168,6 +168,7 @@ export function disconnectFaye() {
         userSubscription.cancel();
     }
 
+    disconnectClient();
     store.dispatch(unsetFayeSubscriptions());
 }
 

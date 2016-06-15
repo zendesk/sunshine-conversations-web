@@ -23,7 +23,7 @@ import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowse
 import { isImageUploadSupported } from './utils/media';
 import { playNotificationSound, isAudioSupported } from './utils/sound';
 import { getDeviceId } from './utils/device';
-import { getIntegration } from './utils/app';
+import { getIntegration, hasChannels } from './utils/app';
 
 import { stylesheet } from './constants/assets';
 
@@ -131,9 +131,9 @@ export class Smooch {
         this.appToken = props.appToken;
 
         if (props.emailCaptureEnabled) {
-            store.dispatch(AppStateActions.enableSettings());
+            store.dispatch(AppStateActions.enableEmailCapture());
         } else {
-            store.dispatch(AppStateActions.disableSettings());
+            store.dispatch(AppStateActions.disableEmailCapture());
         }
 
         if (props.soundNotificationEnabled && isAudioSupported()) {
@@ -171,19 +171,20 @@ export class Smooch {
             attributes = {};
         }
 
+        // in case those are opened;
+        hideSettings();
+        hideChannelPage();
+
         // in case it comes from a previous authenticated state
         store.dispatch(resetAuth());
         store.dispatch(userActions.resetUser());
         store.dispatch(resetConversation());
 
-        hideSettings();
-        hideChannelPage();
-
         disconnectFaye();
 
         attributes = pick(attributes, EDITABLE_PROPERTIES);
 
-        if (store.getState().appState.settingsEnabled && attributes.email) {
+        if (store.getState().appState.emailCaptureEnabled && attributes.email) {
             store.dispatch(AppStateActions.setEmailReadonly());
         } else {
             store.dispatch(AppStateActions.unsetEmailReadonly());
@@ -219,6 +220,10 @@ export class Smooch {
             monitorUrlChanges(() => {
                 updateNowViewing(getDeviceId());
             });
+
+            if (hasChannels(loginResponse.app.settings.web)) {
+                store.dispatch(AppStateActions.disableEmailCapture());
+            }
 
             if (getIntegration(loginResponse.app.integrations, 'stripe')) {
                 return getAccount().then((r) => {

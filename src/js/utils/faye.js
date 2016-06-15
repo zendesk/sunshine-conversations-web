@@ -103,3 +103,10 @@ export function subscribeUser() {
         store.dispatch(setFayeUserSubscription(subscription));
     });
 }
+
+export function disconnectClient() {
+    if (client) {
+        client.disconnect();
+        client = undefined;
+    }
+}

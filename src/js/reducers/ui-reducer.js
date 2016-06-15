@@ -21,8 +21,7 @@ const INITIAL_STATE = {
         invalidFileError: 'Sorry, but only images are supported currently. Please choose a file with a supported extension (jpg, jpeg, png, gif, or bmp).',
         messageIndicatorTitleSingular: '({count}) New message',
         messageIndicatorTitlePlural: '({count}) New messages',
-        messengerConnectNotificationText: 'Get notified when you get a reply by connecting to Messenger. <a href data-ui-settings-link>Connect</a>',
-        notificationsSettingsText: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.'
+        connectNotificationText: 'Be notified inside your other apps when you get a reply.'
     }
 };
 

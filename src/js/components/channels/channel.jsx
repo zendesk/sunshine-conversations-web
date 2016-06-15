@@ -9,13 +9,14 @@ export class ChannelComponent extends Component {
     static propTypes = {
         appChannels: PropTypes.array.isRequired,
         visibleChannelType: PropTypes.string,
-        smoochId: PropTypes.string.isRequired,
-        clients: PropTypes.array.isRequired
+        smoochId: PropTypes.string,
+        clients: PropTypes.array
     };
 
     render() {
         const {appChannels, visibleChannelType, smoochId, clients} = this.props;
 
+        //
         if (!smoochId) {
             return null;
         }

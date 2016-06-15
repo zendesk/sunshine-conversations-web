@@ -82,3 +82,7 @@ export function showChannelPage(channelType) {
 export function hideChannelPage() {
     store.dispatch(AppStateActions.hideChannelPage());
 }
+
+export function showConnectNotification() {
+    store.dispatch(AppStateActions.showConnectNotification(Date.now() / 1000.0));
+}

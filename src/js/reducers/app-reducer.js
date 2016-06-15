@@ -1,7 +1,14 @@
 import { SET_STRIPE_INFO, RESET_APP, SET_APP } from '../actions/app-actions';
 import { RESET } from '../actions/common-actions';
 
-const INITIAL_STATE = {};
+const INITIAL_STATE = {
+    integrations: [],
+    settings: {
+        web: {
+            channels: {}
+        }
+    }
+};
 
 function filterIntegrations(integrations, channelSettings) {
     // check for !== false because we also want it to be true if the key is not in channelSettings

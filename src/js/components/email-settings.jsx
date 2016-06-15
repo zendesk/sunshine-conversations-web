@@ -10,25 +10,19 @@ export class EmailSettingsComponent extends Component {
         settings: {}
     };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            email: this.props.user.email,
-            hasError: false
-        };
+    state = {
+        email: this.props.user.email,
+        hasError: false
+    };
 
-        this.onChange = this.onChange.bind(this);
-        this.save = this.save.bind(this);
-    }
-
-    onChange(e) {
+    onChange = (e) => {
         this.setState({
             email: e.target.value,
             hasError: false
         });
-    }
+    };
 
-    save(e) {
+    save = (e) => {
         e.preventDefault();
 
         // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
@@ -51,7 +45,7 @@ export class EmailSettingsComponent extends Component {
                 });
             });
         }
-    }
+    };
 
     render() {
         const hasError = this.state.hasError;
@@ -62,16 +56,18 @@ export class EmailSettingsComponent extends Component {
             style.backgroundColor = style.borderColor = `#${this.props.settings.linkColor}`;
         }
 
-        const button = this.props.appState.readOnlyEmail ? null : <div className='input-group'>
-                                                                      <button ref='button'
-                                                                              disabled={ hasError }
-                                                                              type='button'
-                                                                              className='btn btn-sk-primary'
-                                                                              style={ style }
-                                                                              onClick={ this.save }>
-                                                                          { this.props.ui.text.settingsSaveButtonText }
-                                                                      </button>
-                                                                  </div>;
+        const button = this.props.appState.readOnlyEmail ? null : (
+            <div className='input-group'>
+                <button ref='button'
+                        disabled={ hasError }
+                        type='button'
+                        className='btn btn-sk-primary'
+                        style={ style }
+                        onClick={ this.save }>
+                    { this.props.ui.text.settingsSaveButtonText }
+                </button>
+            </div>
+            );
 
         return <div className='settings-wrapper'>
                    <p ref='description'>

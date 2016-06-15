@@ -1,12 +1,15 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+
 import { toggleWidget, showSettings, hideSettings, hideChannelPage } from '../services/app-service';
+import { hasChannels } from '../utils/app';
 
 export class HeaderComponent extends Component {
 
     static contextTypes = {
-        ui: PropTypes.object
-    }
+        ui: PropTypes.object,
+        settings: PropTypes.object
+    };
 
     showSettings(e) {
         e.stopPropagation();
@@ -24,11 +27,12 @@ export class HeaderComponent extends Component {
     }
 
     render() {
-        const {appState: {settingsEnabled, settingsVisible, widgetOpened, embedded, visibleChannelType}, unreadCount} = this.props;
-        const {ui} = this.context;
+        const {appState: {emailCaptureEnabled, settingsVisible, widgetOpened, embedded, visibleChannelType}, unreadCount} = this.props;
+        const {ui, settings} = this.context;
         const {settingsHeaderText, headerText} = ui.text;
 
         const settingsMode = !!(settingsVisible || visibleChannelType);
+        const showSettingsButton = (hasChannels(settings) || emailCaptureEnabled) && !settingsMode;
 
         const unreadBadge = !settingsMode && unreadCount > 0 ? (
             <div id='sk-badge'>
@@ -36,14 +40,14 @@ export class HeaderComponent extends Component {
             </div>
             ) : null;
 
-        const settingsButton = widgetOpened && settingsEnabled && !settingsMode ? (
+        const settingsButton = showSettingsButton ? (
             <div id='sk-settings-handle'
                  onClick={ this.showSettings }>
                 <i className='fa fa-ellipsis-h'></i>
             </div>
             ) : null;
 
-        const backButton = widgetOpened && settingsEnabled && settingsMode ? (
+        const backButton = widgetOpened && settingsMode ? (
             <div className='sk-back-handle'
                  onClick={ this.hideSettings }>
                 <i className='fa fa-arrow-left'></i>
