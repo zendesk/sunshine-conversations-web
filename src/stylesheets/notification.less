@@ -7,12 +7,13 @@
     .sk-notification {
         overflow: hidden;
 
+        height: @notification-height;
         width: 100%;
 
         border-top: 1px solid rgba(0, 0, 0, .1);
         background-color: white;
         p {
-            margin: 10px 18px;
+            margin: 18px 18px;
             a {
                 color: @sk-blue;
             }
@@ -51,11 +52,11 @@
 
     .sk-notification-enter-active {
         .transition(height 500ms);
-        height: 56px;
+        height: @notification-height;
     }
 
     .sk-notification-leave {
-        height: 56px;
+        height: @notification-height;
     }
 
     .sk-notification-leave-active {

@@ -13,6 +13,13 @@ export class ConversationComponent extends Component {
         settings: PropTypes.object
     };
 
+    static propTypes = {
+        connectNotificationTimestamp: PropTypes.number,
+        introHeight: PropTypes.number.isRequired,
+        messages: PropTypes.array.isRequired,
+        errorNotificationMessage: PropTypes.string
+    };
+
     state = {
         logoIsAnchored: true
     };
@@ -63,7 +70,7 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const {connectNotificationTimestamp, introHeight, messages} = this.props;
+        const {connectNotificationTimestamp, introHeight, messages, errorNotificationMessage} = this.props;
         const {settings} = this.context;
 
         let messageItems = messages.map((message) => {
@@ -97,6 +104,7 @@ export class ConversationComponent extends Component {
         };
 
         return <div id='sk-conversation'
+                    className={ errorNotificationMessage && 'notification-shown' }
                     ref='container'
                     onTouchStart={ this.onTouchStart }>
                    <Introduction/>
@@ -120,11 +128,12 @@ export class ConversationComponent extends Component {
     }
 }
 
-export const Conversation = connect((state) => {
+export const Conversation = connect(({appState, conversation}) => {
     return {
-        messages: state.conversation.messages,
-        embedded: state.appState.embedded,
-        introHeight: state.appState.introHeight,
-        connectNotificationTimestamp: state.appState.connectNotificationTimestamp
+        messages: conversation.messages,
+        embedded: appState.embedded,
+        introHeight: appState.introHeight,
+        connectNotificationTimestamp: appState.connectNotificationTimestamp,
+        errorNotificationMessage: appState.errorNotificationMessage
     };
 })(ConversationComponent);
