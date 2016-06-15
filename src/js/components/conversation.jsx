@@ -8,6 +8,8 @@ import { ConnectNotification } from './connect-notification';
 import { logo, logo2x } from '../constants/assets';
 import { Introduction } from './introduction';
 
+const INTRO_BOTTOM_SPACER = 10;
+
 export class ConversationComponent extends Component {
     static contextTypes = {
         settings: PropTypes.object
@@ -51,7 +53,7 @@ export class ConversationComponent extends Component {
         const timeout = setTimeout(() => {
             const container = findDOMNode(this);
             const logo = this.refs.logo;
-            const scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight;
+            const scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight - INTRO_BOTTOM_SPACER;
             container.scrollTop = scrollTop;
         });
         this.scrollTimeouts.push(timeout);
@@ -100,7 +102,7 @@ export class ConversationComponent extends Component {
         } : undefined;
 
         const messagesContainerStyle = {
-            maxHeight: `calc(100% - ${introHeight + 10}px)`
+            maxHeight: `calc(100% - ${introHeight + INTRO_BOTTOM_SPACER}px)`
         };
 
         return <div id='sk-conversation'
