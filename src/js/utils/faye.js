@@ -101,7 +101,7 @@ export function updateUser(currentAppUser, nextAppUser) {
 export function handleUserSubscription({appUser, event}) {
     const {user: currentAppUser, appState: {visibleChannelType}} = store.getState();
 
-    if (event.type === 'channel-linking') {
+    if (event.type === 'link') {
         const {platform} = appUser.clients.find((c) => c.id === event.clientId);
         if (platform === visibleChannelType) {
             showSettings();
