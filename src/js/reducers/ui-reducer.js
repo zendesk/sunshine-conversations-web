@@ -21,7 +21,10 @@ const INITIAL_STATE = {
         invalidFileError: 'Sorry, but only images are supported currently. Please choose a file with a supported extension (jpg, jpeg, png, gif, or bmp).',
         messageIndicatorTitleSingular: '({count}) New message',
         messageIndicatorTitlePlural: '({count}) New messages',
-        connectNotificationText: 'Be notified inside your other apps when you get a reply.'
+        connectNotificationText: 'Be notified inside your other apps when you get a reply.',
+        messengerConnectNotificationText: 'Get notified when you get a reply by connecting to Messenger. <a href data-ui-settings-link>Connect</a>',
+        notificationsSettingsText: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.',
+        wechatQRCodeError: 'An error occurred while fetching your WeChat QR code. Please try again.'
     }
 };
 

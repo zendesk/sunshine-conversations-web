@@ -61,12 +61,12 @@ export function hideSettings() {
 
 export function showChannelPage(channelType) {
     const {user, app: {integrations}} = store.getState();
-    const openLink = !CHANNELS_DETAILS[channelType].Component || isChannelLinked(user.clients, channelType);
+    const channelDetails = CHANNELS_DETAILS[channelType];
+    const openLink = channelDetails.getURL && (!channelDetails.Component || isChannelLinked(user.clients, channelType));
 
     if (openLink) {
-        const channelDetails = CHANNELS_DETAILS[channelType];
         const appChannel = getIntegration(integrations, channelType);
-        const link = channelDetails.getLink(user, appChannel, isChannelLinked(user.clients, channelType));
+        const link = channelDetails.getURL(user, appChannel, isChannelLinked(user.clients, channelType));
 
         if (link) {
             window.open(link);

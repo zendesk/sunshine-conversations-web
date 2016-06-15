@@ -10,7 +10,7 @@ export class ChannelItem extends Component {
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         linked: PropTypes.bool.isRequired,
-        link: PropTypes.string,
+        hasURL: PropTypes.string,
         icon: PropTypes.string.isRequired,
         icon2x: PropTypes.string.isRequired
     };
@@ -21,10 +21,10 @@ export class ChannelItem extends Component {
 
     onClick = () => {
         showChannelPage(this.props.id);
-    }
+    };
 
     render() {
-        const {name, icon, icon2x, linked} = this.props;
+        const {name, icon, icon2x, linked, hasURL} = this.props;
         const {settings} = this.context;
 
         const itemRightStyle = linked && settings.linkColor ? {
@@ -50,7 +50,7 @@ export class ChannelItem extends Component {
                        </div>
                        <div className='channel-item-right'
                             style={ itemRightStyle }>
-                           { linked ? 'Open' : <i className='fa fa-angle-right' /> }
+                           { hasURL && linked ? 'Open' : <i className='fa fa-angle-right' /> }
                        </div>
                    </div>
                </div>;
@@ -81,7 +81,7 @@ export class NotificationsSettingsComponent extends Component {
                                 id={ channel.type }
                                 {...details}
                                 linked={ isChannelLinked(user.clients, channel.type) }
-                                link={ details.getLink(user, channel) } />;
+                                hasURL={ details.getURL && details.getURL(user, channel) } />;
         });
 
 

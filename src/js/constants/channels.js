@@ -13,7 +13,7 @@ export const CHANNELS_DETAILS = {
         isLinkable: true,
         ...integrationsAssets.messenger,
         Component: MessengerChannelContent,
-        getLink: (appUser, channel) => `https://m.me/${channel.pageId}`
+        getURL: (appUser, channel) => `https://m.me/${channel.pageId}`
     },
     frontendEmail: {
         name: 'Email',
@@ -21,7 +21,7 @@ export const CHANNELS_DETAILS = {
         isLinkable: false,
         ...integrationsAssets.frontendEmail,
         Component: EmailChannelContent,
-        getLink: () => {
+        getURL: () => {
         }
     },
     twilio: {
@@ -30,7 +30,7 @@ export const CHANNELS_DETAILS = {
         isLinkable: false,
         ...integrationsAssets.sms,
         Component: TwilioChannelContent,
-        getLink: () => {
+        getURL: () => {
         }
     },
     telegram: {
@@ -38,16 +38,14 @@ export const CHANNELS_DETAILS = {
         description: 'To talk to us using Telegram, add our bot:',
         isLinkable: false,
         ...integrationsAssets.telegram,
-        getLink: (appUser, channel, linked) => `https://telegram.me/${channel.username}${!linked ? '?start=' + appUser._id : ''}`
+        getURL: (appUser, channel, linked) => `https://telegram.me/${channel.username}${!linked ? '?start=' + appUser._id : ''}`
     },
     wechat: {
         name: 'WeChat',
         description: 'To send us a message from WeChat, scan this QR code using the WeChat app.',
-        isLinkable: false,
+        isLinkable: true,
         ...integrationsAssets.wechat,
-        Component: WeChatChannelContent,
-        getLink: () => {
-        }
+        Component: WeChatChannelContent
     },
     line: {
         name: 'LINE',
@@ -55,7 +53,7 @@ export const CHANNELS_DETAILS = {
         isLinkable: false,
         ...integrationsAssets.line,
         Component: LineChannelContent,
-        getLink: () => {
+        getURL: () => {
         }
     }
 };
