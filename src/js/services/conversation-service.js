@@ -10,14 +10,33 @@ import { disconnectClient, subscribeConversation, subscribeUser } from '../utils
 import { observable } from '../utils/events';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
 import { getDeviceId } from '../utils/device';
+import { hasLinkableChannels } from '../utils/user';
+import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
 
-export function handleFirstUserMessage(response) {
-    const state = store.getState();
-    if (state.appState.settingsEnabled && !state.user.email) {
-        const appUserMessageCount = state.conversation.messages.filter((message) => message.role === 'appUser').length;
+export function handleConnectNotification(response) {
+    const {user: {clients, email}, app: {integrations, settings}, conversation: {messages}, appState: {emailCaptureEnabled}} = store.getState();
+    const appUserMessages = messages.filter((message) => message.role === 'appUser');
 
-        if (appUserMessageCount === 1) {
+    if ((emailCaptureEnabled && !email) || hasLinkableChannels(integrations, clients, settings.web)) {
+        if (appUserMessages.length === 1) {
             showConnectNotification();
+        } else {
+            // find the last confirmed message timestamp
+            let lastMessageTimestamp;
+
+            // start at -2 to ignore the message that was just sent
+            for (let index = appUserMessages.length - 2; index >= 0 && !lastMessageTimestamp; index--) {
+                const message = appUserMessages[index];
+                lastMessageTimestamp = message.received;
+            }
+
+            if (lastMessageTimestamp) {
+                // divide it by 1000 since server `received` is in seconds and not in ms
+                const currentTimeStamp = Date.now() / 1000;
+                if ((currentTimeStamp - lastMessageTimestamp) >= CONNECT_NOTIFICATION_DELAY_IN_SECONDS) {
+                    showConnectNotification();
+                }
+            }
         }
     }
 
@@ -31,14 +50,14 @@ export function sendChain(sendFn) {
         return promise
             .then(connectFayeConversation)
             .then(sendFn)
-            .then(handleFirstUserMessage);
+            .then(handleConnectNotification);
     }
 
     // if it's not started, send the message first to create the conversation,
     // then get it and connect faye
     return promise
         .then(sendFn)
-        .then(handleFirstUserMessage)
+        .then(handleConnectNotification)
         .then(connectFayeConversation);
 }
 

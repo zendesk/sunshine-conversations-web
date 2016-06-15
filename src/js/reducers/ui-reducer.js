@@ -7,7 +7,7 @@ const INITIAL_STATE = {
         inputPlaceholder: 'Type a message...',
         sendButtonText: 'Send',
         introText: 'We\'re here to talk, so ask us anything!',
-        introAppText: 'Type your message below or message us using your favorite app.',
+        introAppText: 'Message us below or from your favorite app.',
         settingsText: 'You can leave us your email so that we can get back to you this way.',
         settingsReadOnlyText: 'We\'ll get back to you at this email address if we missed you.',
         settingsInputPlaceholder: 'Your email address',

@@ -1,4 +1,4 @@
-import { LINKABLE_CHANNELS } from '../constants/channels';
+import { CHANNELS_DETAILS } from '../constants/channels';
 import { getIntegration } from './app';
 
 export function isChannelLinked(clients, channelType) {
@@ -6,19 +6,17 @@ export function isChannelLinked(clients, channelType) {
 }
 
 export function hasLinkableChannels(appChannels, clients, settings) {
-    return LINKABLE_CHANNELS.some((channelType) => {
-        if (!settings.channels[channelType]) {
-            return false;
-        }
+    return Object.keys(CHANNELS_DETAILS)
+        .filter((channelType) => CHANNELS_DETAILS[channelType].isLinkable && settings.channels[channelType])
+        .some((channelType) => {
+            const integration = getIntegration(appChannels, channelType);
 
-        const integration = getIntegration(appChannels, channelType);
+            // don't care about this channel if not enabled for the app
+            if (!integration) {
+                return false;
+            }
 
-        // don't care about this channel if not enabled for the app
-        if (!integration) {
-            return false;
-        }
-
-        // a channel is not considered as linkable if it's already linked
-        return !isChannelLinked(clients, channelType);
-    });
+            // a channel is not considered as linkable if it's already linked
+            return !isChannelLinked(clients, channelType);
+        });
 }

@@ -5,7 +5,6 @@ import { TwilioChannelContent } from '../components/channels/twilio-channel-cont
 import { WeChatChannelContent } from '../components/channels/wechat-channel-content';
 import { LineChannelContent } from '../components/channels/line-channel-content';
 
-export const LINKABLE_CHANNELS = ['messenger'];
 export const CHANNELS_DETAILS = {
     messenger: {
         name: 'Facebook Messenger',
