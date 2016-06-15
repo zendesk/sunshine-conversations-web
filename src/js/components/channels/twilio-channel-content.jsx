@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import isMobile from 'ismobilejs';
 
 export class TwilioChannelContent extends Component {
     static contextTypes = {
@@ -12,10 +13,14 @@ export class TwilioChannelContent extends Component {
             color: `#${settings.linkColor}`
         } : null;
 
-        return <a href={ `tel:${phoneNumber}` }
-                  style={ styleOverride }
-                  target='_blank'>
-                   { phoneNumber }
-               </a>;
+        if (isMobile.any) {
+            return <a href={ `sms:${phoneNumber}` }
+                      style={ styleOverride }
+                      target='_blank'>
+                       { phoneNumber }
+                   </a>;
+
+        }
+        return <span>{ phoneNumber }</span>;
     }
 }
