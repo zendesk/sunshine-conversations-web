@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { showChannelPage } from '../services/app-service';
 import { getAppChannelDetails } from '../utils/app';
-import { isChannelLinked } from '../utils/user';
+import { isChannelLinked, getDisplayName } from '../utils/user';
 
 export class ChannelItem extends Component {
     static propTypes = {
@@ -12,7 +12,8 @@ export class ChannelItem extends Component {
         linked: PropTypes.bool.isRequired,
         hasURL: PropTypes.string,
         icon: PropTypes.string.isRequired,
-        icon2x: PropTypes.string.isRequired
+        icon2x: PropTypes.string.isRequired,
+        displayName: PropTypes.string
     };
 
     static contextTypes = {
@@ -24,19 +25,19 @@ export class ChannelItem extends Component {
     };
 
     render() {
-        const {name, icon, icon2x, linked, hasURL} = this.props;
+        const {name, icon, icon2x, linked, hasURL, displayName} = this.props;
         const {settings} = this.context;
 
         const itemRightStyle = linked && settings.linkColor ? {
             color: `#${settings.linkColor}`
         } : null;
 
-        const classNames = [
-            'channel-item'
-        ];
+        const classNames = ['channel-item'];
+        const contentClassNames = ['channel-item-content'];
 
         if (linked) {
             classNames.push('channel-item-linked');
+            contentClassNames.push('linked');
         }
 
         return <div className={ classNames.join(' ') }
@@ -45,8 +46,13 @@ export class ChannelItem extends Component {
                        <img className='channel-item-icon'
                             src={ icon }
                             srcSet={ `${icon} 1x, ${icon2x} 2x` } />
-                       <div className='channel-item-name'>
-                           { name }
+                       <div className={ contentClassNames.join(' ') }>
+                           <div className='channel-item-name'>
+                               { name }
+                           </div>
+                           { linked ? <div className='channel-item-connected-as'>
+                                          { `Connected as ${displayName}` }
+                                      </div> : null }
                        </div>
                        <div className='channel-item-right'
                             style={ itemRightStyle }>
@@ -80,10 +86,10 @@ export class NotificationsSettingsComponent extends Component {
             return <ChannelItem key={ channel.type }
                                 id={ channel.type }
                                 {...details}
+                                displayName={ getDisplayName(user.clients, channel.type) }
                                 linked={ isChannelLinked(user.clients, channel.type) }
                                 hasURL={ details.getURL && details.getURL(user, channel) } />;
         });
-
 
         return <div className='settings-wrapper content-wrapper'>
                    <p className='settings-header'>

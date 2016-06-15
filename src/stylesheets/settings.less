@@ -94,8 +94,6 @@
 
             &:first-child {
                 .channel-item-name {
-                    height: 43px;
-                    line-height: 43px;
                     border-top: 1px solid @settings-channel-item-border-color;
                 }
             }
@@ -104,19 +102,30 @@
                 position: relative;
                 .channel-item-icon {
                     width: 26px;
+                    position: absolute;
                     display: inline-block;
                     vertical-align: middle;
+                    top: 9px;
                 }
 
-                .channel-item-name {
+                .channel-item-content {
                     display: inline-block;
-                    height: 44px;
-                    margin-left: 12px;
-                    line-height: 44px;
+                    margin-left: 38px;
                     border-bottom: 1px solid @settings-channel-item-border-color;
                     width: calc(~"100% - 26px - 12px");
 
+                    .channel-item-name {
+                        color: @settings-header-color;
+                        line-height: 43px;
+                    }
+
+                    .channel-item-connected-as {
+                        margin-bottom: 10px;
+                        margin-top: -10px;
+                        font-size: 10px;
+                    }
                 }
+
                 .channel-item-right {
                     position: absolute;
                     right: 0;

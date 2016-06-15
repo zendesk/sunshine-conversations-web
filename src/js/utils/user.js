@@ -5,6 +5,11 @@ export function isChannelLinked(clients, channelType) {
     return !!clients.find((client) => client.platform === channelType);
 }
 
+export function getDisplayName(clients, channelType) {
+    const client = clients.find((client) => client.platform === channelType);
+    return client && client.displayName;
+}
+
 export function hasLinkableChannels(appChannels, clients, settings) {
     return Object.keys(CHANNELS_DETAILS)
         .filter((channelType) => CHANNELS_DETAILS[channelType].isLinkable && settings.channels[channelType])
