@@ -204,7 +204,7 @@ export function resetUnreadCount() {
 }
 
 export function handleConversationUpdated() {
-    const subscription = store.getState().faye.subscription;
+    const subscription = store.getState().faye.conversationSubscription;
 
     if (!subscription) {
         return getConversation()

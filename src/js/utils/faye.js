@@ -5,7 +5,7 @@ import { store } from '../stores/app-store';
 import { setUser } from '../actions/user-actions';
 import { setFayeConversationSubscription, setFayeUserSubscription } from '../actions/faye-actions';
 import { addMessage, incrementUnreadCount } from '../actions/conversation-actions';
-import { getConversation } from '../services/conversation-service';
+import { getConversation, disconnectFaye, handleConversationUpdated } from '../services/conversation-service';
 import { showSettings, hideChannelPage } from '../services/app-service';
 import { getDeviceId } from './device';
 import { ANIMATION_TIMINGS } from '../constants/styles';
@@ -69,8 +69,37 @@ export function subscribeConversation() {
     });
 }
 
+export function updateUser(currentAppUser, nextAppUser) {
+    if (currentAppUser._id !== nextAppUser._id) {
+        // take no chances, that user might already be linked and it would crash
+        hideChannelPage();
+
+        // Faye needs to be reconnected on the right user/conversation channels
+        disconnectFaye();
+
+        store.dispatch(setUser(nextAppUser));
+        subscribeUser().then(() => {
+            if (nextAppUser.conversationStarted) {
+                return handleConversationUpdated();
+            }
+        });
+    } else {
+        store.dispatch(setUser(nextAppUser));
+
+        if (currentAppUser.conversationStarted) {
+            // if the conversation is already started,
+            // fetch the conversation for merged messages
+            getConversation();
+        } else if (nextAppUser.conversationStarted) {
+            // if the conversation wasn't already started,
+            // `handleConversationUpdated` will connect faye and fetch it
+            handleConversationUpdated();
+        }
+    }
+}
+
 export function handleUserSubscription({appUser, event}) {
-    const {appState: {visibleChannelType}} = store.getState();
+    const {user: currentAppUser, appState: {visibleChannelType}} = store.getState();
 
     if (event.type === 'channel-linking') {
         const {platform} = appUser.clients.find((c) => c.id === event.clientId);
@@ -85,13 +114,13 @@ export function handleUserSubscription({appUser, event}) {
                 // why? React will just remove the channel page from the DOM if
                 // we update the user right away.
                 setTimeout(() => {
-                    store.dispatch(setUser(appUser));
+                    updateUser(currentAppUser, appUser);
                 }, ANIMATION_TIMINGS.PAGE_TRANSITION);
             }, ANIMATION_TIMINGS.PAGE_TRANSITION);
         }
     }
 
-    store.dispatch(setUser(appUser));
+    updateUser(currentAppUser, appUser);
 }
 
 export function subscribeUser() {
