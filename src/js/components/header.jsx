@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import { toggleWidget, showSettings, hideSettings, hideChannelPage } from '../services/app-service';
 import { hasChannels } from '../utils/app';
+import { CHANNEL_DETAILS } from '../constants/channels';
 
 export class HeaderComponent extends Component {
 
@@ -75,7 +76,7 @@ export class HeaderComponent extends Component {
 
         const settingsText = <div style={ settingsTextStyle }
                                   onClick={ this.hideSettings }>
-                                 { settingsHeaderText }
+                                 { visibleChannelType ? CHANNEL_DETAILS[visibleChannelType].name : settingsHeaderText }
                              </div>;
 
         return (
@@ -92,9 +93,15 @@ export class HeaderComponent extends Component {
     }
 }
 
-function mapStateToProps({appState, conversation}) {
+function mapStateToProps({appState: {emailCaptureEnabled, settingsVisible, widgetOpened, embedded, visibleChannelType}, conversation}) {
     return {
-        appState,
+        appState: {
+            emailCaptureEnabled,
+            settingsVisible,
+            widgetOpened,
+            embedded,
+            visibleChannelType
+        },
         unreadCount: conversation.unreadCount
     };
 }

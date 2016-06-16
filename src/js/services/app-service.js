@@ -5,7 +5,7 @@ import { resetUnreadCount, connectFayeUser } from './conversation-service';
 import { observable } from '../utils/events';
 import { hasLinkableChannels, isChannelLinked } from '../utils/user';
 import { getIntegration } from '../utils/app';
-import { CHANNELS_DETAILS } from '../constants/channels';
+import { CHANNEL_DETAILS } from '../constants/channels';
 
 export function openWidget() {
     const {embedded} = store.getState().appState;
@@ -61,7 +61,7 @@ export function hideSettings() {
 
 export function showChannelPage(channelType) {
     const {user, app: {integrations}} = store.getState();
-    const channelDetails = CHANNELS_DETAILS[channelType];
+    const channelDetails = CHANNEL_DETAILS[channelType];
     const isLinked = isChannelLinked(user.clients, channelType);
     const openLink = channelDetails.getURL && (!channelDetails.Component || isLinked);
 

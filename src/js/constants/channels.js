@@ -5,7 +5,7 @@ import { TwilioChannelContent } from '../components/channels/twilio-channel-cont
 import { WeChatChannelContent } from '../components/channels/wechat-channel-content';
 import { LineChannelContent } from '../components/channels/line-channel-content';
 
-export const CHANNELS_DETAILS = {
+export const CHANNEL_DETAILS = {
     messenger: {
         name: 'Facebook Messenger',
         description: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.',

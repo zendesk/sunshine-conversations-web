@@ -1,4 +1,4 @@
-import { CHANNELS_DETAILS } from '../constants/channels';
+import { CHANNEL_DETAILS } from '../constants/channels';
 import { getIntegration } from './app';
 
 export function isChannelLinked(clients, channelType) {
@@ -11,8 +11,8 @@ export function getDisplayName(clients, channelType) {
 }
 
 export function hasLinkableChannels(appChannels, clients, settings) {
-    return Object.keys(CHANNELS_DETAILS)
-        .filter((channelType) => CHANNELS_DETAILS[channelType].isLinkable && settings.channels[channelType])
+    return Object.keys(CHANNEL_DETAILS)
+        .filter((channelType) => CHANNEL_DETAILS[channelType].isLinkable && settings.channels[channelType])
         .some((channelType) => {
             const integration = getIntegration(appChannels, channelType);
 

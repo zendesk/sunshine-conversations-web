@@ -1,4 +1,4 @@
-import { CHANNELS_DETAILS } from '../constants/channels';
+import { CHANNEL_DETAILS } from '../constants/channels';
 
 export function getIntegration(appChannels, type) {
     const appChannelsOfType = appChannels.filter((channel) => channel.type === type);
@@ -10,13 +10,13 @@ export function hasChannels({channels}) {
 }
 
 export function getAppChannelDetails(appChannels) {
-    return Object.keys(CHANNELS_DETAILS)
+    return Object.keys(CHANNEL_DETAILS)
         .map((key) => getIntegration(appChannels, key))
         .filter((channel) => channel)
         .map((channel) => {
             return {
                 channel,
-                details: CHANNELS_DETAILS[channel.type]
+                details: CHANNEL_DETAILS[channel.type]
             };
         });
 }

@@ -94,6 +94,7 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
         case AppStateActions.CLOSE_WIDGET:
             return {
                 ...state,
+                visibleChannelType: null,
                 widgetOpened: false,
                 settingsVisible: false
             };
