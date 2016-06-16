@@ -83,7 +83,13 @@ export class NotificationsSettingsComponent extends Component {
             return null;
         }
 
-        const channels = getAppChannelDetails(appChannels).map(({channel, details}) => {
+        let channels = getAppChannelDetails(appChannels);
+        channels.sort(({channel}) => {
+            // List the linked channels first
+            return isChannelLinked(user.clients, channel.type) ? -1 : 1;
+        });
+
+        channels = channels.map(({channel, details}) => {
             return <ChannelItem key={ channel.type }
                                 id={ channel.type }
                                 {...details}
