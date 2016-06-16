@@ -1,5 +1,5 @@
 import { integrations as integrationsAssets } from '../constants/assets';
-import { fetchWeChatQRCode } from '../constants/integrations-service';
+import { fetchWeChatQRCode } from '../services/integrations-service';
 
 import { MessengerChannelContent } from '../components/channels/messenger-channel-content';
 import { EmailChannelContent } from '../components/channels/email-channel-content';
