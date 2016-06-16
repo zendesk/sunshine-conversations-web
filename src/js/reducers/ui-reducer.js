@@ -25,6 +25,7 @@ const INITIAL_STATE = {
         messengerConnectNotificationText: 'Get notified when you get a reply by connecting to Messenger. <a href data-ui-settings-link>Connect</a>',
         notificationSettingsChannelsTitle: 'Other Channels',
         notificationSettingsChannelsDescription: 'You can also talk to us from your favorite app or service.',
+        notificationSettingsConnectedAs: 'Connected as {username}',
         wechatQRCodeError: 'An error occurred while fetching your WeChat QR code. Please try again.'
     }
 };

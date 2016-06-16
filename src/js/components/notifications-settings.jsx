@@ -17,7 +17,8 @@ export class ChannelItem extends Component {
     };
 
     static contextTypes = {
-        settings: PropTypes.object
+        settings: PropTypes.object,
+        ui: PropTypes.object
     };
 
     onClick = () => {
@@ -26,7 +27,7 @@ export class ChannelItem extends Component {
 
     render() {
         const {name, icon, icon2x, linked, hasURL, displayName} = this.props;
-        const {settings} = this.context;
+        const {settings, ui: {text}} = this.context;
 
         const itemRightStyle = linked && settings.linkColor ? {
             color: `#${settings.linkColor}`
@@ -51,7 +52,7 @@ export class ChannelItem extends Component {
                                { name }
                            </div>
                            { linked ? <div className='channel-item-connected-as'>
-                                          { `Connected as ${displayName}` }
+                                          { text.notificationSettingsConnectedAs.replace('{username}', displayName) }
                                       </div> : null }
                        </div>
                        <div className='channel-item-right'
