@@ -15,12 +15,11 @@ export class TwilioChannelContent extends Component {
 
         if (isMobile.any) {
             return <a href={ `sms:${phoneNumber}` }
-                      style={ styleOverride }
-                      target='_blank'>
+                      style={ styleOverride }>
                        { phoneNumber }
                    </a>;
 
         }
-        return <span>{ phoneNumber }</span>;
+        return <span className='channel-content-value'>{ phoneNumber }</span>;
     }
 }

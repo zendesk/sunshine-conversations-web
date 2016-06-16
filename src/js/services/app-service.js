@@ -71,7 +71,7 @@ export function showChannelPage(channelType) {
 
         if (link) {
             window.open(link);
-            return isLinked || !channelDetails.isLinkable ? Promise.resolve() : connectToFayeUser();
+            return (isLinked || !channelDetails.isLinkable) ? Promise.resolve() : connectToFayeUser();
         }
     }
 
