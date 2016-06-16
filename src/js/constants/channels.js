@@ -1,4 +1,5 @@
 import { integrations as integrationsAssets } from '../constants/assets';
+
 import { fetchWeChatQRCode } from '../services/integrations-service';
 
 import { MessengerChannelContent } from '../components/channels/messenger-channel-content';
@@ -55,7 +56,7 @@ export const CHANNEL_DETAILS = {
     }
 };
 
-Object.keys(CHANNEL_DETAILS).each((key) => {
+Object.keys(CHANNEL_DETAILS).forEach((key) => {
     CHANNEL_DETAILS[key] = {
         getURL: () => {},
         onChannelPage: () => Promise.resolve(),
