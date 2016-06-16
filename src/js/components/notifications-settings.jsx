@@ -93,10 +93,10 @@ export class NotificationsSettingsComponent extends Component {
 
         return <div className='settings-wrapper content-wrapper'>
                    <p className='settings-header'>
-                       Cross-Channel Conversations
+                       {text.notificationSettingsChannelsTitle}
                    </p>
                    <p>
-                       { text.notificationsSettingsText }
+                       { text.notificationSettingsChannelsDescription }
                    </p>
                    <div className='channels'>
                        { channels }

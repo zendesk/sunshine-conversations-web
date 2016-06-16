@@ -23,7 +23,8 @@ const INITIAL_STATE = {
         messageIndicatorTitlePlural: '({count}) New messages',
         connectNotificationText: 'Be notified inside your other apps when you get a reply.',
         messengerConnectNotificationText: 'Get notified when you get a reply by connecting to Messenger. <a href data-ui-settings-link>Connect</a>',
-        notificationsSettingsText: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.',
+        notificationSettingsChannelsTitle: 'Other Channels',
+        notificationSettingsChannelsDescription: 'You can also talk to us from your favorite app or service.',
         wechatQRCodeError: 'An error occurred while fetching your WeChat QR code. Please try again.'
     }
 };
