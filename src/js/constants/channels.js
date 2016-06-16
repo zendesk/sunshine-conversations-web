@@ -1,11 +1,12 @@
 import { integrations as integrationsAssets } from '../constants/assets';
+import { fetchWeChatQRCode } from '../constants/integrations-service';
+
 import { MessengerChannelContent } from '../components/channels/messenger-channel-content';
 import { EmailChannelContent } from '../components/channels/email-channel-content';
 import { TwilioChannelContent } from '../components/channels/twilio-channel-content';
 import { WeChatChannelContent } from '../components/channels/wechat-channel-content';
 import { LineChannelContent } from '../components/channels/line-channel-content';
 
-import { fetchWeChatQRCode } from './integrations-service';
 
 export const CHANNEL_DETAILS = {
     messenger: {
