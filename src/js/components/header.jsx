@@ -74,9 +74,12 @@ export class HeaderComponent extends Component {
             cursor: 'pointer'
         };
 
-        const settingsText = <div style={ settingsTextStyle }
+        const settingsText = <div className='settings-content'
                                   onClick={ this.hideSettings }>
-                                 { visibleChannelType ? CHANNEL_DETAILS[visibleChannelType].name : settingsHeaderText }
+                                 <div style={ settingsTextStyle }>
+                                     { backButton }
+                                     { visibleChannelType ? CHANNEL_DETAILS[visibleChannelType].name : settingsHeaderText }
+                                 </div>
                              </div>;
 
         return (
@@ -84,7 +87,6 @@ export class HeaderComponent extends Component {
                  onClick={ !embedded && toggleWidget }
                  className='sk-header-wrapper'>
                 { settingsButton }
-                { backButton }
                 { settingsMode ? settingsText : headerText }
                 { unreadBadge }
                 { closeHandle }

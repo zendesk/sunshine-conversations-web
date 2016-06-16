@@ -2,7 +2,7 @@
     z-index: 10;
     height: @header-height;
     line-height: 28px;
-    padding: @header-padding 18px;
+    padding: @header-vertical-padding @header-horizontal-padding;
     position: relative;
     background-color: @sk-light-grey;
     cursor: pointer;
@@ -22,7 +22,7 @@
     .sk-show-handle {
         cursor: pointer;
         position: absolute;
-        top: @header-padding;
+        top: @header-vertical-padding;
         right: 10px;
     }
 
@@ -41,6 +41,18 @@
 
     .sk-close-handle .fa {
         font-size: 17px;
+    }
+
+    .settings-content {
+        display: inline-block;
+        height: @header-extra-height;
+        margin-top: -@header-vertical-padding;
+        margin-left: -@header-horizontal-padding;
+
+        & > div {
+            margin-top: @header-vertical-padding;
+            margin-left: @header-horizontal-padding;
+        }
     }
 }
 
