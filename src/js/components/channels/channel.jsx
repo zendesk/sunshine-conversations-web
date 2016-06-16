@@ -14,7 +14,7 @@ export class ChannelComponent extends Component {
     };
 
     render() {
-        const {appChannels, visibleChannelType, smoochId, clients} = this.props;
+        const {appChannels, visibleChannelType, smoochId, clients, channelStates} = this.props;
 
         //
         if (!smoochId) {
@@ -32,6 +32,7 @@ export class ChannelComponent extends Component {
                                 icon2x={ details.iconLarge2x }
                                 visible={ channel.type === visibleChannelType }>
                        <details.Component {...channel}
+                                          channelState={ channelStates[channel.type] }
                                           getContent={ details.getContent }
                                           smoochId={ smoochId } />
                    </ChannelPage>;
@@ -43,11 +44,12 @@ export class ChannelComponent extends Component {
     }
 }
 
-export const Channel = connect(({appState, app, user}) => {
+export const Channel = connect(({appState, app, user, integrations}) => {
     const channelType = appState.visibleChannelType;
     return {
         visibleChannelType: channelType,
         appChannels: app.integrations,
+        channelStates: integrations,
         smoochId: user._id,
         clients: user.clients
     };

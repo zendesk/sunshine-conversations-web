@@ -1,50 +1,30 @@
 import React, { Component, PropTypes } from 'react';
-import { getQRCode } from '../../services/wechat-service';
 import { LoadingComponent } from '../../components/loading';
+import { fetchWeChatQRCode } from '../../services/integrations-service';
 
 export class WeChatChannelContent extends Component {
     static contextTypes = {
         ui: PropTypes.object
     };
 
-    state = {
-        hasError: false,
-        qrcode: ''
+    static propTypes = {
+        channelState: PropTypes.object.isRequired
     };
-
-    fetchQRCode = () => {
-        this.setState({
-            hasError: false
-        });
-
-        getQRCode()
-            .then(({url}) => {
-                this.setState({
-                    qrcode: url
-                });
-            })
-            .catch(() => {
-                this.setState({
-                    hasError: true
-                });
-            });
-    };
-
-    componentDidMount() {
-        this.fetchQRCode();
-    }
 
     render() {
-        if (this.state.hasError) {
-            return <a className= { 'sk-error-link' }
-                        onClick={ this.fetchQRCode }>
-                       { this.context.ui.text.wechatQRCodeError }
+        const {channelState} = this.props;
+        const {ui: {text}} = this.context;
+
+        if (channelState.hasError) {
+            return <a className={ 'sk-error-link' }
+                      onClick={ fetchWeChatQRCode }>
+                       { text.wechatQRCodeError }
                    </a>;
         }
 
-        if (this.state.qrcode) {
+        if (channelState.qrCode) {
             return <img style={ { width: '40%' } }
-                        src={ this.state.qrcode } />;
+                        src={ channelState.qrCode } />;
         }
 
         const loadingStyle = {

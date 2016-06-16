@@ -5,6 +5,8 @@ import { TwilioChannelContent } from '../components/channels/twilio-channel-cont
 import { WeChatChannelContent } from '../components/channels/wechat-channel-content';
 import { LineChannelContent } from '../components/channels/line-channel-content';
 
+import { fetchWeChatQRCode } from './integrations-service';
+
 export const CHANNEL_DETAILS = {
     messenger: {
         name: 'Facebook Messenger',
@@ -19,18 +21,14 @@ export const CHANNEL_DETAILS = {
         description: 'To talk to us using email just send a message to our email address and we\'ll reply shortly:',
         isLinkable: false,
         ...integrationsAssets.frontendEmail,
-        Component: EmailChannelContent,
-        getURL: () => {
-        }
+        Component: EmailChannelContent
     },
     twilio: {
         name: 'SMS',
         description: 'To talk to us using SMS, just send a text message to this number from your favorite SMS app:',
         isLinkable: false,
         ...integrationsAssets.sms,
-        Component: TwilioChannelContent,
-        getURL: () => {
-        }
+        Component: TwilioChannelContent
     },
     telegram: {
         name: 'Telegram',
@@ -44,15 +42,22 @@ export const CHANNEL_DETAILS = {
         description: 'To send us a message from WeChat, scan this QR code using the WeChat app.',
         isLinkable: true,
         ...integrationsAssets.wechat,
-        Component: WeChatChannelContent
+        Component: WeChatChannelContent,
+        onChannelPage: fetchWeChatQRCode
     },
     line: {
         name: 'LINE',
         description: 'To talk to us using LINE, search for our official account using the LINE app and send us a message:',
         isLinkable: false,
         ...integrationsAssets.line,
-        Component: LineChannelContent,
-        getURL: () => {
-        }
+        Component: LineChannelContent
     }
 };
+
+Object.keys(CHANNEL_DETAILS).each((key) => {
+    CHANNEL_DETAILS[key] = {
+        getURL: () => {},
+        onChannelPage: () => Promise.resolve(),
+        ...CHANNEL_DETAILS[key]
+    };
+});

@@ -76,6 +76,7 @@ export function showChannelPage(channelType) {
     }
 
     return connectToFayeUser().then(() => {
+        channelDetails.onChannelPage();
         store.dispatch(AppStateActions.showChannelPage(channelType));
     });
 }
