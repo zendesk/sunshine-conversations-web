@@ -32,17 +32,24 @@ class IntroductionComponent extends Component {
         window.addEventListener('resize', this._debounceHeightCalculation);
     }
 
+    componentWillUpdate() {
+        this._debounceHeightCalculation();
+    }
+
     componentWillUnmount() {
         window.removeEventListener('resize', this._debounceHeightCalculation);
     }
 
     calculateIntroHeight() {
         const node = findDOMNode(this);
+        const {introHeight} = this.props.appState;
 
         const nodeRect = node.getBoundingClientRect();
         const nodeHeight = Math.floor(nodeRect.height);
 
-        this.props.dispatch(setIntroHeight(nodeHeight));
+        if (introHeight !== nodeHeight) {
+            this.props.dispatch(setIntroHeight(nodeHeight));
+        }
     }
 
     render() {
@@ -68,9 +75,12 @@ class IntroductionComponent extends Component {
     }
 }
 
-export const Introduction = connect((state) => {
+export const Introduction = connect(({app, appState: {introHeight}}) => {
     return {
-        app: state.app,
-        integrations: state.app.integrations
+        app: app,
+        integrations: app.integrations,
+        appState: {
+            introHeight
+        }
     };
 })(IntroductionComponent);
