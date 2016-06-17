@@ -69,7 +69,7 @@ export class EmailSettingsComponent extends Component {
             </div>
             );
 
-        return <div className='settings-wrapper'>
+        return <div className='settings-wrapper content-wrapper'>
                    <p ref='description'>
                        { this.props.appState.readOnlyEmail ? this.props.ui.text.settingsReadOnlyText : this.props.ui.text.settingsText }
                    </p>
