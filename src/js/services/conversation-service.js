@@ -12,6 +12,7 @@ import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/m
 import { getDeviceId } from '../utils/device';
 import { hasLinkableChannels } from '../utils/user';
 import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
+import { getUserId } from './user-service';
 
 export function handleConnectNotification(response) {
     const {user: {clients, email}, app: {integrations, settings}, conversation: {messages}, appState: {emailCaptureEnabled}} = store.getState();
@@ -73,9 +74,9 @@ export function sendMessage(text) {
 
         store.dispatch(addMessage(message));
 
-        const user = store.getState().user;
+        const {user} = store.getState();
 
-        return core().conversations.sendMessage(user._id, message).then((response) => {
+        return core().conversations.sendMessage(getUserId(), message).then((response) => {
             if (!user.conversationStarted) {
                 // use setConversation to set the conversation id in the store
                 store.dispatch(setConversation(response.conversation));
@@ -114,10 +115,10 @@ export function uploadImage(file) {
 
             store.dispatch(addMessage(message));
 
-            const user = store.getState().user;
+            const {user} = store.getState();
             const blob = getBlobFromDataUrl(dataUrl);
 
-            return core().conversations.uploadImage(user._id, blob, {
+            return core().conversations.uploadImage(getUserId(), blob, {
                 role: 'appUser',
                 deviceId: getDeviceId()
             }).then((response) => {
@@ -149,15 +150,14 @@ export function uploadImage(file) {
 }
 
 export function getConversation() {
-    const user = store.getState().user;
-    return core().conversations.get(user._id).then((response) => {
+    return core().conversations.get(getUserId()).then((response) => {
         store.dispatch(setConversation(response.conversation));
         return response;
     });
 }
 
 export function connectFayeConversation() {
-    const {conversationSubscription} = store.getState().faye;
+    const {faye: {conversationSubscription}} = store.getState();
 
     if (!conversationSubscription) {
         return subscribeConversation();
@@ -167,7 +167,7 @@ export function connectFayeConversation() {
 }
 
 export function connectFayeUser() {
-    const {userSubscription} = store.getState().faye;
+    const {faye: {userSubscription}} = store.getState();
 
     if (!userSubscription) {
         return subscribeUser();
@@ -177,7 +177,7 @@ export function connectFayeUser() {
 }
 
 export function disconnectFaye() {
-    const {conversationSubscription, userSubscription} = store.getState().faye;
+    const {faye: {conversationSubscription, userSubscription}} = store.getState();
 
     if (conversationSubscription) {
         conversationSubscription.cancel();
@@ -192,10 +192,10 @@ export function disconnectFaye() {
 }
 
 export function resetUnreadCount() {
-    const {user, conversation} = store.getState();
+    const {conversation} = store.getState();
     if (conversation.unreadCount > 0) {
         store.dispatch(resetUnreadCountAction());
-        return core().conversations.resetUnreadCount(user._id).then((response) => {
+        return core().conversations.resetUnreadCount(getUserId()).then((response) => {
             return response;
         });
     }
@@ -204,9 +204,9 @@ export function resetUnreadCount() {
 }
 
 export function handleConversationUpdated() {
-    const subscription = store.getState().faye.conversationSubscription;
+    const {faye: {conversationSubscription}} = store.getState();
 
-    if (!subscription) {
+    if (!conversationSubscription) {
         return getConversation()
             .then((response) => {
                 return connectFayeConversation().then(() => {
@@ -219,8 +219,7 @@ export function handleConversationUpdated() {
 }
 
 export function postPostback(actionId) {
-    const {user} = store.getState();
-    return core().conversations.postPostback(user._id, actionId).catch(() => {
+    return core().conversations.postPostback(getUserId(), actionId).catch(() => {
         store.dispatch(showErrorNotification(store.getState().ui.text.actionPostbackError));
     });
 }

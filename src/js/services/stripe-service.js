@@ -1,10 +1,10 @@
 import { store } from '../stores/app-store';
 import { showErrorNotification } from '../actions/app-state-actions';
 import { core } from './core';
+import { getUserId } from './user-service';
 
 export function createTransaction(actionId, token) {
-    const user = store.getState().user;
-    return core().appUsers.stripe.createTransaction(user._id, actionId, token).catch((e) => {
+    return core().appUsers.stripe.createTransaction(getUserId(), actionId, token).catch((e) => {
         store.dispatch(showErrorNotification(store.getState().ui.text.actionPaymentError));
         throw e;
     });
