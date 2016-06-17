@@ -4,7 +4,7 @@ import urljoin from 'urljoin';
 import { store } from '../stores/app-store';
 import { setUser } from '../actions/user-actions';
 import { setFayeConversationSubscription, setFayeUserSubscription } from '../actions/faye-actions';
-import { addMessage, incrementUnreadCount } from '../actions/conversation-actions';
+import { addMessage, incrementUnreadCount, resetUnreadCount } from '../actions/conversation-actions';
 import { getConversation, disconnectFaye, handleConversationUpdated } from '../services/conversation-service';
 import { showSettings, hideChannelPage } from '../services/app-service';
 import { getDeviceId } from './device';
@@ -53,7 +53,12 @@ export function getClient() {
 export function handleConversationSubscription(message) {
     if (message.source.id !== getDeviceId()) {
         store.dispatch(addMessage(message));
+
+        if (message.role === 'appUser') {
+            store.dispatch(resetUnreadCount());
+        }
     }
+
     if (message.role !== 'appUser') {
         store.dispatch(incrementUnreadCount());
     }
