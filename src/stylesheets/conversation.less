@@ -253,20 +253,9 @@
     .sk-clear {
         clear: both;
     }
-    &::-webkit-scrollbar-track {
-        border-radius: 10px;
-        box-shadow: inset 0 -6px 0 0 @background-color, inset 0 6px 0 0 @background-color;
-        background-color: @sk-light-grey;
-    }
-    &::-webkit-scrollbar {
-        width: 8px;
-        background-color: @background-color;
-    }
-    &::-webkit-scrollbar-thumb {
-        border-radius: 10px;
-        box-shadow: inset 0 -6px 0 0 @background-color, inset 0 6px 0 0 @background-color;
-        background-color: rgba(210, 210, 210, 0.97);
-    }
+
+    .scrollbar-mixin();
+
     .sk-logo {
         margin-bottom: 10px;
         margin-left: @logo-margin;
