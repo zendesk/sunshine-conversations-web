@@ -49,13 +49,6 @@ module.exports = function(options) {
         }
     ];
 
-    if (!options.assetsOnly) {
-        additionalLoaders.push({
-            test: /src\/js\/main/,
-            loader: 'expose?Smooch'
-        });
-    }
-
     var alias = {};
 
     var externals = [];

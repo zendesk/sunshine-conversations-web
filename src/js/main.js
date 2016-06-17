@@ -1,3 +1,3 @@
-const Smooch = require('./smooch').Smooch;
+import {Smooch} from './smooch';
 
 module.exports = new Smooch();
