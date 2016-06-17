@@ -22,7 +22,7 @@ export class ChannelComponent extends Component {
         }
 
         const channelPages = getAppChannelDetails(appChannels).map(({channel, details}) => {
-            if (details.getURL && (!details.Component || isChannelLinked(clients, channel.type))) {
+            if (!details.Component || (isChannelLinked(clients, channel.type) && !details.renderPageIfLinked)) {
                 return null;
             }
 

@@ -45,7 +45,8 @@ export const CHANNEL_DETAILS = {
         isLinkable: true,
         ...integrationsAssets.wechat,
         Component: WeChatChannelContent,
-        onChannelPage: fetchWeChatQRCode
+        onChannelPage: fetchWeChatQRCode,
+        renderPageIfLinked: true
     },
     line: {
         name: 'LINE',
@@ -58,6 +59,7 @@ export const CHANNEL_DETAILS = {
 
 Object.keys(CHANNEL_DETAILS).forEach((key) => {
     CHANNEL_DETAILS[key] = {
+        renderPageIfLinked: false,
         getURL: () => {},
         onChannelPage: () => Promise.resolve(),
         ...CHANNEL_DETAILS[key]
