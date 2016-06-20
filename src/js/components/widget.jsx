@@ -138,7 +138,8 @@ export class WidgetComponent extends Component {
 export const Widget = connect(({appState: {
     settingsVisible,
     widgetOpened,
-    errorNotificationMessage
+    errorNotificationMessage,
+    embedded
 }, app, ui, user}) => {
     // only extract what is needed from appState as this is something that might
     // mutate a lot
@@ -146,7 +147,8 @@ export const Widget = connect(({appState: {
         appState: {
             settingsVisible,
             widgetOpened,
-            errorNotificationMessage
+            errorNotificationMessage,
+            embedded
         },
         app,
         settings: app.settings.web,
