@@ -50,9 +50,8 @@ function connectToFayeUser() {
 }
 
 export function showSettings() {
-    return connectToFayeUser().then(() => {
-        store.dispatch(AppStateActions.showSettings());
-    });
+    store.dispatch(AppStateActions.showSettings());
+    return connectToFayeUser();
 }
 
 export function hideSettings() {
@@ -75,9 +74,10 @@ export function showChannelPage(channelType) {
         }
     }
 
+    store.dispatch(AppStateActions.showChannelPage(channelType));
+
     return connectToFayeUser().then(() => {
         channelDetails.onChannelPage();
-        store.dispatch(AppStateActions.showChannelPage(channelType));
     });
 }
 
