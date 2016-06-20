@@ -3,12 +3,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
-import { NotificationComponent } from '../../../src/js/components/notification';
+import { NotificationsSettingsComponent } from '../../../src/js/components/notifications-settings';
 
 const sandbox = sinon.sandbox.create();
 
 
-describe('Notification', () => {
+xdescribe('Notifications Settings', () => {
 
     let component;
     let componentNode;
@@ -28,14 +28,14 @@ describe('Notification', () => {
         sandbox.restore();
     });
 
-    describe('text with link', () => {
+    xdescribe('text with link', () => {
         var props;
 
         beforeEach(() => {
             props = Object.assign({}, defaultProps);
-            sandbox.stub(NotificationComponent.prototype, 'onLinkClick');
-            sandbox.spy(NotificationComponent.prototype, 'bindHandler');
-            component = TestUtils.renderIntoDocument(<NotificationComponent {...props} />);
+            sandbox.stub(NotificationsSettingsComponent.prototype, 'onLinkClick');
+            sandbox.spy(NotificationsSettingsComponent.prototype, 'bindHandler');
+            component = TestUtils.renderIntoDocument(<NotificationsSettingsComponent {...props} />);
             componentNode = ReactDOM.findDOMNode(component);
         });
 
@@ -53,16 +53,16 @@ describe('Notification', () => {
     });
 
 
-    describe('text without link', () => {
+    xdescribe('text without link', () => {
         var props;
 
         beforeEach(() => {
             props = Object.assign({}, defaultProps, {
                 message: 'This is a text without a link!'
             });
-            sandbox.stub(NotificationComponent.prototype, 'onLinkClick');
-            sandbox.spy(NotificationComponent.prototype, 'bindHandler');
-            component = TestUtils.renderIntoDocument(<NotificationComponent {...props} />);
+            sandbox.stub(NotificationsSettingsComponent.prototype, 'onLinkClick');
+            sandbox.spy(NotificationsSettingsComponent.prototype, 'bindHandler');
+            component = TestUtils.renderIntoDocument(<NotificationsSettingsComponent {...props} />);
             componentNode = ReactDOM.findDOMNode(component);
         });
 
@@ -73,12 +73,12 @@ describe('Notification', () => {
         });
     });
 
-    describe('onLinkClick', () => {
+    xdescribe('onLinkClick', () => {
         var props;
 
         beforeEach(() => {
             props = Object.assign({}, defaultProps);
-            component = TestUtils.renderIntoDocument(<NotificationComponent {...props} />);
+            component = TestUtils.renderIntoDocument(<NotificationsSettingsComponent {...props} />);
             componentNode = ReactDOM.findDOMNode(component);
         });
 

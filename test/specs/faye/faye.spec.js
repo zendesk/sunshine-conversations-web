@@ -20,7 +20,7 @@ const state = {
     }
 };
 
-describe('faye', () => {
+xdescribe('faye', () => {
     let sandbox;
     let getConversationStub;
     let mockedStore;

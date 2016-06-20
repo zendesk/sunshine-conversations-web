@@ -33,7 +33,7 @@ const props = {
 };
 
 
-describe('Conversation', () => {
+xdescribe('Conversation', () => {
 
     var component;
 
