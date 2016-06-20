@@ -1,3 +1,5 @@
+import isMobile from 'ismobilejs';
+
 import { integrations as integrationsAssets } from '../constants/assets';
 
 import { fetchWeChatQRCode } from '../services/integrations-service';
@@ -41,7 +43,7 @@ export const CHANNEL_DETAILS = {
     },
     wechat: {
         name: 'WeChat',
-        description: 'To send us a message from WeChat, scan this QR code using the WeChat app.',
+        descriptionHtml: 'To send us a message from WeChat, ' + (isMobile.any ? 'save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.' : 'scan this QR code using the WeChat app.'),
         isLinkable: true,
         ...integrationsAssets.wechat,
         Component: WeChatChannelContent,
