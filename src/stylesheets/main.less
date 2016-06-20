@@ -83,12 +83,19 @@
         }
 
         .content-wrapper {
+            .scrollbar-mixin();
+            overflow-y: auto;
+
             width: @widget-width-md;
+            height: calc(~"@{widget-height-md} - @{header-extra-height}");
+
             @media (min-width: @screen-lg-min) {
                 width: @widget-width-lg;
+                height: calc(~"@{widget-height-lg} - @{header-extra-height}");
             }
             @media (max-width: @screen-sm-min) {
                 width: @widget-width-sm;
+                height: calc(~"@{widget-height-sm} - @{header-extra-height}");
             }
         }
     }

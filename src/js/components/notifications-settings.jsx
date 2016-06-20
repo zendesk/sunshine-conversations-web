@@ -98,15 +98,17 @@ export class NotificationsSettingsComponent extends Component {
                                 hasURL={ details.getURL && details.getURL(user, channel) } />;
         });
 
-        return <div className='settings-wrapper content-wrapper'>
-                   <p className='settings-header'>
-                       {text.notificationSettingsChannelsTitle}
-                   </p>
-                   <p>
-                       { text.notificationSettingsChannelsDescription }
-                   </p>
-                   <div className='channels'>
-                       { channels }
+        return <div className='content-wrapper'>
+                   <div className='settings-wrapper'>
+                       <p className='settings-header'>
+                           { text.notificationSettingsChannelsTitle }
+                       </p>
+                       <p>
+                           { text.notificationSettingsChannelsDescription }
+                       </p>
+                       <div className='channels'>
+                           { channels }
+                       </div>
                    </div>
                </div>;
     }
