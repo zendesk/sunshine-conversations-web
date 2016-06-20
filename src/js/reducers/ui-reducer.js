@@ -22,7 +22,6 @@ const INITIAL_STATE = {
         messageIndicatorTitleSingular: '({count}) New message',
         messageIndicatorTitlePlural: '({count}) New messages',
         connectNotificationText: 'Be notified inside your other apps when you get a reply.',
-        messengerConnectNotificationText: 'Get notified when you get a reply by connecting to Messenger. <a href data-ui-settings-link>Connect</a>',
         notificationSettingsChannelsTitle: 'Other Channels',
         notificationSettingsChannelsDescription: 'You can also talk to us from your favorite app or service.',
         notificationSettingsConnectedAs: 'Connected as {username}',
