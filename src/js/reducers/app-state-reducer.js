@@ -129,6 +129,12 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
                 connectNotificationTimestamp: action.timestamp
             };
 
+        case AppStateActions.HIDE_CONNECT_NOTIFICATION:
+            return {
+                ...state,
+                connectNotificationTimestamp: null
+            };
+
         case AppStateActions.SET_SERVER_URL:
             return {
                 ...state,

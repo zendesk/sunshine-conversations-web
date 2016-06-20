@@ -10,6 +10,7 @@ export const DISABLE_SOUND_NOTIFICATION = 'DISABLE_SOUND_NOTIFICATION';
 export const SHOW_SETTINGS = 'SHOW_SETTINGS';
 export const HIDE_SETTINGS = 'HIDE_SETTINGS';
 export const SHOW_CONNECT_NOTIFICATION = 'SHOW_CONNECT_NOTIFICATION';
+export const HIDE_CONNECT_NOTIFICATION = 'HIDE_CONNECT_NOTIFICATION';
 export const SHOW_ERROR_NOTIFICATION = 'SHOW_ERROR_NOTIFICATION';
 export const HIDE_ERROR_NOTIFICATION = 'HIDE_ERROR_NOTIFICATION';
 export const SET_SERVER_URL = 'SET_SERVER_URL';
@@ -104,6 +105,12 @@ export function showConnectNotification(timestamp) {
     return {
         type: SHOW_CONNECT_NOTIFICATION,
         timestamp
+    };
+}
+
+export function hideConnectNotification() {
+    return {
+        type: HIDE_CONNECT_NOTIFICATION
     };
 }
 

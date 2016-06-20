@@ -10,7 +10,7 @@ import { disconnectClient, subscribeConversation, subscribeUser } from '../utils
 import { observable } from '../utils/events';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
 import { getDeviceId } from '../utils/device';
-import { hasLinkableChannels } from '../utils/user';
+import { hasLinkableChannels, getLinkableChannels, isChannelLinked } from '../utils/user';
 import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
 import { getUserId } from './user-service';
 
@@ -18,7 +18,13 @@ export function handleConnectNotification(response) {
     const {user: {clients, email}, app: {integrations, settings}, conversation: {messages}, appState: {emailCaptureEnabled}} = store.getState();
     const appUserMessages = messages.filter((message) => message.role === 'appUser');
 
-    if ((emailCaptureEnabled && !email) || hasLinkableChannels(integrations, clients, settings.web)) {
+    const channelsAvailable = hasLinkableChannels(integrations, clients, settings.web);
+    const showEmailCapture = emailCaptureEnabled && !email;
+    const hasSomeChannelLinked = getLinkableChannels(integrations, settings.web).some((channelType) => {
+        return isChannelLinked(clients, channelType);
+    });
+
+    if ((showEmailCapture || channelsAvailable) && !hasSomeChannelLinked) {
         if (appUserMessages.length === 1) {
             showConnectNotification();
         } else {
