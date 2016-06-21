@@ -103,7 +103,7 @@ export class NotificationsSettingsComponent extends Component {
                        <p className='settings-header'>
                            { text.notificationSettingsChannelsTitle }
                        </p>
-                       <p>
+                       <p className='settings-description'>
                            { text.notificationSettingsChannelsDescription }
                        </p>
                        <div className='channels'>

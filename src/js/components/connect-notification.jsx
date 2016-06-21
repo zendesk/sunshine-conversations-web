@@ -58,19 +58,25 @@ export class ConnectNotificationComponent extends Component {
 
             const channels = getAppChannelDetails(appChannels)
                 .filter(({details}) => details.isLinkable)
-                .map(({channel, details}) => {
+                .map(({channel, details} , index, array) => {
                     const onClick = (e) => {
                         e.preventDefault();
                         showChannelPage(channel.type);
                     };
 
-                    return <a key={ channel.type }
-                              style={ linkStyle }
-                              href
-                              className='channel-link'
-                              onClick={ onClick }>
-                               { details.name }
-                           </a>;
+                    const separator = index !== array.length - 1 ? ',' : '';
+
+                    return <div style={ linkStyle }
+                                className='channel-details'>
+                               <a key={ channel.type }
+                                  style={ linkStyle }
+                                  href
+                                  className='channel-link'
+                                  onClick={ onClick }>
+                                   { details.name }
+                               </a>
+                               { separator }
+                           </div>;
                 });
 
             return <div className='connect-notification'>
