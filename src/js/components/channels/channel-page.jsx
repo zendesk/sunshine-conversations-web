@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 
-
 export class ChannelPage extends Component {
     static propTypes = {
         name: PropTypes.string.isRequired,
@@ -12,12 +11,19 @@ export class ChannelPage extends Component {
         children: PropTypes.element.isRequired
     };
 
+    static contextTypes = {
+        ui: PropTypes.object
+    };
+
     static defaultProps = {
         visible: false
     };
 
     render() {
-        const {icon, icon2x, name, visible, description, descriptionHtml, children} = this.props;
+        const {icon, icon2x, name, visible, children} = this.props;
+        const description = this.context.ui.text[this.props.descriptionKey];
+        const descriptionHtml = this.context.ui.text[this.props.descriptionHtmlKey];
+
         const channelDescription = descriptionHtml ?
             <span dangerouslySetInnerHTML={ { __html: descriptionHtml } } /> :
             <span>{ description }</span>;

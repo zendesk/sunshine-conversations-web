@@ -10,11 +10,10 @@ import { TwilioChannelContent } from '../components/channels/twilio-channel-cont
 import { WeChatChannelContent } from '../components/channels/wechat-channel-content';
 import { LineChannelContent } from '../components/channels/line-channel-content';
 
-
 export const CHANNEL_DETAILS = {
     messenger: {
         name: 'Facebook Messenger',
-        description: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.',
+        descriptionKey: 'messengerChannelDescription',
         isLinkable: true,
         ...integrationsAssets.messenger,
         Component: MessengerChannelContent,
@@ -22,28 +21,28 @@ export const CHANNEL_DETAILS = {
     },
     frontendEmail: {
         name: 'Email',
-        description: 'To talk to us using email just send a message to our email address and we\'ll reply shortly:',
+        descriptionKey: 'frontendEmailChannelDescription',
         isLinkable: false,
         ...integrationsAssets.frontendEmail,
         Component: EmailChannelContent
     },
     twilio: {
         name: 'SMS',
-        description: 'To talk to us using SMS, just send a text message to this number from your favorite SMS app:',
+        descriptionKey: 'smsChannelDescription',
         isLinkable: false,
         ...integrationsAssets.sms,
         Component: TwilioChannelContent
     },
     telegram: {
         name: 'Telegram',
-        description: 'To talk to us using Telegram, add our bot:',
+        descriptionKey: 'telegramChannelDescription',
         isLinkable: true,
         ...integrationsAssets.telegram,
         getURL: (appUser, channel, linked) => `https://telegram.me/${channel.username}${!linked ? '?start=' + appUser._id : ''}`
     },
     wechat: {
         name: 'WeChat',
-        descriptionHtml: 'To send us a message from WeChat, ' + (isMobile.any ? 'save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.' : 'scan this QR code using the WeChat app.'),
+        descriptionHtmlKey: isMobile.any ? 'wechatChannelDescriptionMobile' : 'wechatChannelDescription',
         isLinkable: true,
         ...integrationsAssets.wechat,
         Component: WeChatChannelContent,
@@ -52,7 +51,7 @@ export const CHANNEL_DETAILS = {
     },
     line: {
         name: 'LINE',
-        description: 'To talk to us using LINE, search for our official account using the LINE app and send us a message:',
+        descriptionKey: 'lineChannelDescription',
         isLinkable: false,
         ...integrationsAssets.line,
         Component: LineChannelContent
