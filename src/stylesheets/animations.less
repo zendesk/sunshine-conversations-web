@@ -14,7 +14,6 @@
                 animation: sk-appear-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
     }
     @media (max-width: @screen-sm-min) {
-        top: 0;
         -webkit-animation: sk-appear-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
                 animation: sk-appear-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
     }
@@ -76,10 +75,10 @@
 }
 @keyframes sk-appear-frames-sm {
     0% {
-        top: @widget-close-top;
+        bottom: @widget-close-bottom-sm;
     }
     100% {
-        top: 0;
+        bottom: 0;
     }
 }
 
@@ -102,7 +101,6 @@
 
     @media (max-width: @screen-sm-min) {
         bottom: @widget-close-bottom-sm;
-        top: @widget-close-top;
         -webkit-animation: sk-close-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
                 animation: sk-close-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
     }
@@ -145,19 +143,18 @@
 
 @-webkit-keyframes sk-close-frames-sm {
     0% {
-        top: 0;
-
+        bottom: 0;
     }
     100% {
-        top: @widget-close-top;
+        bottom: @widget-close-bottom-sm;
     }
 }
 @keyframes sk-close-frames-sm {
     0% {
-       top: 0;
+        bottom: 0;
     }
     100% {
-        top: @widget-close-top;
+        bottom: @widget-close-bottom-sm;
     }
 }
 
