@@ -85,7 +85,7 @@ export class ActionComponent extends Component {
 
     render() {
         const {app} = this.context;
-        const stripeIntegration = getIntegration(app.integrations, 'stripe');
+        const stripeIntegration = getIntegration(app.integrations, 'stripeConnect');
 
         let style = {};
         if (this.props.buttonColor) {

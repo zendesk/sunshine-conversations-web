@@ -225,7 +225,7 @@ export class Smooch {
                 store.dispatch(AppStateActions.disableEmailCapture());
             }
 
-            if (getIntegration(loginResponse.app.integrations, 'stripe')) {
+            if (getIntegration(loginResponse.app.integrations, 'stripeConnect')) {
                 return getAccount().then((r) => {
                     store.dispatch(setStripeInfo(r.account));
                 }).catch(() => {
