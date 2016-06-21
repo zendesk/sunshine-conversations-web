@@ -13,13 +13,23 @@ export class ErrorNotificationComponent extends Component {
             cursor: 'pointer'
         };
 
+        const message = this.props.message;
+
+        const classes = [
+            'sk-notification',
+            'sk-notification-error',
+            message && (message.length > 50) && 'long-text'
+        ]
+            .filter((value) => value)
+            .join(' ');
+
         return (
             <div key='content'
-                 className='sk-notification sk-notification-error'
+                 className={ classes }
                  onClick={ this.props.actions.hideErrorNotification }>
                 <p>
                     <span ref='text'
-                          dangerouslySetInnerHTML={ createMarkup(this.props.message) }></span>
+                          dangerouslySetInnerHTML={ createMarkup(message) }></span>
                     <a style={ linkStyle }
                        onClick={ preventDefault }
                        className='sk-notification-close'>&times;</a>

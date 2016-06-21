@@ -127,7 +127,7 @@ var skPromise = Smooch.init({
         actionPaymentCompleted: 'Payment Completed',
         actionPostbackError: 'An error occurred while processing your action. Please try again.',
         messageError: 'An error occured while sending your message. Please try again.',
-        invalidFileError: 'Sorry, but only images are supported currently. Please choose a file with a supported extension (jpg, jpeg, png, gif, or bmp).',
+        invalidFileError: 'Only images are supported. Choose a file with a supported extension (jpg, jpeg, png, gif, or bmp).',
         messageIndicatorTitleSingular: '({count}) New message',
         messageIndicatorTitlePlural: '({count}) New messages',
         connectNotificationText: 'Be notified inside your other apps when you get a reply.',
