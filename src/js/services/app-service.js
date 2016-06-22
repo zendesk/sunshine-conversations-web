@@ -1,10 +1,11 @@
 import { store } from '../stores/app-store';
 import * as AppStateActions from '../actions/app-state-actions';
-import { observable } from '../utils/events';
 import { preventMobilePageScroll, allowMobilePageScroll } from '../utils/dom';
-import { resetUnreadCount } from './conversation-service';
-
-
+import { resetUnreadCount, connectFayeUser } from './conversation-service';
+import { observable } from '../utils/events';
+import { hasLinkableChannels, isChannelLinked } from '../utils/user';
+import { getIntegration } from '../utils/app';
+import { CHANNEL_DETAILS } from '../constants/channels';
 
 export function openWidget() {
     const {embedded} = store.getState().appState;
@@ -36,4 +37,58 @@ export function toggleWidget() {
             openWidget();
         }
     }
+}
+
+function connectToFayeUser() {
+    const {app: {integrations: appChannels, settings}, user: {clients}} = store.getState();
+
+    if (hasLinkableChannels(appChannels, clients, settings.web)) {
+        return connectFayeUser();
+    }
+
+    return Promise.resolve();
+}
+
+export function showSettings() {
+    store.dispatch(AppStateActions.showSettings());
+    return connectToFayeUser();
+}
+
+export function hideSettings() {
+    store.dispatch(AppStateActions.hideSettings());
+}
+
+export function showChannelPage(channelType) {
+    const {user, app: {integrations}} = store.getState();
+    const channelDetails = CHANNEL_DETAILS[channelType];
+    const isLinked = isChannelLinked(user.clients, channelType);
+    const openLink = channelDetails.getURL && (!channelDetails.Component || isLinked);
+
+    if (openLink) {
+        const appChannel = getIntegration(integrations, channelType);
+        const link = channelDetails.getURL(user, appChannel, isLinked);
+
+        if (link) {
+            window.open(link);
+            return (isLinked || !channelDetails.isLinkable) ? Promise.resolve() : connectToFayeUser();
+        }
+    }
+
+    store.dispatch(AppStateActions.showChannelPage(channelType));
+
+    return connectToFayeUser().then(() => {
+        channelDetails.onChannelPage();
+    });
+}
+
+export function hideChannelPage() {
+    store.dispatch(AppStateActions.hideChannelPage());
+}
+
+export function showConnectNotification() {
+    store.dispatch(AppStateActions.showConnectNotification(Date.now() / 1000.0));
+}
+
+export function hideConnectNotification() {
+    store.dispatch(AppStateActions.hideConnectNotification());
 }

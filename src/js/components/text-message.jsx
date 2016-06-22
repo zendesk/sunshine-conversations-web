@@ -32,7 +32,7 @@ export class TextMessage extends Component {
                    </span>;
         });
 
-        if (this.props.actions.length > 0) {
+        if (this.props.text.trim() && this.props.actions.length > 0) {
             text = <span className='has-actions'>{ text }</span>;
         } else {
             text = <span>{ text }</span>;

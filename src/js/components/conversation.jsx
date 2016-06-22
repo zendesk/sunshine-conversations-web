@@ -1,15 +1,25 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import isMobile from 'ismobilejs';
 
-import { createMarkup } from '../utils/html';
 import { MessageComponent } from './message';
-import { logo, logo2x } from '../utils/assets';
+import { ConnectNotification } from './connect-notification';
+import { logo, logo2x } from '../constants/assets';
+import { Introduction } from './introduction';
+
+const INTRO_BOTTOM_SPACER = 10;
 
 export class ConversationComponent extends Component {
-    static defaultProps = {
-        settings: {}
+    static contextTypes = {
+        settings: PropTypes.object
+    };
+
+    static propTypes = {
+        connectNotificationTimestamp: PropTypes.number,
+        introHeight: PropTypes.number.isRequired,
+        messages: PropTypes.array.isRequired,
+        errorNotificationMessage: PropTypes.string
     };
 
     state = {
@@ -43,7 +53,7 @@ export class ConversationComponent extends Component {
         const timeout = setTimeout(() => {
             const container = findDOMNode(this);
             const logo = this.refs.logo;
-            const scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight;
+            const scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight - INTRO_BOTTOM_SPACER;
             container.scrollTop = scrollTop;
         });
         this.scrollTimeouts.push(timeout);
@@ -62,50 +72,70 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const messages = this.props.conversation.messages.map((message) => {
+        const {connectNotificationTimestamp, introHeight, messages, errorNotificationMessage} = this.props;
+        const {settings} = this.context;
+
+        let messageItems = messages.map((message) => {
             return <MessageComponent key={ message._clientId || message._id }
-                                     accentColor={ this.props.settings.accentColor }
-                                     linkColor={ this.props.settings.linkColor }
+                                     accentColor={ settings.accentColor }
+                                     linkColor={ settings.linkColor }
                                      onLoad={ this.scrollToBottom }
                                      {...message} />;
         });
+
+        if (connectNotificationTimestamp) {
+            const notificationIndex = messages.findIndex((message) => message.received > connectNotificationTimestamp);
+            if (notificationIndex > -1) {
+                messageItems = [
+                    ...messageItems.slice(0, notificationIndex),
+                    <ConnectNotification key='connect-notification' />,
+                    ...messageItems.slice(notificationIndex)
+                ];
+            } else {
+                messageItems.push(<ConnectNotification key='connect-notification' />);
+            }
+        }
+
 
         const logoStyle = isMobile.apple.device ? {
             paddingBottom: 10
         } : undefined;
 
-        return (
-            <div id='sk-conversation'
-                 ref='container'
-                 onTouchStart={ this.onTouchStart }>
-                <div ref='intro'
-                     className='sk-intro'
-                     dangerouslySetInnerHTML={ createMarkup(this.props.ui.text.introText) }></div>
-                <div className='sk-messages-container'>
-                    <div ref='messages'
-                         className='sk-messages'>
-                        { messages }
-                    </div>
-                    <div className='sk-logo'
-                         ref='logo'
-                         style={ logoStyle }>
-                        <a href='https://smooch.io/live-web-chat/?utm_source=widget'
-                           target='_blank'><span>Messaging by</span> <img className='sk-image'
-                                                                                                                      src={ logo }
-                                                                                                                      srcSet={ `${logo} 1x, ${logo2x} 2x` }
-                                                                                                                      alt='smooch.io' /></a>
-                    </div>
-                </div>
-            </div>
-            );
+        const messagesContainerStyle = {
+            maxHeight: `calc(100% - ${introHeight + INTRO_BOTTOM_SPACER}px)`
+        };
+
+        return <div id='sk-conversation'
+                    className={ errorNotificationMessage && 'notification-shown' }
+                    ref='container'
+                    onTouchStart={ this.onTouchStart }>
+                   <Introduction/>
+                   <div className='sk-messages-container'
+                        style={ messagesContainerStyle }>
+                       <div ref='messages'
+                            className='sk-messages'>
+                           { messageItems }
+                       </div>
+                       <div className='sk-logo'
+                            ref='logo'
+                            style={ logoStyle }>
+                           <a href='https://smooch.io/live-web-chat/?utm_source=widget'
+                              target='_blank'><span>Messaging by</span> <img className='sk-image'
+                                                                                                                                       src={ logo }
+                                                                                                                                       srcSet={ `${logo} 1x, ${logo2x} 2x` }
+                                                                                                                                       alt='smooch.io' /></a>
+                       </div>
+                   </div>
+               </div>;
     }
 }
 
-export const Conversation = connect((state) => {
+export const Conversation = connect(({appState, conversation}) => {
     return {
-        ui: state.ui,
-        conversation: state.conversation,
-        settings: state.app.settings && state.app.settings.web,
-        embedded: state.appState.embedded
+        messages: conversation.messages,
+        embedded: appState.embedded,
+        introHeight: appState.introHeight,
+        connectNotificationTimestamp: appState.connectNotificationTimestamp,
+        errorNotificationMessage: appState.errorNotificationMessage
     };
 })(ConversationComponent);

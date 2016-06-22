@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import StripeCheckout from 'react-stripe-checkout';
 
 import { store } from '../stores/app-store';
@@ -6,9 +6,15 @@ import { createTransaction } from '../services/stripe-service';
 import { immediateUpdate } from '../services/user-service';
 import { postPostback } from '../services/conversation-service';
 
+import { getIntegration } from '../utils/app';
+
 import { LoadingComponent } from './loading';
 
 export class ActionComponent extends Component {
+    static contextTypes = {
+        app: PropTypes.object
+    };
+
     constructor(...args) {
         super(...args);
 
@@ -78,7 +84,8 @@ export class ActionComponent extends Component {
     }
 
     render() {
-        const publicKeys = store.getState().app.publicKeys;
+        const {app} = this.context;
+        const stripeIntegration = getIntegration(app.integrations, 'stripeConnect');
 
         let style = {};
         if (this.props.buttonColor) {
@@ -87,18 +94,18 @@ export class ActionComponent extends Component {
 
         // the public key is necessary to use with Checkout
         // use the link fallback if this happens
-        if (this.props.type === 'buy' && publicKeys.stripe) {
+        if (this.props.type === 'buy' && stripeIntegration) {
             const user = store.getState().user;
 
             // let's change this when we support other providers
-            const stripeAccount = store.getState().app.stripe;
+            const stripeAccount = app.stripe;
             const actionState = this.state.state;
             if (actionState === 'offered') {
                 return (
                     <StripeCheckout componentClass='div'
                                     className='sk-action'
                                     token={ this.onStripeToken.bind(this) }
-                                    stripeKey={ publicKeys.stripe }
+                                    stripeKey={ stripeIntegration.publicKey }
                                     email={ user.email }
                                     amount={ this.props.amount }
                                     currency={ this.props.currency.toUpperCase() }
@@ -131,7 +138,8 @@ export class ActionComponent extends Component {
                     );
             }
         } else if (this.props.type === 'postback') {
-            const text = this.state.state === 'processing' ?
+            const isProcessing = this.state.state === 'processing';
+            const text = isProcessing ?
                 <LoadingComponent /> :
                 this.props.text;
 
@@ -139,7 +147,7 @@ export class ActionComponent extends Component {
                 <div className='sk-action'>
                     <button className='btn btn-sk-primary'
                             style={ style }
-                            onClick={ this.onPostbackClick }>
+                            onClick={ !isProcessing && this.onPostbackClick }>
                             { text }
                     </button>
                 </div>

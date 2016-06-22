@@ -27,6 +27,7 @@
     @import "conversation.less";
     @import "footer.less";
     @import "settings.less";
+    @import "channels.less";
     @import "visibility.less";
     @import (css) "~react-spinkit/css/three-bounce.css";
 }
@@ -36,7 +37,6 @@
     @import "reset.less";
     #sk-container {
         position: fixed;
-        bottom: @widget-close-bottom;
         right: 10px;
         margin-bottom: -1px;
         box-shadow: 0 0 24px rgba(0,0,0,0.15);
@@ -46,30 +46,61 @@
         .container();
         #sk-wrapper {
             background: @background-color;
-            width: @widget-width;
-            height: @widget-height;
+            width: @widget-width-md;
+            height: @widget-height-md;
             position: relative;
             border-radius: 10px 10px 0 0;
+            @media (min-width: @screen-lg-min) {
+                width: @widget-width-lg;
+                height: @widget-height-lg;
+            }
+            @media (max-width: @screen-sm-min) {
+                width: @widget-width-sm;
+                height: @widget-height-sm;
+                margin-bottom: 0px;
+            }
         }
         @media (max-width: @screen-sm-min) {
             right: 0;
             border-radius: 0;
             width: 100%;
             border: none;
+            height: 100%;
+            max-height: 100%;
             &.sk-appear {
                 &,
                 #sk-wrapper {
                     height: 100%;
+                    max-height: 100%;
                 }
             }
             #sk-wrapper {
                 width: 100%;
+                max-width: 100%;
             }
         }
-    }
-    @media (max-width: @screen-sm-min) {
-        width: 100%;
-        height: auto;
+        .input {
+            background-color: white;
+            border: 1px solid white;
+            padding: 0px;
+        }
+
+        .content-wrapper {
+            .scrollbar-mixin();
+            overflow-y: auto;
+
+            width: @widget-width-md;
+            height: calc(~"@{widget-height-md} - @{header-extra-height}");
+
+            @media (min-width: @screen-lg-min) {
+                width: @widget-width-lg;
+                height: calc(~"@{widget-height-lg} - @{header-extra-height}");
+            }
+            @media (max-width: @screen-sm-min) {
+                width: @widget-width-sm;
+                height: calc(~"@{widget-height-sm} - @{header-extra-height}");
+            }
+        }
     }
 }
 #sk-container.sk-embedded {
@@ -105,12 +136,13 @@
     }
     #sk-footer {
         box-shadow: none;
+        height: 50px;
     }
     .sk-settings {
         width: 100%;
+        height: @widget-height-md;
     }
 }
-
 
 
 @import "mobile.less";

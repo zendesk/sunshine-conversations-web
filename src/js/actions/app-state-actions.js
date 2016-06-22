@@ -3,12 +3,14 @@ export const OPEN_WIDGET = 'OPEN_WIDGET';
 export const CLOSE_WIDGET = 'CLOSE_WIDGET';
 export const ENABLE_SETTINGS = 'ENABLE_SETTINGS';
 export const DISABLE_SETTINGS = 'DISABLE_SETTINGS';
+export const ENABLE_EMAIL_CAPTURE = 'ENABLE_EMAIL_CAPTURE';
+export const DISABLE_EMAIL_CAPTURE = 'DISABLE_EMAIL_CAPTURE';
 export const ENABLE_SOUND_NOTIFICATION = 'ENABLE_SOUND_NOTIFICATION';
 export const DISABLE_SOUND_NOTIFICATION = 'DISABLE_SOUND_NOTIFICATION';
 export const SHOW_SETTINGS = 'SHOW_SETTINGS';
 export const HIDE_SETTINGS = 'HIDE_SETTINGS';
-export const SHOW_SETTINGS_NOTIFICATION = 'SHOW_SETTINGS_NOTIFICATION';
-export const HIDE_SETTINGS_NOTIFICATION = 'HIDE_SETTINGS_NOTIFICATION';
+export const SHOW_CONNECT_NOTIFICATION = 'SHOW_CONNECT_NOTIFICATION';
+export const HIDE_CONNECT_NOTIFICATION = 'HIDE_CONNECT_NOTIFICATION';
 export const SHOW_ERROR_NOTIFICATION = 'SHOW_ERROR_NOTIFICATION';
 export const HIDE_ERROR_NOTIFICATION = 'HIDE_ERROR_NOTIFICATION';
 export const SET_SERVER_URL = 'SET_SERVER_URL';
@@ -17,6 +19,9 @@ export const UNSET_EMAIL_READONLY = 'UNSET_EMAIL_READONLY';
 export const SET_EMBEDDED = 'SET_EMBEDDED';
 export const ENABLE_IMAGE_UPLOAD = 'ENABLE_IMAGE_UPLOAD';
 export const DISABLE_IMAGE_UPLOAD = 'DISABLE_IMAGE_UPLOAD';
+export const SHOW_CHANNEL_PAGE = 'SHOW_CHANNEL_PAGE';
+export const HIDE_CHANNEL_PAGE = 'HIDE_CHANNEL_PAGE';
+export const SET_INTRO_HEIGHT = 'SET_INTRO_HEIGHT';
 
 export function toggleWidget() {
     return {
@@ -48,15 +53,15 @@ export function hideSettings() {
     };
 }
 
-export function enableSettings() {
+export function enableEmailCapture() {
     return {
-        type: ENABLE_SETTINGS
+        type: ENABLE_EMAIL_CAPTURE
     };
 }
 
-export function disableSettings() {
+export function disableEmailCapture() {
     return {
-        type: DISABLE_SETTINGS
+        type: DISABLE_EMAIL_CAPTURE
     };
 }
 
@@ -96,15 +101,16 @@ export function unsetEmailReadonly() {
     };
 }
 
-export function showSettingsNotification() {
+export function showConnectNotification(timestamp) {
     return {
-        type: SHOW_SETTINGS_NOTIFICATION
+        type: SHOW_CONNECT_NOTIFICATION,
+        timestamp
     };
 }
 
-export function hideSettingsNotification() {
+export function hideConnectNotification() {
     return {
-        type: HIDE_SETTINGS_NOTIFICATION
+        type: HIDE_CONNECT_NOTIFICATION
     };
 }
 
@@ -137,6 +143,26 @@ export function hideErrorNotification() {
 export function setEmbedded(value) {
     return {
         type: SET_EMBEDDED,
+        value
+    };
+}
+
+export function showChannelPage(channelType) {
+    return {
+        type: SHOW_CHANNEL_PAGE,
+        channelType
+    };
+}
+
+export function hideChannelPage() {
+    return {
+        type: HIDE_CHANNEL_PAGE
+    };
+}
+
+export function setIntroHeight(value) {
+    return {
+        type: SET_INTRO_HEIGHT,
         value
     };
 }

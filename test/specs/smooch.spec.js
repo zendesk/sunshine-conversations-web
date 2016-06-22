@@ -6,6 +6,7 @@ import { Smooch } from '../../src/js/smooch';
 import * as authService from '../../src/js/services/auth-service';
 import * as conversationService from '../../src/js/services/conversation-service';
 import * as userService from '../../src/js/services/user-service';
+import * as appUtils from '../../src/js/utils/app';
 
 const defaultState = {
     user: {
@@ -102,7 +103,9 @@ describe('Smooch', () => {
                 appUser: {
                     _id: 1
                 },
-                app: {}
+                app: {
+                    settings: {}
+                }
             });
 
             immediateUpdateStub = sandbox.stub(userService, 'immediateUpdate');
@@ -111,13 +114,24 @@ describe('Smooch', () => {
             getConversationStub = sandbox.stub(conversationService, 'getConversation');
             getConversationStub.resolves({});
 
-            connectFayeStub = sandbox.stub(conversationService, 'connectFaye');
+            connectFayeStub = sandbox.stub(conversationService, 'connectFayeConversation');
             connectFayeStub.resolves({});
 
             disconnectFayeStub = sandbox.stub(conversationService, 'disconnectFaye');
+
+            const hasChannelsStub = sandbox.stub(appUtils, 'hasChannels');
+            hasChannelsStub.resolves(false);
+
+            const getIntegrationStub = sandbox.stub(appUtils, 'getIntegration');
+            getIntegrationStub.resolves(false);
+
         });
 
-        it('should reset the user', () => {
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        xit('should reset the user', () => {
             const props = {
                 userId: 'some-id',
                 appToken: 'some-token',

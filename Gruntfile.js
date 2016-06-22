@@ -66,6 +66,9 @@ module.exports = function(grunt) {
                 upload: [{
                     src: 'dist/*.mp3',
                     dest: '/'
+                }, {
+                    src: 'dist/*.png',
+                    dest: '/'
                 }]
             }
         },

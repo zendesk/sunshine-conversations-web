@@ -1,16 +1,24 @@
-export const SET_FAYE_SUBSCRIPTION = 'SET_FAYE_SUBSCRIPTION';
-export const UNSET_FAYE_SUBSCRIPTION = 'UNSET_FAYE_SUBSCRIPTION';
+export const SET_FAYE_CONVERSATION_SUBSCRIPTION = 'SET_FAYE_CONVERSATION_SUBSCRIPTION';
+export const SET_FAYE_USER_SUBSCRIPTION = 'SET_FAYE_USER_SUBSCRIPTION';
+export const UNSET_FAYE_SUBSCRIPTIONS = 'UNSET_FAYE_SUBSCRIPTIONS';
 
-export function setFayeSubscription(subscription) {
+export function setFayeConversationSubscription(subscription) {
     return {
-        type: SET_FAYE_SUBSCRIPTION,
-        subscription: subscription
+        type: SET_FAYE_CONVERSATION_SUBSCRIPTION,
+        subscription
+    };
+}
+
+export function setFayeUserSubscription(subscription) {
+    return {
+        type: SET_FAYE_USER_SUBSCRIPTION,
+        subscription
     };
 }
 
 
-export function unsetFayeSubscription() {
+export function unsetFayeSubscriptions() {
     return {
-        type: UNSET_FAYE_SUBSCRIPTION
+        type: UNSET_FAYE_SUBSCRIPTIONS
     };
 }

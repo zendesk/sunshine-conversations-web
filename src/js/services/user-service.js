@@ -21,7 +21,7 @@ export const EDITABLE_PROPERTIES = [
 ];
 
 export function immediateUpdate(props) {
-    const user = store.getState().user;
+    const {user} = store.getState();
 
     props = Object.assign({}, pendingUserProps, props);
     pendingUserProps = {};
@@ -30,11 +30,11 @@ export function immediateUpdate(props) {
         return isDirty || !deepEqual(user[prop], props[prop]);
     }, false);
 
-    return isDirty ? core().appUsers.update(user._id, props).then((response) => {
+    return isDirty ? core().appUsers.update(getUserId(), props).then((response) => {
         store.dispatch(setUser(response.appUser));
         return response;
     }) : Promise.resolve({
-        user: user
+        user
     });
 }
 
@@ -57,8 +57,7 @@ export function update(props) {
 }
 
 export function trackEvent(eventName, userProps) {
-    const user = store.getState().user;
-    return core().appUsers.trackEvent(user._id, eventName, userProps).then((response) => {
+    return core().appUsers.trackEvent(getUserId(), eventName, userProps).then((response) => {
         if (response.conversationUpdated) {
             return handleConversationUpdated().then(() => {
                 return response;
@@ -93,7 +92,7 @@ export function updateNowViewing(deviceId) {
 }
 
 function immediateUpdateDevice(deviceId, device) {
-    return core().appUsers.updateDevice(store.getState().user._id, deviceId, device).then((response) => {
+    return core().appUsers.updateDevice(getUserId(), deviceId, device).then((response) => {
         if (response.conversationUpdated) {
             return handleConversationUpdated().then(() => {
                 return response;
@@ -102,4 +101,10 @@ function immediateUpdateDevice(deviceId, device) {
 
         return response;
     });
+}
+
+export function getUserId() {
+    const {user: {_id, userId}} = store.getState();
+
+    return userId || _id;
 }

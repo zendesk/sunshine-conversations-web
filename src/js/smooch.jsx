@@ -6,24 +6,26 @@ import { store } from './stores/app-store';
 
 import { setAuth, resetAuth } from './actions/auth-actions';
 import * as userActions from './actions/user-actions';
-import { setPublicKeys, setStripeInfo, setAppSettings } from './actions/app-actions';
+import { setStripeInfo, setApp } from './actions/app-actions';
 import { updateText } from './actions/ui-actions';
 import { resetConversation } from './actions/conversation-actions';
 import * as AppStateActions from './actions/app-state-actions';
 import { reset } from './actions/common-actions';
 
-import { openWidget, closeWidget } from './services/app-service';
+import { openWidget, closeWidget, hideSettings, hideChannelPage } from './services/app-service';
 import { login } from './services/auth-service';
 import { getAccount } from './services/stripe-service';
 import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, updateNowViewing, immediateUpdate as immediateUpdateUser } from './services/user-service';
-import { getConversation, sendMessage, connectFaye, disconnectFaye, handleConversationUpdated } from './services/conversation-service';
+import { getConversation, sendMessage, connectFayeConversation, disconnectFaye, handleConversationUpdated } from './services/conversation-service';
 
 import { observable, observeStore } from './utils/events';
 import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState } from './utils/dom';
 import { isImageUploadSupported } from './utils/media';
 import { playNotificationSound, isAudioSupported } from './utils/sound';
 import { getDeviceId } from './utils/device';
-import { stylesheet } from './utils/assets';
+import { getIntegration, hasChannels } from './utils/app';
+
+import { stylesheet } from './constants/assets';
 
 import { VERSION } from './constants/version';
 
@@ -69,6 +71,7 @@ observable.on('message:received', (message) => {
 });
 
 let lastTriggeredMessageTimestamp = 0;
+let initialStoreChange = true;
 let unsubscribeFromStore;
 
 function handleNotificationSound() {
@@ -88,16 +91,19 @@ function onStoreChange({messages, unreadCount}) {
             filteredMessages.slice(-unreadCount).filter((message) => message.received > lastTriggeredMessageTimestamp).forEach((message) => {
                 observable.trigger('message:received', message);
                 lastTriggeredMessageTimestamp = message.received;
-                handleNotificationSound();
+
+                if (initialStoreChange) {
+                    initialStoreChange = false;
+                } else {
+                    handleNotificationSound();
+                }
             });
         }
     }
 }
 
 export class Smooch {
-    get VERSION() {
-        return VERSION;
-    }
+    VERSION = VERSION
 
     on() {
         return observable.on(...arguments);
@@ -125,9 +131,9 @@ export class Smooch {
         this.appToken = props.appToken;
 
         if (props.emailCaptureEnabled) {
-            store.dispatch(AppStateActions.enableSettings());
+            store.dispatch(AppStateActions.enableEmailCapture());
         } else {
-            store.dispatch(AppStateActions.disableSettings());
+            store.dispatch(AppStateActions.disableEmailCapture());
         }
 
         if (props.soundNotificationEnabled && isAudioSupported()) {
@@ -165,6 +171,10 @@ export class Smooch {
             attributes = {};
         }
 
+        // in case those are opened;
+        hideSettings();
+        hideChannelPage();
+
         // in case it comes from a previous authenticated state
         store.dispatch(resetAuth());
         store.dispatch(userActions.resetUser());
@@ -174,7 +184,7 @@ export class Smooch {
 
         attributes = pick(attributes, EDITABLE_PROPERTIES);
 
-        if (store.getState().appState.settingsEnabled && attributes.email) {
+        if (store.getState().appState.emailCaptureEnabled && attributes.email) {
             store.dispatch(AppStateActions.setEmailReadonly());
         } else {
             store.dispatch(AppStateActions.unsetEmailReadonly());
@@ -186,6 +196,8 @@ export class Smooch {
         }));
 
         lastTriggeredMessageTimestamp = 0;
+        initialStoreChange = true;
+
         return login({
             userId: userId,
             device: {
@@ -203,28 +215,28 @@ export class Smooch {
             }
         }).then((loginResponse) => {
             store.dispatch(userActions.setUser(loginResponse.appUser));
-            store.dispatch(setAppSettings(loginResponse.app.settings));
+            store.dispatch(setApp(loginResponse.app));
 
             monitorUrlChanges(() => {
                 updateNowViewing(getDeviceId());
             });
 
-            if (loginResponse.publicKeys) {
-                store.dispatch(setPublicKeys(loginResponse.publicKeys));
+            if (hasChannels(loginResponse.app.settings.web)) {
+                store.dispatch(AppStateActions.disableEmailCapture());
+            }
 
-                if (loginResponse.publicKeys.stripe) {
-                    return getAccount().then((r) => {
-                        store.dispatch(setStripeInfo(r.account));
-                    }).catch(() => {
-                        // do nothing about it and let the flow continue
-                    });
-                }
+            if (getIntegration(loginResponse.app.integrations, 'stripeConnect')) {
+                return getAccount().then((r) => {
+                    store.dispatch(setStripeInfo(r.account));
+                }).catch(() => {
+                    // do nothing about it and let the flow continue
+                });
             }
         }).then(() => {
             return immediateUpdateUser(attributes).then(() => {
                 const user = store.getState().user;
                 if (user.conversationStarted) {
-                    return getConversation().then(connectFaye);
+                    return getConversation().then(connectFayeConversation);
                 }
             });
         }).then(() => {

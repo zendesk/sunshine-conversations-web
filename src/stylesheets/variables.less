@@ -1,19 +1,28 @@
-@background-color: rgba(240, 240, 240, 0.97);
+@background-color: #fff;
 
-@widget-height: 420px;
-@widget-width: 330px;
+@widget-height-md: 480px;
+@widget-height-lg: 640px;
+@widget-height-sm: 100%;
 
-@main-region-height-mobile: ~"calc(100% - @{footer-height} - @{header-height} - 2* @{header-padding})";
+@widget-width-md: 350px;
+@widget-width-lg: 410px;
+@widget-width-sm: 100%;
 
-@header-height: 28px;
-@header-padding: 6px;
+@main-region-height-mobile: ~"calc(100% - @{footer-height} - @{header-height} - 2* @{header-vertical-padding})";
+
+@header-height: 32px;
+@header-vertical-padding: 6px;
+@header-horizontal-padding: 18px;
 @footer-height: 45px;
 
-@widget-close-bottom: -@widget-height + @header-height + 2 *@header-padding;
+@header-extra-height: (@header-height + 2 * @header-vertical-padding);
+@widget-close-bottom-md: -@widget-height-md + @header-extra-height;
+@widget-close-bottom-lg: -@widget-height-lg + @header-extra-height;
+@widget-close-bottom-sm: calc(~"@{header-extra-height} - @{widget-height-sm}");
+@widget-close-top: calc(~"100% - @{header-extra-height}");
 
-@conversation-intro-height: 60px;
-@remaining-height: (@header-height + 2 * @header-padding) + @footer-height;
-@conversation-height: calc(@widget-height - @remaining-height);
+@remaining-height: @header-extra-height + @footer-height;
+@conversation-height: calc(~"100% - @{remaining-height}");
 @conversation-height-mobile: ~"calc(100%  - @{remaining-height})";
 @conversation-width-mobile: 100%;
 
@@ -23,4 +32,27 @@
 @input-horizontal-padding: 9px;
 
 @sk-blue: #00aeff;
-@font-size-base: 13px;
+@sk-light-grey: #f4f4f4;
+@sk-grey: #eee;
+@sk-medium-grey: #b2b2b2;
+@sk-dark-grey: #808080;
+@sk-darker-grey: #424242;
+
+@sk-base-text-color: #787f8c;
+@sk-intro-background-color: #EFEFEF;
+
+@settings-header-color: #464646;
+@settings-channel-item-border-color: #EFEFEF;
+
+
+@font-size-base: 14px;
+
+@widget-max-height: 640px;
+@widget-min-height: 420px;
+@widget-max-width: 410px;
+@widget-min-width: 330px;
+@large-desktop-height: 835px;
+@widget-close-top-lg: calc(~"100% - @{widget-max-height}");
+
+@notification-height: 56px;
+@long-notification-height: 75px;

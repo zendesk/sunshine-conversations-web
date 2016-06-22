@@ -1,23 +1,49 @@
 import { store } from '../stores/app-store';
+import { showConnectNotification } from '../services/app-service';
 import { addMessage, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction } from '../actions/conversation-actions';
 import { updateUser } from '../actions/user-actions';
-import { showSettingsNotification, showErrorNotification } from '../actions/app-state-actions';
-import { setFayeSubscription, unsetFayeSubscription } from '../actions/faye-actions';
+import { showErrorNotification } from '../actions/app-state-actions';
+import { unsetFayeSubscriptions } from '../actions/faye-actions';
 import { core } from './core';
 import { immediateUpdate } from './user-service';
-import { initFaye } from '../utils/faye';
+import { disconnectClient, subscribeConversation, subscribeUser } from '../utils/faye';
 import { observable } from '../utils/events';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
 import { getDeviceId } from '../utils/device';
+import { hasLinkableChannels, getLinkableChannels, isChannelLinked } from '../utils/user';
+import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
+import { getUserId } from './user-service';
 
-export function handleFirstUserMessage(response) {
-    const state = store.getState();
-    if (state.appState.settingsEnabled && !state.user.email) {
-        const appUserMessageCount = state.conversation.messages.filter((message) => message.role === 'appUser').length;
+export function handleConnectNotification(response) {
+    const {user: {clients, email}, app: {integrations, settings}, conversation: {messages}, appState: {emailCaptureEnabled}} = store.getState();
+    const appUserMessages = messages.filter((message) => message.role === 'appUser');
 
-        if (appUserMessageCount === 1) {
-            // should only be one message from the app user
-            store.dispatch(showSettingsNotification());
+    const channelsAvailable = hasLinkableChannels(integrations, clients, settings.web);
+    const showEmailCapture = emailCaptureEnabled && !email;
+    const hasSomeChannelLinked = getLinkableChannels(integrations, settings.web).some((channelType) => {
+        return isChannelLinked(clients, channelType);
+    });
+
+    if ((showEmailCapture || channelsAvailable) && !hasSomeChannelLinked) {
+        if (appUserMessages.length === 1) {
+            showConnectNotification();
+        } else {
+            // find the last confirmed message timestamp
+            let lastMessageTimestamp;
+
+            // start at -2 to ignore the message that was just sent
+            for (let index = appUserMessages.length - 2; index >= 0 && !lastMessageTimestamp; index--) {
+                const message = appUserMessages[index];
+                lastMessageTimestamp = message.received;
+            }
+
+            if (lastMessageTimestamp) {
+                // divide it by 1000 since server `received` is in seconds and not in ms
+                const currentTimeStamp = Date.now() / 1000;
+                if ((currentTimeStamp - lastMessageTimestamp) >= CONNECT_NOTIFICATION_DELAY_IN_SECONDS) {
+                    showConnectNotification();
+                }
+            }
         }
     }
 
@@ -29,17 +55,17 @@ export function sendChain(sendFn) {
 
     if (store.getState().user.conversationStarted) {
         return promise
-            .then(connectFaye)
+            .then(connectFayeConversation)
             .then(sendFn)
-            .then(handleFirstUserMessage);
+            .then(handleConnectNotification);
     }
 
     // if it's not started, send the message first to create the conversation,
     // then get it and connect faye
     return promise
         .then(sendFn)
-        .then(handleFirstUserMessage)
-        .then(connectFaye);
+        .then(handleConnectNotification)
+        .then(connectFayeConversation);
 }
 
 export function sendMessage(text) {
@@ -54,9 +80,9 @@ export function sendMessage(text) {
 
         store.dispatch(addMessage(message));
 
-        const user = store.getState().user;
+        const {user} = store.getState();
 
-        return core().conversations.sendMessage(user._id, message).then((response) => {
+        return core().conversations.sendMessage(getUserId(), message).then((response) => {
             if (!user.conversationStarted) {
                 // use setConversation to set the conversation id in the store
                 store.dispatch(setConversation(response.conversation));
@@ -95,10 +121,10 @@ export function uploadImage(file) {
 
             store.dispatch(addMessage(message));
 
-            const user = store.getState().user;
+            const {user} = store.getState();
             const blob = getBlobFromDataUrl(dataUrl);
 
-            return core().conversations.uploadImage(user._id, blob, {
+            return core().conversations.uploadImage(getUserId(), blob, {
                 role: 'appUser',
                 deviceId: getDeviceId()
             }).then((response) => {
@@ -130,36 +156,52 @@ export function uploadImage(file) {
 }
 
 export function getConversation() {
-    const user = store.getState().user;
-    return core().conversations.get(user._id).then((response) => {
+    return core().conversations.get(getUserId()).then((response) => {
         store.dispatch(setConversation(response.conversation));
         return response;
     });
 }
 
-export function connectFaye() {
-    let subscription = store.getState().faye.subscription;
-    if (!subscription) {
-        subscription = initFaye();
-        store.dispatch(setFayeSubscription(subscription));
+export function connectFayeConversation() {
+    const {faye: {conversationSubscription}} = store.getState();
+
+    if (!conversationSubscription) {
+        return subscribeConversation();
     }
 
-    return subscription;
+    return Promise.resolve();
+}
+
+export function connectFayeUser() {
+    const {faye: {userSubscription}} = store.getState();
+
+    if (!userSubscription) {
+        return subscribeUser();
+    }
+
+    return Promise.resolve();
 }
 
 export function disconnectFaye() {
-    const subscription = store.getState().faye.subscription;
-    if (subscription) {
-        subscription.cancel();
-        store.dispatch(unsetFayeSubscription());
+    const {faye: {conversationSubscription, userSubscription}} = store.getState();
+
+    if (conversationSubscription) {
+        conversationSubscription.cancel();
     }
+
+    if (userSubscription) {
+        userSubscription.cancel();
+    }
+
+    disconnectClient();
+    store.dispatch(unsetFayeSubscriptions());
 }
 
 export function resetUnreadCount() {
-    const {user, conversation} = store.getState();
+    const {conversation} = store.getState();
     if (conversation.unreadCount > 0) {
         store.dispatch(resetUnreadCountAction());
-        return core().conversations.resetUnreadCount(user._id).then((response) => {
+        return core().conversations.resetUnreadCount(getUserId()).then((response) => {
             return response;
         });
     }
@@ -168,12 +210,12 @@ export function resetUnreadCount() {
 }
 
 export function handleConversationUpdated() {
-    const subscription = store.getState().faye.subscription;
+    const {faye: {conversationSubscription}} = store.getState();
 
-    if (!subscription) {
+    if (!conversationSubscription) {
         return getConversation()
             .then((response) => {
-                return connectFaye().then(() => {
+                return connectFayeConversation().then(() => {
                     return response;
                 });
             });
@@ -183,8 +225,7 @@ export function handleConversationUpdated() {
 }
 
 export function postPostback(actionId) {
-    const {user} = store.getState();
-    return core().conversations.postPostback(user._id, actionId).catch(() => {
+    return core().conversations.postPostback(getUserId(), actionId).catch(() => {
         store.dispatch(showErrorNotification(store.getState().ui.text.actionPostbackError));
     });
 }

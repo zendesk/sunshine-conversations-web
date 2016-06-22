@@ -2,8 +2,13 @@ import React, { Component } from 'react';
 
 export class LoadingComponent extends Component {
     render() {
+        const classNames = ['sk-fading-circle'];
+        if (this.props.dark) {
+            classNames.push('dark');
+        }
+
         return (
-            <div className='sk-fading-circle'>
+            <div style= { this.props.style } className={ classNames.join(' ') }>
                 <div className='sk-circle1 sk-circle'></div>
                 <div className='sk-circle2 sk-circle'></div>
                 <div className='sk-circle3 sk-circle'></div>
