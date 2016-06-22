@@ -1,7 +1,7 @@
 {
   "name": "smooch",
   "analyze": false,
-  "version": "2.8.1",
+  "version": "3.0.3",
   "keywords": [
     "smooch",
     "javascript",
@@ -28,7 +28,7 @@
     "hot-dev-server": "webpack-dev-server --config webpack-hot-dev-server.config.js --hot --colors --port 2992 --inline --no-info",
     "build": "webpack --config webpack-production.config.js --progress --profile --colors",
     "build:assets": "webpack --config webpack-assets.config.js --progress --profile --colors",
-    "build:npm": "rm -rf lib/ && npm run babelify && npm run build:assets && rm -f lib/utils/*.mp3",
+    "build:npm": "rm -rf lib/ && npm run babelify && npm run build:assets && rm -f lib/constants/*.mp3 && rm -f lib/constants/*.png",
     "start-dev": "node dev-server/server-development",
     "start": "node dev-server/server-production",
     "lint": "eslint . --ext=js --ext=jsx",
