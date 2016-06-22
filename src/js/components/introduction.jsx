@@ -14,12 +14,12 @@ class IntroductionComponent extends Component {
         app: PropTypes.object.isRequired,
         integrations: PropTypes.array.isRequired,
         dispatch: PropTypes.func.isRequired
-    }
+    };
 
     static contextTypes = {
         ui: PropTypes.object,
         settings: PropTypes.object
-    }
+    };
 
     constructor(...args) {
         super(...args);
@@ -57,7 +57,7 @@ class IntroductionComponent extends Component {
         const {ui: {text}, settings: {accentColor}} = this.context;
         const channelDetailsList = getAppChannelDetails(integrations);
         const channelsAvailable = channelDetailsList.length > 0;
-        const introText = channelsAvailable ? `${text.introText} ${text.introAppText}` : text.introText;
+        const introText = channelsAvailable ? `${text.introductionText} ${text.introAppText}` : text.introductionText;
 
         return <div className='sk-intro-section'>
                    { app.iconUrl ? <img className='app-icon'
