@@ -46,15 +46,16 @@
         .container();
         #sk-wrapper {
             background: @background-color;
-            width: @widget-width-md;
-            height: @widget-height-md;
             position: relative;
             border-radius: 10px 10px 0 0;
-            @media (min-width: @screen-lg-min) {
+            width: @widget-width-md;
+            height: @widget-height-md;
+
+            @media (min-width: @screen-lg-min) and (min-height: 648px) {
                 width: @widget-width-lg;
                 height: @widget-height-lg;
             }
-            @media (max-width: @screen-sm-min) {
+            @media (max-height: 488px) {
                 width: @widget-width-sm;
                 height: @widget-height-sm;
                 margin-bottom: 0px;
