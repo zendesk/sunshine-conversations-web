@@ -22,6 +22,9 @@ export class MessengerChannelContent extends Component {
         }
     };
 
+    shouldComponentUpdate(nextProps, nextState) {
+        return nextState.sdkBlocked;
+    }
 
     render() {
         const {appId, pageId, smoochId} = this.props;
@@ -40,6 +43,5 @@ export class MessengerChannelContent extends Component {
                                  asyncScriptOnLoad={ this.facebookScriptDidLoad }
                                  size='large' />
             </div>;
-
     }
 }
