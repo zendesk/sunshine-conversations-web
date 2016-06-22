@@ -169,5 +169,12 @@
 }
 
 .sk-init {
-    top: @widget-close-top;
+    bottom: @widget-close-bottom-md;
+    @media (min-width: @screen-lg-min) {
+        bottom: @widget-close-bottom-lg;
+    }
+
+    @media (max-width: @screen-sm-min) {
+        bottom: @widget-close-bottom-sm;
+    }
 }
