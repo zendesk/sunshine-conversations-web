@@ -33,10 +33,13 @@ export class MessengerChannelContent extends Component {
                     { `https://m.me/${pageId}` }
                 </a>
             </p> :
-            <MessengerPlugin appId={ appId }
-                             pageId={ pageId }
-                             passthroughParams={ smoochId }
-                             asyncScriptOnLoad={ this.facebookScriptDidLoad }
-                             size='large' />;
+            <div className='sk-fb-button-wrapper'>
+                <MessengerPlugin appId={ appId }
+                                 pageId={ pageId }
+                                 passthroughParams={ smoochId }
+                                 asyncScriptOnLoad={ this.facebookScriptDidLoad }
+                                 size='large' />
+            </div>;
+
     }
 }
