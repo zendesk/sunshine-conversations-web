@@ -9,11 +9,17 @@
     -webkit-animation-fill-mode: forwards;
             animation-fill-mode: forwards;
 
-    @media (min-width: @screen-lg-min) {
+    @media (min-width: @screen-lg-min) and (min-height: 648px) {
         -webkit-animation: sk-appear-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
                 animation: sk-appear-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
     }
-    @media (max-width: @screen-sm-min) {
+
+    @media (min-height: 488px) and (max-height: 648px) and (min-width: @screen-sm-min) {
+        -webkit-animation: sk-appear-frames-md .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-appear-frames-md .4s cubic-bezier(.62, .28, .23, .99);
+    }
+
+    @media (max-height: 488px) or (max-width: @screen-sm-min) {
         -webkit-animation: sk-appear-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
                 animation: sk-appear-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
     }
@@ -93,16 +99,22 @@
     -webkit-animation-fill-mode: forwards;
             animation-fill-mode: forwards;
 
-    @media (min-width: @screen-lg-min) {
+    @media (min-width: @screen-lg-min) and (min-height: 648px) {
         bottom: @widget-close-bottom-lg;
-        -webkit-animation: sk-close-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
-                animation: sk-close-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
+        -webkit-animation: sk-appear-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-appear-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
     }
 
-    @media (max-width: @screen-sm-min) {
+    @media (min-height: 488px) and (max-height: 648px) and (min-width: @screen-sm-min) {
+        bottom: @widget-close-bottom-md;
+        -webkit-animation: sk-appear-frames-md .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-appear-frames-md .4s cubic-bezier(.62, .28, .23, .99);
+    }
+
+    @media (max-height: 488px) or (max-width: @screen-sm-min) {
         bottom: @widget-close-bottom-sm;
-        -webkit-animation: sk-close-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
-                animation: sk-close-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
+        -webkit-animation: sk-appear-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-appear-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
     }
 }
 @-webkit-keyframes sk-close-frames {
@@ -170,11 +182,16 @@
 
 .sk-init {
     bottom: @widget-close-bottom-md;
-    @media (min-width: @screen-lg-min) {
+
+    @media (min-width: @screen-lg-min) and (min-height: 648px) {
         bottom: @widget-close-bottom-lg;
     }
 
-    @media (max-width: @screen-sm-min) {
+    @media (min-height: 488px) and (max-height: 648px) and (min-width: @screen-sm-min) {
+        bottom: @widget-close-bottom-md;
+    }
+
+    @media (max-height: 488px) or (max-width: @screen-sm-min) {
         bottom: @widget-close-bottom-sm;
     }
 }
