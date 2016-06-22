@@ -50,14 +50,18 @@
             height: @widget-height-md;
             position: relative;
             border-radius: 10px 10px 0 0;
-            @media (min-width: @screen-lg-min) {
-                width: @widget-width-lg;
-                height: @widget-height-lg;
-            }
-            @media (max-width: @screen-sm-min) {
+            @media (max-height: @screen-sm-ht-max) {
                 width: @widget-width-sm;
                 height: @widget-height-sm;
                 margin-bottom: 0px;
+            }
+            @media (min-height: @screen-md-ht-max) and (min-width: @screen-lg-min) {
+                width: @widget-width-lg;
+                height: @widget-height-lg;
+            }
+            @media (max-height: @screen-md-ht-max) and (min-height: @screen-sm-ht-max) {
+                width: @widget-width-md;
+                height: @widget-height-md;
             }
         }
         @media (max-width: @screen-sm-min) {
