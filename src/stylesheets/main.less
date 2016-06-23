@@ -50,10 +50,6 @@
             height: @widget-height-md;
             position: relative;
             border-radius: 10px 10px 0 0;
-            @media (min-width: @screen-lg-min) and (min-height: 648px) {
-                width: @widget-width-lg;
-                height: @widget-height-lg;
-            }
             @media (min-height: @screen-md-ht-max) and (min-width: @screen-lg-min) {
                 width: @widget-width-lg;
                 height: @widget-height-lg;
@@ -61,6 +57,10 @@
             @media (max-height: @screen-md-ht-max) and (min-height: @screen-sm-ht-max) {
                 width: @widget-width-md;
                 height: @widget-height-md;
+            }
+            @media (max-height: @screen-sm-ht-max) {
+                width: @widget-width-sm;
+                height: @widget-height-fs;
             }
         }
         @media (max-width: @screen-sm-min) {
@@ -99,9 +99,9 @@
                 width: @widget-width-lg;
                 height: calc(~"@{widget-height-lg} - @{header-extra-height}");
             }
-            @media (max-width: @screen-sm-min) {
+            @media (max-width: @screen-sm-min) or {
                 width: @widget-width-sm;
-                height: calc(~"@{widget-height-sm} - @{header-extra-height}");
+                height: calc(~"@{widget-height-fs} - @{header-extra-height}");
             }
         }
     }
