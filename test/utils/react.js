@@ -30,3 +30,13 @@ export function mockComponent(sinon, module, mockTagName = 'div', props = null) 
         );
     });
 }
+
+export function getContext(context = {}) {
+    const defaultContext = {
+        app: {},
+        settings: {},
+        ui: {}
+    };
+
+    return Object.assign(defaultContext, context);
+}
