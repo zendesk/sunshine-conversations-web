@@ -9,13 +9,24 @@
     -webkit-animation-fill-mode: forwards;
             animation-fill-mode: forwards;
 
-    @media (min-width: @screen-lg-min) {
+    @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-max) {
         -webkit-animation: sk-appear-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
                 animation: sk-appear-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
     }
-    @media (max-width: @screen-sm-min) {
+
+    @media (min-height: @screen-sm-ht-max) and (max-height: @screen-md-ht-max) and (min-width: @screen-sm-min) {
+        -webkit-animation: sk-appear-frames-md .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-appear-frames-md .4s cubic-bezier(.62, .28, .23, .99);
+    }
+
+    @media (max-height: @screen-sm-ht-max) {
         -webkit-animation: sk-appear-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
                 animation: sk-appear-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
+    }
+
+    @media (max-width: @screen-sm-min) {
+        -webkit-animation: sk-appear-frames-fs .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-appear-frames-fs .4s cubic-bezier(.62, .28, .23, .99);
     }
 }
 
@@ -82,6 +93,23 @@
     }
 }
 
+@-webkit-keyframes sk-appear-frames-fs {
+    0% {
+        bottom: @widget-close-bottom-fs;
+    }
+    100% {
+        bottom: 0;
+    }
+}
+@keyframes sk-appear-frames-fs {
+    0% {
+        bottom: @widget-close-bottom-fs;
+    }
+    100% {
+        bottom: 0;
+    }
+}
+
 .sk-close {
     bottom: @widget-close-bottom-md;
 
@@ -93,16 +121,28 @@
     -webkit-animation-fill-mode: forwards;
             animation-fill-mode: forwards;
 
-    @media (min-width: @screen-lg-min) {
+    @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-max) {
         bottom: @widget-close-bottom-lg;
         -webkit-animation: sk-close-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
                 animation: sk-close-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
     }
 
-    @media (max-width: @screen-sm-min) {
+    @media (min-height: @screen-sm-ht-max) and (max-height: @screen-md-ht-max) and (min-width: @screen-sm-min) {
+        bottom: @widget-close-bottom-md;
+        -webkit-animation: sk-close-frames-md .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-close-frames-md .4s cubic-bezier(.62, .28, .23, .99);
+    }
+
+    @media (max-height: @screen-sm-ht-max) {
         bottom: @widget-close-bottom-sm;
         -webkit-animation: sk-close-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
                 animation: sk-close-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
+    }
+
+    @media (max-width: @screen-sm-min) {
+        bottom: @widget-close-bottom-fs;
+        -webkit-animation: sk-close-frames-fs .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-close-frames-fs .4s cubic-bezier(.62, .28, .23, .99);
     }
 }
 @-webkit-keyframes sk-close-frames {
@@ -158,6 +198,23 @@
     }
 }
 
+@-webkit-keyframes sk-close-frames-fs {
+    0% {
+        bottom: 0;
+    }
+    100% {
+        bottom: @widget-close-bottom-fs;
+    }
+}
+@keyframes sk-close-frames-fs {
+    0% {
+        bottom: 0;
+    }
+    100% {
+        bottom: @widget-close-bottom-fs;
+    }
+}
+
 .sk-noselect {
     -webkit-user-select: none;
        -moz-user-select: none;
@@ -170,11 +227,20 @@
 
 .sk-init {
     bottom: @widget-close-bottom-md;
-    @media (min-width: @screen-lg-min) {
+
+    @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-max) {
         bottom: @widget-close-bottom-lg;
     }
 
-    @media (max-width: @screen-sm-min) {
+    @media (min-height: @screen-sm-ht-max) and (max-height: @screen-md-ht-max) and (min-width: @screen-sm-min) {
+        bottom: @widget-close-bottom-md;
+    }
+
+    @media (max-height: @screen-sm-ht-max) {
         bottom: @widget-close-bottom-sm;
+    }
+
+    @media (max-width: @screen-sm-min) {
+        bottom: @widget-close-bottom-fs;
     }
 }
