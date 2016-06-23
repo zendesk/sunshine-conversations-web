@@ -1,10 +1,14 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import DocumentTitle from 'react-document-title';
 
 const BLINKING_INTERVAL = 1500;
 
 export class MessageIndicatorComponent extends Component {
+    static contextTypes = {
+        ui: PropTypes.object
+    };
+
     state = {
         initialDocumentTitle: global.document ? document.title : '',
         currentTitle: global.document ? document.title : '',
@@ -14,7 +18,8 @@ export class MessageIndicatorComponent extends Component {
     blinkTitle() {
         if (!this.blinkInterval) {
             const fn = () => {
-                const {unreadCount, messageIndicatorTitleSingular, messageIndicatorTitlePlural} = this.props;
+                const {ui:{text:{messageIndicatorTitleSingular, messageIndicatorTitlePlural}}} = this.context;
+                const {unreadCount} = this.props;
                 const {currentTitle, lastSetTitle} = this.state;
                 let {initialDocumentTitle} = this.state;
 
@@ -90,10 +95,8 @@ export class MessageIndicatorComponent extends Component {
     }
 }
 
-export const MessageIndicator = connect(({conversation: {unreadCount}, ui: {text: {messageIndicatorTitleSingular, messageIndicatorTitlePlural}}}) => {
+export const MessageIndicator = connect(({conversation: {unreadCount}}) => {
     return {
-        unreadCount,
-        messageIndicatorTitleSingular,
-        messageIndicatorTitlePlural
+        unreadCount
     };
 })(MessageIndicatorComponent);

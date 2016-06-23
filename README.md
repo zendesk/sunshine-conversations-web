@@ -115,7 +115,7 @@ var skPromise = Smooch.init({
         headerText: 'How can we help?',
         inputPlaceholder: 'Type a message...',
         sendButtonText: 'Send',
-        introText: 'We\'re here to talk, so ask us anything!',
+        introductionText: 'We\'re here to talk, so ask us anything!',
         introAppText: 'Message us below or from your favorite app.',
         settingsText: 'You can leave us your email so that we can get back to you this way.',
         settingsReadOnlyText: 'We\'ll get back to you at this email address if we missed you.',
