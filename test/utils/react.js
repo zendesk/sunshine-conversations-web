@@ -38,5 +38,8 @@ export function getContext(context = {}) {
         ui: {}
     };
 
-    return Object.assign(defaultContext, context);
+    return {
+        ...defaultContext,
+        ...context
+    };
 }
