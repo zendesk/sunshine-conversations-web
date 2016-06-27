@@ -3,95 +3,183 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
-import { NotificationsSettingsComponent } from '../../../src/js/components/notifications-settings';
+import { ChannelItem, NotificationsSettingsComponent } from '../../../src/js/components/notifications-settings';
+import { ParentComponentWithContext } from '../../utils/parent-component';
+
+import { mockAppStore } from '../../utils/redux';
+import { mockComponent, getContext } from '../../utils/react';
+
+import * as userUtils from '../../../src/js/utils/user';
 
 const sandbox = sinon.sandbox.create();
 
+describe('Channel Item', () => {
+    [true, false].forEach((linked) => {
+        describe(`${linked ? '' : 'not'} linked`, () => {
+            let component;
+            let mockedStore;
 
-xdescribe('Notifications Settings', () => {
+            const context = getContext({
+                settings: {
+                    linkColor: '#00000'
+                },
+                ui: {
+                    text: {
+                        notificationSettingsConnectedAs: 'connected as'
+                    }
+                }
+            });
+
+            const defaultProps = {
+                id: 'id',
+                name: 'name',
+                icon: '/icon/',
+                icon2x: '/icon2x/',
+                hasURL: 'true',
+                displayName: 'displayname'
+            };
+
+            beforeEach(() => {
+                const props = Object.assign(defaultProps, {
+                    linked: linked
+                });
+                mockedStore = mockAppStore(sandbox, {});
+
+                component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
+                                                                                     store={ mockedStore }>
+                                                             <ChannelItem {...props} />
+                                                         </ParentComponentWithContext>);
+            });
+
+            afterEach(() => {
+                sandbox.restore();
+            });
+
+            after(() => {
+                mockedStore && mockedStore.restore();
+            });
+
+            it(`should ${linked ? '' : 'not'} render with linked class`, () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-item-linked').length.should.be.eq(linked ? 1 : 0);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'linked').length.should.be.eq(linked ? 1 : 0);
+            });
+
+            it(`should ${linked ? '' : 'not'} show connected as`, () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-item-connected-as').length.should.be.eq(linked ? 1 : 0);
+            });
+
+            it(`should ${linked ? '' : 'not'} show link`, () => {
+                const linkElement = TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-item-right')[0];
+                linkElement.textContent.should.be.eq(linked ? 'Open' : '');
+            });
+        });
+    });
+});
+
+describe('Notifications Settings', () => {
 
     let component;
-    let componentNode;
-    let defaultProps;
+    let context;
+    let mockedStore;
+    let props;
+
+    const defaultProps = {
+        appChannels: [
+            {
+                _id: 1,
+                type: 'telegram',
+                username: 'chloebot'
+            },
+            {
+                _id: 2,
+                type: 'messenger',
+                username: 'messengerchloe'
+            }
+        ]
+    };
 
     beforeEach(() => {
-        defaultProps = {
-            message: 'This is a text <a data-ui-settings-link>with a link</a>!',
-            actions: {
-                hideNotification: sandbox.spy(),
-                showSettings: sandbox.spy()
+        mockComponent(sandbox, ChannelItem, 'div', {
+            className: 'mockedChannelItem'
+        });
+
+        sandbox.stub(userUtils, 'isChannelLinked');
+        userUtils.isChannelLinked.resolves([
+            {
+                channel: {
+                    type: 'telegram'
+                },
+                details: {}
+            },
+            {
+                channel: {
+                    type: 'messenger'
+                },
+                details: {}
             }
-        };
+        ]);
+
+        context = getContext({
+            ui: {
+                text: {
+                    notificationSettingsChannelsTitle: 'notif settings channels title',
+                    notificationSettingsChannelsDescription: 'notif settings channels desc'
+                }
+            }
+        });
+        mockedStore = mockAppStore(sandbox, {});
+        props = Object.assign(defaultProps, {
+            user: {
+                _id: 1230912,
+                clients: []
+            }
+        });
+
+        component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
+                                                                             store={ mockedStore }>
+                                                     <NotificationsSettingsComponent {...props} />
+                                                 </ParentComponentWithContext>);
+
     });
 
     afterEach(() => {
         sandbox.restore();
     });
 
-    xdescribe('text with link', () => {
-        var props;
-
-        beforeEach(() => {
-            props = Object.assign({}, defaultProps);
-            sandbox.stub(NotificationsSettingsComponent.prototype, 'onLinkClick');
-            sandbox.spy(NotificationsSettingsComponent.prototype, 'bindHandler');
-            component = TestUtils.renderIntoDocument(<NotificationsSettingsComponent {...props} />);
-            componentNode = ReactDOM.findDOMNode(component);
-        });
-
-        it('should render a link and should bind the click handler', () => {
-            const linkNode = componentNode.querySelector('[data-ui-settings-link]');
-            linkNode.should.exists;
-            component.bindHandler.should.have.been.calledOnce;
-
-            // call onclick directly because TestUtils.Simulate.click
-            // doesn't work on a node not rendered by a component
-            linkNode.onclick();
-
-            component.onLinkClick.should.have.been.calledOnce;
-        });
+    after(() => {
+        mockedStore && mockedStore.restore();
     });
 
-
-    xdescribe('text without link', () => {
-        var props;
-
-        beforeEach(() => {
-            props = Object.assign({}, defaultProps, {
-                message: 'This is a text without a link!'
-            });
-            sandbox.stub(NotificationsSettingsComponent.prototype, 'onLinkClick');
-            sandbox.spy(NotificationsSettingsComponent.prototype, 'bindHandler');
-            component = TestUtils.renderIntoDocument(<NotificationsSettingsComponent {...props} />);
-            componentNode = ReactDOM.findDOMNode(component);
-        });
-
-        it('should render not have a link', () => {
-            var linkNode = componentNode.querySelector('[data-ui-settings-link]');
-            expect(linkNode).to.not.exists;
-            component.bindHandler.should.have.been.calledOnce;
-        });
+    it('should render channel items', () => {
+        TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedChannelItem').length.should.be.eq(2);
     });
 
-    xdescribe('onLinkClick', () => {
-        var props;
+    it('should set the header text', () => {
+        const header = TestUtils.scryRenderedDOMComponentsWithClass(component, 'settings-header')[0];
+        header.textContent.should.eq(context.ui.text.notificationSettingsChannelsTitle);
+    });
 
+    it('should set channel description text', () => {
+        const description = TestUtils.scryRenderedDOMComponentsWithClass(component, 'settings-description')[0];
+        description.textContent.should.eq(context.ui.text.notificationSettingsChannelsDescription);
+    });
+
+    describe('No user id', () => {
         beforeEach(() => {
-            props = Object.assign({}, defaultProps);
-            component = TestUtils.renderIntoDocument(<NotificationsSettingsComponent {...props} />);
-            componentNode = ReactDOM.findDOMNode(component);
-        });
-
-        it('should dispatch a close notification action and a show settings action', () => {
-            component.onLinkClick({
-                preventDefault: () => true,
-                stopPropagation: () => true
+            props = Object.assign(defaultProps, {
+                user: {}
             });
-
-            props.actions.hideNotification.should.have.been.calledOnce;
-            props.actions.showSettings.should.have.been.calledOnce;
+            const parentComponent = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
+                                                                                             store={ mockedStore }
+                                                                                             accessElement='true'>
+                                                                     <NotificationsSettingsComponent {...props} />
+                                                                 </ParentComponentWithContext>);
+            component = parentComponent.refs.childElement;
         });
 
-
+        it('should not render', () => {
+            const componentNode = ReactDOM.findDOMNode(component);
+            expect(componentNode).to.be.null;
+        });
     });
 });
