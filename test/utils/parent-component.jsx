@@ -10,7 +10,7 @@ import React, { PropTypes, Component } from 'react';
 // If you need to test functions:
 // component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context } 
 //                                                                      store={ mockedStore }
-//                                                                      accessFunction='true'
+//                                                                      accessElement='true'
 //                                                                      <ActionComponent {...props} />
 //                                          </ParentComponentWithContext>);
 // component.refs.childElement.someFunction();
@@ -20,7 +20,7 @@ export class ParentComponentWithContext extends Component {
     static propTypes = {
         context: PropTypes.object.required,
         store: PropTypes.object.required,
-        accessFunction: PropTypes.string
+        accessElement: PropTypes.string
     };
 
     static childContextTypes = {
@@ -35,7 +35,7 @@ export class ParentComponentWithContext extends Component {
 
     render() {
         // If we need to use functions on the child element, then add a 'ref' propType
-        const childElement = this.props.accessFunction ? React.Children.map(
+        const childElement = this.props.accessElement ? React.Children.map(
             this.props.children, function(child) {
                 return React.cloneElement(child, {
                     ref: 'childElement'
@@ -47,6 +47,6 @@ export class ParentComponentWithContext extends Component {
                     { childElement }
                 </div>
             </Provider>
-        );
+            );
     }
 }

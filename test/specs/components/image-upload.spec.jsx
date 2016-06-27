@@ -8,7 +8,7 @@ const conversationService = require('../../../src/js/services/conversation-servi
 
 const sandbox = sinon.sandbox.create();
 
-xdescribe('ChatInput', () => {
+describe('Image Upload', () => {
     var component;
 
     var onImageChangeSpy;
