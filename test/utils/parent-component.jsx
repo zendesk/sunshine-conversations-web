@@ -1,5 +1,6 @@
 import { Provider } from 'react-redux';
 import React, { PropTypes, Component } from 'react';
+import { connect } from 'react-redux';
 
 // Element with context:
 // component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context } 
@@ -10,7 +11,7 @@ import React, { PropTypes, Component } from 'react';
 // If you need to test functions:
 // component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context } 
 //                                                                      store={ mockedStore }
-//                                                                      accessElement='true'
+//                                                                      accessElement={ true }
 //                                                                      <ActionComponent {...props} />
 //                                          </ParentComponentWithContext>);
 // component.refs.childElement.someFunction();
