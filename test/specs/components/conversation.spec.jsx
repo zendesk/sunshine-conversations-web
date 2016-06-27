@@ -91,7 +91,7 @@ describe('Conversation', () => {
             });
             const parentComponent = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
                                                                                              store={ mockedStore }
-                                                                                             accessElement='true'>
+                                                                                             accessElement={ true }>
                                                                      <ConversationComponent {...props} />
                                                                  </ParentComponentWithContext>);
             component = parentComponent.refs.childElement;

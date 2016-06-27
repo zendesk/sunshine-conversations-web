@@ -243,6 +243,7 @@ describe('Action', () => {
         });
 
         it('should render a link', () => {
+            console.log(componentNode);
             const link = TestUtils.findRenderedDOMComponentWithTag(component, 'a');
             link.textContent = 'action text';
             link.href = 'fallback uri';
@@ -302,7 +303,7 @@ describe('Action', () => {
 
                 component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
                                                                                      store={ mockedStore }
-                                                                                     accessElement='true'>
+                                                                                     accessElement={ true }>
                                                              <ActionComponent {...props} />
                                                          </ParentComponentWithContext>);
 

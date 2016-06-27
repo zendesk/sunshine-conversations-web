@@ -20,7 +20,7 @@ export class ParentComponentWithContext extends Component {
     static propTypes = {
         context: PropTypes.object.required,
         store: PropTypes.object.required,
-        accessElement: PropTypes.string
+        accessElement: PropTypes.bool
     };
 
     static childContextTypes = {
