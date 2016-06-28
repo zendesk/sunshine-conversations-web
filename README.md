@@ -11,7 +11,7 @@ The Smooch Javascript SDK will add [live web messaging](https://smooch.io/live-w
 - Build better relationships with messaging that feels and looks tailored to your website.
 - Delight your customers with the most engaging conversational experience using [rich messaging](https://smooch.io/rich-messaging/).
 - Maximize development productivity with a single codebase across platforms and [add more channels](https://smooch.io/cross-channel-messaging/) anytime.
-- Bring every conversation into your existing business systems. No new tool to learn. [See all integrations](https://smooch.io/integrations/).
+- Bring every conversation into your existing business systems. No new tool to learn. [See all integrations](https://smooch.io/integrations/).
 
 ## Usage
 
