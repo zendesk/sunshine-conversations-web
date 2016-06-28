@@ -302,7 +302,7 @@ describe('Action', () => {
 
                 component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
                                                                                      store={ mockedStore }
-                                                                                     accessElement={ true }>
+                                                                                     withRef={ true }>
                                                              <ActionComponent {...props} />
                                                          </ParentComponentWithContext>);
 
@@ -339,7 +339,7 @@ describe('Action', () => {
 
                 component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
                                                                                      store={ mockedStore }
-                                                                                     accessElement={ true }>
+                                                                                     withRef={ true }>
                                                              <ActionComponent {...props} />
                                                          </ParentComponentWithContext>);
 
@@ -376,7 +376,7 @@ describe('Action', () => {
 
                 component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
                                                                                      store={ mockedStore }
-                                                                                     accessElement={ true }>
+                                                                                     withRef={ true }>
                                                              <ActionComponent {...props} />
                                                          </ParentComponentWithContext>);
 
@@ -415,7 +415,7 @@ describe('Action', () => {
 
                 component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
                                                                                      store={ mockedStore }
-                                                                                     accessElement={ true }>
+                                                                                     withRef={ true }>
                                                              <ActionComponent {...props} />
                                                          </ParentComponentWithContext>);
 
@@ -455,7 +455,7 @@ describe('Action', () => {
 
             component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
                                                                                  store={ mockedStore }
-                                                                                 accessElement={ true }>
+                                                                                 withRef={ true }>
                                                          <ActionComponent {...props} />
                                                      </ParentComponentWithContext>);
         });
@@ -489,7 +489,7 @@ describe('Action', () => {
 
             component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
                                                                                  store={ mockedStore }
-                                                                                 accessElement={ true }>
+                                                                                 withRef={ true }>
                                                          <ActionComponent {...props} />
                                                      </ParentComponentWithContext>);
         });

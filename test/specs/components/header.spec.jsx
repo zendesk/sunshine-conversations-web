@@ -60,7 +60,7 @@ describe('Header', () => {
             mockedStore = mockAppStore(sandbox, {});
             parentComponent = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
                                                                                        store={ mockedStore }
-                                                                                       accessElement='true'>
+                                                                                       withRef='true'>
                                                                <HeaderComponent {...props} />
                                                            </ParentComponentWithContext>);
             header = parentComponent.refs.childElement;
@@ -104,7 +104,7 @@ describe('Header', () => {
             mockedStore = mockAppStore(sandbox, {});
             parentComponent = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
                                                                                        store={ mockedStore }
-                                                                                       accessElement='true'>
+                                                                                       withRef='true'>
                                                                <HeaderComponent {...props} />
                                                            </ParentComponentWithContext>);
             header = parentComponent.refs.childElement;

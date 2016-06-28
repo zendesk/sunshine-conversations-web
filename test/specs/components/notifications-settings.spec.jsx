@@ -171,7 +171,7 @@ describe('Notifications Settings', () => {
             });
             const parentComponent = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
                                                                                              store={ mockedStore }
-                                                                                             accessElement='true'>
+                                                                                             withRef='true'>
                                                                      <NotificationsSettingsComponent {...props} />
                                                                  </ParentComponentWithContext>);
             component = parentComponent.refs.childElement;

@@ -35,7 +35,7 @@ function getStoreState(state = {}) {
 function renderComponent(context, store, props) {
     const parentComponent = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
                                                                                      store={ store }
-                                                                                     accessElement={ true }>
+                                                                                     withRef={ true }>
                                                              <ChatInputComponent {...props} />
                                                          </ParentComponentWithContext>);
     return parentComponent.refs.childElement;
