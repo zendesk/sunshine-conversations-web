@@ -94,7 +94,7 @@ describe('Conversation', () => {
                                                                                              withRef={ true }>
                                                                      <ConversationComponent {...props} />
                                                                  </ParentComponentWithContext>);
-            component = parentComponent.refs.childElement;
+            component = parentComponent.getWrappedInstance();
         });
 
         it('should render', () => {
