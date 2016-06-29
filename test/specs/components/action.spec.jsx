@@ -289,11 +289,12 @@ describe('Action', () => {
 
             beforeEach(() => {
 
-                appUtils.getIntegration.resolves({
-                    stripe: {
+                appUtils.getIntegration.resolves(
+                    {
+                        type: 'stripeConnect',
                         publicKey: 'key'
                     }
-                });
+                );
                 mockedStore = mockAppStore(sandbox, getStoreState({
                     user: {
                         email: ''
