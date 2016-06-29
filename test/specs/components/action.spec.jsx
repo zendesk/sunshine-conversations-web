@@ -144,10 +144,7 @@ describe('Action', () => {
         });
     });
 
-    describe('buy action with stripe keys and offered state', () => {
-        const props = getBuyProps({
-            uri: 'fallback uri'
-        });
+    describe('Stripe', () => {
         const context = getContext({
             app: {
                 stripe: {
@@ -156,68 +153,242 @@ describe('Action', () => {
                 }
             }
         });
+        describe('buy action with stripe keys and offered state', () => {
+            const props = getBuyProps({
+                uri: 'fallback uri'
+            });
 
-        beforeEach(() => {
-            appUtils.getIntegration.resolves(true);
-            mockedStore = mockAppStore(sandbox, getStoreState());
-            component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                                 store={ mockedStore }>
-                                                         <ActionComponent {...props} />
-                                                     </ParentComponentWithContext>);
+            beforeEach(() => {
+                appUtils.getIntegration.resolves(true);
+                mockedStore = mockAppStore(sandbox, getStoreState());
+                component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
+                                                                                     store={ mockedStore }>
+                                                             <ActionComponent {...props} />
+                                                         </ParentComponentWithContext>);
+            });
+
+            it('should render a Stripe button', () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedStripe').length.should.be.eq(1);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedLoading').length.should.be.eq(0);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-action-paid').length.should.be.eq(0);
+                componentNode.textContent.should.eq('action text');
+            });
         });
 
-        it('should render a Stripe button', () => {
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedStripe').length.should.be.eq(1);
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedLoading').length.should.be.eq(0);
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-action-paid').length.should.be.eq(0);
-            componentNode.textContent.should.eq('action text');
-        });
-    });
+        describe('buy action with stripe keys and processing state', () => {
+            const props = getBuyProps({
+                state: 'processing'
+            });
 
-    describe('buy action with stripe keys and processing state', () => {
-        const props = getBuyProps({
-            state: 'processing'
-        });
-        const context = getContext();
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, getStoreState());
+                component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
+                                                                                     store={ mockedStore }>
+                                                             <ActionComponent {...props} />
+                                                         </ParentComponentWithContext>);
+                componentNode = ReactDOM.findDOMNode(component);
+            });
 
-        beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState());
-            component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                                 store={ mockedStore }>
-                                                         <ActionComponent {...props} />
-                                                     </ParentComponentWithContext>);
-            componentNode = ReactDOM.findDOMNode(component);
-        });
-
-        it('should render a loading element', () => {
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedStripe').length.should.be.eq(0);
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedLoading').length.should.be.eq(1);
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-action-paid').length.should.be.eq(0);
-            componentNode.textContent.should.eq('');
-        });
-    });
-
-    describe('buy action with stripe keys and paid state', () => {
-        const props = getBuyProps({
-            state: 'paid'
-        });
-        const context = getContext();
-
-        beforeEach(() => {
-            appUtils.getIntegration.resolves(true);
-            mockedStore = mockAppStore(sandbox, getStoreState());
-            component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                                 store={ mockedStore }>
-                                                         <ActionComponent {...props} />
-                                                     </ParentComponentWithContext>);
-            componentNode = ReactDOM.findDOMNode(component);
+            it('should render a loading element', () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedStripe').length.should.be.eq(0);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedLoading').length.should.be.eq(1);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-action-paid').length.should.be.eq(0);
+                componentNode.textContent.should.eq('');
+            });
         });
 
-        it('should a payment completed button', () => {
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-action-paid').length.should.be.eq(1);
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedStripe').length.should.be.eq(0);
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedLoading').length.should.be.eq(0);
-            componentNode.textContent.should.eq('payment completed text');
+        describe('buy action with stripe keys and paid state', () => {
+            const props = getBuyProps({
+                state: 'paid'
+            });
+
+            beforeEach(() => {
+                appUtils.getIntegration.resolves(true);
+                mockedStore = mockAppStore(sandbox, getStoreState());
+                component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
+                                                                                     store={ mockedStore }>
+                                                             <ActionComponent {...props} />
+                                                         </ParentComponentWithContext>);
+                componentNode = ReactDOM.findDOMNode(component);
+            });
+
+            it('should a payment completed button', () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-action-paid').length.should.be.eq(1);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedStripe').length.should.be.eq(0);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedLoading').length.should.be.eq(0);
+                componentNode.textContent.should.eq('payment completed text');
+            });
+        });
+
+        describe('onStripeToken', () => {
+
+            describe('user has no email', () => {
+                const props = getBuyProps();
+
+                beforeEach(() => {
+                    appUtils.getIntegration.resolves(
+                        {
+                            type: 'stripeConnect',
+                            publicKey: 'key'
+                        }
+                    );
+                    mockedStore = mockAppStore(sandbox, getStoreState({
+                        user: {
+                            email: ''
+                        }
+                    }));
+                    component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
+                                                                                         store={ mockedStore }
+                                                                                         withRef={ true }>
+                                                                 <ActionComponent {...props} />
+                                                             </ParentComponentWithContext>);
+                    sandbox.stub(stripeService, 'createTransaction');
+                    stripeService.createTransaction.resolves();
+                });
+
+                it('call user update', () => {
+                    const stripeComponent = component.refs.childElement;
+                    return stripeComponent.onStripeToken({
+                        email: 'email'
+                    }).then(() => {
+                        userService.immediateUpdate.should.have.been.calledWith({
+                            email: 'email'
+                        });
+                    });
+                });
+            });
+
+            describe('user has email', () => {
+                const props = getBuyProps();
+      
+                beforeEach(() => {
+                    mockedStore = mockAppStore(sandbox, getStoreState());
+                    component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
+                                                                                         store={ mockedStore }
+                                                                                         withRef={ true }>
+                                                                 <ActionComponent {...props} />
+                                                             </ParentComponentWithContext>);
+                    sandbox.stub(stripeService, 'createTransaction');
+                    stripeService.createTransaction.resolves();
+                });
+
+                it('call user update', () => {
+                    const stripeComponent = component.refs.childElement;
+                    return stripeComponent.onStripeToken({
+                        email: 'email'
+                    }).then(() => {
+                        userService.immediateUpdate.should.not.have.been.called;
+                    });
+                });
+            });
+
+            describe('create transaction success', () => {
+                const props = getBuyProps({
+                    state: 'processing'
+                });
+
+                beforeEach(() => {
+                    mockedStore = mockAppStore(sandbox, getStoreState());
+                    component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
+                                                                                         store={ mockedStore }
+                                                                                         withRef={ true }>
+                                                                 <ActionComponent {...props} />
+                                                             </ParentComponentWithContext>);
+                    sandbox.stub(stripeService, 'createTransaction');
+                    stripeService.createTransaction.resolves();
+                });
+
+                it('should set state to paid', () => {
+                    const stripeComponent = component.refs.childElement;
+                    stripeComponent.state.state.should.eq('processing');
+                    return stripeComponent.onStripeToken({
+                        email: 'email'
+                    }).then(() => {
+                        stripeComponent.state.state.should.eq('paid');
+                    });
+                });
+            });
+
+            describe('create transaction fail', () => {
+                const props = getBuyProps({
+                    state: 'processing'
+                });
+
+                beforeEach(() => {
+                    mockedStore = mockAppStore(sandbox, getStoreState());
+                    component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
+                                                                                         store={ mockedStore }
+                                                                                         withRef={ true }>
+                                                                 <ActionComponent {...props} />
+                                                             </ParentComponentWithContext>);
+                    sandbox.stub(stripeService, 'createTransaction');
+                    stripeService.createTransaction.rejects();
+
+                });
+
+                it('should set state to paid', () => {
+                    const stripeComponent = component.refs.childElement;
+                    stripeComponent.state.state.should.eq('processing');
+                    return stripeComponent.onStripeToken({
+                        email: 'email'
+                    }).then(() => {
+                        stripeComponent.state.state.should.eq('offered');
+                    });
+                });
+            });
+        });
+
+        describe('onStripeClick', () => {
+            const props = getBuyProps();
+
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, getStoreState());
+                component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
+                                                                                     store={ mockedStore }
+                                                                                     withRef={ true }>
+                                                             <ActionComponent {...props} />
+                                                         </ParentComponentWithContext>);
+            });
+
+            it('set state to processing', () => {
+                const stripeComponent = component.refs.childElement;
+                stripeComponent.state.state.should.eq('offered');
+                stripeComponent.onStripeClick();
+                stripeComponent.state.state.should.eq('processing');
+            });
+        });
+
+
+
+        describe('onStripeClose', () => {
+            const props = getBuyProps({
+                state: 'processing'
+            });
+
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, getStoreState());
+                component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
+                                                                                     store={ mockedStore }
+                                                                                     withRef={ true }>
+                                                             <ActionComponent {...props} />
+                                                         </ParentComponentWithContext>);
+            });
+
+            it('should set state to offered if no token', () => {
+                const stripeComponent = component.refs.childElement;
+                stripeComponent.state.state.should.eq('processing');
+                stripeComponent.state.hasToken = false;
+                stripeComponent.onStripeClose();
+                stripeComponent.state.state.should.eq('offered');
+            });
+
+            it('should do nothing if token', () => {
+                const stripeComponent = component.refs.childElement;
+                stripeComponent.state.state.should.eq('processing');
+                stripeComponent.state.hasToken = true;
+                stripeComponent.onStripeClose();
+                stripeComponent.state.state.should.eq('processing');
+            });
         });
     });
 
@@ -271,244 +442,6 @@ describe('Action', () => {
             const button = TestUtils.findRenderedDOMComponentWithTag(component, 'button');
             TestUtils.Simulate.click(button);
             conversationService.postPostback.should.have.been.calledOnce;
-        });
-    });
-
-    describe('onStripeToken', () => {
-
-        describe('user has no email', () => {
-            const props = getBuyProps();
-            const context = getContext({
-                app: {
-                    stripe: {
-                        appName: 'app-name',
-                        iconUrl: 'iconUrl'
-                    }
-                }
-            });
-
-            beforeEach(() => {
-
-                appUtils.getIntegration.resolves(
-                    {
-                        type: 'stripeConnect',
-                        publicKey: 'key'
-                    }
-                );
-                mockedStore = mockAppStore(sandbox, getStoreState({
-                    user: {
-                        email: ''
-                    }
-                }));
-
-                component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                                     store={ mockedStore }
-                                                                                     withRef={ true }>
-                                                             <ActionComponent {...props} />
-                                                         </ParentComponentWithContext>);
-
-                sandbox.stub(stripeService, 'createTransaction');
-                stripeService.createTransaction.resolves();
-            });
-
-            it('call user update', () => {
-                const stripeComponent = component.refs.childElement;
-                return stripeComponent.onStripeToken({
-                    email: 'email'
-                }).then(() => {
-                    userService.immediateUpdate.should.have.been.calledWith({
-                        email: 'email'
-                    });
-                });
-            });
-        });
-
-        describe('user has email', () => {
-            const props = getBuyProps();
-            const context = getContext({
-                app: {
-                    stripe: {
-                        appName: 'app-name',
-                        iconUrl: 'iconUrl'
-                    }
-                }
-            });
-
-            beforeEach(() => {
-
-                mockedStore = mockAppStore(sandbox, getStoreState());
-
-                component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                                     store={ mockedStore }
-                                                                                     withRef={ true }>
-                                                             <ActionComponent {...props} />
-                                                         </ParentComponentWithContext>);
-
-                sandbox.stub(stripeService, 'createTransaction');
-                stripeService.createTransaction.resolves();
-            });
-
-            it('call user update', () => {
-                const stripeComponent = component.refs.childElement;
-                return stripeComponent.onStripeToken({
-                    email: 'email'
-                }).then(() => {
-                    userService.immediateUpdate.should.not.have.been.called;
-                });
-            });
-        });
-
-        describe('create transaction success', () => {
-            const props = getBuyProps({
-                state: 'processing'
-            });
-            const context = getContext({
-                app: {
-                    stripe: {
-                        appName: 'app-name',
-                        iconUrl: 'iconUrl'
-                    }
-                }
-            });
-
-            beforeEach(() => {
-
-                mockedStore = mockAppStore(sandbox, getStoreState());
-
-                component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                                     store={ mockedStore }
-                                                                                     withRef={ true }>
-                                                             <ActionComponent {...props} />
-                                                         </ParentComponentWithContext>);
-
-                sandbox.stub(stripeService, 'createTransaction');
-                stripeService.createTransaction.resolves();
-
-            });
-
-            it('should set state to paid', () => {
-                const stripeComponent = component.refs.childElement;
-                stripeComponent.state.state.should.eq('processing');
-                return stripeComponent.onStripeToken({
-                    email: 'email'
-                }).then(() => {
-                    stripeComponent.state.state.should.eq('paid');
-                });
-            });
-        });
-
-        describe('create transaction fail', () => {
-            const props = getBuyProps({
-                state: 'processing'
-            });
-            const context = getContext({
-                app: {
-                    stripe: {
-                        appName: 'app-name',
-                        iconUrl: 'iconUrl'
-                    }
-                }
-            });
-
-            beforeEach(() => {
-
-                mockedStore = mockAppStore(sandbox, getStoreState());
-
-                component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                                     store={ mockedStore }
-                                                                                     withRef={ true }>
-                                                             <ActionComponent {...props} />
-                                                         </ParentComponentWithContext>);
-
-                sandbox.stub(stripeService, 'createTransaction');
-                stripeService.createTransaction.rejects();
-
-            });
-
-            it('should set state to paid', () => {
-                const stripeComponent = component.refs.childElement;
-                stripeComponent.state.state.should.eq('processing');
-                return stripeComponent.onStripeToken({
-                    email: 'email'
-                }).then(() => {
-                    stripeComponent.state.state.should.eq('offered');
-                });
-            });
-        });
-
-    });
-
-
-    describe('onStripeClick', () => {
-        const props = getBuyProps();
-        const context = getContext({
-            app: {
-                stripe: {
-                    appName: 'app-name',
-                    iconUrl: 'iconUrl'
-                }
-            }
-        });
-
-        beforeEach(() => {
-
-            mockedStore = mockAppStore(sandbox, getStoreState());
-
-            component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                                 store={ mockedStore }
-                                                                                 withRef={ true }>
-                                                         <ActionComponent {...props} />
-                                                     </ParentComponentWithContext>);
-        });
-
-        it('set state to processing', () => {
-            const stripeComponent = component.refs.childElement;
-            stripeComponent.state.state.should.eq('offered');
-            stripeComponent.onStripeClick();
-            stripeComponent.state.state.should.eq('processing');
-        });
-    });
-
-
-
-    describe('onStripeClose', () => {
-        const props = getBuyProps({
-            state: 'processing'
-        });
-        const context = getContext({
-            app: {
-                stripe: {
-                    appName: 'app-name',
-                    iconUrl: 'iconUrl'
-                }
-            }
-        });
-
-        beforeEach(() => {
-
-            mockedStore = mockAppStore(sandbox, getStoreState());
-
-            component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                                 store={ mockedStore }
-                                                                                 withRef={ true }>
-                                                         <ActionComponent {...props} />
-                                                     </ParentComponentWithContext>);
-        });
-
-        it('should set state to offered if no token', () => {
-            const stripeComponent = component.refs.childElement;
-            stripeComponent.state.state.should.eq('processing');
-            stripeComponent.state.hasToken = false;
-            stripeComponent.onStripeClose();
-            stripeComponent.state.state.should.eq('offered');
-        });
-
-        it('should do nothing if token', () => {
-            const stripeComponent = component.refs.childElement;
-            stripeComponent.state.state.should.eq('processing');
-            stripeComponent.state.hasToken = true;
-            stripeComponent.onStripeClose();
-            stripeComponent.state.state.should.eq('processing');
         });
     });
 });
