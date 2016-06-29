@@ -1,8 +1,8 @@
 .sk-appear {
     bottom: 0;
 
-    -webkit-animation: sk-appear-frames .4s cubic-bezier(.62, .28, .23, .99);
-            animation: sk-appear-frames .4s cubic-bezier(.62, .28, .23, .99);
+    -webkit-animation: sk-appear-frames-md .4s cubic-bezier(.62, .28, .23, .99);
+            animation: sk-appear-frames-md .4s cubic-bezier(.62, .28, .23, .99);
     -webkit-animation-delay: .0s;
             animation-delay: .0s;
 
@@ -42,7 +42,7 @@
             animation-fill-mode: forwards;
 }
 
-@-webkit-keyframes sk-appear-frames {
+@-webkit-keyframes sk-appear-frames-md {
     0% {
         bottom: @widget-close-bottom-md;
     }
@@ -50,7 +50,7 @@
         bottom: 0;
     }
 }
-@keyframes sk-appear-frames {
+@keyframes sk-appear-frames-md {
     0% {
         bottom: @widget-close-bottom-md;
     }
@@ -113,8 +113,8 @@
 .sk-close {
     bottom: @widget-close-bottom-md;
 
-    -webkit-animation: sk-close-frames .4s cubic-bezier(.62, .28, .23, .99);
-            animation: sk-close-frames .4s cubic-bezier(.62, .28, .23, .99);
+    -webkit-animation: sk-close-frames-md .4s cubic-bezier(.62, .28, .23, .99);
+            animation: sk-close-frames-md .4s cubic-bezier(.62, .28, .23, .99);
     -webkit-animation-delay: .0s;
             animation-delay: .0s;
 
@@ -145,7 +145,7 @@
                 animation: sk-close-frames-fs .4s cubic-bezier(.62, .28, .23, .99);
     }
 }
-@-webkit-keyframes sk-close-frames {
+@-webkit-keyframes sk-close-frames-md {
     0% {
         bottom: 0;
 
@@ -154,7 +154,7 @@
         bottom: @widget-close-bottom-md;
     }
 }
-@keyframes sk-close-frames {
+@keyframes sk-close-frames-md {
     0% {
         bottom: 0;
     }
