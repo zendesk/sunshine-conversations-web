@@ -89,7 +89,7 @@ describe('Action', () => {
         conversationService.postPostback.resolves();
 
         sandbox.stub(appUtils, 'getIntegration');
-        appUtils.getIntegration.resolves(false);
+        appUtils.getIntegration.resolves({});
     });
 
     afterEach(() => {
@@ -153,13 +153,23 @@ describe('Action', () => {
                 }
             }
         });
+
+        afterEach(() => {
+            appUtils.getIntegration.should.have.been.calledWithMatch(context.app.integrations, 'stripeConnect');
+        });
+
         describe('buy action with stripe keys and offered state', () => {
             const props = getBuyProps({
                 uri: 'fallback uri'
             });
 
             beforeEach(() => {
-                appUtils.getIntegration.resolves(true);
+                appUtils.getIntegration.resolves(
+                    {
+                        type: 'stripeConnect',
+                        publicKey: 'key'
+                    }
+                );
                 mockedStore = mockAppStore(sandbox, getStoreState());
                 component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
                                                                                      store={ mockedStore }>
@@ -203,7 +213,12 @@ describe('Action', () => {
             });
 
             beforeEach(() => {
-                appUtils.getIntegration.resolves(true);
+                appUtils.getIntegration.resolves(
+                    {
+                        type: 'stripeConnect',
+                        publicKey: 'key'
+                    }
+                );
                 mockedStore = mockAppStore(sandbox, getStoreState());
                 component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
                                                                                      store={ mockedStore }>
@@ -260,7 +275,6 @@ describe('Action', () => {
 
             describe('user has email', () => {
                 const props = getBuyProps();
-      
                 beforeEach(() => {
                     mockedStore = mockAppStore(sandbox, getStoreState());
                     component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
