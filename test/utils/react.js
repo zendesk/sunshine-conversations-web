@@ -24,9 +24,9 @@ export function mockComponent(sinon, module, mockTagName = 'div', props = null) 
 
     return sinon.stub(module.prototype, 'render', function() {
         return React.createElement(
-        mockTagName,
-        props,
-        this.props.children
+            mockTagName,
+            props,
+            this.props.children
         );
     });
 }
