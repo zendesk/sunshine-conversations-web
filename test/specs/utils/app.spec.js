@@ -1,7 +1,7 @@
 import { CHANNEL_DETAILS } from '../../../src/js/constants/channels';
 import { getIntegration, hasChannels, getAppChannelDetails } from '../../../src/js/utils/app';
 
-describe.only('App utils', () => {
+describe('App utils', () => {
     describe('getIntegration', () => {
         it('should return the first one it finds', () => {
             const type = 'messenger';
@@ -60,6 +60,48 @@ describe.only('App utils', () => {
             ], 'stripeConnect');
 
             expect(integration).to.be.undefined;
+        });
+    });
+
+    describe('hasChannels', () => {
+        it('should return true if has channels', () => {
+            hasChannels({
+                channels: {
+                    stripe: {
+                        some: 'prop'
+                    }
+                }
+            }).should.be.true;
+        });
+
+        it('should return false if has no channels', () => {
+            hasChannels({
+                channels: {}
+            }).should.be.false;
+        });
+    });
+
+    describe('getAppChannelDetails', () => {
+        it('should return the channels with their details', () => {
+            const channel1 = {
+                type: 'messenger'
+            };
+
+            const channel2 = {
+                type: 'telegram'
+            };
+
+            const details = getAppChannelDetails([channel1, channel2]);
+
+            details[0].should.deep.eq({
+                channel: channel1,
+                details: CHANNEL_DETAILS[channel1.type]
+            });
+
+            details[1].should.deep.eq({
+                channel: channel2,
+                details: CHANNEL_DETAILS[channel2.type]
+            });
         });
     });
 });
