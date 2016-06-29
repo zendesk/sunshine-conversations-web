@@ -15,7 +15,7 @@ const baseProps = {
     channelStates: {}
 };
 
-describe.only('Channel', () => {
+describe('Channel', () => {
     beforeEach(() => {
         mockComponent(sandbox, ChannelPage, 'div', {
             className: 'channel-page'
