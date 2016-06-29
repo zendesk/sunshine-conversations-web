@@ -174,7 +174,7 @@ describe('Notifications Settings', () => {
                                                                                              withRef={ true }>
                                                                      <NotificationsSettingsComponent {...props} />
                                                                  </ParentComponentWithContext>);
-            component = parentComponent.refs.childElement;
+            component = parentComponent.getWrappedInstance();
         });
 
         it('should not render', () => {

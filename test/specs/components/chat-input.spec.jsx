@@ -38,7 +38,7 @@ function renderComponent(context, store, props) {
                                                                                      withRef={ true }>
                                                              <ChatInputComponent {...props} />
                                                          </ParentComponentWithContext>);
-    return parentComponent.refs.childElement;
+    return parentComponent.getWrappedInstance();
 }
 
 describe('ChatInput', () => {

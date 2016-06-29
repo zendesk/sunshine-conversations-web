@@ -2,24 +2,24 @@ import { Provider } from 'react-redux';
 import React, { PropTypes, Component } from 'react';
 
 // Element with context:
-// component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context } 
+// component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
 //                                                                      store={ mockedStore }
 //                                                                      <ActionComponent {...props} />
 //                                          </ParentComponentWithContext>);
 
 // If you need to test functions:
-// component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context } 
+// component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
 //                                                                      store={ mockedStore }
 //                                                                      withRef={ true }
 //                                                                      <ActionComponent {...props} />
 //                                          </ParentComponentWithContext>);
-// component.refs.childElement.someFunction();
+// component.getWrappedInstance().someFunction();
 
 export class ParentComponentWithContext extends Component {
 
     static propTypes = {
-        context: PropTypes.object.required,
-        store: PropTypes.object.required,
+        context: PropTypes.object.isRequired,
+        store: PropTypes.object.isRequired,
         withRef: PropTypes.bool
     };
 
@@ -31,6 +31,14 @@ export class ParentComponentWithContext extends Component {
 
     getChildContext() {
         return this.props.context;
+    }
+
+    getWrappedInstance() {
+        if (this.props.withRef) {
+            return this.refs.childElement;
+        }
+
+        throw new Error('Must use `withRef` to acccess wrapped component');
     }
 
     render() {

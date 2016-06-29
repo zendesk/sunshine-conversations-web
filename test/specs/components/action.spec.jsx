@@ -262,7 +262,7 @@ describe('Action', () => {
                 });
 
                 it('call user update', () => {
-                    const stripeComponent = component.refs.childElement;
+                    const stripeComponent = component.getWrappedInstance();
                     return stripeComponent.onStripeToken({
                         email: 'email'
                     }).then(() => {
@@ -287,7 +287,7 @@ describe('Action', () => {
                 });
 
                 it('call user update', () => {
-                    const stripeComponent = component.refs.childElement;
+                    const stripeComponent = component.getWrappedInstance();
                     return stripeComponent.onStripeToken({
                         email: 'email'
                     }).then(() => {
@@ -313,7 +313,7 @@ describe('Action', () => {
                 });
 
                 it('should set state to paid', () => {
-                    const stripeComponent = component.refs.childElement;
+                    const stripeComponent = component.getWrappedInstance();
                     stripeComponent.state.state.should.eq('processing');
                     return stripeComponent.onStripeToken({
                         email: 'email'
@@ -341,7 +341,7 @@ describe('Action', () => {
                 });
 
                 it('should set state to paid', () => {
-                    const stripeComponent = component.refs.childElement;
+                    const stripeComponent = component.getWrappedInstance();
                     stripeComponent.state.state.should.eq('processing');
                     return stripeComponent.onStripeToken({
                         email: 'email'
@@ -365,7 +365,7 @@ describe('Action', () => {
             });
 
             it('set state to processing', () => {
-                const stripeComponent = component.refs.childElement;
+                const stripeComponent = component.getWrappedInstance();
                 stripeComponent.state.state.should.eq('offered');
                 stripeComponent.onStripeClick();
                 stripeComponent.state.state.should.eq('processing');
@@ -389,7 +389,7 @@ describe('Action', () => {
             });
 
             it('should set state to offered if no token', () => {
-                const stripeComponent = component.refs.childElement;
+                const stripeComponent = component.getWrappedInstance();
                 stripeComponent.state.state.should.eq('processing');
                 stripeComponent.state.hasToken = false;
                 stripeComponent.onStripeClose();
@@ -397,7 +397,7 @@ describe('Action', () => {
             });
 
             it('should do nothing if token', () => {
-                const stripeComponent = component.refs.childElement;
+                const stripeComponent = component.getWrappedInstance();
                 stripeComponent.state.state.should.eq('processing');
                 stripeComponent.state.hasToken = true;
                 stripeComponent.onStripeClose();
