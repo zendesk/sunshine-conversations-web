@@ -18,8 +18,8 @@ import React, { PropTypes, Component } from 'react';
 export class ParentComponentWithContext extends Component {
 
     static propTypes = {
-        context: PropTypes.object.required,
-        store: PropTypes.object.required,
+        context: PropTypes.object.isRequired,
+        store: PropTypes.object.isRequired,
         withRef: PropTypes.bool
     };
 
