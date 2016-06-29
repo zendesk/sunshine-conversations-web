@@ -2,7 +2,8 @@
 
 @widget-height-md: 480px;
 @widget-height-lg: 640px;
-@widget-height-sm: 100%;
+@widget-height-sm: 233px;
+@widget-height-fs: 100%;
 
 @widget-width-md: 350px;
 @widget-width-lg: 410px;
@@ -18,7 +19,8 @@
 @header-extra-height: (@header-height + 2 * @header-vertical-padding);
 @widget-close-bottom-md: -@widget-height-md + @header-extra-height;
 @widget-close-bottom-lg: -@widget-height-lg + @header-extra-height;
-@widget-close-bottom-sm: calc(~"@{header-extra-height} - @{widget-height-sm}");
+@widget-close-bottom-sm: -@widget-height-sm + @header-extra-height;
+@widget-close-bottom-fs: calc(~"@{header-extra-height} - @{widget-height-fs}");
 @widget-close-top: calc(~"100% - @{header-extra-height}");
 
 @remaining-height: @header-extra-height + @footer-height;

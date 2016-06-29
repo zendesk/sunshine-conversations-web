@@ -97,6 +97,12 @@ export function sendMessage(text) {
 
             observable.trigger('message:sent', response.message);
             return response;
+        }).catch(() => {
+            store.dispatch(showErrorNotification(store.getState().ui.text.messageError));
+            store.dispatch(removeMessage({
+                _clientId: message._clientId
+            }));
+
         });
     });
 }
