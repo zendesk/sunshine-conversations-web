@@ -22,10 +22,6 @@ export class MessengerChannelContent extends Component {
         }
     };
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return nextState.sdkBlocked;
-    }
-
     render() {
         const {appId, pageId, smoochId} = this.props;
 
