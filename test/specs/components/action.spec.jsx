@@ -89,7 +89,7 @@ describe('Action', () => {
         conversationService.postPostback.resolves();
 
         sandbox.stub(appUtils, 'getIntegration');
-        appUtils.getIntegration.resolves({});
+        appUtils.getIntegration.returns({});
     });
 
     afterEach(() => {
@@ -164,7 +164,7 @@ describe('Action', () => {
             });
 
             beforeEach(() => {
-                appUtils.getIntegration.resolves(
+                appUtils.getIntegration.returns(
                     {
                         type: 'stripeConnect',
                         publicKey: 'key'
@@ -213,7 +213,7 @@ describe('Action', () => {
             });
 
             beforeEach(() => {
-                appUtils.getIntegration.resolves(
+                appUtils.getIntegration.returns(
                     {
                         type: 'stripeConnect',
                         publicKey: 'key'
@@ -241,7 +241,7 @@ describe('Action', () => {
                 const props = getBuyProps();
 
                 beforeEach(() => {
-                    appUtils.getIntegration.resolves(
+                    appUtils.getIntegration.returns(
                         {
                             type: 'stripeConnect',
                             publicKey: 'key'
