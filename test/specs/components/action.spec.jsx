@@ -406,8 +406,7 @@ describe('Action', () => {
         });
     });
 
-    // Re-visit this test after fixing link fallback
-    xdescribe('buy action without stripe keys', () => {
+    describe('buy action without stripe keys', () => {
         const props = getBuyProps();
         const context = getContext({
             app: {
@@ -419,12 +418,12 @@ describe('Action', () => {
         });
 
         beforeEach(() => {
+            appUtils.getIntegration.returns(undefined);
             mockedStore = mockAppStore(sandbox, getStoreState());
             component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
                                                                                  store={ mockedStore }>
                                                          <ActionComponent {...props} />
                                                      </ParentComponentWithContext>);
-            componentNode = ReactDOM.findDOMNode(component);
         });
 
         it('should render a link', () => {
