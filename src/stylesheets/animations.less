@@ -9,24 +9,20 @@
     -webkit-animation-fill-mode: forwards;
             animation-fill-mode: forwards;
 
-    @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-max) {
+    @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht) {
         -webkit-animation: sk-appear-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
                 animation: sk-appear-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
     }
 
-    @media (min-height: @screen-sm-ht-max) and (max-height: @screen-md-ht-max) and (min-width: @screen-sm-min) {
-        -webkit-animation: sk-appear-frames-md .4s cubic-bezier(.62, .28, .23, .99);
-                animation: sk-appear-frames-md .4s cubic-bezier(.62, .28, .23, .99);
-    }
-
-    @media (max-height: @screen-sm-ht-max) {
+    @media (min-width: @screen-sm-min) and (max-height: @screen-sm-ht) {
         -webkit-animation: sk-appear-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
                 animation: sk-appear-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
     }
 
+    // Mobile
     @media (max-width: @screen-sm-min) {
-        -webkit-animation: sk-appear-frames-fs .4s cubic-bezier(.62, .28, .23, .99);
-                animation: sk-appear-frames-fs .4s cubic-bezier(.62, .28, .23, .99);
+        -webkit-animation: sk-appear-frames-xs .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-appear-frames-xs .4s cubic-bezier(.62, .28, .23, .99);
     }
 }
 
@@ -93,17 +89,17 @@
     }
 }
 
-@-webkit-keyframes sk-appear-frames-fs {
+@-webkit-keyframes sk-appear-frames-xs {
     0% {
-        bottom: @widget-close-bottom-fs;
+        bottom: @widget-close-bottom-xs;
     }
     100% {
         bottom: 0;
     }
 }
-@keyframes sk-appear-frames-fs {
+@keyframes sk-appear-frames-xs {
     0% {
-        bottom: @widget-close-bottom-fs;
+        bottom: @widget-close-bottom-xs;
     }
     100% {
         bottom: 0;
@@ -121,28 +117,23 @@
     -webkit-animation-fill-mode: forwards;
             animation-fill-mode: forwards;
 
-    @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-max) {
+    @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht) {
         bottom: @widget-close-bottom-lg;
         -webkit-animation: sk-close-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
                 animation: sk-close-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
     }
 
-    @media (min-height: @screen-sm-ht-max) and (max-height: @screen-md-ht-max) and (min-width: @screen-sm-min) {
-        bottom: @widget-close-bottom-md;
-        -webkit-animation: sk-close-frames-md .4s cubic-bezier(.62, .28, .23, .99);
-                animation: sk-close-frames-md .4s cubic-bezier(.62, .28, .23, .99);
-    }
-
-    @media (max-height: @screen-sm-ht-max) {
+    @media (min-width: @screen-sm-min) and (max-height: @screen-sm-ht) {
         bottom: @widget-close-bottom-sm;
         -webkit-animation: sk-close-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
                 animation: sk-close-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
     }
 
+    // Mobile
     @media (max-width: @screen-sm-min) {
-        bottom: @widget-close-bottom-fs;
-        -webkit-animation: sk-close-frames-fs .4s cubic-bezier(.62, .28, .23, .99);
-                animation: sk-close-frames-fs .4s cubic-bezier(.62, .28, .23, .99);
+        bottom: @widget-close-bottom-xs;
+        -webkit-animation: sk-close-frames-xs .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-close-frames-xs .4s cubic-bezier(.62, .28, .23, .99);
     }
 }
 @-webkit-keyframes sk-close-frames-md {
@@ -198,20 +189,20 @@
     }
 }
 
-@-webkit-keyframes sk-close-frames-fs {
+@-webkit-keyframes sk-close-frames-xs {
     0% {
         bottom: 0;
     }
     100% {
-        bottom: @widget-close-bottom-fs;
+        bottom: @widget-close-bottom-xs;
     }
 }
-@keyframes sk-close-frames-fs {
+@keyframes sk-close-frames-xs {
     0% {
         bottom: 0;
     }
     100% {
-        bottom: @widget-close-bottom-fs;
+        bottom: @widget-close-bottom-xs;
     }
 }
 
@@ -228,19 +219,20 @@
 .sk-init {
     bottom: @widget-close-bottom-md;
 
-    @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-max) {
+    @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht) {
         bottom: @widget-close-bottom-lg;
     }
 
-    @media (min-height: @screen-sm-ht-max) and (max-height: @screen-md-ht-max) and (min-width: @screen-sm-min) {
+    @media (min-width: @screen-sm-min) and (min-height: @screen-sm-ht) and (max-height: @screen-md-ht) {
         bottom: @widget-close-bottom-md;
     }
 
-    @media (max-height: @screen-sm-ht-max) {
+    @media (min-width: @screen-sm-min) and (max-height: @screen-sm-ht) {
         bottom: @widget-close-bottom-sm;
     }
 
+    // Mobiles
     @media (max-width: @screen-sm-min) {
-        bottom: @widget-close-bottom-fs;
+        bottom: @widget-close-bottom-xs;
     }
 }
