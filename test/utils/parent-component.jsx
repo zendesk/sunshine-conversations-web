@@ -19,7 +19,7 @@ export class ParentComponentWithContext extends Component {
 
     static propTypes = {
         context: PropTypes.object.isRequired,
-        store: PropTypes.object.isRequired,
+        store: PropTypes.object,
         withRef: PropTypes.bool
     };
 
@@ -42,19 +42,30 @@ export class ParentComponentWithContext extends Component {
     }
 
     render() {
+        const {store, children, withRef} = this.props;
+
         // If we need to use functions on the child element, then add a 'ref' propType
-        const childElement = this.props.withRef ? React.Children.map(
-            this.props.children, function(child) {
-                return React.cloneElement(child, {
-                    ref: 'childElement'
-                });
-            }) : this.props.children;
-        return (
-            <Provider store={ this.props.store }>
-                <div>
-                    { childElement }
-                </div>
-            </Provider>
-            );
+        const childElement = withRef ?
+            React.Children.map(
+                children, (child) => {
+                    return React.cloneElement(child, {
+                        ref: 'childElement'
+                    });
+                }) :
+            children;
+
+        if (store) {
+            return (
+                <Provider store={ store }>
+                    <div>
+                        { childElement }
+                    </div>
+                </Provider>
+                );
+        }
+
+        return <div>
+                   { childElement }
+               </div>;
     }
 }
