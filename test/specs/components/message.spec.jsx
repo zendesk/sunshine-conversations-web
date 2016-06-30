@@ -6,6 +6,8 @@ import { mockComponent } from '../../utils/react';
 
 import { MessageComponent } from '../../../src/js/components/message';
 import { ActionComponent } from '../../../src/js/components/action';
+import { ImageMessage } from '../../../src/js/components/image-message';
+import { TextMessage } from '../../../src/js/components/text-message';
 
 const sandbox = sinon.sandbox.create();
 
@@ -15,12 +17,18 @@ const defaultProps = {
     actions: []
 };
 
-xdescribe('Message', () => {
+describe('Message', () => {
     var component;
 
     beforeEach(() => {
         mockComponent(sandbox, ActionComponent, 'div', {
             className: 'mockedAction'
+        });
+        mockComponent(sandbox, ImageMessage, 'div', {
+            className: 'mockedImage'
+        });
+        mockComponent(sandbox, TextMessage, 'div', {
+            className: 'mockedText'
         });
     });
 
@@ -28,23 +36,29 @@ xdescribe('Message', () => {
         sandbox.restore();
     });
 
-    describe('no actions', () => {
-        const props = {
-            role: 'appUser',
-            text: 'This is a text!'
-        };
+    [true, false].forEach((isImage) => {
+        describe(`no actions and ${isImage ? 'image' : 'text'} only`, () => {
+            const props = {
+                role: 'appUser',
+                text: 'This is a text!',
+                mediaUrl: isImage ? 'media-url' : false
+            };
 
-        beforeEach(() => {
-            component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
-        });
+            beforeEach(() => {
+                component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
+            });
 
-        it('should not contain any actions', () => {
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-action').length.should.be.eq(0);
-        });
+            it('should not contain any actions', () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-action').length.should.be.eq(0);
+            });
 
-        it('should contains the given text', () => {
-            const message = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-msg');
-            message.textContent.should.eq(props.text);
+            it(`should ${isImage ? 'not' : ''} render a text message`, () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedText').length.should.be.eq(isImage ? 0 : 1);
+            });
+
+            it(`should ${isImage ? '' : 'not'} render an image message`, () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedImage').length.should.be.eq(isImage ? 1 : 0);
+            });
         });
     });
 
@@ -73,9 +87,8 @@ xdescribe('Message', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-action').length.should.be.eq(0);
         });
 
-        it('should contains the given text', () => {
-            const message = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-msg');
-            message.textContent.should.eq(props.text);
+        it('should render the text message', () => {
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedText').length.should.be.eq(1);
         });
     });
 
@@ -87,11 +100,11 @@ xdescribe('Message', () => {
                 avatarUrl: 'http://some-image.url'
             });
             const firstMessageProps = Object.assign({}, props, {
-                        firstInGroup: true
+                firstInGroup: true
             });
             const lastMessageProps = Object.assign({}, props, {
-                        lastInGroup: true
-                    });
+                lastInGroup: true
+            });
             const firstMessageComponent = TestUtils.renderIntoDocument(<MessageComponent {...firstMessageProps} />);
             const lastMessageComponent = TestUtils.renderIntoDocument(<MessageComponent {...lastMessageProps} />);
 
@@ -110,9 +123,8 @@ xdescribe('Message', () => {
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedAction').length.should.be.eq(0);
             });
 
-            it('should contains the given text', () => {
-                const message = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-msg');
-                message.textContent.should.eq(props.text);
+            it('should render the text message', () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedText').length.should.be.eq(1);
             });
 
             describe('avatar', () => {
@@ -171,10 +183,8 @@ xdescribe('Message', () => {
                 actionNodes.length.should.be.eq(props.actions.length);
             });
 
-            it('should contains the given text', () => {
-                const message = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-msg');
-                // actions text will be added at the end.
-                message.textContent.indexOf(props.text).should.eq(0);
+            it('should render the text message', () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedText').length.should.eq(1);
             });
         });
     });
