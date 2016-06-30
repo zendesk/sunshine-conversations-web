@@ -5,7 +5,7 @@ import TestUtils from 'react-addons-test-utils';
 import { ConnectNotificationComponent } from '../../../src/js/components/connect-notification';
 const appService = require('../../../src/js/services/app-service');
 
-import { ParentComponentWithContext } from '../../utils/parent-component';
+import { wrapComponentWithContext } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
 
@@ -25,17 +25,6 @@ const baseProps = {
     emailCaptureEnabled: false
 };
 
-const getComponent = (props, context) => {
-    const wrapper = TestUtils.renderIntoDocument(
-        <ParentComponentWithContext context={ context }
-                                    withRef={ true }>
-            <ConnectNotificationComponent {...props} />
-        </ParentComponentWithContext>
-    );
-
-    return wrapper.getWrappedInstance();
-};
-
 describe('ConnectNotification', () => {
 
     beforeEach(() => {
@@ -48,7 +37,7 @@ describe('ConnectNotification', () => {
     });
 
     it('should render nothing if has no channels and email capture is disabled', () => {
-        const component = getComponent(baseProps, baseContext);
+        const component = wrapComponentWithContext(ConnectNotificationComponent, baseProps, baseContext);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'connect-notification').length.should.eq(0);
     });
 
@@ -59,11 +48,15 @@ describe('ConnectNotification', () => {
                 emailCaptureEnabled: true
             };
 
-            const component = getComponent(props, baseContext);
+            const component = wrapComponentWithContext(ConnectNotificationComponent, props, baseContext);
 
             const node = TestUtils.findRenderedDOMComponentWithTag(component, 'span');
             node.textContent.should.be.eq(baseContext.ui.text.settingsNotificationText);
         });
+    });
+
+    describe('channels', () => {
+
     });
 
 });

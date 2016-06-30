@@ -1,10 +1,8 @@
-import { Provider } from 'react-redux';
 import React, { PropTypes, Component } from 'react';
 
 // Element with context:
 // component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-//                                                                      store={ mockedStore }
-//                                                                      <ActionComponent {...props} />
+//                                               <ActionComponent {...props} />
 //                                          </ParentComponentWithContext>);
 
 // If you need to test functions:
@@ -19,14 +17,14 @@ export class ParentComponentWithContext extends Component {
 
     static propTypes = {
         context: PropTypes.object.isRequired,
-        store: PropTypes.object,
         withRef: PropTypes.bool
     };
 
     static childContextTypes = {
         app: PropTypes.object,
         settings: PropTypes.object,
-        ui: PropTypes.object
+        ui: PropTypes.object,
+        store: PropTypes.object
     };
 
     getChildContext() {
@@ -42,7 +40,7 @@ export class ParentComponentWithContext extends Component {
     }
 
     render() {
-        const {store, children, withRef} = this.props;
+        const {children, withRef} = this.props;
 
         // If we need to use functions on the child element, then add a 'ref' propType
         const childElement = withRef ?
@@ -53,16 +51,6 @@ export class ParentComponentWithContext extends Component {
                     });
                 }) :
             children;
-
-        if (store) {
-            return (
-                <Provider store={ store }>
-                    <div>
-                        { childElement }
-                    </div>
-                </Provider>
-                );
-        }
 
         return <div>
                    { childElement }
