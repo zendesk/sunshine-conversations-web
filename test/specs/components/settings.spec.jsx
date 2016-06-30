@@ -6,46 +6,52 @@ import { Settings } from '../../../src/js/components/settings';
 import { NotificationsSettings } from '../../../src/js/components/notifications-settings';
 import { EmailSettings } from '../../../src/js/components/email-settings';
 import * as appUtils from '../../../src/js/utils/app';
-import { mockComponent } from '../../utils/react';
-import { createMockedStore } from '../../utils/redux';
+import { mockComponent, getContext } from '../../utils/react';
+import { mockAppStore } from '../../utils/redux';
 
 import { ParentComponentWithContext } from '../../utils/parent-component';
 
-
 const sandbox = sinon.sandbox.create();
-const defaultProps = {
+const props = {
     className: 'class-name'
 };
-
+const context = getContext();
 
 describe('Settings', () => {
+    [true, false].forEach((hasChannels) => {
+        describe(`has ${hasChannels ? '' : 'no'} channels`, () => {
+            let mockedStore;
+            let component;
 
-    beforeEach(() => {
-        sandbox.stub(appUtils, 'hasChannels');
-        appUtils.hasChannels.resolves(false);
+            beforeEach(() => {
+                sandbox.stub(appUtils, 'hasChannels');
+                appUtils.hasChannels.returns(hasChannels);
+                mockComponent(sandbox, NotificationsSettings, 'div', {
+                    className: 'mockedNotificationSettings'
+                });
+                mockComponent(sandbox, EmailSettings, 'div', {
+                    className: 'mockedEmailSettings'
+                });
 
-        mockComponent(sandbox, NotificationsSettings, 'div', {
-            className: 'notificationSettings'
+                mockedStore = mockAppStore(sandbox, {});
+                component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
+                                                                                     store={ mockedStore }>
+                                                             <Settings {...props} />
+                                                         </ParentComponentWithContext>);
+            });
+
+            afterEach(() => {
+                sandbox.restore();
+            });
+
+            after(() => {
+                mockedStore && mockedStore.restore();
+            });
+
+            it(`should render the ${hasChannels ? 'NotificationSettings' : 'EmailSettings'} component`, () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedNotificationSettings').length.should.eq(hasChannels ? 1 : 0);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedEmailSettings').length.should.eq(hasChannels ? 0 : 1);
+            });
         });
-        mockComponent(sandbox, EmailSettings, 'div', {
-            className: 'emailSettings'
-        });
     });
-
-    afterEach(() => {
-        sandbox.restore();
-    });
-
-    it('Should render the NotificationSettings component', () => {
-
-        const props = Object.assign({}, defaultProps, {});
-        const store = createMockedStore(sandbox, props);
-        const context = {settings: {}};
-        const component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context } store={ store }>
-                <Settings {...props} />
-            </ParentComponentWithContext>);
-        TestUtils.scryRenderedDOMComponentsWithClass(component, 'notificationSettings').length.should.eq(1);
-        TestUtils.scryRenderedDOMComponentsWithClass(component, 'emailSettings').length.should.eq(0);
-    });
-
 });
