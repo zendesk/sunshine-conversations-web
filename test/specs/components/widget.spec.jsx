@@ -7,13 +7,13 @@ import { Provider } from 'react-redux';
 import { mockComponent } from '../../utils/react';
 import { createMockedStore, mockAppStore } from '../../utils/redux';
 
-import { HeaderComponent } from '../../../src/js/components/header';
+import { Header } from '../../../src/js/components/header';
 import { Settings } from '../../../src/js/components/settings';
-import { ConversationComponent } from '../../../src/js/components/conversation';
-import { ChatInputComponent } from '../../../src/js/components/chat-input';
-import { ErrorNotificationComponent } from '../../../src/js/components/error-notification';
+import { Conversation } from '../../../src/js/components/conversation';
+import { ChatInput } from '../../../src/js/components/chat-input';
+import { ErrorNotification } from '../../../src/js/components/error-notification';
 import { WidgetComponent } from '../../../src/js/components/widget';
-import { ChannelComponent } from '../../../src/js/components/channels/channel';
+import { Channel } from '../../../src/js/components/channels/channel';
 
 import * as appUtils from '../../../src/js/utils/app';
 
@@ -55,22 +55,22 @@ describe('Widget', () => {
     let store;
 
     beforeEach(() => {
-        mockComponent(sandbox, HeaderComponent, 'div', {
+        mockComponent(sandbox, Header, 'div', {
             className: 'mockedHeader'
         });
-        mockComponent(sandbox, ChatInputComponent, 'div', {
+        mockComponent(sandbox, ChatInput, 'div', {
             className: 'mockedInput'
         });
         mockComponent(sandbox, Settings, 'div', {
             className: 'mockedSettings'
         });
-        mockComponent(sandbox, ConversationComponent, 'div', {
+        mockComponent(sandbox, Conversation, 'div', {
             className: 'mockedConversation'
         });
-        mockComponent(sandbox, ErrorNotificationComponent, 'div', {
+        mockComponent(sandbox, ErrorNotification, 'div', {
             className: 'mockedErrorNotification'
         });
-        mockComponent(sandbox, ChannelComponent, 'div', {
+        mockComponent(sandbox, Channel, 'div', {
             className: 'mockedChannel'
         });
         sandbox.stub(appUtils, 'hasChannels').returns(true);
