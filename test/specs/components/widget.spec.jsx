@@ -5,14 +5,17 @@ import TestUtils from 'react-addons-test-utils';
 import { Provider } from 'react-redux';
 
 import { mockComponent } from '../../utils/react';
-import { createMockedStore } from '../../utils/redux';
+import { createMockedStore, mockAppStore } from '../../utils/redux';
 
 import { HeaderComponent } from '../../../src/js/components/header';
-import { SettingsComponent } from '../../../src/js/components/settings';
+import { Settings } from '../../../src/js/components/settings';
 import { ConversationComponent } from '../../../src/js/components/conversation';
 import { ChatInputComponent } from '../../../src/js/components/chat-input';
-import { NotificationsSettingsComponent } from '../../../src/js/components/notifications-settings';
+import { ErrorNotificationComponent } from '../../../src/js/components/error-notification';
 import { WidgetComponent } from '../../../src/js/components/widget';
+import { ChannelComponent } from '../../../src/js/components/channels/channel';
+
+import * as appUtils from '../../../src/js/utils/app';
 
 const sandbox = sinon.sandbox.create();
 
@@ -22,7 +25,8 @@ const defaultProps = {
     },
     appState: {
         widgetOpened: false,
-        settingsVisible: false
+        settingsVisible: false,
+        embedded: false
     },
     app: {
         settings: {
@@ -36,15 +40,19 @@ const defaultProps = {
         text: {
             messageIndicatorTitle: ''
         }
-    }
+    },
+    smoochId: '1234',
+    settings: {}
 };
 
 
-xdescribe('Widget', () => {
+describe('Widget', () => {
 
-    var component;
-    var componentNode;
-    var store;
+    let component;
+    let componentNode;
+    let mockedStore;
+    let props;
+    let store;
 
     beforeEach(() => {
         mockComponent(sandbox, HeaderComponent, 'div', {
@@ -53,24 +61,37 @@ xdescribe('Widget', () => {
         mockComponent(sandbox, ChatInputComponent, 'div', {
             className: 'mockedInput'
         });
-        mockComponent(sandbox, SettingsComponent, 'div', {
+        mockComponent(sandbox, Settings, 'div', {
             className: 'mockedSettings'
         });
         mockComponent(sandbox, ConversationComponent, 'div', {
             className: 'mockedConversation'
         });
-        mockComponent(sandbox, NotificationsSettingsComponent, 'div', {
-            className: 'mockedNotification'
+        mockComponent(sandbox, ErrorNotificationComponent, 'div', {
+            className: 'mockedErrorNotification'
         });
+        mockComponent(sandbox, ChannelComponent, 'div', {
+            className: 'mockedChannel'
+        });
+        sandbox.stub(appUtils, 'hasChannels').returns(true);
     });
 
     afterEach(() => {
         sandbox.restore();
     });
 
+    after(() => {
+        mockedStore && mockedStore.restore();
+    });
+
     describe('is closed', () => {
-        const props = Object.assign({}, defaultProps);
         store = createMockedStore(sandbox, props);
+        props = Object.assign({}, defaultProps);
+        mockedStore = mockAppStore(sandbox, {
+            conversation: {
+                unreadCount: 0
+            }
+        });
 
         beforeEach(() => {
             component = TestUtils.renderIntoDocument(<Provider store={ store }>
@@ -164,11 +185,11 @@ xdescribe('Widget', () => {
         });
     });
 
-    describe('notification', () => {
+    describe('error notification', () => {
         describe('shown', () => {
             const props = Object.assign({}, defaultProps, {
                 appState: {
-                    notificationMessage: 'this is a notification message'
+                    errorNotificationMessage: 'this is a notification message'
                 }
             });
 
@@ -179,13 +200,13 @@ xdescribe('Widget', () => {
             });
 
             it('should render the notification', () => {
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedNotification').length.should.eq(1);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedErrorNotification').length.should.eq(1);
             });
         });
         describe('hidden', () => {
             const props = Object.assign({}, defaultProps, {
                 appState: {
-                    notificationMessage: null
+                    errorNotificationMessage: null
                 }
             });
 
@@ -196,8 +217,25 @@ xdescribe('Widget', () => {
             });
 
             it('should render the notification', () => {
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedNotification').length.should.eq(0);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedErrorNotification').length.should.eq(0);
             });
         });
+    });
+
+    describe('channels', () => {
+        const props = Object.assign({}, defaultProps);
+        store = createMockedStore(sandbox, props);
+
+        beforeEach(() => {
+            component = TestUtils.renderIntoDocument(<Provider store={ store }>
+                                                         <WidgetComponent {...props} />
+                                                     </Provider>);
+            componentNode = ReactDOM.findDOMNode(component);
+        });
+
+        it('should render the channels view', () => {
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedChannel').length.should.eq(1);
+        });
+
     });
 });

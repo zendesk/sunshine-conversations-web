@@ -1,12 +1,14 @@
 @background-color: #fff;
 
-@widget-height-md: 480px;
 @widget-height-lg: 640px;
-@widget-height-sm: 100%;
+@widget-height-md: 480px;
+@widget-height-sm: 420px;
+@widget-height-xs: 100%;
 
-@widget-width-md: 350px;
 @widget-width-lg: 410px;
-@widget-width-sm: 100%;
+@widget-width-md: 350px;
+@widget-width-sm: 330px;
+@widget-width-xs: 100%;
 
 @main-region-height-mobile: ~"calc(100% - @{footer-height} - @{header-height} - 2* @{header-vertical-padding})";
 
@@ -18,7 +20,8 @@
 @header-extra-height: (@header-height + 2 * @header-vertical-padding);
 @widget-close-bottom-md: -@widget-height-md + @header-extra-height;
 @widget-close-bottom-lg: -@widget-height-lg + @header-extra-height;
-@widget-close-bottom-sm: calc(~"@{header-extra-height} - @{widget-height-sm}");
+@widget-close-bottom-sm: -@widget-height-sm + @header-extra-height;
+@widget-close-bottom-xs: calc(~"@{header-extra-height} - @{widget-height-xs}");
 @widget-close-top: calc(~"100% - @{header-extra-height}");
 
 @remaining-height: @header-extra-height + @footer-height;
@@ -44,15 +47,13 @@
 @settings-header-color: #464646;
 @settings-channel-item-border-color: #EFEFEF;
 
-
 @font-size-base: 14px;
 
-@widget-max-height: 640px;
-@widget-min-height: 420px;
-@widget-max-width: 410px;
-@widget-min-width: 330px;
-@large-desktop-height: 835px;
-@widget-close-top-lg: calc(~"100% - @{widget-max-height}");
+@screen-lg-ht: 835px;
+@screen-md-ht: 648px;
+@screen-sm-ht: 488px;
+
+@widget-close-top-lg: calc(~"100% - @{widget-height-lg}");
 
 @notification-height: 56px;
 @long-notification-height: 75px;

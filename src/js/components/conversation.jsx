@@ -22,10 +22,6 @@ export class ConversationComponent extends Component {
         errorNotificationMessage: PropTypes.string
     };
 
-    state = {
-        logoIsAnchored: true
-    };
-
     scrollTimeouts = [];
 
     onTouchStart = () => {
