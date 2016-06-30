@@ -63,7 +63,7 @@ describe('Header', () => {
                                                                                        withRef={ true }>
                                                                <HeaderComponent {...props} />
                                                            </ParentComponentWithContext>);
-            header = parentComponent.refs.childElement;
+            header = parentComponent.getWrappedInstance();
             headerNode = ReactDOM.findDOMNode(header);
         });
 
@@ -107,7 +107,7 @@ describe('Header', () => {
                                                                                        withRef={ true }>
                                                                <HeaderComponent {...props} />
                                                            </ParentComponentWithContext>);
-            header = parentComponent.refs.childElement;
+            header = parentComponent.getWrappedInstance();
             headerNode = ReactDOM.findDOMNode(header);
         });
 

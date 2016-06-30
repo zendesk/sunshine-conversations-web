@@ -6,7 +6,7 @@ import { createTransaction } from '../services/stripe-service';
 import { immediateUpdate } from '../services/user-service';
 import { postPostback } from '../services/conversation-service';
 
-import { getIntegration } from '../utils/app';
+import { getIntegration } from '../utils/app';
 
 import { LoadingComponent } from './loading';
 
@@ -29,16 +29,17 @@ export class ActionComponent extends Component {
             state: 'processing'
         });
 
-        postPostback(this.props._id).then(() => {
-            this.setState({
-                state: ''
+        postPostback(this.props._id)
+            .then(() => {
+                this.setState({
+                    state: ''
+                });
+            })
+            .catch(() => {
+                this.setState({
+                    state: ''
+                });
             });
-        })
-        .catch(() => {
-            this.setState({
-                state: ''
-            });
-        });
     };
 
     onStripeToken(token) {
@@ -54,15 +55,17 @@ export class ActionComponent extends Component {
             }));
         }
 
-        const transactionPromise = createTransaction(this.props._id, token.id).then(() => {
-            this.setState({
-                state: 'paid'
+        const transactionPromise = createTransaction(this.props._id, token.id)
+            .then(() => {
+                this.setState({
+                    state: 'paid'
+                });
+            })
+            .catch(() => {
+                this.setState({
+                    state: 'offered'
+                });
             });
-        }).catch(() => {
-            this.setState({
-                state: 'offered'
-            });
-        });
 
         promises.push(transactionPromise);
 
@@ -148,7 +151,7 @@ export class ActionComponent extends Component {
                     <button className='btn btn-sk-primary'
                             style={ style }
                             onClick={ !isProcessing && this.onPostbackClick }>
-                            { text }
+                        { text }
                     </button>
                 </div>
                 );
