@@ -103,8 +103,8 @@ describe('Notifications Settings', () => {
             className: 'mockedChannelItem'
         });
 
-        sandbox.stub(userUtils, 'isChannelLinked');
-        userUtils.isChannelLinked.resolves([
+        sandbox.stub(userUtils, 'getAppChannelDetails');
+        userUtils.getAppChannelDetails.returns([
             {
                 channel: {
                     type: 'telegram'

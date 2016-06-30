@@ -67,7 +67,7 @@ export class ChannelItem extends Component {
 
 export class NotificationsSettingsComponent extends Component {
     static contextTypes = {
-        ui: PropTypes.object
+        ui: PropTypes.object.isRequired
     };
 
     static propTypes = {

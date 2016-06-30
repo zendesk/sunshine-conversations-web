@@ -6,26 +6,23 @@ import { Settings } from '../../../src/js/components/settings';
 import { NotificationsSettings } from '../../../src/js/components/notifications-settings';
 import { EmailSettings } from '../../../src/js/components/email-settings';
 import * as appUtils from '../../../src/js/utils/app';
-import { mockComponent, getContext } from '../../utils/react';
-import { mockAppStore } from '../../utils/redux';
 
-import { ParentComponentWithContext } from '../../utils/parent-component';
+import { mockComponent, getContext, wrapComponentWithContext } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
 const props = {
     className: 'class-name'
 };
+
 const context = getContext();
 
 describe('Settings', () => {
     [true, false].forEach((hasChannels) => {
         describe(`has ${hasChannels ? '' : 'no'} channels`, () => {
-            let mockedStore;
             let component;
 
             beforeEach(() => {
-                sandbox.stub(appUtils, 'hasChannels');
-                appUtils.hasChannels.returns(hasChannels);
+                sandbox.stub(appUtils, 'hasChannels').returns(hasChannels);
                 mockComponent(sandbox, NotificationsSettings, 'div', {
                     className: 'mockedNotificationSettings'
                 });
@@ -33,19 +30,11 @@ describe('Settings', () => {
                     className: 'mockedEmailSettings'
                 });
 
-                mockedStore = mockAppStore(sandbox, {});
-                component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                                     store={ mockedStore }>
-                                                             <Settings {...props} />
-                                                         </ParentComponentWithContext>);
+                component = wrapComponentWithContext(Settings, props, context);
             });
 
             afterEach(() => {
                 sandbox.restore();
-            });
-
-            after(() => {
-                mockedStore && mockedStore.restore();
             });
 
             it(`should render the ${hasChannels ? 'NotificationSettings' : 'EmailSettings'} component`, () => {
