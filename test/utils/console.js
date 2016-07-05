@@ -1,10 +1,11 @@
 import _ from 'underscore';
 import sinon from 'sinon';
 
-export function watchConsole() {
-    sinon.spy(console, 'error'); // ensure that we don't swallow up console error output
+const sandbox = sinon.sandbox.create();
 
-    sinon.spy(console, 'warn'); // ensure that we don't swallow up console warn output
+export function watchConsole() {
+    sandbox.spy(console, 'error');
+    sandbox.spy(console, 'warn');
 }
 
 export function getConsoleWarningErrorArray() {
@@ -17,11 +18,5 @@ export function getConsoleWarningErrorArray() {
 }
 
 export function unwatchConsole() {
-    if (console.error.restore) {
-        console.error.restore();
-    }
-
-    if (console.warn.restore) {
-        console.warn.restore();
-    }
+    sandbox.restore();
 }
