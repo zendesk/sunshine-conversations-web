@@ -45,7 +45,7 @@ export function getContext(context = {}) {
     };
 }
 
-export function wrapComponentWithContext(Component, props, context) {
+export function wrapComponentWithContext(Component, props, context = getContext()) {
     const wrapper = TestUtils.renderIntoDocument(
         <ParentComponentWithContext context={ context }
                                     withRef={ true }>
