@@ -11,14 +11,13 @@ import { setIntroHeight } from '../actions/app-state-actions';
 
 class IntroductionComponent extends Component {
     static propTypes = {
-        app: PropTypes.object.isRequired,
-        integrations: PropTypes.array.isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
     static contextTypes = {
         ui: PropTypes.object.isRequired,
-        settings: PropTypes.object.isRequired
+        settings: PropTypes.object.isRequired,
+        app: PropTypes.object.isRequired
     };
 
     constructor(...args) {
@@ -53,9 +52,8 @@ class IntroductionComponent extends Component {
     }
 
     render() {
-        const {app, integrations} = this.props;
-        const {ui: {text}, settings: {accentColor}} = this.context;
-        const channelDetailsList = getAppChannelDetails(integrations);
+        const {ui: {text}, settings: {accentColor}, app} = this.context;
+        const channelDetailsList = getAppChannelDetails(app.integrations);
         const channelsAvailable = channelDetailsList.length > 0;
         const introText = channelsAvailable ? `${text.introductionText} ${text.introAppText}` : text.introductionText;
 
@@ -64,7 +62,7 @@ class IntroductionComponent extends Component {
                                         src={ app.iconUrl } />
                          : <DefaultAppIcon color={ accentColor } /> }
                    <div className='app-name'>
-                       { app.name || 'Smooch Technologies Inc.' }
+                       { app.name }
                    </div>
                    <div className='intro-text'
                         dangerouslySetInnerHTML={ createMarkup(introText) } />
@@ -75,10 +73,8 @@ class IntroductionComponent extends Component {
     }
 }
 
-export const Introduction = connect(({app, appState: {introHeight}}) => {
+export const Introduction = connect(({appState: {introHeight}}) => {
     return {
-        app: app,
-        integrations: app.integrations,
         appState: {
             introHeight
         }
