@@ -16,7 +16,7 @@ const props = {
 
 const context = getContext();
 
-describe('Settings', () => {
+describe('Settings Component', () => {
     [true, false].forEach((hasChannels) => {
         describe(`has ${hasChannels ? '' : 'no'} channels`, () => {
             let component;

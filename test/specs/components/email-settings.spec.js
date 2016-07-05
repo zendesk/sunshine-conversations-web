@@ -28,7 +28,7 @@ const context = getContext({
     }
 });
 
-describe('Email Settings', () => {
+describe('Email Settings Component', () => {
 
     var component;
 

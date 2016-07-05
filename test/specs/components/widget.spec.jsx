@@ -46,7 +46,7 @@ const defaultProps = {
 };
 
 
-describe('Widget', () => {
+describe('Widget Component', () => {
 
     let component;
     let componentNode;

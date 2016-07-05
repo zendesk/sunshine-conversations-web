@@ -13,7 +13,7 @@ import * as userUtils from '../../../src/js/utils/user';
 
 const sandbox = sinon.sandbox.create();
 
-describe('Channel Item', () => {
+describe('Channel Item Component', () => {
     [true, false].forEach((linked) => {
         describe(`${linked ? '' : 'not'} linked`, () => {
             let component;

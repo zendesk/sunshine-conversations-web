@@ -31,7 +31,7 @@ const context = getContext({
     }
 });
 
-describe('Header', () => {
+describe('Header Component', () => {
     let props;
     let mockedStore;
     let header;

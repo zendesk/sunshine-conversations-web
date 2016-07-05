@@ -67,7 +67,7 @@ function getStoreState(state = {}) {
     return deepAssign(defaultState, state);
 }
 
-describe('Action', () => {
+describe('Action Component', () => {
     let component;
     let componentNode;
     let mockedStore;

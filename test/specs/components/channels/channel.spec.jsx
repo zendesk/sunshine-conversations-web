@@ -1,12 +1,11 @@
 import sinon from 'sinon';
-import React from 'react';
 import TestUtils from 'react-addons-test-utils';
 
 import { CHANNEL_DETAILS } from '../../../../src/js/constants/channels';
 import { ChannelComponent } from '../../../../src/js/components/channels/channel';
 import { ChannelPage } from '../../../../src/js/components/channels/channel-page';
 
-import { mockComponent } from '../../../utils/react';
+import { mockComponent, wrapComponentWithContext, getContext } from '../../../utils/react';
 
 const sandbox = sinon.sandbox.create();
 
@@ -15,7 +14,9 @@ const baseProps = {
     channelStates: {}
 };
 
-describe('Channel', () => {
+const context = getContext();
+
+describe('Channel Component', () => {
     beforeEach(() => {
         mockComponent(sandbox, ChannelPage, 'div', {
             className: 'channel-page'
@@ -40,7 +41,7 @@ describe('Channel', () => {
             ...baseProps
         };
 
-        const component = TestUtils.renderIntoDocument(<ChannelComponent {...props} />);
+        const component = wrapComponentWithContext(ChannelComponent, props, context);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-pages-container').length.should.be.eq(0);
     });
 
@@ -50,7 +51,7 @@ describe('Channel', () => {
             smoochId: '12345'
         };
 
-        const component = TestUtils.renderIntoDocument(<ChannelComponent {...props} />);
+        const component = wrapComponentWithContext(ChannelComponent, props, context);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-pages-container').length.should.be.eq(1);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-page').length.should.be.eq(0);
     });
@@ -73,7 +74,7 @@ describe('Channel', () => {
             ]
         };
 
-        const component = TestUtils.renderIntoDocument(<ChannelComponent {...props} />);
+        const component = wrapComponentWithContext(ChannelComponent, props, context);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-pages-container').length.should.be.eq(1);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-page').length.should.be.eq(1);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'messenger').length.should.be.eq(1);
@@ -100,7 +101,7 @@ describe('Channel', () => {
             ]
         };
 
-        const component = TestUtils.renderIntoDocument(<ChannelComponent {...props} />);
+        const component = wrapComponentWithContext(ChannelComponent, props, context);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-pages-container').length.should.be.eq(1);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-page').length.should.be.eq(0);
     });
@@ -121,7 +122,7 @@ describe('Channel', () => {
             ]
         };
 
-        const component = TestUtils.renderIntoDocument(<ChannelComponent {...props} />);
+        const component = wrapComponentWithContext(ChannelComponent, props, context);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-pages-container').length.should.be.eq(1);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-page').length.should.be.eq(0);
     });
@@ -148,7 +149,7 @@ describe('Channel', () => {
             ]
         };
 
-        const component = TestUtils.renderIntoDocument(<ChannelComponent {...props} />);
+        const component = wrapComponentWithContext(ChannelComponent, props, context);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-pages-container').length.should.be.eq(1);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-page').length.should.be.eq(1);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'wechat').length.should.be.eq(1);

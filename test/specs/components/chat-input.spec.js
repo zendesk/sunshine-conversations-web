@@ -32,7 +32,7 @@ function getStoreState(state = {}) {
     return Object.assign(defaultState, state);
 }
 
-describe('ChatInput', () => {
+describe('ChatInput Component', () => {
     let component;
     let mockedStore;
     let context;

@@ -9,7 +9,7 @@ const appService = require('../../../src/js/services/app-service');
 const sandbox = sinon.sandbox.create();
 
 
-describe('AlternateChannels', () => {
+describe('AlternateChannels Component', () => {
 
     beforeEach(() => {
         sandbox.stub(appService, 'showChannelPage');

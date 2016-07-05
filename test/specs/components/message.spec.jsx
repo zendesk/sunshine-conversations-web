@@ -17,7 +17,7 @@ const defaultProps = {
     actions: []
 };
 
-describe('Message', () => {
+describe('Message Component', () => {
     var component;
 
     beforeEach(() => {

@@ -33,7 +33,7 @@ const defaultProps = {
     introHeight: 100
 };
 
-describe('Conversation component', () => {
+describe('Conversation Component', () => {
 
     let component;
     let context;
