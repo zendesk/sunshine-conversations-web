@@ -1,5 +1,5 @@
 import './bootstrap';
-import { getReactWarningErrorArray, watchConsole, unwatchConsole } from './utils/react';
+import { getConsoleWarningErrorArray, watchConsole, unwatchConsole } from './utils/console';
 
 var context = require.context('.', true, /\.spec\.jsx?$/);
 context.keys().forEach(context);
@@ -9,8 +9,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-    if(getReactWarningErrorArray().length > 0) {
-        'Check your console for PropTypes warnings and errors'.should.eq('');
+    if (getConsoleWarningErrorArray().length > 0) {
+        `Check your console for warnings and errors : ${getConsoleWarningErrorArray().join(', ')}`.should.eq('');
     }
 
     unwatchConsole();
