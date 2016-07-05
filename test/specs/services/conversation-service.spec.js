@@ -57,7 +57,7 @@ function getProps(props = {}) {
     return Object.assign({}, defaultProps, props);
 }
 
-describe.only('Conversation service', () => {
+describe('Conversation service', () => {
     var sandbox;
     var coreMock;
     var mockedStore;
