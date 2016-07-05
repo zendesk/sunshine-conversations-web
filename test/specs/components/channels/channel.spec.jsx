@@ -1,9 +1,10 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
-import { CHANNEL_DETAILS } from '../../../../src/js/constants/channels';
 import { ChannelComponent } from '../../../../src/js/components/channels/channel';
 import { ChannelPage } from '../../../../src/js/components/channels/channel-page';
+import { CHANNEL_DETAILS } from '../../../../src/js/constants/channels';
+import * as appUtils from '../../../../src/js/utils/app';
 
 import { mockComponent, wrapComponentWithContext, getContext } from '../../../utils/react';
 
@@ -30,6 +31,9 @@ describe('Channel Component', () => {
                 });
             }
         });
+
+        sandbox.stub(appUtils, 'getAppChannelDetails');
+        appUtils.getAppChannelDetails.returns([]);
     });
 
     afterEach(() => {
@@ -74,6 +78,17 @@ describe('Channel Component', () => {
             ]
         };
 
+        appUtils.getAppChannelDetails.returns([
+            {
+                channel: {
+                    type: 'messenger',
+                    appId: '1234',
+                    pageId: '1234'
+                },
+                details: CHANNEL_DETAILS.messenger
+            }
+        ]);
+
         const component = wrapComponentWithContext(ChannelComponent, props, context);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-pages-container').length.should.be.eq(1);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-page').length.should.be.eq(1);
@@ -101,6 +116,17 @@ describe('Channel Component', () => {
             ]
         };
 
+        appUtils.getAppChannelDetails.returns([
+            {
+                channel: {
+                    type: 'messenger',
+                    appId: '1234',
+                    pageId: '1234'
+                },
+                details: CHANNEL_DETAILS.messenger
+            }
+        ]);
+
         const component = wrapComponentWithContext(ChannelComponent, props, context);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-pages-container').length.should.be.eq(1);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-page').length.should.be.eq(0);
@@ -121,6 +147,15 @@ describe('Channel Component', () => {
                 }
             ]
         };
+
+        appUtils.getAppChannelDetails.returns([
+            {
+                channel: {
+                    type: 'telegram'
+                },
+                details: CHANNEL_DETAILS.telegram
+            }
+        ]);
 
         const component = wrapComponentWithContext(ChannelComponent, props, context);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-pages-container').length.should.be.eq(1);
@@ -148,6 +183,15 @@ describe('Channel Component', () => {
                 }
             ]
         };
+
+        appUtils.getAppChannelDetails.returns([
+            {
+                channel: {
+                    type: 'wechat'
+                },
+                details: CHANNEL_DETAILS.wechat
+            }
+        ]);
 
         const component = wrapComponentWithContext(ChannelComponent, props, context);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-pages-container').length.should.be.eq(1);
