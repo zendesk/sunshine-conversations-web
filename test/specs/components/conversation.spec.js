@@ -1,5 +1,4 @@
 import sinon from 'sinon';
-import React from 'react';
 import TestUtils from 'react-addons-test-utils';
 
 import { mockComponent, getContext, wrapComponentWithContext } from '../../utils/react';
@@ -34,7 +33,7 @@ const defaultProps = {
     introHeight: 100
 };
 
-describe('Conversation', () => {
+describe('Conversation component', () => {
 
     let component;
     let context;
@@ -59,9 +58,6 @@ describe('Conversation', () => {
 
     afterEach(() => {
         sandbox.restore();
-    });
-
-    after(() => {
         mockedStore && mockedStore.restore();
     });
 

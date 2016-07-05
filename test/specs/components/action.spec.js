@@ -145,6 +145,11 @@ describe('Action', () => {
     describe('Stripe', () => {
         const context = getContext({
             app: {
+                integrations: [
+                    {
+                        type: 'stripeConnect'
+                    }
+                ],
                 stripe: {
                     appName: 'app-name',
                     iconUrl: 'iconUrl'

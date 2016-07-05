@@ -1,11 +1,10 @@
 import sinon from 'sinon';
-import React from 'react';
 import TestUtils from 'react-addons-test-utils';
 
 import { ConnectNotificationComponent } from '../../../src/js/components/connect-notification';
 const appService = require('../../../src/js/services/app-service');
 
-import { wrapComponentWithContext } from '../../utils/react';
+import { wrapComponentWithContext } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
 
