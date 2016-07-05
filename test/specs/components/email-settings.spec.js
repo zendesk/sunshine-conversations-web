@@ -30,7 +30,7 @@ const defaultContext = {
 };
 
 
-describe.only('Email Settings', () => {
+describe('Email Settings', () => {
 
     var component;
 
