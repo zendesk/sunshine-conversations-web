@@ -17,8 +17,8 @@ export class ChannelItem extends Component {
     };
 
     static contextTypes = {
-        settings: PropTypes.object,
-        ui: PropTypes.object
+        settings: PropTypes.object.isRequired,
+        ui: PropTypes.object.isRequired
     };
 
     onClick = () => {

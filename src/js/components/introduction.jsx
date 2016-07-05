@@ -17,8 +17,8 @@ class IntroductionComponent extends Component {
     };
 
     static contextTypes = {
-        ui: PropTypes.object,
-        settings: PropTypes.object
+        ui: PropTypes.object.isRequired,
+        settings: PropTypes.object.isRequired
     };
 
     constructor(...args) {

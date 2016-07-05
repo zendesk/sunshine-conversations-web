@@ -12,7 +12,7 @@ export class ChannelPage extends Component {
     };
 
     static contextTypes = {
-        ui: PropTypes.object
+        ui: PropTypes.object.isRequired
     };
 
     static defaultProps = {

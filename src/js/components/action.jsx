@@ -12,7 +12,7 @@ import { LoadingComponent } from './loading';
 
 export class ActionComponent extends Component {
     static contextTypes = {
-        app: PropTypes.object
+        app: PropTypes.object.isRequired
     };
 
     constructor(...args) {

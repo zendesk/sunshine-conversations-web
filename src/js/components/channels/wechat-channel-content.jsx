@@ -4,7 +4,7 @@ import { fetchWeChatQRCode } from '../../services/integrations-service';
 
 export class WeChatChannelContent extends Component {
     static contextTypes = {
-        ui: PropTypes.object
+        ui: PropTypes.object.isRequired
     };
 
     static propTypes = {
