@@ -1,14 +1,13 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
-import { mockComponent, getContext, wrapComponentWithContext } from '../../utils/react';
-
-import { mockAppStore } from '../../utils/redux';
-
 import { ConversationComponent } from '../../../src/js/components/conversation';
 import { MessageComponent } from '../../../src/js/components/message';
 import { Introduction } from '../../../src/js/components/introduction';
 import { ConnectNotification } from '../../../src/js/components/connect-notification';
+
+import { mockComponent, getContext, wrapComponentWithContext } from '../../utils/react';
+import { mockAppStore } from '../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
 const defaultProps = {
@@ -50,6 +49,7 @@ describe('Conversation Component', () => {
         mockComponent(sandbox, ConnectNotification, 'div', {
             className: 'mockedConnectNotification'
         });
+
         mockedStore = mockAppStore(sandbox, {});
         context = getContext({
             store: mockedStore
