@@ -9,6 +9,7 @@ import * as userActions from './actions/user-actions';
 import { setStripeInfo, setApp } from './actions/app-actions';
 import { updateText } from './actions/ui-actions';
 import { resetConversation } from './actions/conversation-actions';
+import { resetIntegrations } from './actions/integrations-actions';
 import * as AppStateActions from './actions/app-state-actions';
 import { reset } from './actions/common-actions';
 
@@ -179,6 +180,7 @@ export class Smooch {
         store.dispatch(resetAuth());
         store.dispatch(userActions.resetUser());
         store.dispatch(resetConversation());
+        store.dispatch(resetIntegrations());
 
         disconnectFaye();
 
