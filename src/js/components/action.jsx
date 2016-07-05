@@ -18,12 +18,16 @@ export class ActionComponent extends Component {
 
     static propTypes = {
         text: PropTypes.string.isRequired,
-        type: PropTypes.string.isRequired,
+        type: PropTypes.string,
         buttonColor: PropTypes.string,
         amount: PropTypes.string,
         currency: PropTypes.string,
         uri: PropTypes.string,
         state: PropTypes.string
+    };
+
+    static defaultProps = {
+        type: 'link'
     };
 
     constructor(...args) {
