@@ -10,9 +10,9 @@ import { mockComponent, getContext, wrapComponentWithContext } from '../../utils
 import { ActionComponent } from '../../../src/js/components/action.jsx';
 import { LoadingComponent } from '../../../src/js/components/loading.jsx';
 
-const stripeService = require('../../../src/js/services/stripe-service');
-const userService = require('../../../src/js/services/user-service');
-const conversationService = require('../../../src/js/services/conversation-service');
+import * as stripeService from '../../../src/js/services/stripe-service';
+import * as userService from '../../../src/js/services/user-service';
+import * as conversationService from '../../../src/js/services/conversation-service';
 import * as appUtils from '../../../src/js/utils/app';
 
 const sandbox = sinon.sandbox.create();
@@ -392,10 +392,15 @@ describe('Action Component', () => {
             componentNode.textContent.should.eq('postback text');
         });
 
-        it('should call the postPostback action on button click', () => {
+        it('should call the postPostback action on button click', (done) => {
             const button = TestUtils.findRenderedDOMComponentWithTag(component, 'button');
             TestUtils.Simulate.click(button);
-            conversationService.postPostback.should.have.been.calledOnce;
+
+            // use setTimeout to let the promise chain resolve in onPostbackClick
+            setTimeout(() => {
+                conversationService.postPostback.should.have.been.calledOnce;
+                done();
+            });
         });
     });
 });
