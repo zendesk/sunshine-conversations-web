@@ -4,7 +4,7 @@ import TestUtils from 'react-addons-test-utils';
 import { EmailSettingsComponent } from '../../../src/js/components/email-settings';
 import * as userService from '../../../src/js/services/user-service';
 
-import { wrapComponentWithContext } from '../../utils/react';
+import { getContext, wrapComponentWithContext } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
 const defaultProps = {
@@ -17,7 +17,7 @@ const defaultProps = {
     }
 };
 
-const defaultContext = {
+const context = getContext({
     ui: {
         text: {
             settingsReadOnlyText: 'This is readonly',
@@ -25,10 +25,8 @@ const defaultContext = {
             settingsInputPlaceholder: 'This is a placeholder',
             settingsSaveButtonText: 'This is a button text'
         }
-    },
-    settings: {}
-};
-
+    }
+});
 
 describe('Email Settings', () => {
 
@@ -51,10 +49,10 @@ describe('Email Settings', () => {
         });
 
         beforeEach(() => {
-            component = wrapComponentWithContext(EmailSettingsComponent, props, defaultContext);
+            component = wrapComponentWithContext(EmailSettingsComponent, props, context);
         });
         it('should render the read-only text', () => {
-            component.refs.description.textContent.should.eq(defaultContext.ui.text.settingsReadOnlyText);
+            component.refs.description.textContent.should.eq(context.ui.text.settingsReadOnlyText);
         });
 
         it('should put user email in input', () => {
@@ -75,11 +73,11 @@ describe('Email Settings', () => {
         var props = Object.assign({}, defaultProps);
 
         beforeEach(() => {
-            component = wrapComponentWithContext(EmailSettingsComponent, props, defaultContext);
+            component = wrapComponentWithContext(EmailSettingsComponent, props, context);
         });
 
         it('should render the normal text', () => {
-            component.refs.description.textContent.should.eq(defaultContext.ui.text.settingsText);
+            component.refs.description.textContent.should.eq(context.ui.text.settingsText);
         });
 
         it('should put user email in input', () => {
@@ -102,7 +100,7 @@ describe('Email Settings', () => {
 
         beforeEach(() => {
             sandbox.stub(EmailSettingsComponent.prototype, 'onChange');
-            component = wrapComponentWithContext(EmailSettingsComponent, props, defaultContext);
+            component = wrapComponentWithContext(EmailSettingsComponent, props, context);
         });
 
         it('should call onChange', () => {
@@ -123,7 +121,7 @@ describe('Email Settings', () => {
 
         beforeEach(() => {
             sandbox.stub(EmailSettingsComponent, 'save');
-            component = wrapComponentWithContext(EmailSettingsComponent, props, defaultContext);
+            component = wrapComponentWithContext(EmailSettingsComponent, props, context);
         });
 
         it('should call save', () => {
@@ -148,7 +146,7 @@ describe('Email Settings', () => {
                 }
             });
 
-            component = wrapComponentWithContext(EmailSettingsComponent, props, defaultContext);
+            component = wrapComponentWithContext(EmailSettingsComponent, props, context);
             sandbox.spy(component, 'setState');
             event = {
                 preventDefault: sandbox.stub()
