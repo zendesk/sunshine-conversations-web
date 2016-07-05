@@ -1,5 +1,4 @@
 import sinon from 'sinon';
-import React from 'react';
 import TestUtils from 'react-addons-test-utils';
 
 import { Settings } from '../../../src/js/components/settings';
@@ -7,14 +6,13 @@ import { NotificationsSettings } from '../../../src/js/components/notifications-
 import { EmailSettings } from '../../../src/js/components/email-settings';
 import * as appUtils from '../../../src/js/utils/app';
 
+import { mockAppStore } from '../../utils/redux';
 import { mockComponent, getContext, wrapComponentWithContext } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
 const props = {
     className: 'class-name'
 };
-
-const context = getContext();
 
 describe('Settings Component', () => {
     [true, false].forEach((hasChannels) => {
@@ -28,6 +26,10 @@ describe('Settings Component', () => {
                 });
                 mockComponent(sandbox, EmailSettings, 'div', {
                     className: 'mockedEmailSettings'
+                });
+
+                const context = getContext({
+                    store: mockAppStore(sandbox, {})
                 });
 
                 component = wrapComponentWithContext(Settings, props, context);
