@@ -93,8 +93,8 @@ describe.only('Conversation service', () => {
         };
 
         sandbox.stub(utilsFaye, 'disconnectClient').returns(null);
-        sandbox.stub(utilsFaye, 'subscribeConversation').returns(null);
-        sandbox.stub(utilsFaye, 'subscribeUser').returns(null);
+        sandbox.stub(utilsFaye, 'subscribeConversation').resolves();
+        sandbox.stub(utilsFaye, 'subscribeUser').resolves();
         sandbox.stub(utilsMedia, 'isImageUploadSupported').returns(true);
         sandbox.stub(utilsMedia, 'isFileTypeSupported');
         sandbox.stub(utilsMedia, 'resizeImage');
@@ -133,9 +133,8 @@ describe.only('Conversation service', () => {
                 }
             }));
 
-            return conversationService.handleConnectNotification({}).then(() => {
-                appService.showConnectNotification.should.have.been.calledOnce;
-            });
+            conversationService.handleConnectNotification({});
+            appService.showConnectNotification.should.have.been.calledOnce;
         });
 
         it('should show connect notification 24 hours later', () => {
@@ -154,9 +153,9 @@ describe.only('Conversation service', () => {
                 }
             }));
 
-            return conversationService.handleConnectNotification({}).then(() => {
-                appService.showConnectNotification.should.have.been.calledOnce;
-            });
+            conversationService.handleConnectNotification({});
+            appService.showConnectNotification.should.have.been.calledOnce;
+
         });
 
         it('should not show connect notification if it\'s been less than 24 hours', () => {
@@ -175,9 +174,8 @@ describe.only('Conversation service', () => {
                 }
             }));
 
-            return conversationService.handleConnectNotification({}).then(() => {
-                appService.showConnectNotification.should.not.have.been.called;
-            });
+            conversationService.handleConnectNotification({});
+            appService.showConnectNotification.should.not.have.been.called;
         });
     });
 
@@ -441,7 +439,7 @@ describe.only('Conversation service', () => {
                         }
                     })) : mockAppStore(sandbox, getProps());
 
-                    conversationService.connectFayeUser().then(() => {
+                    return conversationService.connectFayeUser().then(() => {
                         if (subscribed) {
                             utilsFaye.subscribeUser.should.have.not.been.called;
                         } else {
@@ -528,7 +526,7 @@ describe.only('Conversation service', () => {
                         }
                     })) : mockAppStore(sandbox, getProps());
 
-                    conversationService.handleConversationUpdated().then(() => {
+                    return conversationService.handleConversationUpdated().then(() => {
                         if (active) {
                             coreMock.conversations.get.should.not.have.been.called;
                         } else {
