@@ -12,7 +12,18 @@ import { LoadingComponent } from './loading';
 
 export class ActionComponent extends Component {
     static contextTypes = {
-        app: PropTypes.object.isRequired
+        app: PropTypes.object.isRequired,
+        ui: PropTypes.object.isRequired
+    };
+
+    static propTypes = {
+        text: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired,
+        buttonColor: PropTypes.string,
+        amount: PropTypes.string,
+        currency: PropTypes.string,
+        uri: PropTypes.string,
+        state: PropTypes.string
     };
 
     constructor(...args) {
@@ -87,87 +98,81 @@ export class ActionComponent extends Component {
     }
 
     render() {
-        const {app} = this.context;
+        const {app, ui: {text: {actionPaymentCompleted}}} = this.context;
+        const {buttonColor, amount, currency, text, uri, type} = this.props;
+        const {state} = this.state;
+
         const stripeIntegration = getIntegration(app.integrations, 'stripeConnect');
 
         let style = {};
-        if (this.props.buttonColor) {
-            style.backgroundColor = style.borderColor = `#${this.props.buttonColor}`;
+        if (buttonColor) {
+            style.backgroundColor = style.borderColor = `#${buttonColor}`;
         }
 
         // the public key is necessary to use with Checkout
         // use the link fallback if this happens
-        if (this.props.type === 'buy' && stripeIntegration) {
+        if (type === 'buy' && stripeIntegration) {
             const user = store.getState().user;
 
             // let's change this when we support other providers
             const stripeAccount = app.stripe;
-            const actionState = this.state.state;
-            if (actionState === 'offered') {
-                return (
-                    <StripeCheckout componentClass='div'
-                                    className='sk-action'
-                                    token={ this.onStripeToken.bind(this) }
-                                    stripeKey={ stripeIntegration.publicKey }
-                                    email={ user.email }
-                                    amount={ this.props.amount }
-                                    currency={ this.props.currency.toUpperCase() }
-                                    name={ stripeAccount.appName }
-                                    image={ stripeAccount.iconUrl }
-                                    closed={ this.onStripeClose.bind(this) }>
-                        <button className='btn btn-sk-primary'
-                                onClick={ this.onStripeClick.bind(this) }
-                                style={ style }>
-                            { this.props.text }
-                        </button>
-                    </StripeCheckout>
-                    );
+            if (state === 'offered') {
+                return <StripeCheckout componentClass='div'
+                                       className='sk-action'
+                                       token={ this.onStripeToken.bind(this) }
+                                       stripeKey={ stripeIntegration.publicKey }
+                                       email={ user.email }
+                                       amount={ amount }
+                                       currency={ currency.toUpperCase() }
+                                       name={ stripeAccount.appName }
+                                       image={ stripeAccount.iconUrl }
+                                       closed={ this.onStripeClose.bind(this) }>
+                           <button className='btn btn-sk-primary'
+                                   onClick={ this.onStripeClick.bind(this) }
+                                   style={ style }>
+                               { text }
+                           </button>
+                       </StripeCheckout>;
             } else {
-                const text = actionState === 'paid' ?
-                    store.getState().ui.text.actionPaymentCompleted :
+                const buttonText = state === 'paid' ?
+                    actionPaymentCompleted :
                     <LoadingComponent />;
 
-                if (actionState === 'paid') {
+                if (state === 'paid') {
                     style = {};
                 }
 
-                return (
-                    <div className='sk-action'>
-                        <div className={ `btn btn-sk-action-${actionState}` }
-                             style={ style }>
-                            { text }
-                        </div>
-                    </div>
-                    );
+                return <div className='sk-action'>
+                           <div className={ `btn btn-sk-action-${state}` }
+                                style={ style }>
+                               { buttonText }
+                           </div>
+                       </div>;
             }
-        } else if (this.props.type === 'postback') {
-            const isProcessing = this.state.state === 'processing';
-            const text = isProcessing ?
+        } else if (type === 'postback') {
+            const isProcessing = state === 'processing';
+            const buttonText = isProcessing ?
                 <LoadingComponent /> :
-                this.props.text;
+                text;
 
-            return (
-                <div className='sk-action'>
-                    <button className='btn btn-sk-primary'
-                            style={ style }
-                            onClick={ !isProcessing && this.onPostbackClick }>
-                        { text }
-                    </button>
-                </div>
-                );
+            return <div className='sk-action'>
+                       <button className='btn btn-sk-primary'
+                               style={ style }
+                               onClick={ !isProcessing && this.onPostbackClick }>
+                           { buttonText }
+                       </button>
+                   </div>;
         } else {
-            const isJavascript = this.props.uri.startsWith('javascript:');
+            const isJavascript = uri.startsWith('javascript:');
 
-            return (
-                <div className='sk-action'>
-                    <a className='btn btn-sk-primary'
-                       href={ this.props.uri }
-                       target={ isJavascript ? '_self' : '_blank' }
-                       style={ style }>
-                        { this.props.text }
-                    </a>
-                </div>
-                );
+            return <div className='sk-action'>
+                       <a className='btn btn-sk-primary'
+                          href={ uri }
+                          target={ isJavascript ? '_self' : '_blank' }
+                          style={ style }>
+                           { text }
+                       </a>
+                   </div>;
         }
     }
 }

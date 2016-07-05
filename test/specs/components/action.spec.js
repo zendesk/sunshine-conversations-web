@@ -56,11 +56,6 @@ function getStoreState(state = {}) {
     const defaultState = {
         user: {
             email: 'test'
-        },
-        ui: {
-            text: {
-                actionPaymentCompleted: 'payment completed text'
-            }
         }
     };
 
@@ -71,6 +66,14 @@ describe('Action Component', () => {
     let component;
     let componentNode;
     let mockedStore;
+
+    const context = getContext({
+        ui: {
+            text: {
+                actionPaymentCompleted: 'payment completed text'
+            }
+        }
+    });
 
     beforeEach(() => {
         mockComponent(sandbox, StripeCheckout, 'div', {
@@ -97,15 +100,11 @@ describe('Action Component', () => {
 
     afterEach(() => {
         sandbox.restore();
-    });
-
-    after(() => {
         mockedStore.restore();
     });
 
     describe('normal action link', () => {
         const props = getNormalProps();
-        const context = getContext();
 
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, getStoreState());
@@ -125,8 +124,6 @@ describe('Action Component', () => {
         const props = getNormalProps({
             uri: 'javascript:someAction()'
         });
-
-        const context = getContext();
 
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, getStoreState());
@@ -153,6 +150,11 @@ describe('Action Component', () => {
                 stripe: {
                     appName: 'app-name',
                     iconUrl: 'iconUrl'
+                }
+            },
+            ui: {
+                text: {
+                    actionPaymentCompleted: 'payment completed text'
                 }
             }
         });
@@ -206,7 +208,7 @@ describe('Action Component', () => {
                 componentNode = ReactDOM.findDOMNode(component);
             });
 
-            it('should a payment completed button', () => {
+            it('should show a payment completed button', () => {
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-action-paid').length.should.be.eq(1);
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedStripe').length.should.be.eq(0);
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedLoading').length.should.be.eq(0);
@@ -356,6 +358,11 @@ describe('Action Component', () => {
                     appName: 'app-name',
                     iconUrl: 'iconUrl'
                 }
+            },
+            ui: {
+                text: {
+                    actionPaymentCompleted: 'payment completed text'
+                }
             }
         });
 
@@ -375,10 +382,8 @@ describe('Action Component', () => {
 
     describe('postback action', () => {
         const props = getPostbackProps();
-        const context = getContext();
 
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState());
             component = wrapComponentWithContext(ActionComponent, props, context);
             componentNode = ReactDOM.findDOMNode(component);
         });
