@@ -10,8 +10,6 @@ import * as conversationActions from '../../../src/js/actions/conversation-actio
 import * as conversationService from '../../../src/js/services/conversation-service';
 import * as appService from '../../../src/js/services/app-service';
 
-
-
 function getProps(props = {}){
     const state = {
         user: {
@@ -31,7 +29,8 @@ function getProps(props = {}){
 }
 
 const sandbox = sinon.sandbox.create();
-describe('faye', () => {
+
+describe('Faye utils', () => {
     let mockedStore;
 
     after(() => {
@@ -44,7 +43,6 @@ describe('faye', () => {
 
     beforeEach(() => {
         sandbox.stub(Client.prototype, 'addExtension');
-        
         sandbox.stub(conversationService, 'getConversation');
         sandbox.stub(conversationService, 'disconnectFaye');
         sandbox.stub(conversationService, 'handleConversationUpdated');
