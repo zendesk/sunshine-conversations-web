@@ -1,15 +1,14 @@
 import sinon from 'sinon';
-import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
 import { ChannelItem, NotificationsSettingsComponent } from '../../../src/js/components/notifications-settings';
-import { ParentComponentWithContext } from '../../utils/parent-component';
+import { CHANNEL_DETAILS } from '../../../src/js/constants/channels';
 
 import { mockAppStore } from '../../utils/redux';
-import { mockComponent, getContext } from '../../utils/react';
+import { mockComponent, getContext, wrapComponentWithContext } from '../../utils/react';
 
-import * as userUtils from '../../../src/js/utils/user';
+import * as appUtils from '../../../src/js/utils/app';
 
 const sandbox = sinon.sandbox.create();
 
@@ -19,16 +18,7 @@ describe('Channel Item Component', () => {
             let component;
             let mockedStore;
 
-            const context = getContext({
-                settings: {
-                    linkColor: '#00000'
-                },
-                ui: {
-                    text: {
-                        notificationSettingsConnectedAs: 'connected as'
-                    }
-                }
-            });
+            let context;
 
             const defaultProps = {
                 id: 'id',
@@ -44,11 +34,19 @@ describe('Channel Item Component', () => {
                     linked: linked
                 });
                 mockedStore = mockAppStore(sandbox, {});
+                context = getContext({
+                    settings: {
+                        linkColor: '#00000'
+                    },
+                    ui: {
+                        text: {
+                            notificationSettingsConnectedAs: 'connected as'
+                        }
+                    },
+                    store: mockedStore
+                });
 
-                component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                                     store={ mockedStore }>
-                                                             <ChannelItem {...props} />
-                                                         </ParentComponentWithContext>);
+                component = wrapComponentWithContext(ChannelItem, props, context);
             });
 
             afterEach(() => {
@@ -103,21 +101,23 @@ describe('Notifications Settings', () => {
             className: 'mockedChannelItem'
         });
 
-        sandbox.stub(userUtils, 'getAppChannelDetails');
-        userUtils.getAppChannelDetails.returns([
+        sandbox.stub(appUtils, 'getAppChannelDetails');
+        appUtils.getAppChannelDetails.returns([
             {
                 channel: {
                     type: 'telegram'
                 },
-                details: {}
+                details: CHANNEL_DETAILS.telegram
             },
             {
                 channel: {
                     type: 'messenger'
                 },
-                details: {}
+                details: CHANNEL_DETAILS.messenger
             }
         ]);
+
+        mockedStore = mockAppStore(sandbox, {});
 
         context = getContext({
             ui: {
@@ -125,9 +125,10 @@ describe('Notifications Settings', () => {
                     notificationSettingsChannelsTitle: 'notif settings channels title',
                     notificationSettingsChannelsDescription: 'notif settings channels desc'
                 }
-            }
+            },
+            store: mockedStore
         });
-        mockedStore = mockAppStore(sandbox, {});
+
         props = Object.assign(defaultProps, {
             user: {
                 _id: 1230912,
@@ -135,19 +136,12 @@ describe('Notifications Settings', () => {
             }
         });
 
-        component = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                             store={ mockedStore }>
-                                                     <NotificationsSettingsComponent {...props} />
-                                                 </ParentComponentWithContext>);
-
+        component = wrapComponentWithContext(NotificationsSettingsComponent, props, context);
     });
 
     afterEach(() => {
         sandbox.restore();
-    });
-
-    after(() => {
-        mockedStore && mockedStore.restore();
+        mockedStore.restore();
     });
 
     it('should render channel items', () => {
@@ -169,12 +163,7 @@ describe('Notifications Settings', () => {
             props = Object.assign(defaultProps, {
                 user: {}
             });
-            const parentComponent = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                                             store={ mockedStore }
-                                                                                             withRef={ true }>
-                                                                     <NotificationsSettingsComponent {...props} />
-                                                                 </ParentComponentWithContext>);
-            component = parentComponent.getWrappedInstance();
+            component = wrapComponentWithContext(NotificationsSettingsComponent, props, context);
         });
 
         it('should not render', () => {
