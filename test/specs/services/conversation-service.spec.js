@@ -48,13 +48,16 @@ function getProps(props = {}) {
         appState: {
             emailCaptureEnabled: true
         },
-        faye: {}
+        faye: {
+            userSubscription: null,
+            conversationSubscription: null
+        }
     };
 
     return Object.assign({}, defaultProps, props);
 }
 
-describe('Conversation service', () => {
+describe.only('Conversation service', () => {
     var sandbox;
     var coreMock;
     var mockedStore;
@@ -129,8 +132,10 @@ describe('Conversation service', () => {
                     ]
                 }
             }));
-            conversationService.handleConnectNotification({});
-            appService.showConnectNotification.should.have.been.calledOnce;
+
+            return conversationService.handleConnectNotification({}).then(() => {
+                appService.showConnectNotification.should.have.been.calledOnce;
+            });
         });
 
         it('should show connect notification 24 hours later', () => {
@@ -148,8 +153,10 @@ describe('Conversation service', () => {
                     ]
                 }
             }));
-            conversationService.handleConnectNotification({});
-            appService.showConnectNotification.should.have.been.calledOnce;
+
+            return conversationService.handleConnectNotification({}).then(() => {
+                appService.showConnectNotification.should.have.been.calledOnce;
+            });
         });
 
         it('should not show connect notification if it\'s been less than 24 hours', () => {
@@ -167,8 +174,10 @@ describe('Conversation service', () => {
                     ]
                 }
             }));
-            conversationService.handleConnectNotification({});
-            appService.showConnectNotification.should.not.have.been.called;
+
+            return conversationService.handleConnectNotification({}).then(() => {
+                appService.showConnectNotification.should.not.have.been.called;
+            });
         });
     });
 
@@ -409,12 +418,14 @@ describe('Conversation service', () => {
                             conversationSubscription: fayeSubscriptionMock
                         }
                     })) : mockAppStore(sandbox, getProps());
-                    conversationService.connectFayeConversation();
-                    if (active) {
-                        utilsFaye.subscribeConversation.should.not.have.been.called;
-                    } else {
-                        utilsFaye.subscribeConversation.should.have.been.calledOnce;
-                    }
+
+                    return conversationService.connectFayeConversation().then(() => {
+                        if (active) {
+                            utilsFaye.subscribeConversation.should.not.have.been.called;
+                        } else {
+                            utilsFaye.subscribeConversation.should.have.been.calledOnce;
+                        }
+                    });
                 });
             });
         });
@@ -429,12 +440,14 @@ describe('Conversation service', () => {
                             userSubscription: userSubscriptionMock
                         }
                     })) : mockAppStore(sandbox, getProps());
-                    conversationService.connectFayeUser();
-                    if (subscribed) {
-                        utilsFaye.subscribeUser.should.have.not.been.called;
-                    } else {
-                        utilsFaye.subscribeUser.should.have.been.calledOnce;
-                    }
+
+                    conversationService.connectFayeUser().then(() => {
+                        if (subscribed) {
+                            utilsFaye.subscribeUser.should.have.not.been.called;
+                        } else {
+                            utilsFaye.subscribeUser.should.have.been.calledOnce;
+                        }
+                    });
                 });
             });
         });
@@ -515,12 +528,13 @@ describe('Conversation service', () => {
                         }
                     })) : mockAppStore(sandbox, getProps());
 
-                    conversationService.handleConversationUpdated();
-                    if (active) {
-                        coreMock.conversations.get.should.not.have.been.called;
-                    } else {
-                        coreMock.conversations.get.should.have.been.calledOnce;
-                    }
+                    conversationService.handleConversationUpdated().then(() => {
+                        if (active) {
+                            coreMock.conversations.get.should.not.have.been.called;
+                        } else {
+                            coreMock.conversations.get.should.have.been.calledOnce;
+                        }
+                    });
                 });
             });
         });
