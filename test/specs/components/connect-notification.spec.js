@@ -26,7 +26,7 @@ const baseProps = {
     emailCaptureEnabled: false
 };
 
-describe.only('ConnectNotification Component', () => {
+describe('ConnectNotification Component', () => {
 
     beforeEach(() => {
         sandbox.stub(appService, 'showChannelPage');
