@@ -49,9 +49,13 @@
 
 @font-size-base: 14px;
 
-@screen-lg-ht: 835px;
-@screen-md-ht: 648px;
-@screen-sm-ht: 488px;
+@screen-lg-ht-min: 835px;
+@screen-md-ht-min: 648px;
+@screen-sm-ht-min: 488px;
+
+@screen-md-ht-min-max: @screen-lg-ht-min - 1;
+@screen-sm-ht-min-max: @screen-md-ht-min - 1;
+@screen-xs-ht-max: @screen-sm-ht-min - 1;
 
 @widget-close-top-lg: calc(~"100% - @{widget-height-lg}");
 
