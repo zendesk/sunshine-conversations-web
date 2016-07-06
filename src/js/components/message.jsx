@@ -52,7 +52,9 @@ export class MessageComponent extends Component {
 
         const containerClass = [this.props.mediaUrl ? 'sk-msg-image' : 'sk-msg'];
 
-        if (this.props.text.trim() && this.props.actions.length > 0) {
+        const hasContent = (this.props.text && this.props.text.trim()) || (this.props.mediaUrl && this.props.mediaUrl.trim());
+
+        if (hasContent && this.props.actions.length > 0) {
             containerClass.push('has-actions');
         }
 
