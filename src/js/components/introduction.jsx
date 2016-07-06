@@ -4,14 +4,17 @@ import debounce from 'lodash.debounce';
 import { findDOMNode } from 'react-dom';
 
 import { AlternateChannels } from './alternate-channels';
-import { createMarkup } from '../utils/html';
-import { getAppChannelDetails } from '../utils/app';
 import { DefaultAppIcon } from './default-app-icon';
+
 import { setIntroHeight } from '../actions/app-state-actions';
 
-class IntroductionComponent extends Component {
+import { createMarkup } from '../utils/html';
+import { getAppChannelDetails } from '../utils/app';
+
+export class IntroductionComponent extends Component {
     static propTypes = {
-        dispatch: PropTypes.func.isRequired
+        dispatch: PropTypes.func.isRequired,
+        appState: PropTypes.object.isRequired
     };
 
     static contextTypes = {
@@ -41,13 +44,13 @@ class IntroductionComponent extends Component {
 
     calculateIntroHeight() {
         const node = findDOMNode(this);
-        const {introHeight} = this.props.appState;
+        const {appState: {introHeight}, dispatch} = this.props;
 
         const nodeRect = node.getBoundingClientRect();
         const nodeHeight = Math.floor(nodeRect.height);
 
         if (introHeight !== nodeHeight) {
-            this.props.dispatch(setIntroHeight(nodeHeight));
+            dispatch(setIntroHeight(nodeHeight));
         }
     }
 
