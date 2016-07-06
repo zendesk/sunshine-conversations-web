@@ -16,9 +16,7 @@ export class DefaultAppIcon extends Component {
             style.fill = `#${color}`;
         }
 
-        return (<svg className='app-icon'
-                     id='Calque_1'
-                     data-name='Calque 1'
+        return <svg className='app-icon'
                      xmlns='http://www.w3.org/2000/svg'
                      viewBox='0 0 80 80'>
                     <title>
@@ -66,6 +64,6 @@ export class DefaultAppIcon extends Component {
                           width='4.36'
                           height='4.36'
                           style={ style } />
-                </svg>);
+                </svg>;
     }
 }
