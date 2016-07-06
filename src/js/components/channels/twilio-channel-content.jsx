@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import isMobile from 'ismobilejs';
+import { TelephoneInput } from '../telephone-input';
 
 export class TwilioChannelContent extends Component {
     static contextTypes = {
@@ -13,13 +14,10 @@ export class TwilioChannelContent extends Component {
             color: `#${settings.linkColor}`
         } : null;
 
-        if (isMobile.any) {
-            return <a href={ `sms:${phoneNumber}` }
-                      style={ styleOverride }>
-                       { phoneNumber }
-                   </a>;
-
-        }
-        return <span className='channel-content-value'>{ phoneNumber }</span>;
+        return <TelephoneInput ref='telInput'
+                               defaultCountry='ca'
+                               onChange={ this.handleInputChange }
+                               preferredCountries={ ['ca', 'us'] }
+                               onBlur={ this.handleInputBlur } />;
     }
 }
