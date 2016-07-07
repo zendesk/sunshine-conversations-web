@@ -96,7 +96,7 @@ describe('Header Component', () => {
                 }
             });
             mockedStore = mockAppStore(sandbox, {});
-            header = header = wrapComponentWithContext(HeaderComponent, props, {...context, store: mockedStore});
+            header = wrapComponentWithContext(HeaderComponent, props, {...context, store: mockedStore});
             headerNode = ReactDOM.findDOMNode(header);
         });
 
