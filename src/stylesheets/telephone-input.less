@@ -2,7 +2,7 @@
 
 .react-tel-input {
     position: relative;
-    margin: auto;
+    margin: 20px auto;
 
     .content-width-mixin();
 
@@ -40,10 +40,8 @@
             left: -1px;
             border: 1px solid #d79f9f;
             background-color: #FAF0F0;
-            border-left-color: #cacaca;
             &:focus {
                 border: 1px solid #d79f9f;
-                border-left-color: #cacaca;
                 background-color: #FAF0F0;
             }
         }
@@ -77,14 +75,18 @@
     }
 
     .selected-flag {
+        width: 60px;
+        height: 39px;
+
         .flag {
             position: absolute;
-            margin-top: 7.5px;
+            margin-top: 6.5px;
+            margin-left: 10px;
         }
         .arrow {
             position: relative;
             top: -50%;
-            left: 40px;
+            left: 35px;
             width: 0;
             height: 0;
             border-left: 5px solid transparent;
