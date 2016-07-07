@@ -1,3 +1,5 @@
+@import "telephone-input";
+
 .sk-channel {
     box-sizing: border-box;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
@@ -23,7 +25,7 @@
     }
 
     .content-wrapper {
-        padding: 40px 40px;
+        padding: @widget-padding @widget-padding;
     }
 
     .channel-header {
@@ -44,8 +46,6 @@
     }
 
     .channel-content {
-        overflow: hidden;
-
         a, a:visited {
             color: @sk-blue;
 

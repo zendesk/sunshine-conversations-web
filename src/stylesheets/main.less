@@ -46,22 +46,10 @@
         .container();
         #sk-wrapper {
             background: @background-color;
-            width: @widget-width-md;
-            height: @widget-height-md;
             position: relative;
             border-radius: 10px 10px 0 0;
-            @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht) {
-                width: @widget-width-lg;
-                height: @widget-height-lg;
-            }
-            @media (min-width: @screen-sm-min) and (max-height: @screen-sm-ht) {
-                width: @widget-width-sm;
-                height: @widget-height-sm;
-            }
-            @media (max-width: @screen-sm-min) {
-                width: @widget-width-xs;
-                height: @widget-height-xs;
-            }
+
+            .widget-size-mixin();
         }
         @media (max-width: @screen-sm-min) {
             right: 0;
@@ -92,21 +80,7 @@
             .scrollbar-mixin();
             overflow-y: auto;
 
-            width: @widget-width-md;
-            height: @widget-height-md;
-
-            @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht) {
-                width: @widget-width-lg;
-                height: @widget-height-lg;
-            }
-            @media (min-width: @screen-sm-min) and (max-height: @screen-sm-ht) {
-                width: @widget-width-sm;
-                height: @widget-height-sm;
-            }
-            @media (max-width: @screen-sm-min) {
-                width: @widget-width-xs;
-                height: @widget-height-xs;
-            }
+            .widget-size-mixin();
         }
     }
 }
