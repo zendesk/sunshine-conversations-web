@@ -329,12 +329,20 @@ The embedded widget will take full width and height of the container. You must g
 ## How to contribute
 
 ### Clone the git repo
-```git clone https://github.com/smooch/smooch-js```
+```
+git clone https://github.com/smooch/smooch-js
+```
 
 ### Install Node.js and run the following
 
-```npm install```
+```
+npm install
+```
 
 In one console, run `npm run start-dev` to start the web server. In another, run `npm run hot-dev-server` to start the webpack dev server.
 
 Then, go to `http://localhost:8282` to test the normal widget or `http://localhost:8282/embedded` for the embedded one.
+
+## Acknowledgements
+
+https://github.com/lipis/flag-icon-css

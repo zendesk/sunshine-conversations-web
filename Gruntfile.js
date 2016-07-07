@@ -69,6 +69,9 @@ module.exports = function(grunt) {
                 }, {
                     src: 'dist/*.png',
                     dest: '/'
+                }, {
+                    src: 'dist/*.svg',
+                    dest: '/'
                 }]
             }
         },
