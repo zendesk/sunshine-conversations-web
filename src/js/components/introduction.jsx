@@ -56,7 +56,7 @@ export class IntroductionComponent extends Component {
 
     render() {
         const {app, integrations} = this.props;
-        const {ui: {text}, settings: {brandingColor}} = this.context;
+        const {ui: {text}, settings: {brandColor}} = this.context;
         const channelDetailsList = getAppChannelDetails(integrations);
         
         const channelsAvailable = channelDetailsList.length > 0;
@@ -65,7 +65,7 @@ export class IntroductionComponent extends Component {
         return <div className='sk-intro-section'>
                    { app.iconUrl ? <img className='app-icon'
                                         src={ app.iconUrl } />
-                         : <DefaultAppIcon color={ brandingColor } /> }
+                         : <DefaultAppIcon color={ brandColor } /> }
                    <div className='app-name'>
                        { app.name }
                    </div>
