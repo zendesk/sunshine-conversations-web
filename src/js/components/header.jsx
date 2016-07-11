@@ -31,6 +31,7 @@ export class HeaderComponent extends Component {
         const {appState: {emailCaptureEnabled, settingsVisible, widgetOpened, embedded, visibleChannelType}, unreadCount} = this.props;
         const {ui, settings} = this.context;
         const {settingsHeaderText, headerText} = ui.text;
+        const {brandColor} = settings;
 
         const settingsMode = !!(settingsVisible || visibleChannelType);
         const showSettingsButton = (hasChannels(settings) || emailCaptureEnabled) && !settingsMode;
@@ -82,16 +83,22 @@ export class HeaderComponent extends Component {
                                  </div>
                              </div>;
 
-        return (
-            <div id={ settingsMode ? 'sk-settings-header' : 'sk-header' }
+        let style;
+        if (brandColor) {
+            style = {
+                backgroundColor: `#${brandColor}`
+            };
+        }
+
+        return <div id={ settingsMode ? 'sk-settings-header' : 'sk-header' }
                  onClick={ !embedded && toggleWidget }
-                 className='sk-header-wrapper'>
+                 className='sk-header-wrapper'
+                 style={ style }>
                 { settingsButton }
                 { settingsMode ? settingsText : headerText }
                 { unreadBadge }
                 { closeHandle }
-            </div>
-            );
+            </div>;
     }
 }
 
