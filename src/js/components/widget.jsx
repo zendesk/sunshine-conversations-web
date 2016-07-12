@@ -26,9 +26,9 @@ export class WidgetComponent extends Component {
     };
 
     static childContextTypes = {
-        app: PropTypes.object,
-        settings: PropTypes.object,
-        ui: PropTypes.object
+        app: PropTypes.object.isRequired,
+        settings: PropTypes.object.isRequired,
+        ui: PropTypes.object.isRequired
     };
 
     onTouchStart = (e) => {
@@ -69,7 +69,7 @@ export class WidgetComponent extends Component {
         const settingsComponent = appState.settingsVisible ? <Settings /> : null;
 
         // if no user set in store or the app has no channels,
-        // no need to render the channel page manager 
+        // no need to render the channel page manager
         const channelsComponent = smoochId && hasChannels(settings) ? <Channel /> : null;
 
         const footer = appState.settingsVisible ? null : <ChatInput ref='input' />;

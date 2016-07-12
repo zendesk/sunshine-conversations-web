@@ -4,21 +4,23 @@ import debounce from 'lodash.debounce';
 import { findDOMNode } from 'react-dom';
 
 import { AlternateChannels } from './alternate-channels';
-import { createMarkup } from '../utils/html';
-import { getAppChannelDetails } from '../utils/app';
 import { DefaultAppIcon } from './default-app-icon';
+
 import { setIntroHeight } from '../actions/app-state-actions';
 
-class IntroductionComponent extends Component {
+import { createMarkup } from '../utils/html';
+import { getAppChannelDetails } from '../utils/app';
+
+export class IntroductionComponent extends Component {
     static propTypes = {
-        app: PropTypes.object.isRequired,
-        integrations: PropTypes.array.isRequired,
-        dispatch: PropTypes.func.isRequired
+        dispatch: PropTypes.func.isRequired,
+        appState: PropTypes.object.isRequired
     };
 
     static contextTypes = {
-        ui: PropTypes.object,
-        settings: PropTypes.object
+        ui: PropTypes.object.isRequired,
+        settings: PropTypes.object.isRequired,
+        app: PropTypes.object.isRequired
     };
 
     constructor(...args) {
@@ -42,20 +44,19 @@ class IntroductionComponent extends Component {
 
     calculateIntroHeight() {
         const node = findDOMNode(this);
-        const {introHeight} = this.props.appState;
+        const {appState: {introHeight}, dispatch} = this.props;
 
         const nodeRect = node.getBoundingClientRect();
         const nodeHeight = Math.floor(nodeRect.height);
 
         if (introHeight !== nodeHeight) {
-            this.props.dispatch(setIntroHeight(nodeHeight));
+            dispatch(setIntroHeight(nodeHeight));
         }
     }
 
     render() {
-        const {app, integrations} = this.props;
-        const {ui: {text}, settings: {accentColor}} = this.context;
-        const channelDetailsList = getAppChannelDetails(integrations);
+        const {ui: {text}, settings: {accentColor}, app} = this.context;
+        const channelDetailsList = getAppChannelDetails(app.integrations);
         const channelsAvailable = channelDetailsList.length > 0;
         const introText = channelsAvailable ? `${text.introductionText} ${text.introAppText}` : text.introductionText;
 
@@ -64,7 +65,7 @@ class IntroductionComponent extends Component {
                                         src={ app.iconUrl } />
                          : <DefaultAppIcon color={ accentColor } /> }
                    <div className='app-name'>
-                       { app.name || 'Smooch Technologies Inc.' }
+                       { app.name }
                    </div>
                    <div className='intro-text'
                         dangerouslySetInnerHTML={ createMarkup(introText) } />
@@ -75,10 +76,8 @@ class IntroductionComponent extends Component {
     }
 }
 
-export const Introduction = connect(({app, appState: {introHeight}}) => {
+export const Introduction = connect(({appState: {introHeight}}) => {
     return {
-        app: app,
-        integrations: app.integrations,
         appState: {
             introHeight
         }

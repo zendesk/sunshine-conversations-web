@@ -6,7 +6,7 @@ const BLINKING_INTERVAL = 1500;
 
 export class MessageIndicatorComponent extends Component {
     static contextTypes = {
-        ui: PropTypes.object
+        ui: PropTypes.object.isRequired
     };
 
     state = {
