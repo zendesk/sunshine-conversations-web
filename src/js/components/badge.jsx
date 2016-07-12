@@ -1,11 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 
+import { openWidget } from '../services/app-service';
+
 class DefaultIcon extends Component {
     render() {
-        const {badgeColorDark} = this.props;
+        const {brandColorDark} = this.props;
         const style = {
-            filter: `drop-shadow( -5px -5px 5px #${badgeColorDark ? 'fff': '000'} )`,
-            fill: badgeColorDark ? '#fff' : '#000'
+            fill: brandColorDark ? '#fff' : '#000'
         };
 
         return <svg version='1.0'
@@ -26,10 +27,22 @@ export class Badge extends Component {
         settings: PropTypes.object.isRequired
     };
 
+    onClick = (e) => {
+        e.preventDefault();
+        openWidget();
+    };
+
     render() {
-        const {settings: {badgeColor, badgeColorDark, badgeIconUrl}} = this.context;
-        return <div className='sk-badge'>
-                   <DefaultIcon badgeColorDark={ badgeColorDark } />
+        const {settings: {brandColor, brandColorDark, badgeIconUrl}} = this.context;
+
+        const style = {
+            backgroundColor: `#${brandColor}`
+        };
+
+        return <div className='sk-badge'
+                    style={ style }
+                    onClick={ this.onClick }>
+                   <DefaultIcon brandColorDark={ brandColorDark } />
                </div>;
     }
 }

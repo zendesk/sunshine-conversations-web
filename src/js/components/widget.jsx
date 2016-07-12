@@ -77,7 +77,9 @@ export class WidgetComponent extends Component {
 
         const footer = appState.settingsVisible ? null : <ChatInput ref='input' />;
 
-        const classNames = [];
+        const classNames = [
+            `sk-${displayStyle}-display`
+        ];
 
         if (appState.embedded) {
             classNames.push('sk-embedded');
