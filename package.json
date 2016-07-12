@@ -29,7 +29,7 @@
     "build": "webpack --config webpack-production.config.js --progress --profile --colors",
     "build:assets": "webpack --config webpack-assets.config.js --progress --profile --colors",
     "build:npm": "rm -rf lib/ && npm run babelify && npm run build:assets && rm -f lib/constants/*.mp3 && rm -f lib/constants/*.png",
-    "start-dev": "node dev-server/server-development",
+    "start-dev": "nodemon --watch dev-server/ --watch src/index.html --watch src/embedded.html --watch config/config.json dev-server/server-development",
     "start": "node dev-server/server-production",
     "lint": "eslint . --ext=js --ext=jsx",
     "babelify": "babel -d lib/ src/js/"
@@ -120,6 +120,7 @@
     "less-loader": "2.2.2",
     "matchdep": "0.3.0",
     "mocha": "2.2.5",
+    "nodemon": "1.9.2",
     "phantomjs-prebuilt": "2.1.4",
     "react": "15.1.0",
     "react-addons-test-utils": "15.1.0",

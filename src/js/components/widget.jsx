@@ -65,6 +65,7 @@ export class WidgetComponent extends Component {
 
     render() {
         const {appState, settings, smoochId} = this.props;
+        const {isBrandColorDark, isAccentColorDark, isLinkColorDark} = settings;
 
         const settingsComponent = appState.settingsVisible ? <Settings /> : null;
 
@@ -95,19 +96,24 @@ export class WidgetComponent extends Component {
             classNames.push('sk-ios-device');
         }
 
-        const className = classNames.join(' ');
-
         const notification = appState.errorNotificationMessage ?
             <ErrorNotification message={ appState.errorNotificationMessage } /> : null;
 
+        const wrapperClassNames = [
+            `sk-branding-color-${isBrandColorDark ? 'dark' : 'light'}`,
+            `sk-accent-color-${isAccentColorDark ? 'dark' : 'light'}`,
+            `sk-link-color-${isLinkColorDark ? 'dark' : 'light'}`
+        ];
+
         return (
             <div id='sk-container'
-                 className={ className }
+                 className={ classNames.join(' ') }
                  onTouchStart={ this.onTouchStart }
                  onClick={ this.onClick }
                  onWheel={ this.onWheel }>
                 <MessageIndicator />
-                <div id='sk-wrapper'>
+                <div id='sk-wrapper'
+                     className={ wrapperClassNames.join(' ') }>
                     <Header />
                     <ReactCSSTransitionGroup component='div'
                                              className='sk-notification-container'
@@ -135,12 +141,7 @@ export class WidgetComponent extends Component {
     }
 }
 
-export const Widget = connect(({appState: {
-    settingsVisible,
-    widgetOpened,
-    errorNotificationMessage,
-    embedded
-}, app, ui, user}) => {
+export const Widget = connect(({appState: {settingsVisible, widgetOpened, errorNotificationMessage, embedded}, app, ui, user}) => {
     // only extract what is needed from appState as this is something that might
     // mutate a lot
     return {
