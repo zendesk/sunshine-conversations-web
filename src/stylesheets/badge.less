@@ -1,0 +1,21 @@
+.sk-badge {
+    position: fixed;
+    right: @widget-horizontal-spacing;
+    bottom: @widget-badge-vertical-spacing;
+
+    height: @badge-size;
+    width: @badge-size;
+
+    border-radius: 50%;
+
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.26);
+    z-index: 9998; // 1 less than Stripe Checkout
+    overflow: hidden;
+
+    .default-icon {
+        width: 70%;
+        margin-left: 50%;
+        transform: translate(-50%, -50%);
+        margin-top: 50%;
+    }
+}
