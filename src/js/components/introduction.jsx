@@ -55,10 +55,9 @@ export class IntroductionComponent extends Component {
     }
 
     render() {
-        const {app, integrations} = this.props;
-        const {ui: {text}, settings: {brandColor}} = this.context;
-        const channelDetailsList = getAppChannelDetails(integrations);
-        
+        const {app, ui: {text}, settings: {brandColor}} = this.context;
+        const channelDetailsList = getAppChannelDetails(app.integrations);
+
         const channelsAvailable = channelDetailsList.length > 0;
         const introText = channelsAvailable ? `${text.introductionText} ${text.introAppText}` : text.introductionText;
 

@@ -65,7 +65,7 @@ export class WidgetComponent extends Component {
 
     render() {
         const {appState, settings, smoochId} = this.props;
-        const {brandColorDark, accentColorDark, linkColorDark} = settings;
+        const {isBrandColorDark, isAccentColorDark, isLinkColorDark} = settings;
 
         const settingsComponent = appState.settingsVisible ? <Settings /> : null;
 
@@ -100,9 +100,9 @@ export class WidgetComponent extends Component {
             <ErrorNotification message={ appState.errorNotificationMessage } /> : null;
 
         const wrapperClassNames = [
-            `sk-branding-color-${brandColorDark ? 'dark' : 'light'}`,
-            `sk-accent-color-${accentColorDark ? 'dark' : 'light'}`,
-            `sk-link-color-${linkColorDark ? 'dark' : 'light'}`
+            `sk-branding-color-${isBrandColorDark ? 'dark' : 'light'}`,
+            `sk-accent-color-${isAccentColorDark ? 'dark' : 'light'}`,
+            `sk-link-color-${isLinkColorDark ? 'dark' : 'light'}`
         ];
 
         return (
