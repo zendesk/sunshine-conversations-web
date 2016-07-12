@@ -101,7 +101,7 @@ describe('Widget Component', () => {
         });
 
         it('should have a sk-close class', () => {
-            componentNode.className.should.eq('sk-close');
+            componentNode.className.indexOf('sk-close').should.be.gt(-1);
         });
     });
 
@@ -121,7 +121,7 @@ describe('Widget Component', () => {
         });
 
         it('should have a sk-appear class', () => {
-            componentNode.className.should.eq('sk-appear');
+            componentNode.className.indexOf('sk-appear').should.be.gt(-1);
         });
     });
 
