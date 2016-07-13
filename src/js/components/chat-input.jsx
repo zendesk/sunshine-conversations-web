@@ -52,7 +52,7 @@ export class ChatInputComponent extends Component {
     }
 
     render() {
-        const {settings, ui} = this.context;
+        const {settings: {linkColor}, ui} = this.context;
 
         let sendButton;
 
@@ -62,8 +62,8 @@ export class ChatInputComponent extends Component {
         if (this.state.text.trim()) {
             buttonClassNames.push('active');
 
-            if (settings.accentColor) {
-                buttonStyle.color = `#${settings.accentColor}`;
+            if (linkColor) {
+                buttonStyle.color = `#${linkColor}`;
             }
         }
 
@@ -85,7 +85,7 @@ export class ChatInputComponent extends Component {
 
         const imageUploadButton = this.props.imageUploadEnabled ?
             <ImageUpload ref='imageUpload'
-                         accentColor={ settings.accentColor } /> : null;
+                         color={ linkColor } /> : null;
 
         const inputContainerClasses = ['input-container'];
 
