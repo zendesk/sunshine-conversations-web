@@ -116,7 +116,6 @@ export class WidgetComponent extends Component {
         }
 
         return <div>
-                   { badge }
                    <div id='sk-container'
                         className={ classNames.join(' ') }
                         onTouchStart={ this.onTouchStart }
@@ -148,6 +147,7 @@ export class WidgetComponent extends Component {
                            { footer }
                        </div>
                    </div>
+                   { badge }
                </div>;
     }
 }

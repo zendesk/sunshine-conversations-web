@@ -1,8 +1,8 @@
 .sk-badge {
     position: fixed;
-    right: -@badge-size;
-    bottom: -@badge-size;
-    transition: all .2s cubic-bezier(.62, .28, .23, .99);
+
+    right: @widget-horizontal-spacing;
+    bottom: @widget-vertical-spacing;
     opacity: 0;
 
     height: @badge-size;
@@ -16,10 +16,16 @@
 
     cursor: pointer;
 
-    &.shown {
-        right: @widget-horizontal-spacing;
-        bottom: @widget-badge-vertical-spacing;
-        opacity: 1;
+    &.badge-shown {
+        animation: sk-badge-shown-frames .4s cubic-bezier(.62, .28, .23, .99);
+        animation-delay: .2s;
+        animation-fill-mode: forwards;
+    }
+
+    &.badge-hidden {
+        animation: sk-badge-hidden-frames .4s cubic-bezier(.62, .28, .23, .99);
+        animation-delay: .0s;
+        animation-fill-mode: forwards;
     }
 
     .default-icon {
@@ -27,5 +33,28 @@
         margin-left: 50%;
         transform: translate(-50%, -50%);
         margin-top: 50%;
+    }
+}
+
+@keyframes sk-badge-shown-frames {
+    0% {
+        bottom: @widget-vertical-spacing;
+        opacity: 0;
+    }
+    100% {
+        bottom: @widget-badge-vertical-spacing;
+        opacity: 1;
+    }
+}
+
+
+@keyframes sk-badge-hidden-frames {
+    0% {
+        bottom: @widget-badge-vertical-spacing;
+        opacity: 1;
+    }
+    100% {
+        bottom: @widget-vertical-spacing;
+        opacity: 0;
     }
 }

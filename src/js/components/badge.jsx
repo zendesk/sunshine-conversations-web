@@ -48,7 +48,7 @@ export class Badge extends Component {
     };
 
     static defaultProps = {
-        shown: true
+        shown: true,
     };
 
     onClick = (e) => {
@@ -66,9 +66,7 @@ export class Badge extends Component {
 
         const classNames = ['sk-badge'];
 
-        if (shown) {
-            classNames.push('shown');
-        }
+        classNames.push(`badge-${shown ? 'shown' : 'hidden'}`);
 
         return <div className={ classNames.join(' ') }
                     style={ style }
