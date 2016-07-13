@@ -1,8 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { findDOMNode } from 'react-dom';
 import isMobile from 'ismobilejs';
-import debounce from 'lodash.debounce';
 
 import { sendMessage, resetUnreadCount } from '../services/conversation-service';
 import { store } from '../stores/app-store';
@@ -19,13 +17,11 @@ export class ChatInputComponent extends Component {
         super(...args);
 
         this.state = {
-            text: '',
-            inputContainerWidth: undefined
+            text: ''
         };
 
         this.onChange = this.onChange.bind(this);
         this.onSendMessage = this.onSendMessage.bind(this);
-        this._debouncedResize = debounce(this.resizeInput.bind(this), 150);
     }
 
     blur() {
@@ -43,41 +39,6 @@ export class ChatInputComponent extends Component {
         checkAndResetUnreadCount();
     }
 
-    resizeInput(attempt = 0) {
-        const node = findDOMNode(this);
-
-        const nodeRect = node.getBoundingClientRect();
-        const buttonRect = this.refs.button.getBoundingClientRect();
-
-        // floor widget width and ceil button width to ensure button fits in widget
-        const nodeWidth = Math.floor(nodeRect.width);
-        let buttonsWidth = Math.ceil(buttonRect.width);
-
-        if (this.refs.imageUpload) {
-            const imageUploadRect = findDOMNode(this.refs.imageUpload).getBoundingClientRect();
-            const imageUploadWith = Math.ceil(imageUploadRect.width);
-            buttonsWidth += imageUploadWith;
-        }
-
-        if (node.offsetWidth - buttonsWidth > 0) {
-            this.setState({
-                inputContainerWidth: nodeWidth - buttonsWidth
-            });
-        } else {
-            // let's try it 10 times (so, 1 sec)
-            if (attempt < 10) {
-                setTimeout(() => {
-                    this.resizeInput(attempt + 1);
-                }, 100);
-            } else {
-                // otherwise, let's hope 70% won't break it and won't look too silly
-                this.setState({
-                    inputContainerWidth: '70%'
-                });
-            }
-        }
-    }
-
     onSendMessage(e) {
         e.preventDefault();
         const text = this.state.text;
@@ -90,19 +51,7 @@ export class ChatInputComponent extends Component {
         }
     }
 
-    componentDidMount() {
-        setTimeout(() => this.resizeInput());
-        window.addEventListener('resize', this._debouncedResize);
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('resize', this._debouncedResize);
-    }
-
     render() {
-        const containerStyle = {
-            width: this.state.inputContainerWidth
-        };
         const {settings, ui} = this.context;
 
         let sendButton;
@@ -149,8 +98,7 @@ export class ChatInputComponent extends Component {
                 { imageUploadButton }
                 <form onSubmit={ this.onSendMessage }
                       action='#'>
-                    <div className={ inputContainerClasses.join(' ') }
-                         style={ containerStyle }>
+                    <div className={ inputContainerClasses.join(' ') }>
                         <input ref='input'
                                placeholder={ ui.text.inputPlaceholder }
                                className='input message-input'
@@ -159,8 +107,8 @@ export class ChatInputComponent extends Component {
                                value={ this.state.text }
                                title={ ui.text.sendButtonText }></input>
                     </div>
-                    { sendButton }
                 </form>
+                { sendButton }
             </div>
             );
     }
