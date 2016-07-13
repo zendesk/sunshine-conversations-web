@@ -295,15 +295,15 @@ export class Smooch {
         }
 
         stopMonitoringBrowserState();
-        
+
         if (process.env.NODE_ENV !== 'test' && this._container) {
             unmountComponentAtNode(this._container);
         }
 
+        const {embedded} = store.getState().appState;
         disconnectFaye();
         store.dispatch(reset());
 
-        const {embedded} = store.getState().appState;
         if (embedded) {
             // retain the embed mode
             store.dispatch(AppStateActions.setEmbedded(true));
