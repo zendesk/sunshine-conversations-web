@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 
 import { openWidget } from '../services/app-service';
 
-class DefaultIcon extends Component {
+export class DefaultIcon extends Component {
     render() {
         const {isBrandColorDark, brandColor} = this.props;
 

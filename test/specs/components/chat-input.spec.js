@@ -2,13 +2,11 @@ import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
 import { mockAppStore } from '../../utils/redux';
-import { mockComponent, getContext } from '../../utils/react';
+import { mockComponent, getContext, wrapComponentWithContext } from '../../utils/react';
 
 import { ChatInputComponent } from '../../../src/js/components/chat-input';
 import { ImageUpload } from '../../../src/js/components/image-upload';
 const conversationService = require('../../../src/js/services/conversation-service');
-
-import { wrapComponentWithContext } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
 
