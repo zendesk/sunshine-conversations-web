@@ -111,7 +111,7 @@ export class WidgetComponent extends Component {
 
         let badge;
 
-        if (displayStyle === DISPLAY_STYLE.BADGE) {
+        if (displayStyle === DISPLAY_STYLE.BADGE && !appState.embedded) {
             badge = <Badge shown={ !appState.widgetOpened } />;
         }
 
