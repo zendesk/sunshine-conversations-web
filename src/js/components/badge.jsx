@@ -48,7 +48,7 @@ export class Badge extends Component {
     };
 
     static defaultProps = {
-        shown: true,
+        shown: true
     };
 
     onClick = (e) => {
@@ -57,7 +57,7 @@ export class Badge extends Component {
     };
 
     render() {
-        const {settings: {brandColor, isBrandColorDark}} = this.context;
+        const {settings: {brandColor, isBrandColorDark, badgeIconUrl}} = this.context;
         const {shown} = this.props;
 
         const style = {
@@ -68,11 +68,19 @@ export class Badge extends Component {
 
         classNames.push(`badge-${shown ? 'shown' : 'hidden'}`);
 
+        let content;
+
+        if (badgeIconUrl) {
+            content = <img src={ badgeIconUrl } />;
+        } else {
+            content = <DefaultIcon isBrandColorDark={ isBrandColorDark }
+                                   brandColor={ brandColor } />;
+        }
+
         return <div className={ classNames.join(' ') }
                     style={ style }
                     onClick={ this.onClick }>
-                   <DefaultIcon isBrandColorDark={ isBrandColorDark }
-                                brandColor={ brandColor } />
+                   { content }
                </div>;
     }
 }
