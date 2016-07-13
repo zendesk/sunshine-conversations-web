@@ -57,7 +57,7 @@ export class Badge extends Component {
     };
 
     render() {
-        const {settings: {brandColor, isBrandColorDark, badgeIconUrl}} = this.context;
+        const {settings: {brandColor, isBrandColorDark}} = this.context;
         const {shown} = this.props;
 
         const style = {
