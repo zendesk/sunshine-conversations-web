@@ -112,39 +112,41 @@ export class WidgetComponent extends Component {
         let badge;
 
         if (displayStyle === DISPLAY_STYLE.BADGE) {
-            badge = <Badge />;
+            badge = <Badge shown={ !appState.widgetOpened } />;
         }
 
-        return <div id='sk-container'
-                    className={ classNames.join(' ') }
-                    onTouchStart={ this.onTouchStart }
-                    onClick={ this.onClick }
-                    onWheel={ this.onWheel }>
-                   <MessageIndicator />
+        return <div>
                    { badge }
-                   <div id='sk-wrapper'
-                        className={ wrapperClassNames.join(' ') }>
-                       <Header />
-                       <ReactCSSTransitionGroup component='div'
-                                                className='sk-notification-container'
-                                                transitionName='sk-notification'
-                                                transitionAppear={ true }
-                                                transitionAppearTimeout={ 500 }
-                                                transitionEnterTimeout={ 500 }
-                                                transitionLeaveTimeout={ 500 }>
-                           { notification }
-                       </ReactCSSTransitionGroup>
-                       <ReactCSSTransitionGroup component='div'
-                                                transitionName='settings'
-                                                transitionAppear={ true }
-                                                transitionAppearTimeout={ 250 }
-                                                transitionEnterTimeout={ 250 }
-                                                transitionLeaveTimeout={ 250 }>
-                           { settingsComponent }
-                       </ReactCSSTransitionGroup>
-                       { channelsComponent }
-                       <Conversation />
-                       { footer }
+                   <div id='sk-container'
+                        className={ classNames.join(' ') }
+                        onTouchStart={ this.onTouchStart }
+                        onClick={ this.onClick }
+                        onWheel={ this.onWheel }>
+                       <MessageIndicator />
+                       <div id='sk-wrapper'
+                            className={ wrapperClassNames.join(' ') }>
+                           <Header />
+                           <ReactCSSTransitionGroup component='div'
+                                                    className='sk-notification-container'
+                                                    transitionName='sk-notification'
+                                                    transitionAppear={ true }
+                                                    transitionAppearTimeout={ 500 }
+                                                    transitionEnterTimeout={ 500 }
+                                                    transitionLeaveTimeout={ 500 }>
+                               { notification }
+                           </ReactCSSTransitionGroup>
+                           <ReactCSSTransitionGroup component='div'
+                                                    transitionName='settings'
+                                                    transitionAppear={ true }
+                                                    transitionAppearTimeout={ 250 }
+                                                    transitionEnterTimeout={ 250 }
+                                                    transitionLeaveTimeout={ 250 }>
+                               { settingsComponent }
+                           </ReactCSSTransitionGroup>
+                           { channelsComponent }
+                           <Conversation />
+                           { footer }
+                       </div>
                    </div>
                </div>;
     }

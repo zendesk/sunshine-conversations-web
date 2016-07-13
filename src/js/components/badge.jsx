@@ -43,6 +43,14 @@ export class Badge extends Component {
         settings: PropTypes.object.isRequired
     };
 
+    static propTypes = {
+        shown: PropTypes.bool
+    };
+
+    static defaultProps = {
+        shown: true
+    };
+
     onClick = (e) => {
         e.preventDefault();
         openWidget();
@@ -50,12 +58,19 @@ export class Badge extends Component {
 
     render() {
         const {settings: {brandColor, isBrandColorDark, badgeIconUrl}} = this.context;
+        const {shown} = this.props;
 
         const style = {
             backgroundColor: `#${brandColor}`
         };
 
-        return <div className='sk-badge'
+        const classNames = ['sk-badge'];
+
+        if (shown) {
+            classNames.push('shown');
+        }
+
+        return <div className={ classNames.join(' ') }
                     style={ style }
                     onClick={ this.onClick }>
                    <DefaultIcon isBrandColorDark={ isBrandColorDark }
