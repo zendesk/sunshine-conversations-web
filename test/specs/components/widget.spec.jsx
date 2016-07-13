@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 import { Provider } from 'react-redux';
 
-import { mockComponent } from '../../utils/react';
+import { mockComponent, findRenderedDOMComponentsWithId } from '../../utils/react';
 import { createMockedStore, mockAppStore } from '../../utils/redux';
 
 import { Header } from '../../../src/js/components/header';
@@ -97,11 +97,10 @@ describe('Widget Component', () => {
             component = TestUtils.renderIntoDocument(<Provider store={ store }>
                                                          <WidgetComponent {...props} />
                                                      </Provider>);
-            componentNode = ReactDOM.findDOMNode(component);
         });
 
         it('should have a sk-close class', () => {
-            componentNode.className.indexOf('sk-close').should.be.gt(-1);
+            findRenderedDOMComponentsWithId(component, 'sk-container').className.indexOf('sk-close').should.be.gt(-1);
         });
     });
 
@@ -117,11 +116,10 @@ describe('Widget Component', () => {
             component = TestUtils.renderIntoDocument(<Provider store={ store }>
                                                          <WidgetComponent {...props} />
                                                      </Provider>);
-            componentNode = ReactDOM.findDOMNode(component);
         });
 
         it('should have a sk-appear class', () => {
-            componentNode.className.indexOf('sk-appear').should.be.gt(-1);
+            findRenderedDOMComponentsWithId(component, 'sk-container').className.indexOf('sk-appear').should.be.gt(-1);
         });
     });
 
