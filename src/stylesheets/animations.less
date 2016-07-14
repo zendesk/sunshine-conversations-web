@@ -90,24 +90,24 @@
     &.sk-close {
         bottom: @widget-close-bottom-md;
 
-            animation: sk-close-frames-md .4s cubic-bezier(.62, .28, .23, .99);
+            animation: sk-close-tab-frames-md .4s cubic-bezier(.62, .28, .23, .99);
             animation-delay: .0s;
             animation-fill-mode: forwards;
 
         @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-min) {
             bottom: @widget-close-bottom-lg;
-            animation: sk-close-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
+            animation: sk-close-tab-frames-lg .4s cubic-bezier(.62, .28, .23, .99);
         }
 
         @media (min-width: @screen-sm-min) and (max-height: @screen-sm-ht-min) {
             bottom: @widget-close-bottom-sm;
-            animation: sk-close-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
+            animation: sk-close-tab-frames-sm .4s cubic-bezier(.62, .28, .23, .99);
         }
 
         // Mobile
         @media (max-width: @screen-sm-min) {
             bottom: @widget-close-bottom-xs;
-            animation: sk-close-frames-xs .4s cubic-bezier(.62, .28, .23, .99);
+            animation: sk-close-tab-frames-xs .4s cubic-bezier(.62, .28, .23, .99);
         }
     }
 
@@ -168,7 +168,7 @@
         }
     }
 
-    @keyframes sk-close-frames-md {
+    @keyframes sk-close-tab-frames-md {
         0% {
             bottom: @widget-vertical-spacing;
         }
@@ -177,7 +177,7 @@
         }
     }
 
-    @keyframes sk-close-frames-lg {
+    @keyframes sk-close-tab-frames-lg {
         0% {
             bottom: @widget-vertical-spacing;
         }
@@ -186,7 +186,7 @@
         }
     }
 
-    @keyframes sk-close-frames-sm {
+    @keyframes sk-close-tab-frames-sm {
         0% {
             bottom: @widget-vertical-spacing;
         }
@@ -195,7 +195,7 @@
         }
     }
 
-    @keyframes sk-close-frames-xs {
+    @keyframes sk-close-tab-frames-xs {
         0% {
             bottom: 0;
         }
