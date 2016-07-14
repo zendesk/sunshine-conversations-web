@@ -3,7 +3,7 @@ import React, { Component, PropTypes } from 'react';
 import { openWidget } from '../services/app-service';
 import { SK_DARK_CONTRAST } from '../constants/styles';
 
-export class DefaultIcon extends Component {
+export class DefaultBadgeIcon extends Component {
     render() {
         const {isBrandColorDark, brandColor} = this.props;
 
@@ -74,7 +74,7 @@ export class Badge extends Component {
         if (badgeIconUrl) {
             content = <img src={ badgeIconUrl } />;
         } else {
-            content = <DefaultIcon isBrandColorDark={ isBrandColorDark }
+            content = <DefaultBadgeIcon isBrandColorDark={ isBrandColorDark }
                                    brandColor={ brandColor } />;
         }
 
