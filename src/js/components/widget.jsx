@@ -5,6 +5,7 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import isMobile from 'ismobilejs';
 import debounce from 'lodash.debounce';
 
+import { Badge } from './badge';
 import { Header } from './header';
 import { Conversation } from './conversation';
 import { Settings } from './settings';
@@ -15,6 +16,7 @@ import { MessageIndicator } from './message-indicator';
 
 import { resetUnreadCount } from '../services/conversation-service';
 import { hasChannels } from '../utils/app';
+import { DISPLAY_STYLE } from '../constants/styles';
 
 export class WidgetComponent extends Component {
     static propTypes = {
@@ -65,7 +67,7 @@ export class WidgetComponent extends Component {
 
     render() {
         const {appState, settings, smoochId} = this.props;
-        const {isBrandColorDark, isAccentColorDark, isLinkColorDark} = settings;
+        const {displayStyle, isBrandColorDark, isAccentColorDark, isLinkColorDark} = settings;
 
         const settingsComponent = appState.settingsVisible ? <Settings /> : null;
 
@@ -75,7 +77,9 @@ export class WidgetComponent extends Component {
 
         const footer = appState.settingsVisible ? null : <ChatInput ref='input' />;
 
-        const classNames = [];
+        const classNames = [
+            `sk-${displayStyle}-display`
+        ];
 
         if (appState.embedded) {
             classNames.push('sk-embedded');
@@ -105,39 +109,46 @@ export class WidgetComponent extends Component {
             `sk-link-color-${isLinkColorDark ? 'dark' : 'light'}`
         ];
 
-        return (
-            <div id='sk-container'
-                 className={ classNames.join(' ') }
-                 onTouchStart={ this.onTouchStart }
-                 onClick={ this.onClick }
-                 onWheel={ this.onWheel }>
-                <MessageIndicator />
-                <div id='sk-wrapper'
-                     className={ wrapperClassNames.join(' ') }>
-                    <Header />
-                    <ReactCSSTransitionGroup component='div'
-                                             className='sk-notification-container'
-                                             transitionName='sk-notification'
-                                             transitionAppear={ true }
-                                             transitionAppearTimeout={ 500 }
-                                             transitionEnterTimeout={ 500 }
-                                             transitionLeaveTimeout={ 500 }>
-                        { notification }
-                    </ReactCSSTransitionGroup>
-                    <ReactCSSTransitionGroup component='div'
-                                             transitionName='settings'
-                                             transitionAppear={ true }
-                                             transitionAppearTimeout={ 250 }
-                                             transitionEnterTimeout={ 250 }
-                                             transitionLeaveTimeout={ 250 }>
-                        { settingsComponent }
-                    </ReactCSSTransitionGroup>
-                    { channelsComponent }
-                    <Conversation />
-                    { footer }
-                </div>
-            </div>
-            );
+        let badge;
+
+        if (displayStyle === DISPLAY_STYLE.BADGE && !appState.embedded) {
+            badge = <Badge shown={ !appState.widgetOpened } />;
+        }
+
+        return <div>
+                   <div id='sk-container'
+                        className={ classNames.join(' ') }
+                        onTouchStart={ this.onTouchStart }
+                        onClick={ this.onClick }
+                        onWheel={ this.onWheel }>
+                       <MessageIndicator />
+                       <div id='sk-wrapper'
+                            className={ wrapperClassNames.join(' ') }>
+                           <Header />
+                           <ReactCSSTransitionGroup component='div'
+                                                    className='sk-notification-container'
+                                                    transitionName='sk-notification'
+                                                    transitionAppear={ true }
+                                                    transitionAppearTimeout={ 500 }
+                                                    transitionEnterTimeout={ 500 }
+                                                    transitionLeaveTimeout={ 500 }>
+                               { notification }
+                           </ReactCSSTransitionGroup>
+                           <ReactCSSTransitionGroup component='div'
+                                                    transitionName='settings'
+                                                    transitionAppear={ true }
+                                                    transitionAppearTimeout={ 250 }
+                                                    transitionEnterTimeout={ 250 }
+                                                    transitionLeaveTimeout={ 250 }>
+                               { settingsComponent }
+                           </ReactCSSTransitionGroup>
+                           { channelsComponent }
+                           <Conversation />
+                           { footer }
+                       </div>
+                   </div>
+                   { badge }
+               </div>;
     }
 }
 

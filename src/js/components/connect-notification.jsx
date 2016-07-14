@@ -66,9 +66,9 @@ export class ConnectNotificationComponent extends Component {
                     const separator = index !== array.length - 1 ? ',' : '';
 
                     return <div style={ linkStyle }
-                                className='channel-details'>
-                               <a key={ channel.type }
-                                  style={ linkStyle }
+                                className='channel-details'
+                                key={channel.type}>
+                               <a style={ linkStyle }
                                   href
                                   className='channel-link'
                                   onClick={ onClick }>

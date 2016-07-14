@@ -8,6 +8,8 @@
     box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
     background-color: white;
     z-index: 1;
+    display: -ms-flexbox;; // for IE10
+    display: flex;
 
     .image-upload {
         height: @footer-height;
@@ -30,12 +32,13 @@
 
     form {
         display: inline-block;
+        -ms-flex: 1; // for IE10
+        flex: 1;
     }
 
     .input-container {
-        width: 100%;
         padding: 5px 0;
-        display: inline-block;
+        display: block;
 
         &.no-upload {
             padding: 5px 0 5px @input-horizontal-margin;
