@@ -2,10 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { SK_DARK_CONSTRAST } from '../constants/styles';
 
 export class DefaultAppIcon extends Component {
-    static propTypes = {
-        color: PropTypes.string
-    };
-
     static contextTypes = {
         settings: PropTypes.object.isRequired
     };
