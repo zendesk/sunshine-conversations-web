@@ -294,12 +294,15 @@ export class Smooch {
             console.warn('Smooch.destroy was called before Smooch.init was called properly.');
         }
 
-        const {embedded} = store.getState().appState;
-        disconnectFaye();
-        store.dispatch(reset());
+        stopMonitoringBrowserState();
+
         if (process.env.NODE_ENV !== 'test' && this._container) {
             unmountComponentAtNode(this._container);
         }
+
+        const {embedded} = store.getState().appState;
+        disconnectFaye();
+        store.dispatch(reset());
 
         if (embedded) {
             // retain the embed mode
@@ -309,7 +312,6 @@ export class Smooch {
         }
 
         stopMonitoringUrlChanges();
-        stopMonitoringBrowserState();
         unsubscribeFromStore();
 
         delete this.appToken;
