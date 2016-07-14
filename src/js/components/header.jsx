@@ -8,8 +8,8 @@ import { CHANNEL_DETAILS } from '../constants/channels';
 export class HeaderComponent extends Component {
 
     static contextTypes = {
-        ui: PropTypes.object,
-        settings: PropTypes.object
+        ui: PropTypes.object.isRequired,
+        settings: PropTypes.object.isRequired
     };
 
     showSettings(e) {
