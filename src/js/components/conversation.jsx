@@ -12,7 +12,7 @@ const INTRO_BOTTOM_SPACER = 10;
 
 export class ConversationComponent extends Component {
     static contextTypes = {
-        settings: PropTypes.object
+        settings: PropTypes.object.isRequired
     };
 
     static propTypes = {
@@ -20,10 +20,6 @@ export class ConversationComponent extends Component {
         introHeight: PropTypes.number.isRequired,
         messages: PropTypes.array.isRequired,
         errorNotificationMessage: PropTypes.string
-    };
-
-    state = {
-        logoIsAnchored: true
     };
 
     scrollTimeouts = [];

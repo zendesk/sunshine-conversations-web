@@ -9,6 +9,7 @@ import * as userActions from './actions/user-actions';
 import { setStripeInfo, setApp } from './actions/app-actions';
 import { updateText } from './actions/ui-actions';
 import { resetConversation } from './actions/conversation-actions';
+import { resetIntegrations } from './actions/integrations-actions';
 import * as AppStateActions from './actions/app-state-actions';
 import { reset } from './actions/common-actions';
 
@@ -179,6 +180,7 @@ export class Smooch {
         store.dispatch(resetAuth());
         store.dispatch(userActions.resetUser());
         store.dispatch(resetConversation());
+        store.dispatch(resetIntegrations());
 
         disconnectFaye();
 
@@ -292,12 +294,15 @@ export class Smooch {
             console.warn('Smooch.destroy was called before Smooch.init was called properly.');
         }
 
-        const {embedded} = store.getState().appState;
-        disconnectFaye();
-        store.dispatch(reset());
+        stopMonitoringBrowserState();
+
         if (process.env.NODE_ENV !== 'test' && this._container) {
             unmountComponentAtNode(this._container);
         }
+
+        const {embedded} = store.getState().appState;
+        disconnectFaye();
+        store.dispatch(reset());
 
         if (embedded) {
             // retain the embed mode
@@ -307,7 +312,6 @@ export class Smooch {
         }
 
         stopMonitoringUrlChanges();
-        stopMonitoringBrowserState();
         unsubscribeFromStore();
 
         delete this.appToken;

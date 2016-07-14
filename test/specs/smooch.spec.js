@@ -120,10 +120,10 @@ describe('Smooch', () => {
             disconnectFayeStub = sandbox.stub(conversationService, 'disconnectFaye');
 
             const hasChannelsStub = sandbox.stub(appUtils, 'hasChannels');
-            hasChannelsStub.resolves(false);
+            hasChannelsStub.returns(false);
 
             const getIntegrationStub = sandbox.stub(appUtils, 'getIntegration');
-            getIntegrationStub.resolves(false);
+            getIntegrationStub.returns({});
 
         });
 

@@ -6,16 +6,63 @@ import { mockAppStore } from '../../utils/redux';
 import * as utilsDevice from '../../../src/js/utils/device';
 import * as utilsFaye from '../../../src/js/utils/faye';
 import * as utilsMedia from '../../../src/js/utils/media';
+import * as utilsUser from '../../../src/js/utils/user';
 import * as conversationService from '../../../src/js/services/conversation-service';
 import * as coreService from '../../../src/js/services/core';
 import * as userService from '../../../src/js/services/user-service';
-import { SHOW_NOTIFICATION, SHOW_ERROR_NOTIFICATION } from '../../../src/js/actions/app-state-actions';
+import * as appService from '../../../src/js/services/app-service';
+import * as appStateActions from '../../../src/js/actions/app-state-actions';
+import * as conversationActions from '../../../src/js/actions/conversation-actions';
+import * as userActions from '../../../src/js/actions/user-actions';
+import * as fayeActions from '../../../src/js/actions/faye-actions';
 
-xdescribe('Conversation service', () => {
+function getProps(props = {}) {
+    const defaultProps = {
+        user: {
+            clients: {},
+            email: 'hello@smooch.io'
+        },
+        app: {
+            integrations: [
+                {
+                    _id: '12241',
+                    type: 'telegram',
+                    username: 'chloebot'
+                }
+            ],
+            settings: {
+                web: {
+                    channels: {
+                        telegram: true,
+                        messenger: false,
+                        line: false,
+                        twilio: false,
+                        wechat: false
+                    }
+                }
+            }
+        },
+        conversation: {
+            messages: []
+        },
+        appState: {
+            emailCaptureEnabled: true
+        },
+        faye: {
+            userSubscription: null,
+            conversationSubscription: null
+        }
+    };
+
+    return Object.assign({}, defaultProps, props);
+}
+
+describe('Conversation service', () => {
     var sandbox;
     var coreMock;
     var mockedStore;
     var fayeSubscriptionMock;
+    var userSubscriptionMock;
 
     before(() => {
         sandbox = sinon.sandbox.create();
@@ -38,29 +85,302 @@ xdescribe('Conversation service', () => {
         });
 
         fayeSubscriptionMock = {
-            then: sandbox.spy((cb) => {
-                return cb({
-                    conversation: {
-                        messages: []
-                    }
-                });
-            }),
-            cancel: sandbox.stub()
+            cancel: sandbox.stub().resolves()
+        };
+
+        userSubscriptionMock = {
+            cancel: sandbox.stub().resolves()
         };
 
         sandbox.stub(utilsFaye, 'disconnectClient').returns(null);
-        sandbox.stub(utilsFaye, 'subscribeConversation').returns(null);
-        sandbox.stub(utilsFaye, 'subscribeUser').returns(null);
-        sandbox.stub(userService, 'immediateUpdate').resolves();
+        sandbox.stub(utilsFaye, 'subscribeConversation').resolves();
+        sandbox.stub(utilsFaye, 'subscribeUser').resolves();
         sandbox.stub(utilsMedia, 'isImageUploadSupported').returns(true);
         sandbox.stub(utilsMedia, 'isFileTypeSupported');
         sandbox.stub(utilsMedia, 'resizeImage');
         sandbox.stub(utilsMedia, 'getBlobFromDataUrl').returns('this-is-a-blob');
         sandbox.stub(utilsDevice, 'getDeviceId').returns('1234');
+        sandbox.stub(utilsUser, 'hasLinkableChannels').returns(true);
+        sandbox.stub(utilsUser, 'isChannelLinked').returns(false);
+
+        sandbox.stub(appService, 'showConnectNotification');
+        sandbox.stub(userService, 'immediateUpdate').resolves();
+
+        sandbox.stub(conversationActions, 'setConversation');
+        sandbox.stub(conversationActions, 'replaceMessage');
+        sandbox.stub(conversationActions, 'addMessage');
+        sandbox.stub(conversationActions, 'removeMessage');
+        sandbox.stub(conversationActions, 'resetUnreadCount');
+        sandbox.stub(userActions, 'updateUser');
+        sandbox.stub(appStateActions, 'showErrorNotification');
+        sandbox.stub(fayeActions, 'unsetFayeSubscriptions');
     });
 
     afterEach(() => {
         sandbox.restore();
+    });
+
+    describe('handleConnectNotification', () => {
+        it('should show connect notification on first appuser message', () => {
+            mockedStore = mockAppStore(sandbox, getProps({
+                conversation: {
+                    messages: [
+                        {
+                            received: 1,
+                            role: 'appUser'
+                        }
+                    ]
+                }
+            }));
+
+            conversationService.handleConnectNotification({});
+            appService.showConnectNotification.should.have.been.calledOnce;
+        });
+
+        it('should show connect notification 24 hours later', () => {
+            mockedStore = mockAppStore(sandbox, getProps({
+                conversation: {
+                    messages: [
+                        {
+                            received: 1,
+                            role: 'appUser'
+                        },
+                        {
+                            received: Date.now(),
+                            role: 'appUser'
+                        }
+                    ]
+                }
+            }));
+
+            conversationService.handleConnectNotification({});
+            appService.showConnectNotification.should.have.been.calledOnce;
+
+        });
+
+        it('should not show connect notification if it\'s been less than 24 hours', () => {
+            mockedStore = mockAppStore(sandbox, getProps({
+                conversation: {
+                    messages: [
+                        {
+                            received: Date.now() + 1,
+                            role: 'appUser'
+                        },
+                        {
+                            received: Date.now() + 2,
+                            role: 'appUser'
+                        }
+                    ]
+                }
+            }));
+
+            conversationService.handleConnectNotification({});
+            appService.showConnectNotification.should.not.have.been.called;
+        });
+    });
+
+    describe('sendMessage', () => {
+        const message = {
+            conversation: 'conversation',
+            _clientId: 2,
+            message: 'message'
+        };
+
+        beforeEach(() => {
+            coreMock.conversations.sendMessage.resolves(message);
+        });
+
+        describe('conversation started', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, getProps({
+                    user: {
+                        _id: '1',
+                        conversationStarted: true
+                    }
+                }));
+            });
+
+            it('should replace message', () => {
+                return conversationService.sendMessage('message').then(() => {
+                    userService.immediateUpdate.should.have.been.calledOnce;
+
+                    coreMock.conversations.sendMessage.should.have.been.calledWithMatch('1', {
+                        text: 'message',
+                        role: 'appUser'
+                    });
+
+                    conversationActions.addMessage.should.have.been.called;
+                    conversationActions.setConversation.should.not.have.been.called;
+                    conversationActions.replaceMessage.should.have.been.called;
+                    userActions.updateUser.should.not.have.been.called;
+                });
+            });
+        });
+
+        describe('conversation not started', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, getProps({
+                    user: {
+                        _id: '1',
+                        conversationStated: false
+                    }
+                }));
+            });
+
+            it('should set conversation to started', () => {
+                return conversationService.sendMessage('message').then(() => {
+                    userService.immediateUpdate.should.have.been.calledOnce;
+
+                    coreMock.conversations.sendMessage.should.have.been.calledWithMatch('1', {
+                        text: 'message',
+                        role: 'appUser'
+                    });
+
+                    conversationActions.addMessage.should.have.been.called;
+                    conversationActions.setConversation.should.have.been.called;
+                    conversationActions.replaceMessage.should.not.have.been.called;
+                    userActions.updateUser.should.have.been.called;
+                });
+            });
+        });
+
+        describe('errors', () => {
+            it('should show an error notification', () => {
+                mockedStore = mockAppStore(sandbox, getProps());
+                return conversationService.sendMessage('message').catch(() => {
+                    appStateActions.showErrorNotification.should.have.been.called;
+                    conversationActions.removeMessage.should.have.been.called;
+                });
+            });
+        });
+    });
+
+    describe('uploadImage', () => {
+        const image = {
+            conversation: 'conversation'
+        };
+
+        beforeEach(() => {
+            coreMock.conversations.uploadImage.resolves(image);
+        });
+
+        describe('conversation started', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, getProps({
+                    user: {
+                        _id: '1',
+                        conversationStarted: true
+                    }
+                }));
+                utilsMedia.isFileTypeSupported.returns(true);
+                utilsMedia.resizeImage.resolves({});
+            });
+
+            it('should replace image', () => {
+                return conversationService.uploadImage({}).then(() => {
+                    userService.immediateUpdate.should.have.been.calledOnce;
+
+                    coreMock.conversations.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
+                        role: 'appUser',
+                        deviceId: '1234'
+                    });
+
+                    conversationActions.setConversation.should.not.have.been.called;
+                    conversationActions.replaceMessage.should.have.been.called;
+                    userActions.updateUser.should.not.have.been.called;
+                });
+            });
+        });
+
+        describe('conversation not started', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, getProps({
+                    user: {
+                        _id: '1',
+                        conversationStarted: false
+                    }
+                }));
+                utilsMedia.isFileTypeSupported.returns(true);
+                utilsMedia.resizeImage.resolves({});
+            });
+
+            it('should set conversation to started', () => {
+                return conversationService.uploadImage({}).then(() => {
+                    userService.immediateUpdate.should.have.been.calledOnce;
+
+                    coreMock.conversations.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
+                        role: 'appUser'
+                    });
+
+                    conversationActions.setConversation.should.have.been.called;
+                    conversationActions.replaceMessage.should.not.have.been.called;
+                    userActions.updateUser.should.have.been.called;
+                });
+            });
+        });
+
+        describe('errors', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, getProps({
+                    user: {
+                        _id: '1',
+                        conversationStarted: true
+                    },
+                    ui: {
+                        text: {
+                            invalidFileError: 'invalidFileError'
+                        }
+                    }
+                }));
+            });
+
+            describe('unsupported file type', () => {
+                beforeEach(() => {
+                    coreMock.conversations.uploadImage.resolves({
+                        conversation: 'conversation'
+                    });
+                    utilsMedia.isFileTypeSupported.returns(false);
+                    utilsMedia.resizeImage.resolves({});
+                });
+
+                it('should show an error notification', () => {
+                    return conversationService.uploadImage({}).catch(() => {
+                        appStateActions.showErrorNotification.should.have.been.called;
+                    });
+                });
+            });
+
+            describe('resize error', () => {
+                beforeEach(() => {
+                    coreMock.conversations.uploadImage.resolves({
+                        conversation: 'conversation'
+                    });
+                    utilsMedia.isFileTypeSupported.returns(true);
+                    utilsMedia.resizeImage.rejects();
+                });
+
+                it('should show an error notification', () => {
+                    return conversationService.uploadImage({}).catch(() => {
+                        appStateActions.showErrorNotification.should.have.been.called;
+                    });
+                });
+            });
+
+            describe('upload error', () => {
+                beforeEach(() => {
+                    utilsMedia.isFileTypeSupported.returns(true);
+                    utilsMedia.resizeImage.resolves({});
+                    coreMock.conversations.uploadImage.rejects();
+                });
+
+                it('should show an error notification', () => {
+                    return conversationService.uploadImage({}).catch(() => {
+                        appStateActions.showErrorNotification.should.have.been.called;
+                        conversationActions.removeMessage.should.have.been.called;
+                    });
+                });
+            });
+        });
     });
 
     describe('getConversation', () => {
@@ -81,62 +401,49 @@ xdescribe('Conversation service', () => {
                         messages: []
                     }
                 });
-                mockedStore.dispatch.should.have.been.calledWith({
-                    type: 'SET_CONVERSATION',
-                    conversation: {
-                        messages: []
-                    }
-                });
+
+                conversationActions.setConversation.should.have.been.called;
             });
         });
     });
 
-    describe('connectFaye', () => {
-        describe('without subscription active', () => {
-            beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, {
-                    user: {
-                        _id: '1'
-                    },
-                    faye: {
-                        subscription: undefined
-                    }
-                });
-            });
+    describe('connectFayeConversation', () => {
+        [true, false].forEach((active) => {
+            describe(`with${active ? '' : 'out'} subscription active`, () => {
+                it(`should ${active ? 'not' : ''} subscribe to conversation`, () => {
+                    mockedStore = active ? mockAppStore(sandbox, getProps({
+                        faye: {
+                            conversationSubscription: fayeSubscriptionMock
+                        }
+                    })) : mockAppStore(sandbox, getProps());
 
-            it('should call initFaye and dispatch the result', () => {
-                return conversationService.connectFaye().then((payload) => {
-                    utilsFaye.initFaye.should.have.been.calledOnce;
-                    mockedStore.dispatch.should.have.been.calledWith({
-                        type: 'SET_FAYE_SUBSCRIPTIONS',
-                        subscription: fayeSubscriptionMock
-                    });
-                    payload.should.deep.eq({
-                        conversation: {
-                            messages: []
+                    return conversationService.connectFayeConversation().then(() => {
+                        if (active) {
+                            utilsFaye.subscribeConversation.should.not.have.been.called;
+                        } else {
+                            utilsFaye.subscribeConversation.should.have.been.calledOnce;
                         }
                     });
                 });
             });
         });
+    });
 
-        describe('with subscription active', () => {
-            beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, {
-                    faye: {
-                        subscription: fayeSubscriptionMock
-                    }
-                });
-            });
+    describe('connectFayeUser', () => {
+        [true, false].forEach((subscribed) => {
+            describe(`user ${subscribed ? '' : 'not'} subscribed`, () => {
+                it(`should ${subscribed ? 'not' : ''} subscribe user`, () => {
+                    mockedStore = subscribed ? mockAppStore(sandbox, getProps({
+                        faye: {
+                            userSubscription: userSubscriptionMock
+                        }
+                    })) : mockAppStore(sandbox, getProps());
 
-            it('should do nothing and return the subscription', () => {
-                return conversationService.connectFaye().then((payload) => {
-                    utilsFaye.initFaye.should.not.have.been.calledOnce;
-                    coreMock.conversations.get.should.not.have.been.called;
-                    mockedStore.dispatch.should.not.have.been.called;
-                    payload.should.deep.eq({
-                        conversation: {
-                            messages: []
+                    return conversationService.connectFayeUser().then(() => {
+                        if (subscribed) {
+                            utilsFaye.subscribeUser.should.have.not.been.called;
+                        } else {
+                            utilsFaye.subscribeUser.should.have.been.calledOnce;
                         }
                     });
                 });
@@ -145,557 +452,119 @@ xdescribe('Conversation service', () => {
     });
 
     describe('disconnectFaye', () => {
-        beforeEach(() => {
-            sandbox.stub(conversationService, 'getConversation');
-            conversationService.getConversation.resolves({
-                conversation: {
-                    messages: []
-                }
-            });
-        });
-
-        describe('without subscription active', () => {
-            beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, {
-                    faye: {
-                        subscription: undefined
-                    }
-                });
-            });
-
-            it('should do nothing', () => {
-                conversationService.disconnectFaye();
-                mockedStore.dispatch.should.not.have.been.called;
-            });
-        });
-
-        describe('with subscription active', () => {
-            beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, {
-                    faye: {
-                        subscription: fayeSubscriptionMock
-                    }
-                });
-            });
-
-            it('should call initFaye and dispatch the result', () => {
-                conversationService.disconnectFaye();
-                fayeSubscriptionMock.cancel.should.have.been.calledOnce;
-                mockedStore.dispatch.should.have.been.calledWith({
-                    type: 'UNSET_FAYE_SUBSCRIPTIONS'
-                });
-            });
-        });
-    });
-
-    describe('sendMessage', () => {
-        describe('conversation started and connected to faye', () => {
-            beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, {
-                    user: {
-                        _id: '1',
-                        conversationStarted: true
-                    },
-                    appState: {
-                        settingsEnabled: true
-                    },
-                    conversation: {
-                        messages: []
-                    },
-                    faye: {
-                        subscription: fayeSubscriptionMock
-                    }
-                });
-
-                coreMock.conversations.sendMessage.resolves({
-                    conversation: 'conversation'
-                });
-
-                sandbox.stub(conversationService, 'connectFaye').resolves();
-            });
-
-            it('should not connect faye', () => {
-                return conversationService.sendMessage('message').then(() => {
-                    userService.immediateUpdate.should.have.been.calledOnce;
-
-                    coreMock.conversations.sendMessage.should.have.been.calledWithMatch('1', {
-                        text: 'message',
-                        role: 'appUser'
-                    });
-
-                    utilsFaye.initFaye.should.not.have.been.called;
-                });
-            });
-        });
-
-        describe('conversation started and not connected to faye', () => {
-            beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, {
-                    user: {
-                        _id: '1',
-                        conversationStarted: true
-                    },
-                    appState: {
-                        settingsEnabled: true
-                    },
-                    conversation: {
-                        messages: []
-                    },
-                    faye: {
-                        subscription: undefined
-                    }
-                });
-
-                coreMock.conversations.sendMessage.resolves({
-                    conversation: 'conversation'
-                });
-            });
-
-            it('should connect faye', () => {
-                return conversationService.sendMessage('message').then(() => {
-                    userService.immediateUpdate.should.have.been.calledOnce;
-
-                    coreMock.conversations.sendMessage.should.have.been.calledWithMatch('1', {
-                        text: 'message',
-                        role: 'appUser'
-                    });
-
-                    utilsFaye.initFaye.should.have.been.calledOnce;
-                });
-            });
-        });
-
-        describe('conversation not started', () => {
-            beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, {
-                    user: {
-                        _id: '1',
-                        conversationStarted: false
-                    },
-                    appState: {
-                        settingsEnabled: true
-                    },
-                    conversation: {
-                        messages: []
-                    },
-                    faye: {
-                        subscription: undefined
-                    }
-                });
-
-                coreMock.conversations.sendMessage.resolves({
-                    conversation: 'conversation'
-                });
-            });
-
-            it('should connect faye', () => {
-                return conversationService.sendMessage('message').then(() => {
-                    userService.immediateUpdate.should.have.been.calledOnce;
-
-                    coreMock.conversations.sendMessage.should.have.been.calledWithMatch('1', {
-                        text: 'message',
-                        role: 'appUser'
-                    });
-
-                    utilsFaye.initFaye.should.have.been.calledOnce;
-                });
-            });
-
-            it('should set conversationStarted to true', () => {
-                return conversationService.sendMessage('message').then(() => {
-                    mockedStore.dispatch.should.have.been.calledWith({
-                        type: 'UPDATE_USER',
-                        properties: {
-                            conversationStarted: true
+        [true, false].forEach((active) => {
+            describe(`with${active ? '' : 'out'} subscription active`, () => {
+                it(`should ${active ? '' : 'not'} cancel subscription`, () => {
+                    mockedStore = active ? mockAppStore(sandbox, getProps({
+                        faye: {
+                            conversationSubscription: fayeSubscriptionMock
                         }
-                    });
-                });
-            });
-        });
-    });
+                    })) : mockAppStore(sandbox, getProps());
+                    conversationService.disconnectFaye();
 
-    describe('uploadImage', () => {
-        describe('conversation started and connected to faye', () => {
-            beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, {
-                    user: {
-                        _id: '1',
-                        conversationStarted: true
-                    },
-                    appState: {
-                        settingsEnabled: true
-                    },
-                    conversation: {
-                        messages: []
-                    },
-                    faye: {
-                        subscription: fayeSubscriptionMock
-                    }
-                });
-
-                coreMock.conversations.uploadImage.resolves({
-                    conversation: 'conversation'
-                });
-
-                sandbox.stub(conversationService, 'handleFirstUserMessage');
-                sandbox.stub(conversationService, 'connectFaye').resolves();
-                utilsMedia.isFileTypeSupported.returns(true);
-                utilsMedia.resizeImage.resolves({});
-            });
-
-            it('should not connect faye', () => {
-                return conversationService.uploadImage({}).then(() => {
-                    userService.immediateUpdate.should.have.been.calledOnce;
-
-                    coreMock.conversations.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
-                        role: 'appUser',
-                        deviceId: '1234'
-                    });
-
-                    utilsFaye.initFaye.should.not.have.been.called;
-                });
-            });
-        });
-
-        describe('conversation started and not connected to faye', () => {
-            beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, {
-                    user: {
-                        _id: '1',
-                        conversationStarted: true
-                    },
-                    appState: {
-                        settingsEnabled: true
-                    },
-                    conversation: {
-                        messages: []
-                    },
-                    faye: {
-                        subscription: undefined
-                    },
-                    ui: {
-                        text: {
-
-                        }
-                    }
-                });
-
-                sandbox.stub(conversationService, 'handleFirstUserMessage');
-                sandbox.stub(conversationService, 'connectFaye').resolves();
-                utilsMedia.isFileTypeSupported.returns(true);
-                utilsMedia.resizeImage.resolves({});
-            });
-
-            it('should connect faye', () => {
-                return conversationService.uploadImage({}).then(() => {
-                    userService.immediateUpdate.should.have.been.calledOnce;
-
-                    coreMock.conversations.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
-                        role: 'appUser'
-                    });
-
-                    utilsFaye.initFaye.should.have.been.calledOnce;
-                });
-            });
-        });
-
-        describe('conversation not started', () => {
-            beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, {
-                    user: {
-                        _id: '1',
-                        conversationStarted: true
-                    },
-                    appState: {
-                        settingsEnabled: true
-                    },
-                    conversation: {
-                        messages: []
-                    },
-                    faye: {
-                        subscription: undefined
-                    },
-                    ui: {
-                        text: {
-
-                        }
-                    }
-                });
-
-                sandbox.stub(conversationService, 'handleFirstUserMessage');
-                sandbox.stub(conversationService, 'connectFaye').resolves();
-                utilsMedia.isFileTypeSupported.returns(true);
-                utilsMedia.resizeImage.resolves({});
-            });
-
-            it('should connect faye', () => {
-                return conversationService.uploadImage({}).then(() => {
-                    userService.immediateUpdate.should.have.been.calledOnce;
-
-                    coreMock.conversations.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
-                        role: 'appUser'
-                    });
-
-                    utilsFaye.initFaye.should.have.been.calledOnce;
-                });
-            });
-        });
-
-        describe('errors', () => {
-            beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, {
-                    user: {
-                        _id: '1',
-                        conversationStarted: true
-                    },
-                    appState: {
-                        settingsEnabled: true
-                    },
-                    conversation: {
-                        messages: []
-                    },
-                    faye: {
-                        subscription: fayeSubscriptionMock
-                    },
-                    ui: {
-                        text: {
-                            invalidFileError: 'invalidFileError'
-                        }
-                    }
-                });
-
-                sandbox.stub(conversationService, 'handleFirstUserMessage');
-                sandbox.stub(conversationService, 'connectFaye').resolves();
-            });
-
-            describe('unsupported file type', () => {
-                beforeEach(() => {
-                    coreMock.conversations.uploadImage.resolves({
-                        conversation: 'conversation'
-                    });
-                    utilsMedia.isFileTypeSupported.returns(false);
-                    utilsMedia.resizeImage.resolves({});
-                });
-
-                it('should show an error notification', () => {
-                    return conversationService.uploadImage({}).catch(() => {
-                        mockedStore.getActions().should.include({
-                            type: SHOW_ERROR_NOTIFICATION,
-                            message: 'invalidFileError'
-                        });
-                    });
-                });
-            });
-
-            describe('resize error', () => {
-                beforeEach(() => {
-                    coreMock.conversations.uploadImage.resolves({
-                        conversation: 'conversation'
-                    });
-                    utilsMedia.isFileTypeSupported.returns(true);
-                    utilsMedia.resizeImage.rejects();
-                });
-
-                it('should show an error notification', () => {
-                    return conversationService.uploadImage({}).catch(() => {
-                        mockedStore.dispatch.should.have.been.calledWith({
-                            type: SHOW_ERROR_NOTIFICATION,
-                            message: 'invalidFileError'
-                        });
-                    });
-                });
-            });
-
-            describe('upload error', () => {
-                beforeEach(() => {
-                    utilsMedia.isFileTypeSupported.returns(true);
-                    utilsMedia.resizeImage.resolves({});
-                    coreMock.conversations.uploadImage.rejects();
-                });
-
-                it('should show an error notification', () => {
-                    return conversationService.uploadImage({}).catch(() => {
-                        mockedStore.dispatch.should.have.been.calledWith({
-                            type: SHOW_ERROR_NOTIFICATION,
-                            message: 'invalidFileError'
-                        });
-                    });
-                });
-            });
-        });
-    });
-
-
-    function getScenarioName(scenario) {
-        const messageType = scenario.state.conversation.messages.filter((message) => message.role === 'appUser').length === 1 ?
-            'first appUser message' :
-            'not first message';
-        const settingsState = scenario.state.appState.settingsEnabled ? 'settings enabled' : 'settings disabled';
-        const emailState = scenario.state.user.email ? 'email set' : 'email not set';
-
-        // since the dispatch function is a no op, the last message in the state is assumed to be the last message dispatched
-        const role = scenario.state.conversation.messages[scenario.state.conversation.messages.length - 1].role;
-        const messageRole = `dispatching message with ${role} role`;
-
-        return `${messageType}, ${settingsState}, ${emailState}, ${messageRole}`;
-    }
-
-
-    describe('handleFirstUserMessage', () => {
-        let store;
-
-        [{
-            description: 'First message by appUser',
-            state: {
-                appState: {
-                    settingsEnabled: true
-                },
-                user: {
-                    email: undefined
-                },
-                conversation: {
-                    messages: [
-                        {
-                            role: 'appUser'
-                        }
-                    ]
-                },
-                ui: {
-                    text: ''
-                }
-            },
-            outcome: true
-        }, {
-            description: 'Multiple messages by appUser',
-            state: {
-                appState: {
-                    settingsEnabled: true
-                },
-                user: {
-                    email: undefined
-                },
-                conversation: {
-                    messages: [
-                        {
-                            role: 'appUser'
-                        },
-                        {
-                            role: 'appUser'
-                        }
-                    ]
-                },
-                ui: {
-                    text: ''
-                }
-            },
-            outcome: false
-        }, {
-            description: 'Multiple messages by appMaker, but first by appUser',
-            state: {
-                appState: {
-                    settingsEnabled: true
-                },
-                user: {
-                    email: undefined
-                },
-                conversation: {
-                    messages: [
-                        {
-                            role: 'appMaker'
-                        },
-                        {
-                            role: 'appMaker'
-                        },
-                        {
-                            role: 'appUser'
-                        }
-                    ]
-                },
-                ui: {
-                    text: ''
-                }
-            },
-            outcome: true
-        }, {
-            description: 'Email set',
-            state: {
-                appState: {
-                    settingsEnabled: true
-                },
-                user: {
-                    email: 'test@test.com'
-                },
-                conversation: {
-                    messages: [
-                        {
-                            role: 'appUser'
-                        }
-                    ]
-                },
-                ui: {
-                    text: ''
-                }
-            },
-            outcome: false
-        }, {
-            description: 'First message by appMaker',
-            state: {
-                appState: {
-                    settingsEnabled: true
-                },
-                user: {
-                    email: undefined
-                },
-                conversation: {
-                    messages: [
-                        {
-                            role: 'appMaker'
-                        }
-                    ]
-                },
-                ui: {
-                    text: ''
-                }
-            },
-            outcome: false
-        }, {
-            description: 'Settings disabled',
-            state: {
-                appState: {
-                    settingsEnabled: false
-                },
-                user: {
-                    email: undefined
-                },
-                conversation: {
-                    messages: [
-                        {
-                            role: 'appUser'
-                        }
-                    ]
-                },
-                ui: {
-                    text: ''
-                }
-            },
-            outcome: false
-        }].forEach((scenario) => {
-            describe(`${scenario.description}: ${getScenarioName(scenario)}`, () => {
-                beforeEach(() => {
-                    store = mockAppStore(sandbox, Object.assign({}, scenario.state));
-                });
-
-                it(`should ${scenario.outcome ? '' : 'not'} call dispatch with showNotification`, () => {
-                    conversationService.handleFirstUserMessage();
-                    if (scenario.outcome) {
-                        store.dispatch.should.have.been.calledWith({
-                            type: SHOW_NOTIFICATION,
-                            message: store.getState().ui.text.settingsNotificationText
-                        });
+                    userSubscriptionMock.cancel.should.not.have.been.called;
+                    utilsFaye.disconnectClient.should.have.been.called;
+                    fayeActions.unsetFayeSubscriptions.should.have.been.called;
+                    if (active) {
+                        fayeSubscriptionMock.cancel.should.have.been.called;
                     } else {
-                        store.dispatch.should.not.have.been.called;
+                        fayeSubscriptionMock.cancel.should.not.have.been.called;
                     }
                 });
+            });
+        });
+
+        [true, false].forEach((subscribed) => {
+            describe(`user ${subscribed ? '' : 'not'} subscribed`, () => {
+                it(`should ${subscribed ? '' : 'not'} cancel their subscription`, () => {
+                    mockedStore = subscribed ? mockAppStore(sandbox, getProps({
+                        faye: {
+                            userSubscription: userSubscriptionMock
+                        }
+                    })) : mockAppStore(sandbox, getProps());
+                    conversationService.disconnectFaye();
+
+                    fayeSubscriptionMock.cancel.should.not.have.been.called;
+                    utilsFaye.disconnectClient.should.have.been.called;
+                    fayeActions.unsetFayeSubscriptions.should.have.been.called;
+                    if (subscribed) {
+                        userSubscriptionMock.cancel.should.have.been.called;
+                    } else {
+                        userSubscriptionMock.cancel.should.not.have.been.called;
+                    }
+                });
+            });
+        });
+    });
+
+    describe('resetUnreadCount', () => {
+        it('should reset unread count to 0', () => {
+            coreMock.conversations.resetUnreadCount.resolves();
+            mockedStore = mockAppStore(sandbox, getProps({
+                user: {
+                    _id: '1'
+                },
+                conversation: {
+                    unreadCount: 20
+                }
+            }));
+            conversationService.resetUnreadCount();
+            coreMock.conversations.resetUnreadCount.should.have.been.calledWithMatch('1');
+        });
+    });
+
+    describe('handleConversationUpdated', () => {
+        [true, false].forEach((active) => {
+            describe(`with${active ? '' : 'out'} subscription active`, () => {
+                it(`should ${active ? 'not' : ''} get conversation`, () => {
+                    mockedStore = active ? mockAppStore(sandbox, getProps({
+                        user: {
+                            _id: '1'
+                        },
+                        faye: {
+                            conversationSubscription: fayeSubscriptionMock
+                        }
+                    })) : mockAppStore(sandbox, getProps());
+
+                    return conversationService.handleConversationUpdated().then(() => {
+                        if (active) {
+                            coreMock.conversations.get.should.not.have.been.called;
+                        } else {
+                            coreMock.conversations.get.should.have.been.calledOnce;
+                        }
+                    });
+                });
+            });
+        });
+
+    });
+
+    describe('postPostbacks', () => {
+        const actionId = '1234';
+
+        beforeEach(() => {
+            coreMock.conversations.postPostback.resolves();
+            mockedStore = mockAppStore(sandbox, getProps({
+                user: {
+                    _id: '1'
+                },
+                ui: {
+                    text: {
+                        actionPostbackError: 'action postback error'
+                    }
+                }
+            }));
+        });
+
+        it('should post postback', () => {
+            conversationService.postPostback(actionId);
+            coreMock.conversations.postPostback.should.have.been.calledWithMatch('1', actionId);
+        });
+
+        it('should show error notification on error', () => {
+            return conversationService.postPostback(actionId).catch(() => {
+                coreMock.conversations.postPostback.should.have.been.calledWithMatch('1', actionId);
+                appStateActions.showErrorNotification.should.have.been.calledWithMatch('action postback error');
             });
         });
     });

@@ -3,7 +3,7 @@ import isMobile from 'ismobilejs';
 
 export class TwilioChannelContent extends Component {
     static contextTypes = {
-        settings: PropTypes.object
+        settings: PropTypes.object.isRequired
     }
 
     render() {

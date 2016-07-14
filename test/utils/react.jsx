@@ -1,5 +1,6 @@
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
+import { ParentComponentWithContext } from './parent-component';
 
 export function scryRenderedDOMComponentsWithId(tree, id) {
     return TestUtils.findAllInRenderedTree(tree, function(inst) {
@@ -24,9 +25,33 @@ export function mockComponent(sinon, module, mockTagName = 'div', props = null) 
 
     return sinon.stub(module.prototype, 'render', function() {
         return React.createElement(
-        mockTagName,
-        props,
-        this.props.children
+            mockTagName,
+            props,
+            this.props.children
         );
     });
+}
+
+export function getContext(context = {}) {
+    const defaultContext = {
+        app: {},
+        settings: {},
+        ui: {}
+    };
+
+    return {
+        ...defaultContext,
+        ...context
+    };
+}
+
+export function wrapComponentWithContext(Component, props, context = getContext()) {
+    const wrapper = TestUtils.renderIntoDocument(
+        <ParentComponentWithContext context={ context }
+                                    withRef={ true }>
+            <Component {...props} />
+        </ParentComponentWithContext>
+    );
+
+    return wrapper.getWrappedInstance();
 }

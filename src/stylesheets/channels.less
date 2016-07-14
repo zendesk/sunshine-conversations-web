@@ -63,15 +63,10 @@
 
     }
 
-    .fb-send-to-messenger {
-        margin-left: 54px;
-
-        @media (max-width: @widget-min-width) {
-            margin-left: 0;
-        }
-
-        @media (min-width: @screen-lg-min) {
-            margin-left: 90px;
-        }
+    .sk-fb-button-wrapper {
+        text-align: left;
+        // -76px is half the width of the 'Send to Messenger' button
+        transform: translateX(-76px);
+        margin-left: 50%;
     }
 }
