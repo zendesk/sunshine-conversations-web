@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { SK_DARK_CONSTRAST } from '../constants/styles';
+import { SK_DARK_CONTRAST } from '../constants/styles';
 
 export class DefaultAppIcon extends Component {
     static contextTypes = {
@@ -9,7 +9,7 @@ export class DefaultAppIcon extends Component {
     render() {
         const {settings: {brandColor, isBrandColorDark}} = this.context;
         const backgroundFill = `#${brandColor}`;
-        const businessPathFill = isBrandColorDark ? 'transparent' : SK_DARK_CONSTRAST;
+        const businessPathFill = isBrandColorDark ? 'transparent' : SK_DARK_CONTRAST;
 
         return <svg className='app-icon'
                     viewBox='0 0 80 80'
