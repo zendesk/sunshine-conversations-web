@@ -49,4 +49,31 @@ describe('Badge Component', () => {
         TestUtils.scryRenderedDOMComponentsWithTag(component, 'img').length.should.eq(1);
     });
 
+    it('should not render unread count if none', () => {
+        const props = {
+            unreadCount: 0
+        };
+
+        const context = {
+            settings: {}
+        };
+
+        const component = wrapComponentWithContext(BadgeComponent, props, context);
+        TestUtils.scryRenderedDOMComponentsWithClass(component, 'unread-badge').length.should.eq(0);
+    });
+
+    it('should render unread count if none', () => {
+        const props = {
+            unreadCount: 3
+        };
+
+        const context = {
+            settings: {}
+        };
+
+        const component = wrapComponentWithContext(BadgeComponent, props, context);
+        const unreadBadge = TestUtils.findRenderedDOMComponentWithClass(component, 'unread-badge');
+        unreadBadge.textContent.should.eq('3');
+    });
+
 });

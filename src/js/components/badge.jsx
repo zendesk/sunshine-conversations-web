@@ -51,7 +51,8 @@ export class BadgeComponent extends Component {
     };
 
     static defaultProps = {
-        shown: true
+        shown: true,
+        unreadCount: 0
     };
 
     onClick = (e) => {
