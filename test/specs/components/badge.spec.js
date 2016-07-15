@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
-import { Badge, DefaultBadgeIcon } from '../../../src/js/components/badge';
+import { BadgeComponent, DefaultBadgeIcon } from '../../../src/js/components/badge';
 
 import { mockComponent, wrapComponentWithContext } from '../../utils/react';
 
@@ -28,7 +28,7 @@ describe('Badge Component', () => {
             settings: {}
         };
 
-        const component = wrapComponentWithContext(Badge, props, context);
+        const component = wrapComponentWithContext(BadgeComponent, props, context);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedDefaultBadgeIcon').length.should.eq(1);
         TestUtils.scryRenderedDOMComponentsWithTag(component, 'img').length.should.eq(0);
     });
@@ -44,7 +44,7 @@ describe('Badge Component', () => {
             }
         };
 
-        const component = wrapComponentWithContext(Badge, props, context);
+        const component = wrapComponentWithContext(BadgeComponent, props, context);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedDefaultBadgeIcon').length.should.eq(0);
         TestUtils.scryRenderedDOMComponentsWithTag(component, 'img').length.should.eq(1);
     });
