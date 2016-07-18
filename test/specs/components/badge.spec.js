@@ -62,7 +62,7 @@ describe('Badge Component', () => {
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'unread-badge').length.should.eq(0);
     });
 
-    it('should render unread count if none', () => {
+    it('should render the correct unread count', () => {
         const props = {
             unreadCount: 3
         };
