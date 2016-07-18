@@ -37,7 +37,7 @@ export class HeaderComponent extends Component {
         const showSettingsButton = (hasChannels(settings) || emailCaptureEnabled) && !settingsMode;
 
         const unreadBadge = !settingsMode && unreadCount > 0 ? (
-            <div id='sk-badge'>
+            <div className='unread-badge'>
                 { unreadCount }
             </div>
             ) : null;

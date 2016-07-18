@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 
 import { openWidget } from '../services/app-service';
 import { SK_DARK_CONTRAST } from '../constants/styles';
@@ -39,17 +40,19 @@ export class DefaultBadgeIcon extends Component {
     }
 }
 
-export class Badge extends Component {
+export class BadgeComponent extends Component {
     static contextTypes = {
         settings: PropTypes.object.isRequired
     };
 
     static propTypes = {
-        shown: PropTypes.bool
+        shown: PropTypes.bool,
+        unreadCount: PropTypes.number
     };
 
     static defaultProps = {
-        shown: true
+        shown: true,
+        unreadCount: 0
     };
 
     onClick = (e) => {
@@ -58,30 +61,43 @@ export class Badge extends Component {
     };
 
     render() {
+        const {unreadCount, shown} = this.props;
         const {settings: {brandColor, isBrandColorDark, badgeIconUrl}} = this.context;
-        const {shown} = this.props;
 
         const style = {
             backgroundColor: `#${brandColor}`
         };
 
-        const classNames = ['sk-badge'];
-
-        classNames.push(`badge-${shown ? 'shown' : 'hidden'}`);
-
         let content;
 
         if (badgeIconUrl) {
-            content = <img src={ badgeIconUrl } />;
+            content = <div className='badge-icon'>
+                          <img src={ badgeIconUrl } />
+                      </div>;
         } else {
             content = <DefaultBadgeIcon isBrandColorDark={ isBrandColorDark }
-                                   brandColor={ brandColor } />;
+                                        brandColor={ brandColor } />;
         }
 
-        return <div className={ classNames.join(' ') }
+        let unreadBadge;
+        if (unreadCount > 0) {
+            unreadBadge = <div className='unread-badge'>
+                              { unreadCount }
+                          </div>;
+        }
+
+        return <div id='sk-badge'
+                    className={ `badge-${shown ? 'shown' : 'hidden'}` }
                     style={ style }
                     onClick={ this.onClick }>
+                   { unreadBadge }
                    { content }
                </div>;
     }
 }
+
+export const Badge = connect(({conversation: {unreadCount}}) => {
+    return {
+        unreadCount
+    };
+})(BadgeComponent);
