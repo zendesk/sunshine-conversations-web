@@ -3,7 +3,6 @@
     .hyphens();
 }
 
-
 .input-mixin() {
     background-color: #fbfbfb;
     border: 1px solid #e8e8e8;
@@ -45,4 +44,18 @@
 .flex(@value) {
     -ms-flex: @value; // for IE10
     flex: @value;
+}
+
+.content-width-mixin() {
+    width: @content-width-md;
+
+    @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-min) {
+        width: @content-width-lg;
+    }
+    @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
+        width: @content-width-sm;
+    }
+    @media (max-width: @screen-sm-min) {
+        width: @content-width-xs;
+    }
 }
