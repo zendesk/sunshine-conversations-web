@@ -29,8 +29,9 @@ export const CHANNEL_DETAILS = {
     twilio: {
         name: 'SMS',
         descriptionKey: 'smsChannelDescription',
-        isLinkable: false,
+        isLinkable: true,
         ...integrationsAssets.sms,
+        renderPageIfLinked: true,
         Component: TwilioChannelContent
     },
     telegram: {
