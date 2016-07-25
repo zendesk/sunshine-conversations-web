@@ -9,9 +9,8 @@ import isMobile from 'ismobilejs';
 export class TwilioChannelContentComponent extends Component {
 
     linkTwilioNumber = () => {
-        const {state: {formattedNumber}} = this._telInput;
         updateTwilioAttributes({
-            number: formattedNumber,
+            number: this.props.number,
             linkState: 'pending'
         });
     }
@@ -19,6 +18,12 @@ export class TwilioChannelContentComponent extends Component {
     onRetry = () => {
         updateTwilioAttributes({
             linkState: 'linked'
+        });
+    }
+
+    handleInputChange = (telNumber) => {
+        updateTwilioAttributes({
+            number: telNumber
         });
     }
 
