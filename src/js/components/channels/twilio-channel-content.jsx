@@ -94,32 +94,26 @@ export class TwilioChannelContentComponent extends Component {
                                  </div>;
 
         const sendTextUrl = `sms://${phoneNumber}`;
+        const linkedComponentButton = isMobile.phone ? <button className='btn btn-sk-primary twilio-linking'
+                                                               onClick={ this.onStartTexting }>
+                                                           Start Texting
+                                                       </button> :
+            <button className='btn btn-sk-primary twilio-linking'
+                    onClick={ this.onSendText }>
+                Send me a text
+            </button>;
 
-        const mobileLinkedComponent = <div>
-                                          <div className='twilio-linking unconfirmed-state'>
-                                              <i className='fa fa-phone'
-                                                 style={ iconStyle }></i>
-                                              <span className='phone-number'>{ number }</span>
-                                              <a onClick={ this.onChangeNumber }>Change my number</a>
-                                          </div>
-                                          <a href={ sendTextUrl }>
-                                              <button className='btn btn-sk-primary twilio-linking'
-                                                      onClick={ this.onStartTexting }> Start Texting </button>
-                                          </a>
-                                      </div>;
-        const desktopLinkedComponent = <div>
-                                           <div className='twilio-linking linked-state'>
-                                               <i className='fa fa-phone'
-                                                  style={ iconStyle }></i>
-                                               <span className='phone-number'>{ number }</span>
-                                               <a onClick={ this.onChangeNumber }>Change my number</a>
-                                           </div>
-                                           <a href={ sendTextUrl }>
-                                               <button className='btn btn-sk-primary twilio-linking'
-                                                       onClick={ this.onSendText }> Send me a text </button>
-                                           </a>
-                                       </div>;
-        const linkedComponent = isMobile.phone ? mobileLinkedComponent : desktopLinkedComponent;
+        const linkedComponent = <div>
+                                    <div className='twilio-linking linked-state'>
+                                        <i className='fa fa-phone'
+                                           style={ iconStyle }></i>
+                                        <span className='phone-number'>{ number }</span>
+                                        <a onClick={ this.onChangeNumber }>Change my number</a>
+                                    </div>
+                                    <a href={ sendTextUrl }>
+                                        { linkedComponentButton }
+                                    </a>
+                                </div>;
         if (linkState === 'pending') {
             return pendingComponent;
         } else if (linkState === 'linked') {
