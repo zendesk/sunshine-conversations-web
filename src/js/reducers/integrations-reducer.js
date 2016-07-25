@@ -1,11 +1,16 @@
 import { RESET_APP } from '../actions/app-actions';
 import { RESET } from '../actions/common-actions';
-import { SET_WECHAT_QR_CODE, SET_WECHAT_ERROR, UNSET_WECHAT_ERROR, RESET_INTEGRATIONS } from '../actions/integrations-actions';
+import { SET_WECHAT_QR_CODE, SET_WECHAT_ERROR, UNSET_WECHAT_ERROR, SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE, RESET_INTEGRATIONS } from '../actions/integrations-actions';
 
 const INITIAL_STATE = {
     wechat: {
         hasError: false,
         qrCode: ''
+    },
+    twilio: {
+        linkState: 'unlinked',
+        number: '',
+        hasError: false
     }
 };
 
@@ -41,6 +46,16 @@ export function IntegrationsReducer(state = INITIAL_STATE, action) {
                     hasError: false
                 }
             };
+        case SET_TWILIO_INTEGRATION_STATE:
+            return {
+                ...state,
+                twilio: {
+                    ...state.twilio,
+                    ...action.attrs
+                }
+            };
+        case RESET_TWILIO_INTEGRATION_STATE:
+            return INITIAL_STATE;
         default:
             return state;
     }
