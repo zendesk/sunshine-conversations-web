@@ -17,7 +17,7 @@ export class TwilioChannelContentComponent extends Component {
 
     onRetry = () => {
         updateTwilioAttributes({
-            linkState: 'linked'
+            linkState: 'unlinked'
         });
     }
 
