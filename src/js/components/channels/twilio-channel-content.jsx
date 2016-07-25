@@ -127,6 +127,7 @@ export class TwilioChannelContentComponent extends Component {
 export const TwilioChannelContent = connect((state) => {
     return {
         ...state.integrations.twilio,
-        settings: state.app.settings.web
+        settings: state.app.settings.web,
+        user: state.user
     };
 })(TwilioChannelContentComponent);

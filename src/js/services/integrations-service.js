@@ -33,3 +33,15 @@ export function updateTwilioAttributes(attr) {
 export function resetTwilioAttributes() {
     store.dispatch(resetTwilioIntegrationState());
 }
+
+export function fetchTwilioAttributes() {
+    const {user: {clients}} = store.getState();
+    const client = clients.find((client) => client.platform === 'twilio');
+
+    if (client) {
+        updateTwilioAttributes({
+            linkState: 'linked',
+            number: client.info.phoneNumber
+        });
+    }
+}
