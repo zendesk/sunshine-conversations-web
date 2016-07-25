@@ -9,7 +9,7 @@ import isMobile from 'ismobilejs';
 export class TwilioChannelContentComponent extends Component {
 
     linkTwilioNumber = () => {
-        const {state: {formattedNumber}} = this.refs.telInput;
+        const {state: {formattedNumber}} = this._telInput;
         updateTwilioAttributes({
             number: formattedNumber,
             linkState: 'pending'
@@ -71,7 +71,7 @@ export class TwilioChannelContentComponent extends Component {
                                                         Continue
                                                     </button> : '';
         const unlinkedComponent = <div>
-                                      <ReactTelephoneInput ref='telInput'
+                                      <ReactTelephoneInput ref={ (c) => this._telInput = c }
                                                            defaultCountry='ca'
                                                            onChange={ this.handleInputChange }
                                                            onValid={ this.onNumberValid }
