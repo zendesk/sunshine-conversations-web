@@ -58,15 +58,9 @@ export class HeaderComponent extends Component {
 
         let closeHandle = null;
         if (!embedded) {
-            closeHandle = widgetOpened ? (
-                <div className='sk-close-handle sk-close-hidden'>
-                    <i className='fa fa-times'></i>
-                </div>
-                ) : (
-                <div className='sk-show-handle sk-appear-hidden'>
-                    <i className='fa fa-arrow-up'></i>
-                </div>
-                );
+            closeHandle = widgetOpened ? <div className='sk-close-handle sk-close-hidden'>
+                                             <i className='fa fa-times'></i>
+                                         </div> : null;
         }
 
         const settingsTextStyle = {
@@ -91,14 +85,14 @@ export class HeaderComponent extends Component {
         }
 
         return <div id={ settingsMode ? 'sk-settings-header' : 'sk-header' }
-                 onClick={ !embedded && toggleWidget }
-                 className='sk-header-wrapper'
-                 style={ style }>
-                { settingsButton }
-                { settingsMode ? settingsText : headerText }
-                { unreadBadge }
-                { closeHandle }
-            </div>;
+                    onClick={ !embedded && toggleWidget }
+                    className='sk-header-wrapper'
+                    style={ style }>
+                   { settingsButton }
+                   { settingsMode ? settingsText : headerText }
+                   { unreadBadge }
+                   { closeHandle }
+               </div>;
     }
 }
 
