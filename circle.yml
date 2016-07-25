@@ -27,7 +27,7 @@ deployment:
       - grunt deploy
 
   staging:
-    branch: f/staging-deployment
+    branch: integration
     commands:
       - npm run build:staging
       - aws s3 cp dist/smooch.js $SK_JS_STAGING_PATH > /dev/null
