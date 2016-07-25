@@ -1,6 +1,6 @@
 import { store } from '../stores/app-store';
 import { core } from './core';
-import { setWeChatQRCode, setWeChatError, unsetWeChatError } from '../actions/integrations-actions';
+import { setWeChatQRCode, setWeChatError, unsetWeChatError, setTwilioIntegrationState, resetTwilioIntegrationState } from '../actions/integrations-actions';
 import { getUserId } from './user-service';
 
 let fetchingWeChat = false;
@@ -24,4 +24,12 @@ export function fetchWeChatQRCode() {
         .then(() => {
             fetchingWeChat = false;
         });
+}
+
+export function updateTwilioAttributes(attr) {
+    store.dispatch(setTwilioIntegrationState(attr));
+}
+
+export function resetTwilioAttributes() {
+    store.dispatch(resetTwilioIntegrationState());
 }
