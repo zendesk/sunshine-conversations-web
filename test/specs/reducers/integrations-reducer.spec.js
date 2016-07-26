@@ -4,8 +4,8 @@ import { SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE } from '..
 const INITIAL_STATE = IntegrationsReducer(undefined, {});
 const TWILIO_ATTRIBUTES = {
     linkState: 'linked',
-    number: '+15145555555',
-    numberValid: true
+    appUserNumber: '+15145555555',
+    appUserNumberValid: true
 }
 
 describe('Integrations Reducer', () => {
@@ -18,8 +18,8 @@ describe('Integrations Reducer', () => {
             });
             afterState.twilio.should.be.defined;
             afterState.twilio.linkState.should.eql(TWILIO_ATTRIBUTES.linkState);
-            afterState.twilio.number.should.eql(TWILIO_ATTRIBUTES.number);
-            afterState.twilio.numberValid.should.eql(TWILIO_ATTRIBUTES.numberValid);
+            afterState.twilio.appUserNumber.should.eql(TWILIO_ATTRIBUTES.appUserNumber);
+            afterState.twilio.appUserNumberValid.should.eql(TWILIO_ATTRIBUTES.appUserNumberValid);
         });
     });
 

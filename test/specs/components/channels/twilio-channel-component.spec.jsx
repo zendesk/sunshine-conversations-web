@@ -25,10 +25,10 @@ describe('Twilio Channel Content Component', () => {
 
     describe('user has sms linking enabled', () => {
         const linkedProps = {
-            number: '+151455555555',
+            appUserNumber: '+151455555555',
             linkState: 'linked',
             phoneNumber: '123456789',
-            numberValid: true,
+            appUserNumberValid: true,
             settings: {}
         };
         it('should render linked component', () => {
@@ -37,7 +37,7 @@ describe('Twilio Channel Content Component', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedTelephoneInput').length.should.eq(0);
 
             const appUserPhoneNumber = TestUtils.findRenderedDOMComponentWithClass(component, 'phone-number');
-            appUserPhoneNumber.textContent.should.eq(linkedProps.number);
+            appUserPhoneNumber.textContent.should.eq(linkedProps.appUserNumber);
 
             const appMakerPhoneNumber = TestUtils.scryRenderedDOMComponentsWithTag(component, 'a')[1];
             const domNode = findDOMNode(appMakerPhoneNumber);
@@ -47,10 +47,10 @@ describe('Twilio Channel Content Component', () => {
 
     describe('user has sms linking disabled', () => {
         const unlinkedProps = {
-            number: '',
+            appUserNumber: '',
             linkState: 'unlinked',
             phoneNumber: '123456789',
-            numberValid: false,
+            appUserNumberValid: false,
             settings: {}
         };
 
@@ -59,15 +59,15 @@ describe('Twilio Channel Content Component', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedTelephoneInput').length.should.eq(1);
         });
 
-        [true, false].forEach((numberValid) => {
-            describe(`number is ${numberValid ? '' : 'not'} valid`, () => {
-                it(`should ${numberValid ? '' : 'not'} display Continue button`, () => {
+        [true, false].forEach((appUserNumberValid) => {
+            describe(`appUserNumber is ${appUserNumberValid ? '' : 'not'} valid`, () => {
+                it(`should ${appUserNumberValid ? '' : 'not'} display Continue button`, () => {
                     const props = {
                         ...unlinkedProps,
-                        numberValid: numberValid
+                        appUserNumberValid: appUserNumberValid
                     };
                     component = TestUtils.renderIntoDocument(<TwilioChannelContentComponent {...props}/>);
-                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-primary').length.should.eq(numberValid ? 1 : 0);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-primary').length.should.eq(appUserNumberValid ? 1 : 0);
                 });
             });
         });
@@ -75,10 +75,10 @@ describe('Twilio Channel Content Component', () => {
 
     describe('user is in pending state', () => {
         const pendingProps = {
-            number: '+15145555555',
+            appUserNumber: '+15145555555',
             linkState: 'pending',
             phoneNumber: '123456789',
-            numberValid: true,
+            appUserNumberValid: true,
             settings: {}
         };
 
@@ -87,7 +87,7 @@ describe('Twilio Channel Content Component', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedTelephoneInput').length.should.eq(0);
 
             const appUserPhoneNumber = TestUtils.findRenderedDOMComponentWithClass(component, 'phone-number');
-            appUserPhoneNumber.textContent.should.eq(`${pendingProps.number} - Pending`);
+            appUserPhoneNumber.textContent.should.eq(`${pendingProps.appUserNumber} - Pending`);
         });
     });
 });
