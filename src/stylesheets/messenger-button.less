@@ -1,12 +1,12 @@
-#sk-badge {
+#sk-messenger-button {
     position: fixed;
 
     right: @widget-horizontal-spacing;
     bottom: @widget-vertical-spacing;
     opacity: 0;
 
-    height: @badge-size;
-    width: @badge-size;
+    height: @messenger-button-size;
+    width: @messenger-button-size;
 
     border-radius: 50%;
 
@@ -16,14 +16,14 @@
     cursor: pointer;
     transform-origin: bottom;
 
-    &.badge-shown {
-        animation: sk-badge-shown-frames .4s cubic-bezier(.62, .28, .23, .99);
+    &.messenger-button-shown {
+        animation: sk-messenger-button-shown-frames .4s cubic-bezier(.62, .28, .23, .99);
         animation-delay: .2s;
         animation-fill-mode: forwards;
     }
 
-    &.badge-hidden {
-        animation: sk-badge-hidden-frames .4s cubic-bezier(.62, .28, .23, .99);
+    &.messenger-button-hidden {
+        animation: sk-messenger-button-hidden-frames .4s cubic-bezier(.62, .28, .23, .99);
         animation-delay: .0s;
         animation-fill-mode: forwards;
     }
@@ -35,9 +35,9 @@
         margin-top: 50%;
     }
 
-    .badge-icon {
-        height: @badge-size;
-        width: @badge-size;
+    .messenger-button-icon {
+        height: @messenger-button-size;
+        width: @messenger-button-size;
 
         border-radius: 50%;
         overflow: hidden;
@@ -49,7 +49,7 @@
     }
 }
 
-@keyframes sk-badge-shown-frames {
+@keyframes sk-messenger-button-shown-frames {
     0% {
         transform: scale(0, 0);
         bottom: @widget-vertical-spacing;
@@ -61,15 +61,15 @@
         opacity: 0;
     }
     100% {
-        bottom: @widget-badge-vertical-spacing;
+        bottom: @widget-messenger-button-vertical-spacing;
         opacity: 1;
     }
 }
 
 
-@keyframes sk-badge-hidden-frames {
+@keyframes sk-messenger-button-hidden-frames {
     0% {
-        bottom: @widget-badge-vertical-spacing;
+        bottom: @widget-messenger-button-vertical-spacing;
         opacity: 1;
         transform: scale(1, 1);
     }
