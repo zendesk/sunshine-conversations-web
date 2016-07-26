@@ -49,9 +49,22 @@
 
 @font-size-base: 14px;
 
-@screen-lg-ht-min: 835px;
-@screen-md-ht-min: 648px;
-@screen-sm-ht-min: 488px;
+@badge-size: 58px;
+
+@widget-vertical-spacing: 20px;
+@widget-horizontal-spacing: 20px;
+@widget-badge-vertical-spacing: 40px;
+
+// Original values were the following :
+// @screen-lg-ht-min: 835px;
+// @screen-md-ht-min: 648px;
+// @screen-sm-ht-min: 488px;
+// for some reason, LESS didn't like `@screen-lg-ht-min: 835px + @widget-vertical-spacing`
+// so the value was added manually.
+
+@screen-lg-ht-min: 855px;
+@screen-md-ht-min: 668px;
+@screen-sm-ht-min: 508px;
 
 @screen-md-ht-max: @screen-lg-ht-min - 1;
 @screen-sm-ht-max: @screen-md-ht-min - 1;

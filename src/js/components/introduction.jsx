@@ -55,15 +55,16 @@ export class IntroductionComponent extends Component {
     }
 
     render() {
-        const {ui: {text}, settings: {accentColor}, app} = this.context;
+        const {app, ui: {text}} = this.context;
         const channelDetailsList = getAppChannelDetails(app.integrations);
+
         const channelsAvailable = channelDetailsList.length > 0;
         const introText = channelsAvailable ? `${text.introductionText} ${text.introAppText}` : text.introductionText;
 
         return <div className='sk-intro-section'>
                    { app.iconUrl ? <img className='app-icon'
                                         src={ app.iconUrl } />
-                         : <DefaultAppIcon color={ accentColor } /> }
+                         : <DefaultAppIcon /> }
                    <div className='app-name'>
                        { app.name }
                    </div>
