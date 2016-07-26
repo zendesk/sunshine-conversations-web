@@ -35,13 +35,19 @@ export function resetTwilioAttributes() {
 }
 
 export function fetchTwilioAttributes() {
-    const {user: {clients}} = store.getState();
+    const {user: {clients, pendingClients}} = store.getState();
     const client = clients.find((client) => client.platform === 'twilio');
+    const pendingClient = pendingClients.find((client) => client.platform === 'twilio');
 
     if (client) {
         updateTwilioAttributes({
             linkState: 'linked',
             number: client.info.phoneNumber
+        });
+    } else if (pendingClient) {
+        updateTwilioAttributes({
+            linkState: 'pending',
+            number: pendingClient.info.phoneNumber
         });
     }
 }
