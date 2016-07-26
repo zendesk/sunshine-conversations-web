@@ -7,11 +7,7 @@ export function isChannelLinked(clients, channelType) {
 
 export function getDisplayName(clients, channelType) {
     const client = clients.find((client) => client.platform === channelType);
-    if (channelType === 'twilio') {
-        return client && client.info && client.info.phoneNumber;
-    } else {
-        return client && client.displayName;
-    }
+    return client && client.displayName;
 }
 
 export function getLinkableChannels(appChannels, settings) {

@@ -42,12 +42,12 @@ export function fetchTwilioAttributes() {
     if (client) {
         updateTwilioAttributes({
             linkState: 'linked',
-            number: client.info.phoneNumber
+            number: client.displayName
         });
     } else if (pendingClient) {
         updateTwilioAttributes({
             linkState: 'pending',
-            number: pendingClient.info.phoneNumber
+            number: pendingClient.displayName
         });
     }
 }

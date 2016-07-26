@@ -30,6 +30,7 @@ describe('User Utils', () => {
                 id: '123456789',
                 platform: 'twilio',
                 linkedAt: '2016-07-25T18:53:05.064Z',
+                displayName: '+15145555555',
                 info: {
                     phoneNumber: '+15145555555',
                     country: 'CA',
@@ -43,7 +44,7 @@ describe('User Utils', () => {
             describe(`${platform} channel`, () => {
                 it(`should return ${platform === 'messenger' ? 'display name' : 'phone number'}`, () => {
                     const displayName = getDisplayName(CLIENTS, platform);
-                    displayName.should.eql(platform === 'messenger' ? CLIENTS[1].displayName : CLIENTS[2].info.phoneNumber);
+                    displayName.should.eql(platform === 'messenger' ? CLIENTS[1].displayName : CLIENTS[2].displayName);
                 });
             });
         });
