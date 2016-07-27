@@ -1,6 +1,5 @@
 import sinon from 'sinon';
 import React from 'react';
-import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 import { Provider } from 'react-redux';
 
@@ -14,7 +13,7 @@ import { ChatInput } from '../../../src/js/components/chat-input';
 import { ErrorNotification } from '../../../src/js/components/error-notification';
 import { WidgetComponent } from '../../../src/js/components/widget';
 import { Channel } from '../../../src/js/components/channels/channel';
-import { Badge } from '../../../src/js/components/badge';
+import { MessengerButton } from '../../../src/js/components/messenger-button';
 
 import * as appUtils from '../../../src/js/utils/app';
 
@@ -73,8 +72,8 @@ describe('Widget Component', () => {
         mockComponent(sandbox, Channel, 'div', {
             className: 'mockedChannel'
         });
-        mockComponent(sandbox, Badge, 'div', {
-            className: 'mockedBadge'
+        mockComponent(sandbox, MessengerButton, 'div', {
+            className: 'mockedMessengerButton'
         });
         sandbox.stub(appUtils, 'hasChannels').returns(true);
     });
@@ -237,9 +236,9 @@ describe('Widget Component', () => {
 
     });
 
-    describe('badge', () => {
+    describe('messenger button', () => {
 
-        it('should not render the badge in tab mode', () => {
+        it('should not render the button in tab mode', () => {
             const props = {
                 ...defaultProps,
                 settings: {
@@ -251,10 +250,10 @@ describe('Widget Component', () => {
                                                          <WidgetComponent {...props} />
                                                      </Provider>);
 
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedBadge').length.should.eq(0);
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedMessengerButton').length.should.eq(0);
         });
 
-        it('should not render the badge in embedded mode', () => {
+        it('should not render the button in embedded mode', () => {
             const props = {
                 ...defaultProps,
                 appState: {
@@ -262,7 +261,7 @@ describe('Widget Component', () => {
                     embedded: true
                 },
                 settings: {
-                    displayStyle: 'badge'
+                    displayStyle: 'button'
                 }
             };
             store = createMockedStore(sandbox, props);
@@ -270,14 +269,14 @@ describe('Widget Component', () => {
                                                          <WidgetComponent {...props} />
                                                      </Provider>);
 
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedBadge').length.should.eq(0);
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedMessengerButton').length.should.eq(0);
         });
 
-        it('should render the badge in badge mode', () => {
+        it('should render the button in button mode', () => {
             const props = {
                 ...defaultProps,
                 settings: {
-                    displayStyle: 'badge'
+                    displayStyle: 'button'
                 }
             };
             store = createMockedStore(sandbox, props);
@@ -285,7 +284,7 @@ describe('Widget Component', () => {
                                                          <WidgetComponent {...props} />
                                                      </Provider>);
 
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedBadge').length.should.eq(1);
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedMessengerButton').length.should.eq(1);
         });
 
     });

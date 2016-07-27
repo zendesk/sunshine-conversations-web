@@ -6,6 +6,6 @@ export const SK_PURPLE = '#92278f';
 export const SK_DARK_CONTRAST = '#55555d';
 
 export const DISPLAY_STYLE = {
-    BADGE: 'badge',
+    BUTTON: 'button',
     TAB: 'tab'
 };

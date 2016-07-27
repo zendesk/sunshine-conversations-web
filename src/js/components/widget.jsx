@@ -5,7 +5,7 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import isMobile from 'ismobilejs';
 import debounce from 'lodash.debounce';
 
-import { Badge } from './badge';
+import { MessengerButton } from './messenger-button';
 import { Header } from './header';
 import { Conversation } from './conversation';
 import { Settings } from './settings';
@@ -109,10 +109,10 @@ export class WidgetComponent extends Component {
             `sk-link-color-${isLinkColorDark ? 'dark' : 'light'}`
         ];
 
-        let badge;
+        let messengerButton;
 
-        if (displayStyle === DISPLAY_STYLE.BADGE && !appState.embedded) {
-            badge = <Badge shown={ !appState.widgetOpened } />;
+        if (displayStyle === DISPLAY_STYLE.BUTTON && !appState.embedded) {
+            messengerButton = <MessengerButton shown={ !appState.widgetOpened } />;
         }
 
         return <div>
@@ -147,7 +147,7 @@ export class WidgetComponent extends Component {
                            { footer }
                        </div>
                    </div>
-                   { badge }
+                   { messengerButton }
                </div>;
     }
 }
