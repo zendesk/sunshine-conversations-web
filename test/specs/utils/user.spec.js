@@ -23,17 +23,54 @@ describe('User utils', () => {
     describe('getDisplayName', () => {
         const clients = [
             {
+                lastSeen: '2016-07-25T20:58:25.533Z',
+                info: {
+                    sdkVersion: '3.1.2',
+                    URL: '',
+                    userAgent: '',
+                    referrer: '',
+                    browserLanguage: '',
+                    currentUrl: '',
+                    currentTitle: ''
+                },
+                platform: 'web',
+                id: 'abcdefghijklmnop',
+                active: true
+            },
+            {
+                displayName: 'Beep Boop',
+                id: '987654321',
                 platform: 'messenger',
-                displayName: 'Smoochbot'
+                linkedAt: '2016-07-25T15:30:56.549Z',
+                active: true
+            },
+            {
+                lastSeen: '2016-07-25T18:53:05.069Z',
+                id: '123456789',
+                platform: 'twilio',
+                linkedAt: '2016-07-25T18:53:05.064Z',
+                displayName: '+15145555555',
+                info: {
+                    phoneNumber: '+15145555555',
+                    country: 'CA',
+                    city: 'MONTREAL',
+                    state: 'QC'
+                },
+                active: true
             }
         ];
 
-        it('should return the display name for a matching client type', () => {
-            getDisplayName(clients, 'messenger').should.eq('Smoochbot');
-        });
-
         it('should return nothing if no matching type', () => {
             expect(getDisplayName(clients, 'frontendEmail')).to.not.exist;
+        });
+
+        ['messenger', 'twilio'].forEach((platform) => {
+            describe(`${platform} channel`, () => {
+                it(`should return ${platform === 'messenger' ? 'display name' : 'phone number'}`, () => {
+                    const displayName = getDisplayName(clients, platform);
+                    displayName.should.eql(platform === 'messenger' ? clients[1].displayName : clients[2].displayName);
+                });
+            });
         });
     });
 
