@@ -22,7 +22,8 @@ export class ChannelComponent extends Component {
         }
 
         const channelPages = getAppChannelDetails(appChannels).map(({channel, details}) => {
-            if (!details.Component || (isChannelLinked(clients, channel.type) && !details.renderPageIfLinked)) {
+            const linked = isChannelLinked(clients, channel.type);
+            if (!details.Component || (linked && !details.renderPageIfLinked)) {
                 return null;
             }
 
@@ -34,7 +35,8 @@ export class ChannelComponent extends Component {
                        <details.Component {...channel}
                                           channelState={ channelStates[channel.type] }
                                           getContent={ details.getContent }
-                                          smoochId={ smoochId } />
+                                          smoochId={ smoochId }
+                                          linked={ linked } />
                    </ChannelPage>;
         });
 
