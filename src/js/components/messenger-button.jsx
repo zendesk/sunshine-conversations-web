@@ -89,8 +89,8 @@ export class MessengerButtonComponent extends Component {
                     className={ `messenger-button-${shown ? 'shown' : 'hidden'}` }
                     style={ style }
                     onClick={ this.onClick }>
-                   { unreadBadge }
                    { content }
+                   { unreadBadge }
                </div>;
     }
 }
