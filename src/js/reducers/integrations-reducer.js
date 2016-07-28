@@ -9,7 +9,7 @@ const INITIAL_STATE = {
     },
     twilio: {
         linkState: 'unlinked',
-        number: '',
+        appUserNumber: '',
         hasError: false
     }
 };

@@ -33,3 +33,21 @@ export function updateTwilioAttributes(attr) {
 export function resetTwilioAttributes() {
     store.dispatch(resetTwilioIntegrationState());
 }
+
+export function fetchTwilioAttributes() {
+    const {user: {clients, pendingClients}} = store.getState();
+    const client = clients.find((client) => client.platform === 'twilio');
+    const pendingClient = pendingClients.find((client) => client.platform === 'twilio');
+
+    if (client) {
+        updateTwilioAttributes({
+            linkState: 'linked',
+            number: client.displayName
+        });
+    } else if (pendingClient) {
+        updateTwilioAttributes({
+            linkState: 'pending',
+            number: pendingClient.displayName
+        });
+    }
+}
