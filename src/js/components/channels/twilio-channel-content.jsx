@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { updateTwilioAttributes, resetTwilioAttributes } from '../../services/integrations-service';
+import { updateTwilioAttributes, resetTwilioAttributes, linkChannel, deleteChannel } from '../../services/integrations-service';
 
 import { ReactTelephoneInput } from '../../lib/react-telephone-input';
 
@@ -9,15 +9,15 @@ import isMobile from 'ismobilejs';
 export class TwilioChannelContentComponent extends Component {
 
     linkTwilioNumber = () => {
-        updateTwilioAttributes({
-            appUserNumber: this.props.appUserNumber,
-            linkState: 'pending'
+        linkChannel(this.props.userId, {
+            type: 'twilio', 
+            phoneNumber: this.props.appUserNumber.replace(/[()\-\s]/g, '')
         });
     }
 
-    onRetry = () => {
-        updateTwilioAttributes({
-            linkState: 'unlinked'
+    deleteChannel = () => {
+        deleteChannel(this.props.userId, {
+            type: 'twilio'
         });
     }
 
@@ -90,7 +90,7 @@ export class TwilioChannelContentComponent extends Component {
                                      <i className='fa fa-phone'
                                         style={ iconStyle }></i>
                                      <span className='phone-number'>{ appUserNumber } - Pending</span>
-                                     <a onClick={ this.onRetry }>Retry</a>
+                                     <a onClick={ this.deleteChannel }>Retry</a>
                                  </div>;
 
         const sendTextUrl = `sms://${phoneNumber}`;
@@ -108,7 +108,7 @@ export class TwilioChannelContentComponent extends Component {
                                         <i className='fa fa-phone'
                                            style={ iconStyle }></i>
                                         <span className='phone-number'>{ appUserNumber }</span>
-                                        <a onClick={ this.onChangeNumber }>Change my number</a>
+                                        <a onClick={ this.deleteChannel }>Change my number</a>
                                     </div>
                                     <a href={ sendTextUrl }>
                                         { linkedComponentButton }
@@ -127,6 +127,7 @@ export class TwilioChannelContentComponent extends Component {
 export const TwilioChannelContent = connect((state) => {
     return {
         ...state.integrations.twilio,
-        settings: state.app.settings.web
+        settings: state.app.settings.web,
+        userId: state.user._id
     };
 })(TwilioChannelContentComponent);
