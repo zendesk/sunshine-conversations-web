@@ -1,7 +1,7 @@
 .header() {
     z-index: 10;
     height: @header-height;
-    line-height: 28px;
+    line-height: @header-height;
     padding: @header-vertical-padding @header-horizontal-padding;
     position: relative;
     background-color: @sk-light-grey;
@@ -12,24 +12,21 @@
     box-sizing: content-box;
     border-bottom: 1px solid @sk-grey;
 
+    @media (max-width: @screen-sm-min) {
+        border-radius: 0;
+    }
+
     .fa {
         line-height: 28px;
         color: @sk-dark-grey;
         font-size: 15px;
     }
 
-    .sk-close-handle,
-    .sk-show-handle {
+    .sk-close-handle {
         cursor: pointer;
         position: absolute;
         top: @header-vertical-padding;
         right: 10px;
-    }
-
-    .sk-show-handle {
-        @media (min-width: @screen-sm-min) {
-            display: none;
-        }
     }
 
     .sk-back-handle {
@@ -62,17 +59,9 @@
 }
 
 #sk-badge {
-    background-color: @brand-danger;
-    border-radius: 100px;
-    box-shadow: 0 0 0 1px #cf2615;
-    color: white;
     position: absolute;
     top: 11px;
     left: 10px;
-    padding: 0 6px;
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 18px;
 }
 
 #sk-settings-handle  {
@@ -92,4 +81,13 @@
 
 #sk-settings-header {
     .header();
+}
+
+
+.sk-branding-color-dark {
+    #sk-header, #sk-settings-header {
+        &, .fa {
+            color: #fff;
+        }
+    }
 }

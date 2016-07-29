@@ -1,68 +1,69 @@
-import React, { Component } from 'react';
-import { SK_PURPLE } from '../constants/styles';
+import React, { Component, PropTypes } from 'react';
+import { SK_DARK_CONTRAST } from '../constants/styles';
 
 export class DefaultAppIcon extends Component {
-    static defaultProps = {
-        style: {
-            fill: SK_PURPLE
-        }
+    static contextTypes = {
+        settings: PropTypes.object.isRequired
     };
 
     render() {
-        const {color, style} = this.props;
-
-        if (color) {
-            style.fill = `#${color}`;
-        }
+        const {settings: {brandColor, isBrandColorDark}} = this.context;
+        const backgroundFill = `#${brandColor}`;
+        const businessPathFill = isBrandColorDark ? 'transparent' : SK_DARK_CONTRAST;
 
         return <svg className='app-icon'
-                    xmlns='http://www.w3.org/2000/svg'
-                    viewBox='0 0 80 80'>
-                   <title>
-                       defaultBusiness
-                   </title>
-                   <rect x='31.27'
-                         y='39.48'
-                         width='4.36'
-                         height='4.36'
-                         style={ style } />
-                   <rect x='31.27'
-                         y='30.75'
-                         width='4.36'
-                         height='5.82'
-                         style={ style } />
-                   <path d='M48.73,52.57V46.75H44.36v33a39.75,39.75,0,0,0,8.73-2V52.57H48.73Z'
-                         style={ style } />
-                   <path d='M56,64.2V76.66a39.92,39.92,0,0,0,5.82-3.14V64.2H56Z'
-                         style={ style } />
-                   <path d='M18.18,64.2v9.31A39.88,39.88,0,0,0,24,76.66V64.2H18.18Z'
-                         style={ style } />
-                   <path d='M38.55,46.75V80c0.48,0,1,0,1.45,0s1,0,1.45,0V46.75H38.55Z'
-                         style={ style } />
-                   <path d='M31.27,46.75v5.82H26.91V77.8a39.76,39.76,0,0,0,8.73,2v-33H31.27Z'
-                         style={ style } />
-                   <rect x='44.36'
-                         y='30.75'
-                         width='4.36'
-                         height='5.82'
-                         style={ style } />
-                   <rect x='38.55'
-                         y='39.48'
-                         width='2.91'
-                         height='4.36'
-                         style={ style } />
-                   <path d='M80,40A40,40,0,1,0,15.27,71.43V59.71a1.33,1.33,0,0,1,1.33-1.33h4.48V51a1.33,1.33,0,0,1,1.33-1.32h4.49V26.26a1.33,1.33,0,0,1,1.33-1.33h7.4V19A1.33,1.33,0,0,1,37,17.66h1.58V7.48a1.45,1.45,0,1,1,2.91,0V17.66H43A1.33,1.33,0,0,1,44.36,19v5.95h7.4a1.33,1.33,0,0,1,1.33,1.33v23.4h4.84A1.33,1.33,0,0,1,59.25,51l0,7.64H63.4a1.33,1.33,0,0,1,1.33,1.33V71.43A39.92,39.92,0,0,0,80,40Z'
-                         style={ style } />
-                   <rect x='38.55'
-                         y='30.75'
-                         width='2.91'
-                         height='5.82'
-                         style={ style } />
-                   <rect x='44.36'
-                         y='39.48'
-                         width='4.36'
-                         height='4.36'
-                         style={ style } />
+                    viewBox='0 0 80 80'
+                    style={ { enableBackground: 'new 0 0 80 80', shapeRendering: 'geometricPrecision' } }>
+                   <rect fill={ backgroundFill }
+                         x='31.3'
+                         y='39.5'
+                         width='4.4'
+                         height='4.4' />
+                   <rect fill={ backgroundFill }
+                         x='31.3'
+                         y='30.8'
+                         width='4.4'
+                         height='5.8' />
+                   <path fill={ backgroundFill }
+                         d='M48.7,52.6v-5.8h-4.4v33c3-0.3,5.9-1,8.7-2V52.6H48.7z' />
+                   <path fill={ backgroundFill }
+                         d='M56,64.2v12.5c2-0.9,4-1.9,5.8-3.1v-9.3H56z' />
+                   <path fill={ backgroundFill }
+                         d='M18.2,64.2v9.3c1.8,1.2,3.8,2.3,5.8,3.2V64.2H18.2z' />
+                   <path fill={ backgroundFill }
+                         d='M38.5,46.8V80c0.5,0,1,0,1.5,0s1,0,1.5,0V46.8H38.5z' />
+                   <path fill={ backgroundFill }
+                         d='M31.3,46.8v5.8h-4.4v25.2c2.8,1,5.8,1.7,8.7,2v-33L31.3,46.8L31.3,46.8z' />
+                   <rect fill={ backgroundFill }
+                         x='44.4'
+                         y='30.8'
+                         width='4.4'
+                         height='5.8' />
+                   <rect fill={ backgroundFill }
+                         x='38.5'
+                         y='39.5'
+                         width='2.9'
+                         height='4.4' />
+                   <path fill={ backgroundFill }
+                         d='M80,40C80,17.9,62.1,0,40,0S0,17.9,0,40c0,12.3,5.6,23.9,15.3,31.4V59.7c0-0.7,0.6-1.3,1.3-1.3h0h4.5V51 c0-0.7,0.6-1.3,1.3-1.3h4.5V26.3c0-0.7,0.6-1.3,1.3-1.3h7.4V19c0-0.7,0.6-1.3,1.3-1.3c0,0,0,0,0.1,0h1.6V7.5C38.6,6.7,39.2,6,40,6 c0.8,0,1.5,0.7,1.5,1.5v10.2H43c0.7,0,1.3,0.6,1.4,1.3c0,0,0,0,0,0v6h7.4c0.7,0,1.3,0.6,1.3,1.3v0v23.4h4.8c0.7,0,1.3,0.6,1.3,1.3 v7.6h4.2c0.7,0,1.3,0.6,1.3,1.3v0v11.5C74.4,63.9,80,52.3,80,40z' />
+                   <rect fill={ backgroundFill }
+                         x='38.5'
+                         y='30.8'
+                         width='2.9'
+                         height='5.8' />
+                   <rect fill={ backgroundFill }
+                         x='44.4'
+                         y='39.5'
+                         width='4.4'
+                         height='4.4' />
+                   <g>
+                       <path fill={businessPathFill}
+                             d='M56,76.7V64.2h5.8v9.3c1-0.7,2-1.3,2.9-2.1V60c0-0.7-0.6-1.3-1.3-1.3h-4.2V51c0-0.7-0.6-1.3-1.3-1.3h-4.8V26.3 v0c0-0.7-0.6-1.3-1.3-1.3h-7.4v-6c0,0,0,0,0,0c0-0.7-0.6-1.3-1.4-1.3h-1.5V7.5c0-0.8-0.7-1.5-1.5-1.5s-1.5,0.7-1.5,1.5v10.2H37 c0,0,0,0-0.1,0c-0.7,0-1.3,0.6-1.3,1.3V25h-7.4c-0.7,0-1.3,0.6-1.3,1.3v23.4h-4.5c-0.7,0-1.3,0.6-1.3,1.3v7.4h-4.5 c-0.7,0-1.3,0.6-1.3,1.3v11.7c0.9,0.7,1.9,1.4,2.9,2.1v-9.3H24v12.4c1,0.4,1.9,0.8,2.9,1.1V52.6h4.4v-5.8h4.4v33 c1,0.1,1.9,0.2,2.9,0.2V46.8h2.9V80c1,0,1.9-0.1,2.9-0.2v-33h4.4v5.8h4.4v25.2 M35.6,43.9h-4.4v-4.4h4.4V43.9z M35.6,36.6h-4.4 v-5.8h4.4V36.6z M41.5,43.9h-2.9v-4.4h2.9V43.9z M41.5,36.6h-2.9v-5.8h2.9V36.6z M48.7,43.9h-4.4v-4.4h4.4V43.9z M48.7,36.6h-4.4 v-5.8h4.4V36.6z' />
+                       <path fill={businessPathFill}
+                             d='M56.1,76.6C56.1,76.7,56,76.7,56.1,76.6L56.1,76.6C56,76.7,56.1,76.7,56.1,76.6z' />
+                       <path fill={businessPathFill}
+                             d='M18.2,73.6C18.2,73.6,18.2,73.6,18.2,73.6L18.2,73.6C18.2,73.6,18.2,73.6,18.2,73.6z' />
+                   </g>
                </svg>;
     }
 }

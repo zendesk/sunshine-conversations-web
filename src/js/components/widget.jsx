@@ -5,6 +5,7 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import isMobile from 'ismobilejs';
 import debounce from 'lodash.debounce';
 
+import { MessengerButton } from './messenger-button';
 import { Header } from './header';
 import { Conversation } from './conversation';
 import { Settings } from './settings';
@@ -15,6 +16,7 @@ import { MessageIndicator } from './message-indicator';
 
 import { resetUnreadCount } from '../services/conversation-service';
 import { hasChannels } from '../utils/app';
+import { DISPLAY_STYLE } from '../constants/styles';
 
 export class WidgetComponent extends Component {
     static propTypes = {
@@ -65,6 +67,7 @@ export class WidgetComponent extends Component {
 
     render() {
         const {appState, settings, smoochId} = this.props;
+        const {displayStyle, isBrandColorDark, isAccentColorDark, isLinkColorDark} = settings;
 
         const settingsComponent = appState.settingsVisible ? <Settings /> : null;
 
@@ -74,7 +77,9 @@ export class WidgetComponent extends Component {
 
         const footer = appState.settingsVisible ? null : <ChatInput ref='input' />;
 
-        const classNames = [];
+        const classNames = [
+            `sk-${displayStyle}-display`
+        ];
 
         if (appState.embedded) {
             classNames.push('sk-embedded');
@@ -95,52 +100,59 @@ export class WidgetComponent extends Component {
             classNames.push('sk-ios-device');
         }
 
-        const className = classNames.join(' ');
-
         const notification = appState.errorNotificationMessage ?
             <ErrorNotification message={ appState.errorNotificationMessage } /> : null;
 
-        return (
-            <div id='sk-container'
-                 className={ className }
-                 onTouchStart={ this.onTouchStart }
-                 onClick={ this.onClick }
-                 onWheel={ this.onWheel }>
-                <MessageIndicator />
-                <div id='sk-wrapper'>
-                    <Header />
-                    <ReactCSSTransitionGroup component='div'
-                                             className='sk-notification-container'
-                                             transitionName='sk-notification'
-                                             transitionAppear={ true }
-                                             transitionAppearTimeout={ 500 }
-                                             transitionEnterTimeout={ 500 }
-                                             transitionLeaveTimeout={ 500 }>
-                        { notification }
-                    </ReactCSSTransitionGroup>
-                    <ReactCSSTransitionGroup component='div'
-                                             transitionName='settings'
-                                             transitionAppear={ true }
-                                             transitionAppearTimeout={ 250 }
-                                             transitionEnterTimeout={ 250 }
-                                             transitionLeaveTimeout={ 250 }>
-                        { settingsComponent }
-                    </ReactCSSTransitionGroup>
-                    { channelsComponent }
-                    <Conversation />
-                    { footer }
-                </div>
-            </div>
-            );
+        const wrapperClassNames = [
+            `sk-branding-color-${isBrandColorDark ? 'dark' : 'light'}`,
+            `sk-accent-color-${isAccentColorDark ? 'dark' : 'light'}`,
+            `sk-link-color-${isLinkColorDark ? 'dark' : 'light'}`
+        ];
+
+        let messengerButton;
+
+        if (displayStyle === DISPLAY_STYLE.BUTTON && !appState.embedded) {
+            messengerButton = <MessengerButton shown={ !appState.widgetOpened } />;
+        }
+
+        return <div>
+                   <div id='sk-container'
+                        className={ classNames.join(' ') }
+                        onTouchStart={ this.onTouchStart }
+                        onClick={ this.onClick }
+                        onWheel={ this.onWheel }>
+                       <MessageIndicator />
+                       <div id='sk-wrapper'
+                            className={ wrapperClassNames.join(' ') }>
+                           <Header />
+                           <ReactCSSTransitionGroup component='div'
+                                                    className='sk-notification-container'
+                                                    transitionName='sk-notification'
+                                                    transitionAppear={ true }
+                                                    transitionAppearTimeout={ 500 }
+                                                    transitionEnterTimeout={ 500 }
+                                                    transitionLeaveTimeout={ 500 }>
+                               { notification }
+                           </ReactCSSTransitionGroup>
+                           <ReactCSSTransitionGroup component='div'
+                                                    transitionName='settings'
+                                                    transitionAppear={ true }
+                                                    transitionAppearTimeout={ 250 }
+                                                    transitionEnterTimeout={ 250 }
+                                                    transitionLeaveTimeout={ 250 }>
+                               { settingsComponent }
+                           </ReactCSSTransitionGroup>
+                           { channelsComponent }
+                           <Conversation />
+                           { footer }
+                       </div>
+                   </div>
+                   { messengerButton }
+               </div>;
     }
 }
 
-export const Widget = connect(({appState: {
-    settingsVisible,
-    widgetOpened,
-    errorNotificationMessage,
-    embedded
-}, app, ui, user}) => {
+export const Widget = connect(({appState: {settingsVisible, widgetOpened, errorNotificationMessage, embedded}, app, ui, user}) => {
     // only extract what is needed from appState as this is something that might
     // mutate a lot
     return {

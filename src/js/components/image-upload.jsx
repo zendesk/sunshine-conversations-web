@@ -44,8 +44,8 @@ export class ImageUpload extends Component {
     render() {
         const style = {};
 
-        if (this.props.accentColor && this.state.imageButtonHovered) {
-            style.color = `#${this.props.accentColor}`;
+        if (this.props.color && this.state.imageButtonHovered) {
+            style.color = `#${this.props.color}`;
         }
         return <label className='btn btn-sk-link image-upload'
                       onMouseOver={ () => this.onMouseOver() }
