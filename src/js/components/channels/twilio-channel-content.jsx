@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { updateTwilioAttributes, resetTwilioAttributes, linkChannel, deleteChannel } from '../../services/integrations-service';
+import { updateTwilioAttributes, resetTwilioAttributes, linkTwilioChannel, deleteTwilioChannel } from '../../services/integrations-service';
 
 import { ReactTelephoneInput } from '../../lib/react-telephone-input';
 
@@ -9,16 +9,14 @@ import isMobile from 'ismobilejs';
 export class TwilioChannelContentComponent extends Component {
 
     linkTwilioNumber = () => {
-        linkChannel(this.props.userId, {
+        linkTwilioChannel(this.props.userId, {
             type: 'twilio', 
             phoneNumber: this.props.appUserNumber.replace(/[()\-\s]/g, '')
         });
     }
 
     deleteChannel = () => {
-        deleteChannel(this.props.userId, {
-            type: 'twilio'
-        });
+        deleteTwilioChannel(this.props.userId);
     }
 
     handleInputChange = (telNumber) => {

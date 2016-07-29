@@ -53,7 +53,7 @@ export function fetchTwilioAttributes() {
     }
 }
 
-export function linkChannel(userId, data) {
+export function linkTwilioChannel(userId, data) {
     return core().appUsers.link.linkChannel(userId, data)
         .then((appUser) => {
             immediateUpdate(appUser).then(() => {
@@ -70,8 +70,8 @@ export function linkChannel(userId, data) {
         });
 }
 
-export function deleteChannel(userId, data) {
-    return core().appUsers.link.deleteChannel(userId, data)
+export function deleteTwilioChannel(userId) {
+    return core().appUsers.link.deleteTwilioChannel(userId)
         .then(() => {
             immediateUpdate({
                 pendingClients: []
