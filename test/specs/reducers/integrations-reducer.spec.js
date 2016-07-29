@@ -6,7 +6,7 @@ const TWILIO_ATTRIBUTES = {
     linkState: 'linked',
     appUserNumber: '+15145555555',
     appUserNumberValid: true
-}
+};
 
 describe('Integrations Reducer', () => {
     describe('SET_TWILIO_INTEGRATION_STATE action', () => {

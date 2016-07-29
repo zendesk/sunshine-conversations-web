@@ -7,7 +7,11 @@ export function createMock(sinon) {
             stripe: {
                 createTransaction: sinon.stub()
             },
-            updateDevice: sinon.stub()
+            updateDevice: sinon.stub(),
+            link: {
+                linkChannel: sinon.stub(),
+                deleteChannel: sinon.stub()
+            }
         },
 
         conversations: {
