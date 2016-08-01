@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { updateTwilioAttributes, resetTwilioAttributes, linkTwilioChannel, deleteTwilioChannel } from '../../services/integrations-service';
 
 import { ReactTelephoneInput } from '../../lib/react-telephone-input';
@@ -7,6 +7,10 @@ import { connect } from 'react-redux';
 import isMobile from 'ismobilejs';
 
 export class TwilioChannelContentComponent extends Component {
+
+    static contextTypes = {
+        settings: PropTypes.object
+    };
 
     linkTwilioNumber = () => {
         linkTwilioChannel(this.props.userId, {
@@ -62,7 +66,8 @@ export class TwilioChannelContentComponent extends Component {
     }
 
     render() {
-        const {appUserNumber, appUserNumberValid, phoneNumber, linkState, settings: {linkColor}} = this.props;
+        const {appUserNumber, appUserNumberValid, phoneNumber, linkState} = this.props;
+        const {settings: {linkColor}} = this.context;
         let iconStyle = {};
         if (linkColor) {
             iconStyle = {
@@ -125,7 +130,6 @@ export class TwilioChannelContentComponent extends Component {
 export const TwilioChannelContent = connect((state) => {
     return {
         ...state.integrations.twilio,
-        settings: state.app.settings.web,
         userId: state.user._id
     };
 })(TwilioChannelContentComponent);
