@@ -56,10 +56,11 @@ export function fetchTwilioAttributes() {
 export function linkTwilioChannel(userId, data) {
     return core().appUsers.link.linkChannel(userId, data)
         .then((appUser) => {
-            immediateUpdate(appUser).then(() => {
-                updateTwilioAttributes({
-                    linkState: 'pending'
-                });
+            return immediateUpdate(appUser);
+        })
+        .then(() => {
+            updateTwilioAttributes({
+                linkState: 'pending'
             });
         })
         .catch(() => {
@@ -73,14 +74,15 @@ export function linkTwilioChannel(userId, data) {
 export function deleteTwilioChannel(userId) {
     return core().appUsers.link.deleteChannel(userId, 'twilio')
         .then(() => {
-            immediateUpdate({
+            return immediateUpdate({
                 pendingClients: []
-            }).then(() => {
-                updateTwilioAttributes({
-                    linkState: 'unlinked',
-                    appUserNumber: '',
-                    appUserNumberValid: false
-                });
+            });
+        })
+        .then(() => {
+            updateTwilioAttributes({
+                linkState: 'unlinked',
+                appUserNumber: '',
+                appUserNumberValid: false
             });
         })
         .catch(() => {
