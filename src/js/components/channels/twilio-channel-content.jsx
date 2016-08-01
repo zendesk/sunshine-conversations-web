@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { updateTwilioAttributes, resetTwilioAttributes, linkTwilioChannel, deleteTwilioChannel } from '../../services/integrations-service';
+import { updateTwilioAttributes, resetTwilioAttributes, linkTwilioChannel, unlinkTwilioChannel } from '../../services/integrations-service';
 
 import { ReactTelephoneInput } from '../../lib/react-telephone-input';
 
@@ -19,8 +19,8 @@ export class TwilioChannelContentComponent extends Component {
         });
     }
 
-    deleteChannel = () => {
-        deleteTwilioChannel(this.props.userId);
+    unlinkChannel = () => {
+        unlinkTwilioChannel(this.props.userId);
     }
 
     handleInputChange = (telNumber) => {
@@ -93,7 +93,7 @@ export class TwilioChannelContentComponent extends Component {
                                      <i className='fa fa-phone'
                                         style={ iconStyle }></i>
                                      <span className='phone-number'>{ appUserNumber } - Pending</span>
-                                     <a onClick={ this.deleteChannel }>Retry</a>
+                                     <a onClick={ this.unlinkChannel }>Retry</a>
                                  </div>;
 
         const sendTextUrl = `sms://${phoneNumber}`;
@@ -111,7 +111,7 @@ export class TwilioChannelContentComponent extends Component {
                                         <i className='fa fa-phone'
                                            style={ iconStyle }></i>
                                         <span className='phone-number'>{ appUserNumber }</span>
-                                        <a onClick={ this.deleteChannel }>Change my number</a>
+                                        <a onClick={ this.unlinkChannel }>Change my number</a>
                                     </div>
                                     <a href={ sendTextUrl }>
                                         { linkedComponentButton }

@@ -10,7 +10,7 @@ export function createMock(sinon) {
             updateDevice: sinon.stub(),
             link: {
                 linkChannel: sinon.stub(),
-                deleteChannel: sinon.stub()
+                unlinkChannel: sinon.stub()
             }
         },
 

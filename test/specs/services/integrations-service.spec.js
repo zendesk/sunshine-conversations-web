@@ -30,7 +30,7 @@ describe('Integrations service', () => {
 
         coreMock = createMock(sandbox);
         coreMock.appUsers.link.linkChannel.resolves(pendingAppUser);
-        coreMock.appUsers.link.deleteChannel.resolves();
+        coreMock.appUsers.link.unlinkChannel.resolves();
         sandbox.stub(coreService, 'core', () => {
             return coreMock;
         });
@@ -67,10 +67,10 @@ describe('Integrations service', () => {
         });
     });
 
-    describe('deleteTwilioChannel', () => {
+    describe('unlinkTwilioChannel', () => {
         it('should set the twilio integration state to unlinked', () => {
-            return integrationsService.deleteTwilioChannel('1').then(() => {
-                coreMock.appUsers.link.deleteChannel.should.have.been.calledWith('1', 'twilio');
+            return integrationsService.unlinkTwilioChannel('1').then(() => {
+                coreMock.appUsers.link.unlinkChannel.should.have.been.calledWith('1', 'twilio');
             });
 
         });
