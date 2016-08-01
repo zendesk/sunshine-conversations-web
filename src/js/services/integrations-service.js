@@ -65,7 +65,7 @@ export function linkTwilioChannel(userId, data) {
         .catch(() => {
             updateTwilioAttributes({
                 hasError: true,
-                errorMessage: 'Something went wrong. Please try again.'
+                errorMessage: 'We were unable to communicate with this number. Please enter a different one.'
             });
         });
 }
@@ -86,7 +86,7 @@ export function deleteTwilioChannel(userId) {
         .catch(() => {
             updateTwilioAttributes({
                 hasError: true,
-                errorMessage: 'Something went wrong. Please try again.'
+                errorMessage: 'We were unable to communicate with this number. Please enter a different one.'
             });
         });
 }
