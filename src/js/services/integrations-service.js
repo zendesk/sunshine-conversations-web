@@ -71,7 +71,7 @@ export function linkTwilioChannel(userId, data) {
 }
 
 export function deleteTwilioChannel(userId) {
-    return core().appUsers.link.deleteTwilioChannel(userId)
+    return core().appUsers.link.deleteChannel(userId, 'twilio')
         .then(() => {
             immediateUpdate({
                 pendingClients: []
