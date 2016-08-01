@@ -2,7 +2,7 @@ import { store } from '../stores/app-store';
 import { core } from './core';
 import { setWeChatQRCode, setWeChatError, unsetWeChatError, setTwilioIntegrationState, resetTwilioIntegrationState } from '../actions/integrations-actions';
 import { getUserId } from './user-service';
-import { immediateUpdate } from './user-service';
+import { updateUser } from '../actions/user-actions';
 
 let fetchingWeChat = false;
 
@@ -56,7 +56,7 @@ export function fetchTwilioAttributes() {
 export function linkTwilioChannel(userId, data) {
     return core().appUsers.link.linkChannel(userId, data)
         .then((appUser) => {
-            return immediateUpdate(appUser);
+            store.dispatch(updateUser(...appUser));
         })
         .then(() => {
             updateTwilioAttributes({
@@ -74,9 +74,11 @@ export function linkTwilioChannel(userId, data) {
 export function unlinkTwilioChannel(userId) {
     return core().appUsers.link.unlinkChannel(userId, 'twilio')
         .then(() => {
-            return immediateUpdate({
-                pendingClients: []
-            });
+            const {user: {clients, pendingClients}} = store.getState();
+            store.dispatch(updateUser({
+                pendingClients: pendingClients.filter((pendingClient) => pendingClient.platform !== 'twilio'),
+                clients: clients.filter((client) => client.platform !== 'twilio')
+            }));
         })
         .then(() => {
             updateTwilioAttributes({
