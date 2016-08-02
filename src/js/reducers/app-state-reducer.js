@@ -16,7 +16,8 @@ const INITIAL_STATE = {
     serverURL: 'https://api.smooch.io/',
     connectNotificationTimestamp: null,
     errorNotificationMessage: null,
-    introHeight: 158
+    introHeight: 158,
+    showAnimation: false
 };
 
 export function AppStateReducer(state = INITIAL_STATE, action) {
@@ -84,13 +85,15 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             return {
                 ...state,
                 widgetState: state.widgetState === WIDGET_STATE.OPENED ? WIDGET_STATE.CLOSED : WIDGET_STATE.OPENED,
-                settingsVisible: state.settingsVisible && state.widgetState !== WIDGET_STATE.OPENED
+                settingsVisible: state.settingsVisible && state.widgetState !== WIDGET_STATE.OPENED,
+                showAnimation: true
             };
 
         case AppStateActions.OPEN_WIDGET:
             return {
                 ...state,
-                widgetState: WIDGET_STATE.OPENED
+                widgetState: WIDGET_STATE.OPENED,
+                showAnimation: true
             };
 
         case AppStateActions.CLOSE_WIDGET:
@@ -98,7 +101,8 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
                 ...state,
                 visibleChannelType: null,
                 widgetState: WIDGET_STATE.CLOSED,
-                settingsVisible: false
+                settingsVisible: false,
+                showAnimation: true
             };
 
         case AppStateActions.SHOW_SETTINGS:
@@ -166,6 +170,12 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             return {
                 ...state,
                 introHeight: action.value
+            };
+
+        case AppStateActions.DISABLE_ANIMATION:
+            return {
+                ...state,
+                showAnimation: false
             };
 
         default:

@@ -18,6 +18,7 @@ import { resetUnreadCount } from '../services/conversation-service';
 import { hasChannels } from '../utils/app';
 import { DISPLAY_STYLE } from '../constants/styles';
 import { WIDGET_STATE } from '../constants/app';
+import { disableAnimation } from '../actions/app-state-actions';
 
 export class WidgetComponent extends Component {
     static propTypes = {
@@ -32,10 +33,6 @@ export class WidgetComponent extends Component {
         app: PropTypes.object.isRequired,
         settings: PropTypes.object.isRequired,
         ui: PropTypes.object.isRequired
-    };
-
-    state = {
-        showAnimation: false
     };
 
     onTouchStart = (e) => {
@@ -54,11 +51,11 @@ export class WidgetComponent extends Component {
 
     onClick = () => {
         resetUnreadCount();
-        this.setState({showAnimation: true});
+
     };
 
     handleResize = () => {
-        this.setState({showAnimation: false});
+        this.props.dispatch(disableAnimation());
     };
 
     onWheel = debounce(() => {
@@ -116,7 +113,7 @@ export class WidgetComponent extends Component {
             classNames.push('sk-ios-device');
         }
 
-        if (this.state.showAnimation) {
+        if (appState.showAnimation) {
             classNames.push('sk-animation');
         }
 
@@ -172,7 +169,7 @@ export class WidgetComponent extends Component {
     }
 }
 
-export const Widget = connect(({appState: {settingsVisible, widgetState, errorNotificationMessage, embedded}, app, ui, user}) => {
+export const Widget = connect(({appState: {settingsVisible, widgetState, errorNotificationMessage, embedded, showAnimation}, app, ui, user}) => {
     // only extract what is needed from appState as this is something that might
     // mutate a lot
     return {
@@ -180,7 +177,8 @@ export const Widget = connect(({appState: {settingsVisible, widgetState, errorNo
             settingsVisible,
             widgetState,
             errorNotificationMessage,
-            embedded
+            embedded,
+            showAnimation
         },
         app,
         settings: app.settings.web,
