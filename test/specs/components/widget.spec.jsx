@@ -27,7 +27,8 @@ const defaultProps = {
     appState: {
         widgetState: WIDGET_STATE.CLOSED,
         settingsVisible: false,
-        embedded: false
+        embedded: false,
+        showAnimation: false
     },
     app: {
         settings: {
