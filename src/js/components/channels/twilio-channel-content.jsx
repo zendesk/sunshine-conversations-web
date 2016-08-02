@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { updateTwilioAttributes, resetTwilioAttributes, linkTwilioChannel, unlinkTwilioChannel } from '../../services/integrations-service';
+import { updateTwilioAttributes, resetTwilioAttributes, linkTwilioChannel, unlinkTwilioChannel, pingTwilioChannel } from '../../services/integrations-service';
 
 import { ReactTelephoneInput } from '../../lib/react-telephone-input';
 
@@ -44,9 +44,7 @@ export class TwilioChannelContentComponent extends Component {
     }
 
     onSendText = () => {
-        updateTwilioAttributes({
-            linkState: 'linked'
-        });
+        pingTwilioChannel(this.props.userId);
     }
 
     onNumberValid = () => {
@@ -97,10 +95,10 @@ export class TwilioChannelContentComponent extends Component {
                                  </div>;
 
         const sendTextUrl = `sms://${phoneNumber}`;
-        const linkedComponentButton = isMobile.phone ? <button className='btn btn-sk-primary twilio-linking'
-                                                               onClick={ this.onStartTexting }>
-                                                           Start Texting
-                                                       </button> :
+        const linkedComponentButton = isMobile.phone ? <a href={ sendTextUrl }>
+                                                           <button className='btn btn-sk-primary twilio-linking'
+                                                                   onClick={ this.onStartTexting }> Start Texting </button>
+                                                       </a> :
             <button className='btn btn-sk-primary twilio-linking'
                     onClick={ this.onSendText }>
                 Send me a text
@@ -113,9 +111,7 @@ export class TwilioChannelContentComponent extends Component {
                                         <span className='phone-number'>{ appUserNumber }</span>
                                         <a onClick={ this.unlinkChannel }>Change my number</a>
                                     </div>
-                                    <a href={ sendTextUrl }>
-                                        { linkedComponentButton }
-                                    </a>
+                                    { linkedComponentButton }
                                 </div>;
         if (linkState === 'pending') {
             return pendingComponent;

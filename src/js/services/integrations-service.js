@@ -87,10 +87,17 @@ export function unlinkTwilioChannel(userId) {
                 appUserNumberValid: false
             });
         })
+export function pingTwilioChannel(userId) {
+    return core().appUsers.pingChannel(userId, 'twilio')
+        .then(() => {
+            updateTwilioAttributes({
+                linkState: 'linked'
+            });
+        })
         .catch(() => {
             updateTwilioAttributes({
                 hasError: true,
-                errorMessage: 'We were unable to communicate with this number. Please enter a different one.'
+                errorMessage: 'There was an error sending a message to your number.'
             });
         });
 }
