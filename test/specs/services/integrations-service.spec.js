@@ -29,8 +29,8 @@ describe('Integrations service', () => {
         };
 
         coreMock = createMock(sandbox);
-        coreMock.appUsers.link.linkChannel.resolves(pendingAppUser);
-        coreMock.appUsers.link.unlinkChannel.resolves();
+        coreMock.appUsers.linkChannel.resolves(pendingAppUser);
+        coreMock.appUsers.unlinkChannel.resolves();
         sandbox.stub(coreService, 'core', () => {
             return coreMock;
         });
@@ -59,7 +59,7 @@ describe('Integrations service', () => {
                 type: 'twilio',
                 phoneNumber: '+0123456789'
             }).then(() => {
-                coreMock.appUsers.link.linkChannel.should.have.been.calledWith('1', {
+                coreMock.appUsers.linkChannel.should.have.been.calledWith('1', {
                     type: 'twilio',
                     phoneNumber: '+0123456789'
                 });
@@ -70,7 +70,7 @@ describe('Integrations service', () => {
     describe('unlinkTwilioChannel', () => {
         it('should set the twilio integration state to unlinked', () => {
             return integrationsService.unlinkTwilioChannel('1').then(() => {
-                coreMock.appUsers.link.unlinkChannel.should.have.been.calledWith('1', 'twilio');
+                coreMock.appUsers.unlinkChannel.should.have.been.calledWith('1', 'twilio');
             });
 
         });

@@ -54,9 +54,9 @@ export function fetchTwilioAttributes() {
 }
 
 export function linkTwilioChannel(userId, data) {
-    return core().appUsers.link.linkChannel(userId, data)
-        .then((appUser) => {
-            store.dispatch(updateUser(...appUser));
+    return core().appUsers.linkChannel(userId, data)
+        .then(({appUser}) => {
+            store.dispatch(updateUser(appUser));
         })
         .then(() => {
             updateTwilioAttributes({
@@ -72,7 +72,7 @@ export function linkTwilioChannel(userId, data) {
 }
 
 export function unlinkTwilioChannel(userId) {
-    return core().appUsers.link.unlinkChannel(userId, 'twilio')
+    return core().appUsers.unlinkChannel(userId, 'twilio')
         .then(() => {
             const {user: {clients, pendingClients}} = store.getState();
             store.dispatch(updateUser({

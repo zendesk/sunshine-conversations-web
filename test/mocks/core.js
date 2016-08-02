@@ -8,10 +8,8 @@ export function createMock(sinon) {
                 createTransaction: sinon.stub()
             },
             updateDevice: sinon.stub(),
-            link: {
-                linkChannel: sinon.stub(),
-                unlinkChannel: sinon.stub()
-            }
+            linkChannel: sinon.stub(),
+            unlinkChannel: sinon.stub()
         },
 
         conversations: {
