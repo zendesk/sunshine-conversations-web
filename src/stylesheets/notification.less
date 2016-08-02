@@ -1,23 +1,16 @@
 .sk-notification-container {
     box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
-    position: absolute;
     width: 100%;
     z-index: 1;
 
     .sk-notification {
-        overflow: hidden;
-
-        height: @notification-height;
         width: 100%;
-
-        &.long-text {
-            height: @long-notification-height;
-        }
-
+        height: 100%;
+        position: relative;
         border-top: 1px solid rgba(0, 0, 0, .1);
         background-color: white;
         p {
-            margin: 18px 18px;
+            margin: 12px 12px;
             a {
                 color: @sk-blue;
             }
@@ -56,11 +49,11 @@
 
     .sk-notification-enter-active {
         .transition(height 500ms);
-        height: @notification-height;
+        height: 100%;
     }
 
     .sk-notification-leave {
-        height: @notification-height;
+        height: 100%;
     }
 
     .sk-notification-leave-active {

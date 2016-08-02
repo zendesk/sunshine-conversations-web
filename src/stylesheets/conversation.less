@@ -1,19 +1,11 @@
 #sk-conversation {
     position: relative;
     padding: 0;
-    height: @conversation-height;
+    height: 100%;
     overflow-y: scroll;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     .transition(padding-top 500ms);
-
-    @media (max-width:@screen-sm-min) {
-        height: @conversation-height-mobile;
-    }
-
-    &.notification-shown {
-        padding-top: @notification-height;
-    }
 
     .sk-intro-section {
         background-color: #F8F9FA;

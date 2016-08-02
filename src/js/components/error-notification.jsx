@@ -17,8 +17,7 @@ export class ErrorNotificationComponent extends Component {
 
         const classes = [
             'sk-notification',
-            'sk-notification-error',
-            message && (message.length > 50) && 'long-text'
+            'sk-notification-error'
         ]
             .filter((value) => value)
             .join(' ');

@@ -58,6 +58,11 @@
     }
 }
 
+#sk-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
 #sk-holder {
     @import "loading.less";
     @import "animations.less";
@@ -134,7 +139,7 @@
         }
     }
     #sk-conversation {
-        height: ~"calc(100% - @{remaining-height})";
+        height: 100%;
         .sk-messages-container {
             position: relative;
         }

@@ -24,9 +24,8 @@
 @widget-close-bottom-xs: calc(~"@{header-extra-height} - @{widget-height-xs}");
 @widget-close-top: calc(~"100% - @{header-extra-height}");
 
-@remaining-height: @header-extra-height + @footer-height;
-@conversation-height: calc(~"100% - @{remaining-height}");
-@conversation-height-mobile: ~"calc(100%  - @{remaining-height})";
+@conversation-height: 100%;
+@conversation-height-mobile: 100%;
 @conversation-width-mobile: 100%;
 
 @logo-margin: ~"calc(50% - 83px)"; // 83 is width of text + logo + scrollbar width / 2
@@ -71,6 +70,3 @@
 @screen-xs-ht-max: 507px;
 
 @widget-close-top-lg: calc(~"100% - @{widget-height-lg}");
-
-@notification-height: 56px;
-@long-notification-height: 75px;
