@@ -34,6 +34,10 @@ export class WidgetComponent extends Component {
         ui: PropTypes.object.isRequired
     };
 
+    state = {
+        showAnimation: false
+    };
+
     onTouchStart = (e) => {
         resetUnreadCount();
         // the behavior is problematic only on iOS devices
@@ -50,6 +54,11 @@ export class WidgetComponent extends Component {
 
     onClick = () => {
         resetUnreadCount();
+        this.setState({showAnimation: true});
+    };
+
+    handleResize = () => {
+        this.setState({showAnimation: false});
     };
 
     onWheel = debounce(() => {
@@ -65,6 +74,14 @@ export class WidgetComponent extends Component {
             ui: this.props.ui
         };
     }
+
+    componentDidMount = () => {
+        window.addEventListener('resize', this.handleResize);
+    };
+
+    componentWillUnmount = () => {
+        window.addEventListener('resize', this.handleResize);
+    };
 
     render() {
         const {appState, settings, smoochId} = this.props;
@@ -97,6 +114,10 @@ export class WidgetComponent extends Component {
 
         if (isMobile.apple.device) {
             classNames.push('sk-ios-device');
+        }
+
+        if (this.state.showAnimation) {
+            classNames.push('sk-animation');
         }
 
         const notification = appState.errorNotificationMessage ?
