@@ -1,7 +1,6 @@
 import sinon from 'sinon';
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
-import { findDOMNode } from 'react-dom';
 
 import { mockComponent } from '../../../utils/react';
 import { ReactTelephoneInput } from '../../../../src/js/lib/react-telephone-input';
@@ -54,10 +53,6 @@ describe('Twilio Channel Content Component', () => {
 
             const appUserPhoneNumber = TestUtils.findRenderedDOMComponentWithClass(component, 'phone-number');
             appUserPhoneNumber.textContent.should.eq(linkedProps.appUserNumber);
-
-            const appMakerPhoneNumber = TestUtils.scryRenderedDOMComponentsWithTag(component, 'a')[1];
-            const domNode = findDOMNode(appMakerPhoneNumber);
-            domNode.getAttribute('href').should.eql(`sms://${linkedProps.phoneNumber}`);
         });
     });
 
@@ -66,7 +61,7 @@ describe('Twilio Channel Content Component', () => {
             appUserNumber: '',
             linkState: 'unlinked',
             phoneNumber: '123456789',
-            appUserNumberValid: false,
+            appUserNumberValid: true,
             settings: {}
         };
 
@@ -85,6 +80,30 @@ describe('Twilio Channel Content Component', () => {
                     component = renderComponent(context, store, props);
                     TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-primary').length.should.eq(appUserNumberValid ? 1 : 0);
                 });
+            });
+        });
+
+        describe('warning message', () => {
+            it('should warn if phone number is invalid', () => {
+                const props = {
+                    ...unlinkedProps,
+                    appUserNumber: '+0000000000',
+                    appUserNumberValid: false
+                };
+                component = renderComponent(context, store, props);
+                const warning = TestUtils.findRenderedDOMComponentWithClass(component, 'warning-message');
+                warning.textContent.should.eq('Your phone number isn\'t valid. Please try again.');
+            });
+
+            it('should warn if error', () => {
+                const props = {
+                    ...unlinkedProps,
+                    hasError: true,
+                    errorMessage: 'error-message'
+                };
+                component = renderComponent(context, store, props);
+                const warning = TestUtils.findRenderedDOMComponentWithClass(component, 'warning-message');
+                warning.textContent.should.eq(props.errorMessage);
             });
         });
     });

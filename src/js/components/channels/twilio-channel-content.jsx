@@ -25,15 +25,8 @@ export class TwilioChannelContentComponent extends Component {
 
     handleInputChange = (telNumber) => {
         updateTwilioAttributes({
-            appUserNumber: telNumber
-        });
-    }
-
-    onChangeNumber = () => {
-        updateTwilioAttributes({
-            linkState: 'unlinked',
-            appUserNumber: '',
-            appUserNumberValid: false
+            appUserNumber: telNumber,
+            hasError: false
         });
     }
 
@@ -64,7 +57,7 @@ export class TwilioChannelContentComponent extends Component {
     }
 
     render() {
-        const {appUserNumber, appUserNumberValid, phoneNumber, linkState} = this.props;
+        const {appUserNumber, appUserNumberValid, phoneNumber, linkState, errorMessage, hasError} = this.props;
         const {settings: {linkColor}} = this.context;
         let iconStyle = {};
         if (linkColor) {
@@ -77,7 +70,11 @@ export class TwilioChannelContentComponent extends Component {
                                                         onClick={ this.linkTwilioNumber }>
                                                     Continue
                                                 </button> : '';
-        const unlinkedComponent = <div>
+        const invalidNumberMessage = appUserNumber && !appUserNumberValid ? 'Your phone number isn\'t valid. Please try again.' : '';
+        const warningMessage = invalidNumberMessage || hasError ? <div className='warning-message'>
+                                                                      { invalidNumberMessage ? invalidNumberMessage : errorMessage }
+                                                                  </div> : '';
+        const unlinkedComponent = <div className='twilio-linking unlinked-state'>
                                       <ReactTelephoneInput ref={ (c) => this._telInput = c }
                                                            defaultCountry='ca'
                                                            onChange={ this.handleInputChange }
@@ -85,6 +82,7 @@ export class TwilioChannelContentComponent extends Component {
                                                            onInvalid={ this.onNumberInvalid }
                                                            preferredCountries={ ['ca', 'us'] }
                                                            onBlur={ this.handleInputBlur } />
+                                      { warningMessage }
                                       { linkButton }
                                   </div>;
         const pendingComponent = <div className='twilio-linking pending-state'>
