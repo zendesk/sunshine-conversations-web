@@ -17,9 +17,7 @@ export const EDITABLE_PROPERTIES = [
     'surname',
     'email',
     'signedUpAt',
-    'properties',
-    'pendingClients',
-    'clients'
+    'properties'
 ];
 
 export function immediateUpdate(props) {
