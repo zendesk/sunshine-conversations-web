@@ -17,6 +17,7 @@ import { MessageIndicator } from './message-indicator';
 import { resetUnreadCount } from '../services/conversation-service';
 import { hasChannels } from '../utils/app';
 import { DISPLAY_STYLE } from '../constants/styles';
+import { WIDGET_STATE } from '../constants/app';
 
 export class WidgetComponent extends Component {
     static propTypes = {
@@ -84,14 +85,12 @@ export class WidgetComponent extends Component {
         if (appState.embedded) {
             classNames.push('sk-embedded');
         } else {
-            // `widgetOpened` can have 3 values: `true`, `false`, and `undefined`.
-            // `undefined` is basically the default state where the widget was never
-            // opened or closed and not visibility class is applied to the widget
-            if (appState.widgetOpened === true) {
+            if (appState.widgetState === WIDGET_STATE.OPENED) {
                 classNames.push('sk-appear');
-            } else if (appState.widgetOpened === false) {
+            } else if (appState.widgetState === WIDGET_STATE.CLOSED) {
                 classNames.push('sk-close');
             } else {
+                // state is WIDGET_STATE.INIT
                 classNames.push('sk-init');
             }
         }
@@ -112,7 +111,7 @@ export class WidgetComponent extends Component {
         let messengerButton;
 
         if (displayStyle === DISPLAY_STYLE.BUTTON && !appState.embedded) {
-            messengerButton = <MessengerButton shown={ !appState.widgetOpened } />;
+            messengerButton = <MessengerButton shown={ appState.widgetState !== WIDGET_STATE.OPENED } />;
         }
 
         return <div>
@@ -152,13 +151,13 @@ export class WidgetComponent extends Component {
     }
 }
 
-export const Widget = connect(({appState: {settingsVisible, widgetOpened, errorNotificationMessage, embedded}, app, ui, user}) => {
+export const Widget = connect(({appState: {settingsVisible, widgetState, errorNotificationMessage, embedded}, app, ui, user}) => {
     // only extract what is needed from appState as this is something that might
     // mutate a lot
     return {
         appState: {
             settingsVisible,
-            widgetOpened,
+            widgetState,
             errorNotificationMessage,
             embedded
         },

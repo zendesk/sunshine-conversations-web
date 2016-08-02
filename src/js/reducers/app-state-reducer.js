@@ -1,11 +1,12 @@
 import * as AppStateActions from '../actions/app-state-actions';
 import { RESET } from '../actions/common-actions';
 import { RESET_CONVERSATION } from '../actions/conversation-actions';
+import { WIDGET_STATE } from '../constants/app';
 
 const INITIAL_STATE = {
     settingsVisible: false,
     visibleChannelType: null,
-    widgetOpened: null,
+    widgetState: WIDGET_STATE.INIT,
     settingsEnabled: true,
     soundNotificationEnabled: true,
     imageUploadEnabled: true,
@@ -79,23 +80,24 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             };
 
         case AppStateActions.TOGGLE_WIDGET:
+
             return {
                 ...state,
-                widgetOpened: !state.widgetOpened,
-                settingsVisible: state.settingsVisible && !state.widgetOpened
+                widgetState: state.widgetState === WIDGET_STATE.OPENED ? WIDGET_STATE.CLOSED : WIDGET_STATE.OPENED,
+                settingsVisible: state.settingsVisible && state.widgetState !== WIDGET_STATE.OPENED
             };
 
         case AppStateActions.OPEN_WIDGET:
             return {
                 ...state,
-                widgetOpened: true
+                widgetState: WIDGET_STATE.OPENED
             };
 
         case AppStateActions.CLOSE_WIDGET:
             return {
                 ...state,
                 visibleChannelType: null,
-                widgetOpened: false,
+                widgetState: WIDGET_STATE.CLOSED,
                 settingsVisible: false
             };
 
@@ -157,7 +159,7 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             return {
                 ...state,
                 embedded: action.value,
-                widgetOpened: action.value ? true : state.widgetOpened
+                widgetState: action.value ? WIDGET_STATE.OPENED : state.widgetState
             };
 
         case AppStateActions.SET_INTRO_HEIGHT:
