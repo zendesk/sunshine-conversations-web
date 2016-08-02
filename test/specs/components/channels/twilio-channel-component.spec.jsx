@@ -5,10 +5,26 @@ import { findDOMNode } from 'react-dom';
 
 import { mockComponent } from '../../../utils/react';
 import { ReactTelephoneInput } from '../../../../src/js/lib/react-telephone-input';
+import { ParentComponentWithContext } from '../../../utils/parent-component';
 
 import { TwilioChannelContentComponent } from '../../../../src/js/components/channels/twilio-channel-content';
 
 const sandbox = sinon.sandbox.create();
+
+const context = {
+    settings: {}
+};
+
+const store = {};
+
+function renderComponent(context, store, props) {
+    const parentComponent = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
+                                                                                     store={ store }
+                                                                                     withRef={ true }>
+                                                             <TwilioChannelContentComponent {...props} />
+                                                         </ParentComponentWithContext>);
+    return parentComponent.refs.childElement;
+}
 
 describe('Twilio Channel Content Component', () => {
     let component;
@@ -32,7 +48,7 @@ describe('Twilio Channel Content Component', () => {
             settings: {}
         };
         it('should render linked component', () => {
-            component = TestUtils.renderIntoDocument(<TwilioChannelContentComponent {...linkedProps}/>);
+            component = renderComponent(context, store, linkedProps);
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'linked-state').length.should.eq(1);
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedTelephoneInput').length.should.eq(0);
 
@@ -55,7 +71,7 @@ describe('Twilio Channel Content Component', () => {
         };
 
         it('should render unlinked component', () => {
-            component = TestUtils.renderIntoDocument(<TwilioChannelContentComponent {...unlinkedProps}/>);
+            component = renderComponent(context, store, unlinkedProps);
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedTelephoneInput').length.should.eq(1);
         });
 
@@ -66,7 +82,7 @@ describe('Twilio Channel Content Component', () => {
                         ...unlinkedProps,
                         appUserNumberValid: appUserNumberValid
                     };
-                    component = TestUtils.renderIntoDocument(<TwilioChannelContentComponent {...props}/>);
+                    component = renderComponent(context, store, props);
                     TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-primary').length.should.eq(appUserNumberValid ? 1 : 0);
                 });
             });
@@ -83,7 +99,7 @@ describe('Twilio Channel Content Component', () => {
         };
 
         it('should render pending component', () => {
-            component = TestUtils.renderIntoDocument(<TwilioChannelContentComponent {...pendingProps}/>);
+            component = renderComponent(context, store, pendingProps);
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedTelephoneInput').length.should.eq(0);
 
             const appUserPhoneNumber = TestUtils.findRenderedDOMComponentWithClass(component, 'phone-number');

@@ -2,6 +2,7 @@ import { store } from '../stores/app-store';
 import { core } from './core';
 import { setWeChatQRCode, setWeChatError, unsetWeChatError, setTwilioIntegrationState, resetTwilioIntegrationState } from '../actions/integrations-actions';
 import { getUserId } from './user-service';
+import { updateUser } from '../actions/user-actions';
 
 let fetchingWeChat = false;
 
@@ -42,12 +43,54 @@ export function fetchTwilioAttributes() {
     if (client) {
         updateTwilioAttributes({
             linkState: 'linked',
-            number: client.displayName
+            appUserNumber: client.displayName
         });
     } else if (pendingClient) {
         updateTwilioAttributes({
             linkState: 'pending',
-            number: pendingClient.displayName
+            appUserNumber: pendingClient.displayName
         });
     }
+}
+
+export function linkTwilioChannel(userId, data) {
+    return core().appUsers.linkChannel(userId, data)
+        .then(({appUser}) => {
+            store.dispatch(updateUser(appUser));
+        })
+        .then(() => {
+            updateTwilioAttributes({
+                linkState: 'pending'
+            });
+        })
+        .catch(() => {
+            updateTwilioAttributes({
+                hasError: true,
+                errorMessage: 'We were unable to communicate with this number. Please enter a different one.'
+            });
+        });
+}
+
+export function unlinkTwilioChannel(userId) {
+    return core().appUsers.unlinkChannel(userId, 'twilio')
+        .then(() => {
+            const {user: {clients, pendingClients}} = store.getState();
+            store.dispatch(updateUser({
+                pendingClients: pendingClients.filter((pendingClient) => pendingClient.platform !== 'twilio'),
+                clients: clients.filter((client) => client.platform !== 'twilio')
+            }));
+        })
+        .then(() => {
+            updateTwilioAttributes({
+                linkState: 'unlinked',
+                appUserNumber: '',
+                appUserNumberValid: false
+            });
+        })
+        .catch(() => {
+            updateTwilioAttributes({
+                hasError: true,
+                errorMessage: 'We were unable to communicate with this number. Please enter a different one.'
+            });
+        });
 }
