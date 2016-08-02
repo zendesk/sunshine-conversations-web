@@ -38,7 +38,7 @@ export function resetTwilioAttributes() {
 export function fetchTwilioAttributes() {
     const {user: {clients, pendingClients}} = store.getState();
     const client = clients.find((client) => client.platform === 'twilio');
-    const pendingClient = pendingClients && pendingClients.find((client) => client.platform === 'twilio');
+    const pendingClient = pendingClients.find((client) => client.platform === 'twilio');
 
     if (client) {
         updateTwilioAttributes({
