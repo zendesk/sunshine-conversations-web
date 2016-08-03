@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { updateTwilioAttributes, resetTwilioAttributes, linkTwilioChannel, unlinkTwilioChannel } from '../../services/integrations-service';
+import { updateTwilioAttributes, resetTwilioAttributes, linkTwilioChannel, unlinkTwilioChannel, pingTwilioChannel } from '../../services/integrations-service';
 
 import { ReactTelephoneInput } from '../../lib/react-telephone-input';
 
@@ -9,7 +9,8 @@ import isMobile from 'ismobilejs';
 export class TwilioChannelContentComponent extends Component {
 
     static contextTypes = {
-        settings: PropTypes.object
+        settings: PropTypes.object,
+        ui: PropTypes.object
     };
 
     linkTwilioNumber = () => {
@@ -25,15 +26,8 @@ export class TwilioChannelContentComponent extends Component {
 
     handleInputChange = (telNumber) => {
         updateTwilioAttributes({
-            appUserNumber: telNumber
-        });
-    }
-
-    onChangeNumber = () => {
-        updateTwilioAttributes({
-            linkState: 'unlinked',
-            appUserNumber: '',
-            appUserNumberValid: false
+            appUserNumber: telNumber,
+            hasError: false
         });
     }
 
@@ -44,9 +38,7 @@ export class TwilioChannelContentComponent extends Component {
     }
 
     onSendText = () => {
-        updateTwilioAttributes({
-            linkState: 'linked'
-        });
+        pingTwilioChannel(this.props.userId);
     }
 
     onNumberValid = () => {
@@ -66,8 +58,8 @@ export class TwilioChannelContentComponent extends Component {
     }
 
     render() {
-        const {appUserNumber, appUserNumberValid, phoneNumber, linkState} = this.props;
-        const {settings: {linkColor}} = this.context;
+        const {appUserNumber, appUserNumberValid, phoneNumber, linkState, errorMessage, hasError} = this.props;
+        const {settings: {linkColor}, ui: {text: {smsInvalidNumberError}}} = this.context;
         let iconStyle = {};
         if (linkColor) {
             iconStyle = {
@@ -79,7 +71,11 @@ export class TwilioChannelContentComponent extends Component {
                                                         onClick={ this.linkTwilioNumber }>
                                                     Continue
                                                 </button> : '';
-        const unlinkedComponent = <div>
+        const invalidNumberMessage = appUserNumber && !appUserNumberValid ? smsInvalidNumberError : '';
+        const warningMessage = invalidNumberMessage || hasError ? <div className='warning-message'>
+                                                                      { invalidNumberMessage ? invalidNumberMessage : errorMessage }
+                                                                  </div> : '';
+        const unlinkedComponent = <div className='twilio-linking unlinked-state'>
                                       <ReactTelephoneInput ref={ (c) => this._telInput = c }
                                                            defaultCountry='ca'
                                                            onChange={ this.handleInputChange }
@@ -87,6 +83,7 @@ export class TwilioChannelContentComponent extends Component {
                                                            onInvalid={ this.onNumberInvalid }
                                                            preferredCountries={ ['ca', 'us'] }
                                                            onBlur={ this.handleInputBlur } />
+                                      { warningMessage }
                                       { linkButton }
                                   </div>;
         const pendingComponent = <div className='twilio-linking pending-state'>
@@ -97,10 +94,13 @@ export class TwilioChannelContentComponent extends Component {
                                  </div>;
 
         const sendTextUrl = `sms://${phoneNumber}`;
-        const linkedComponentButton = isMobile.phone ? <button className='btn btn-sk-primary twilio-linking'
-                                                               onClick={ this.onStartTexting }>
-                                                           Start Texting
-                                                       </button> :
+        const linkStyle = {
+            color: 'white'
+        };
+        const linkedComponentButton = isMobile.phone ? <a href={ sendTextUrl }
+                                                          className='btn btn-sk-primary twilio-linking'
+                                                          onClick={ this.onStartTexting }
+                                                          style={ linkStyle }>Start Texting</a> :
             <button className='btn btn-sk-primary twilio-linking'
                     onClick={ this.onSendText }>
                 Send me a text
@@ -113,9 +113,7 @@ export class TwilioChannelContentComponent extends Component {
                                         <span className='phone-number'>{ appUserNumber }</span>
                                         <a onClick={ this.unlinkChannel }>Change my number</a>
                                     </div>
-                                    <a href={ sendTextUrl }>
-                                        { linkedComponentButton }
-                                    </a>
+                                    { linkedComponentButton }
                                 </div>;
         if (linkState === 'pending') {
             return pendingComponent;
