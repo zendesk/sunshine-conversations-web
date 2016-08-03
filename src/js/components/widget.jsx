@@ -18,6 +18,7 @@ import { resetUnreadCount } from '../services/conversation-service';
 import { hasChannels } from '../utils/app';
 import { DISPLAY_STYLE } from '../constants/styles';
 import { WIDGET_STATE } from '../constants/app';
+import { disableAnimation } from '../actions/app-state-actions';
 
 export class WidgetComponent extends Component {
     static propTypes = {
@@ -50,6 +51,11 @@ export class WidgetComponent extends Component {
 
     onClick = () => {
         resetUnreadCount();
+
+    };
+
+    handleResize = () => {
+        this.props.dispatch(disableAnimation());
     };
 
     onWheel = debounce(() => {
@@ -65,6 +71,14 @@ export class WidgetComponent extends Component {
             ui: this.props.ui
         };
     }
+
+    componentDidMount = () => {
+        window.addEventListener('resize', this.handleResize);
+    };
+
+    componentWillUnmount = () => {
+        window.removeEventListener('resize', this.handleResize);
+    };
 
     render() {
         const {appState, settings, smoochId} = this.props;
@@ -97,6 +111,10 @@ export class WidgetComponent extends Component {
 
         if (isMobile.apple.device) {
             classNames.push('sk-ios-device');
+        }
+
+        if (appState.showAnimation) {
+            classNames.push('sk-animation');
         }
 
         const notification = appState.errorNotificationMessage ?
@@ -151,7 +169,7 @@ export class WidgetComponent extends Component {
     }
 }
 
-export const Widget = connect(({appState: {settingsVisible, widgetState, errorNotificationMessage, embedded}, app, ui, user}) => {
+export const Widget = connect(({appState: {settingsVisible, widgetState, errorNotificationMessage, embedded, showAnimation}, app, ui, user}) => {
     // only extract what is needed from appState as this is something that might
     // mutate a lot
     return {
@@ -159,7 +177,8 @@ export const Widget = connect(({appState: {settingsVisible, widgetState, errorNo
             settingsVisible,
             widgetState,
             errorNotificationMessage,
-            embedded
+            embedded,
+            showAnimation
         },
         app,
         settings: app.settings.web,
