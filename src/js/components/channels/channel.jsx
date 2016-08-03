@@ -8,6 +8,7 @@ import { getAppChannelDetails } from '../../utils/app';
 export class ChannelComponent extends Component {
     static propTypes = {
         appChannels: PropTypes.array.isRequired,
+        channelStates: PropTypes.object.isRequired,
         visibleChannelType: PropTypes.string,
         smoochId: PropTypes.string,
         clients: PropTypes.array
@@ -16,7 +17,6 @@ export class ChannelComponent extends Component {
     render() {
         const {appChannels, visibleChannelType, smoochId, clients, channelStates} = this.props;
 
-        //
         if (!smoochId) {
             return null;
         }

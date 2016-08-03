@@ -4,12 +4,13 @@ import { connect } from 'react-redux';
 import { toggleWidget, showSettings, hideSettings, hideChannelPage } from '../services/app-service';
 import { hasChannels } from '../utils/app';
 import { CHANNEL_DETAILS } from '../constants/channels';
+import { WIDGET_STATE } from '../constants/app';
 
 export class HeaderComponent extends Component {
 
     static contextTypes = {
-        ui: PropTypes.object,
-        settings: PropTypes.object
+        ui: PropTypes.object.isRequired,
+        settings: PropTypes.object.isRequired
     };
 
     showSettings(e) {
@@ -28,15 +29,17 @@ export class HeaderComponent extends Component {
     }
 
     render() {
-        const {appState: {emailCaptureEnabled, settingsVisible, widgetOpened, embedded, visibleChannelType}, unreadCount} = this.props;
+        const {appState: {emailCaptureEnabled, settingsVisible, widgetState, embedded, visibleChannelType}, unreadCount} = this.props;
         const {ui, settings} = this.context;
         const {settingsHeaderText, headerText} = ui.text;
+        const {brandColor} = settings;
 
         const settingsMode = !!(settingsVisible || visibleChannelType);
         const showSettingsButton = (hasChannels(settings) || emailCaptureEnabled) && !settingsMode;
+        const widgetOpened = widgetState === WIDGET_STATE.OPENED;
 
         const unreadBadge = !settingsMode && unreadCount > 0 ? (
-            <div id='sk-badge'>
+            <div className='unread-badge'>
                 { unreadCount }
             </div>
             ) : null;
@@ -57,15 +60,9 @@ export class HeaderComponent extends Component {
 
         let closeHandle = null;
         if (!embedded) {
-            closeHandle = widgetOpened ? (
-                <div className='sk-close-handle sk-close-hidden'>
-                    <i className='fa fa-times'></i>
-                </div>
-                ) : (
-                <div className='sk-show-handle sk-appear-hidden'>
-                    <i className='fa fa-arrow-up'></i>
-                </div>
-                );
+            closeHandle = widgetOpened ? <div className='sk-close-handle sk-close-hidden'>
+                                             <i className='fa fa-times'></i>
+                                         </div> : null;
         }
 
         const settingsTextStyle = {
@@ -82,25 +79,31 @@ export class HeaderComponent extends Component {
                                  </div>
                              </div>;
 
-        return (
-            <div id={ settingsMode ? 'sk-settings-header' : 'sk-header' }
-                 onClick={ !embedded && toggleWidget }
-                 className='sk-header-wrapper'>
-                { settingsButton }
-                { settingsMode ? settingsText : headerText }
-                { unreadBadge }
-                { closeHandle }
-            </div>
-            );
+        let style;
+        if (brandColor) {
+            style = {
+                backgroundColor: `#${brandColor}`
+            };
+        }
+
+        return <div id={ settingsMode ? 'sk-settings-header' : 'sk-header' }
+                    onClick={ !embedded && toggleWidget }
+                    className='sk-header-wrapper'
+                    style={ style }>
+                   { settingsButton }
+                   { settingsMode ? settingsText : headerText }
+                   { unreadBadge }
+                   { closeHandle }
+               </div>;
     }
 }
 
-function mapStateToProps({appState: {emailCaptureEnabled, settingsVisible, widgetOpened, embedded, visibleChannelType}, conversation}) {
+function mapStateToProps({appState: {emailCaptureEnabled, settingsVisible, widgetState, embedded, visibleChannelType}, conversation}) {
     return {
         appState: {
             emailCaptureEnabled,
             settingsVisible,
-            widgetOpened,
+            widgetState,
             embedded,
             visibleChannelType
         },

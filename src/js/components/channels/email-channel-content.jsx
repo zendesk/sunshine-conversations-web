@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 
 export class EmailChannelContent extends Component {
     static contextTypes = {
-        settings: PropTypes.object
+        settings: PropTypes.object.isRequired
     }
 
     render() {

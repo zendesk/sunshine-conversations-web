@@ -1,5 +1,4 @@
 import sinon from 'sinon';
-import React from 'react';
 import TestUtils from 'react-addons-test-utils';
 
 import { mockComponent } from '../../utils/react';
@@ -9,6 +8,8 @@ import { ActionComponent } from '../../../src/js/components/action';
 import { ImageMessage } from '../../../src/js/components/image-message';
 import { TextMessage } from '../../../src/js/components/text-message';
 
+import { wrapComponentWithContext } from '../../utils/react';
+
 const sandbox = sinon.sandbox.create();
 
 const defaultProps = {
@@ -17,7 +18,7 @@ const defaultProps = {
     actions: []
 };
 
-describe('Message', () => {
+describe('Message Component', () => {
     var component;
 
     beforeEach(() => {
@@ -45,7 +46,7 @@ describe('Message', () => {
             };
 
             beforeEach(() => {
-                component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
+                component = wrapComponentWithContext(MessageComponent, props);
             });
 
             it('should not contain any actions', () => {
@@ -66,7 +67,7 @@ describe('Message', () => {
         const props = Object.assign({}, defaultProps);
 
         beforeEach(() => {
-            component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
+            component = wrapComponentWithContext(MessageComponent, props);
         });
 
         it('should not have an avatar', () => {
@@ -105,11 +106,11 @@ describe('Message', () => {
             const lastMessageProps = Object.assign({}, props, {
                 lastInGroup: true
             });
-            const firstMessageComponent = TestUtils.renderIntoDocument(<MessageComponent {...firstMessageProps} />);
-            const lastMessageComponent = TestUtils.renderIntoDocument(<MessageComponent {...lastMessageProps} />);
+            const firstMessageComponent = wrapComponentWithContext(MessageComponent, firstMessageProps);
+            const lastMessageComponent = wrapComponentWithContext(MessageComponent, lastMessageProps);
 
             beforeEach(() => {
-                component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
+                component = wrapComponentWithContext(MessageComponent, props);
 
             });
 
@@ -169,7 +170,7 @@ describe('Message', () => {
             });
 
             beforeEach(() => {
-                component = TestUtils.renderIntoDocument(<MessageComponent {...props} />);
+                component = wrapComponentWithContext(MessageComponent, props);
             });
 
             it('should be on the left', () => {

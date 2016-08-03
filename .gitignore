@@ -3,7 +3,7 @@ bower_components
 *.log
 tmp
 dist/
-/lib/
+lib/
 grunt-aws.json
 grunt-maxcdn.json
 *.sublime-workspace

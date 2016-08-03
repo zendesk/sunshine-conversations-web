@@ -4,6 +4,7 @@ import { openWidget, closeWidget, toggleWidget } from '../../../src/js/services/
 import { mockAppStore } from '../../utils/redux';
 import { OPEN_WIDGET, CLOSE_WIDGET } from '../../../src/js/actions/app-state-actions';
 import { observable } from '../../../src/js/utils/events';
+import { WIDGET_STATE } from '../../../src/js/constants/app';
 
 describe('App Service', () => {
     let mockedStore;
@@ -95,7 +96,7 @@ describe('App Service', () => {
                                 mockedStore = mockAppStore(sandbox, {
                                     appState: {
                                         embedded: isEmbedded,
-                                        widgetOpened: isOpened
+                                        widgetState: isOpened ? WIDGET_STATE.OPENED : WIDGET_STATE.CLOSED
                                     },
                                     conversation: {}
                                 });

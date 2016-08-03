@@ -1,5 +1,5 @@
 import { IntegrationsReducer } from '../../../src/js/reducers/integrations-reducer';
-import { SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE } from '../../../src/js/actions/integrations-actions';
+import { SET_WECHAT_QR_CODE, SET_WECHAT_ERROR, UNSET_WECHAT_ERROR, RESET_INTEGRATIONS, SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE } from '../../../src/js/actions/integrations-actions';
 
 const INITIAL_STATE = IntegrationsReducer(undefined, {});
 const TWILIO_ATTRIBUTES = {
@@ -37,5 +37,39 @@ describe('Integrations Reducer', () => {
             });
             afterState.should.eql(INITIAL_STATE);
         });
+    });
+
+    it('should set the WeChat QR Code with the actions prop on SET_WECHAT_QR_CODE', () => {
+        IntegrationsReducer(undefined, {
+            type: SET_WECHAT_QR_CODE,
+            code: 'qrCode'
+        }).wechat.qrCode.should.eq('qrCode');
+    });
+
+    it('should set the WeChat error with the actions prop on SET_WECHAT_ERROR', () => {
+        IntegrationsReducer(undefined, {
+            type: SET_WECHAT_ERROR,
+            wechat: {
+                hasError: true
+            }
+        }).wechat.hasError.should.true;
+    });
+
+    it('should unset the WeChat error with the actions prop on UNSET_WECHAT_ERROR', () => {
+        IntegrationsReducer({
+            wechat: {
+                hasError: true
+            }
+        }, {
+            type: UNSET_WECHAT_ERROR
+        }).wechat.hasError.should.be.false;
+    });
+
+    it('should clear the state on RESET_INTEGRATIONS', () => {
+        expect(IntegrationsReducer({
+            some: 'prop'
+        }, {
+            type: RESET_INTEGRATIONS
+        }).some).to.not.exist;
     });
 });

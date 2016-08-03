@@ -41,34 +41,21 @@
     }
 }
 
-.widget-size-mixin() {
-    width: @widget-width-md;
-    height: @widget-height-md;
-
-    @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht) {
-        width: @widget-width-lg;
-        height: @widget-height-lg;
-    }
-    @media (min-width: @screen-sm-min) and (max-height: @screen-sm-ht) {
-        width: @widget-width-sm;
-        height: @widget-height-sm;
-    }
-    @media (max-width: @screen-sm-min) {
-        width: @widget-width-xs;
-        height: @widget-height-xs;
-    }
-}
-
 .content-width-mixin() {
     width: @content-width-md;
 
-    @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht) {
+    @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-min) {
         width: @content-width-lg;
     }
-    @media (min-width: @screen-sm-min) and (max-height: @screen-sm-ht) {
+    @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
         width: @content-width-sm;
     }
     @media (max-width: @screen-sm-min) {
         width: @content-width-xs;
     }
+}
+
+.flex(@value) {
+    -ms-flex: @value; // for IE10
+    flex: @value;
 }
