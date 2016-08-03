@@ -75,14 +75,15 @@
 }
 
 .twilio-linking {
-    
-        border-bottom: #e4e4e4 1px solid;
-        text-align: left;
-        padding-left: 5px;
 
         .phone-number {
             padding-right: 10px;
             padding-left: 10px;
+        }
+
+        .warning-message {
+            font-size: 10px;
+            color: red;
         }
 
         a {
@@ -93,15 +94,29 @@
             cursor: pointer;
         }
 
-        &.btn {
+        .btn {
             margin-top: 25px;
             text-align: center;
             border: 0px;
         }
 
+        &.btn {
+            margin-top: 25px;
+        }
+
         &.pending-state {
+            border-bottom: #e4e4e4 1px solid;
+            text-align: left;
+            padding-left: 5px;
+
             .phone-number {
                 color: darkgray;
             }
+        }
+
+        &.linked-state {
+            border-bottom: #e4e4e4 1px solid;
+            text-align: left;
+            padding-left: 5px;
         }
 }
