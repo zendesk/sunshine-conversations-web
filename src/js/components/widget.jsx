@@ -77,7 +77,7 @@ export class WidgetComponent extends Component {
     };
 
     componentWillUnmount = () => {
-        window.addEventListener('resize', this.handleResize);
+        window.removeEventListener('resize', this.handleResize);
     };
 
     render() {
