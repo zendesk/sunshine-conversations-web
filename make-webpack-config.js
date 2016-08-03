@@ -24,6 +24,8 @@ module.exports = function(options) {
         smooch: ['./src/js/utils/polyfills', './src/js/main']
     };
 
+    const fileLimit = options.bundleAll ? 100000 : 1;
+
     var loaders = {
         'jsx': options.hotComponents ? ['react-hot-loader', 'babel-loader'] : 'babel-loader',
         'js': {
@@ -31,11 +33,8 @@ module.exports = function(options) {
             include: [path.join(__dirname, 'src/js'), path.join(__dirname, 'test')]
         },
         'json': 'json-loader',
-        'txt': 'raw-loader',
-        'png|jpg|jpeg|gif|svg': 'url-loader?limit=1',
-        'woff|woff2': 'url-loader?limit=1',
-        'mp3': 'url-loader?limit=1',
-        'ttf|eot': 'file-loader'
+        'png|jpg|jpeg|gif|svg': `url-loader?limit=${fileLimit}`,
+        'mp3': `url-loader?limit=${fileLimit}`
     };
     var cssLoader = options.minimize ? 'css-loader?insertAt=top' : 'css-loader?insertAt=top&localIdentName=[path][name]---[local]---[hash:base64:5]';
     var stylesheetLoaders = {

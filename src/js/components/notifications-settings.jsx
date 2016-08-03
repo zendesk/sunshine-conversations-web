@@ -17,8 +17,8 @@ export class ChannelItem extends Component {
     };
 
     static contextTypes = {
-        settings: PropTypes.object,
-        ui: PropTypes.object
+        settings: PropTypes.object.isRequired,
+        ui: PropTypes.object.isRequired
     };
 
     onClick = () => {
@@ -67,7 +67,7 @@ export class ChannelItem extends Component {
 
 export class NotificationsSettingsComponent extends Component {
     static contextTypes = {
-        ui: PropTypes.object
+        ui: PropTypes.object.isRequired
     };
 
     static propTypes = {

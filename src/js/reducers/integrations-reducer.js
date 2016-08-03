@@ -1,6 +1,6 @@
 import { RESET_APP } from '../actions/app-actions';
 import { RESET } from '../actions/common-actions';
-import { SET_WECHAT_QR_CODE, SET_WECHAT_ERROR, UNSET_WECHAT_ERROR, SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE } from '../actions/integrations-actions';
+import { SET_WECHAT_QR_CODE, SET_WECHAT_ERROR, UNSET_WECHAT_ERROR, SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE, RESET_INTEGRATIONS } from '../actions/integrations-actions';
 
 const INITIAL_STATE = {
     wechat: {
@@ -18,6 +18,7 @@ export function IntegrationsReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case RESET:
         case RESET_APP:
+        case RESET_INTEGRATIONS:
             return {
                 ...INITIAL_STATE
             };

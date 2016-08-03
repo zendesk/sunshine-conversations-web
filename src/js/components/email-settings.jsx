@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -6,6 +6,11 @@ import { immediateUpdate } from '../services/user-service';
 import { hideSettings } from '../actions/app-state-actions';
 
 export class EmailSettingsComponent extends Component {
+    static contextTypes = {
+        ui: PropTypes.object.isRequired,
+        settings: PropTypes.object.isRequired
+    };
+
     static defaultProps = {
         settings: {}
     };
@@ -49,14 +54,16 @@ export class EmailSettingsComponent extends Component {
 
     render() {
         const hasError = this.state.hasError;
+        const {settings, ui: {text}} = this.context;
+        const {appState, user} = this.props;
 
         const style = {};
 
-        if (this.props.settings.linkColor) {
-            style.backgroundColor = style.borderColor = `#${this.props.settings.linkColor}`;
+        if (settings.linkColor) {
+            style.backgroundColor = style.borderColor = `#${settings.linkColor}`;
         }
 
-        const button = this.props.appState.readOnlyEmail ? null : (
+        const button = appState.readOnlyEmail ? null : (
             <div className='input-group'>
                 <button ref='button'
                         disabled={ hasError }
@@ -64,25 +71,25 @@ export class EmailSettingsComponent extends Component {
                         className='btn btn-sk-primary'
                         style={ style }
                         onClick={ this.save }>
-                    { this.props.ui.text.settingsSaveButtonText }
+                    { text.settingsSaveButtonText }
                 </button>
             </div>
             );
 
         return <div className='settings-wrapper content-wrapper'>
                    <p ref='description'>
-                       { this.props.appState.readOnlyEmail ? this.props.ui.text.settingsReadOnlyText : this.props.ui.text.settingsText }
+                       { appState.readOnlyEmail ? text.settingsReadOnlyText : text.settingsText }
                    </p>
                    <form onSubmit={ this.save }>
                        <div className={ hasError ? 'input-group has-error' : 'input-group' }>
                            <i className='fa fa-envelope-o before-icon'></i>
-                           <input disabled={ this.props.appState.readOnlyEmail }
+                           <input disabled={ appState.readOnlyEmail }
                                   ref='input'
                                   type='email'
-                                  placeholder={ this.props.ui.text.settingsInputPlaceholder }
+                                  placeholder={ text.settingsInputPlaceholder }
                                   className='input email-input'
                                   onChange={ this.onChange }
-                                  defaultValue={ this.props.user.email } />
+                                  defaultValue={ user.email } />
                        </div>
                        { button }
                    </form>
@@ -92,10 +99,8 @@ export class EmailSettingsComponent extends Component {
 
 export const EmailSettings = connect((state) => {
     return {
-        ui: state.ui,
         appState: state.appState,
-        user: state.user,
-        settings: state.app.settings && state.app.settings.web
+        user: state.user
     };
 }, (dispatch) => {
     return {

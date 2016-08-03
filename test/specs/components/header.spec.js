@@ -1,21 +1,22 @@
 import sinon from 'sinon';
-import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
 import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId, getContext } from '../../utils/react';
 import * as appService from '../../../src/js/services/app-service';
 import * as appUtils from '../../../src/js/utils/app';
+import { WIDGET_STATE } from '../../../src/js/constants/app';
 import { HeaderComponent } from '../../../src/js/components/header';
-import { ParentComponentWithContext } from '../../utils/parent-component';
+
 import { mockAppStore } from '../../utils/redux';
+import { wrapComponentWithContext } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
 const defaultProps = {
     appState: {
         emailCaptureEnabled: false,
         settingsVisible: true,
-        widgetOpened: true,
+        widgetState: WIDGET_STATE.OPENED,
         embedded: false,
         visibleChannelType: false
     },
@@ -31,10 +32,9 @@ const context = getContext({
     }
 });
 
-describe('Header', () => {
+describe('Header Component', () => {
     let props;
     let mockedStore;
-    let parentComponent;
     let header;
     let headerNode;
 
@@ -58,12 +58,10 @@ describe('Header', () => {
         beforeEach(() => {
             props = Object.assign(defaultProps, {});
             mockedStore = mockAppStore(sandbox, {});
-            parentComponent = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                                       store={ mockedStore }
-                                                                                       withRef={ true }>
-                                                               <HeaderComponent {...props} />
-                                                           </ParentComponentWithContext>);
-            header = parentComponent.refs.childElement;
+            header = wrapComponentWithContext(HeaderComponent, props, {
+                ...context,
+                store: mockedStore
+            });
             headerNode = ReactDOM.findDOMNode(header);
         });
 
@@ -102,12 +100,10 @@ describe('Header', () => {
                 }
             });
             mockedStore = mockAppStore(sandbox, {});
-            parentComponent = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                                       store={ mockedStore }
-                                                                                       withRef={ true }>
-                                                               <HeaderComponent {...props} />
-                                                           </ParentComponentWithContext>);
-            header = parentComponent.refs.childElement;
+            header = wrapComponentWithContext(HeaderComponent, props, {
+                ...context,
+                store: mockedStore
+            });
             headerNode = ReactDOM.findDOMNode(header);
         });
 

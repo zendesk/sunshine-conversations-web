@@ -12,7 +12,7 @@ const INTRO_BOTTOM_SPACER = 10;
 
 export class ConversationComponent extends Component {
     static contextTypes = {
-        settings: PropTypes.object
+        settings: PropTypes.object.isRequired
     };
 
     static propTypes = {
@@ -69,12 +69,12 @@ export class ConversationComponent extends Component {
 
     render() {
         const {connectNotificationTimestamp, introHeight, messages, errorNotificationMessage} = this.props;
-        const {settings} = this.context;
+        const {accentColor, linkColor} = this.context.settings;
 
         let messageItems = messages.map((message) => {
             return <MessageComponent key={ message._clientId || message._id }
-                                     accentColor={ settings.accentColor }
-                                     linkColor={ settings.linkColor }
+                                     accentColor={ accentColor }
+                                     linkColor={ linkColor }
                                      onLoad={ this.scrollToBottom }
                                      {...message} />;
         });

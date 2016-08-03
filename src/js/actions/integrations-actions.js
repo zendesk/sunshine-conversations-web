@@ -3,6 +3,7 @@ export const SET_WECHAT_ERROR = 'SET_WECHAT_ERROR';
 export const UNSET_WECHAT_ERROR = 'UNSET_WECHAT_ERROR';
 export const SET_TWILIO_INTEGRATION_STATE = 'SET_TWILIO_INTEGRATION_STATE';
 export const RESET_TWILIO_INTEGRATION_STATE = 'RESET_TWILIO_INTEGRATION_STATE';
+export const RESET_INTEGRATIONS = 'RESET_INTEGRATIONS';
 
 export function setWeChatQRCode(code) {
     return {
@@ -33,5 +34,11 @@ export function setTwilioIntegrationState(attrs) {
 export function resetTwilioIntegrationState() {
     return {
         type: RESET_TWILIO_INTEGRATION_STATE
+    };
+}
+
+export function resetIntegrations() {
+    return {
+        type: RESET_INTEGRATIONS
     };
 }
