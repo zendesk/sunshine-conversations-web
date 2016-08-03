@@ -93,24 +93,22 @@ export class ChatInputComponent extends Component {
             inputContainerClasses.push('no-upload');
         }
 
-        return (
-            <div id='sk-footer'>
-                { imageUploadButton }
-                <form onSubmit={ this.onSendMessage }
-                      action='#'>
-                    <div className={ inputContainerClasses.join(' ') }>
-                        <input ref='input'
-                               placeholder={ ui.text.inputPlaceholder }
-                               className='input message-input'
-                               onChange={ this.onChange }
-                               onFocus={ this.onFocus }
-                               value={ this.state.text }
-                               title={ ui.text.sendButtonText }></input>
-                    </div>
-                </form>
-                { sendButton }
-            </div>
-            );
+        return <div id='sk-footer'>
+                   { imageUploadButton }
+                   <form onSubmit={ this.onSendMessage }
+                         action='#'>
+                       <div className={ inputContainerClasses.join(' ') }>
+                           <input ref='input'
+                                  placeholder={ ui.text.inputPlaceholder }
+                                  className='input message-input'
+                                  onChange={ this.onChange }
+                                  onFocus={ this.onFocus }
+                                  value={ this.state.text }
+                                  title={ ui.text.sendButtonText }></input>
+                       </div>
+                   </form>
+                   { sendButton }
+               </div>;
     }
 }
 
