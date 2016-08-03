@@ -20,12 +20,14 @@ export class ChannelPage extends Component {
     };
 
     render() {
-        const {icon, icon2x, name, visible, children} = this.props;
-        const description = this.context.ui.text[this.props.descriptionKey];
+        const {icon, icon2x, name, visible, children, channel, linked, pendingLink} = this.props;
+        const description = this.props.getDescription ?
+            this.props.getDescription(this.context.ui.text, channel, linked, pendingLink)
+            : this.context.ui.text[this.props.descriptionKey];
         const descriptionHtml = this.context.ui.text[this.props.descriptionHtmlKey];
 
         const channelDescription = descriptionHtml ?
-            <span dangerouslySetInnerHTML={ { __html: descriptionHtml } } /> :
+            <span dangerouslySetInnerHTML={ {    __html: descriptionHtml} } /> :
             <span>{ description }</span>;
 
         return <div className={ `sk-channel ${visible ? 'sk-channel-visible' : 'sk-channel-hidden'}` }>

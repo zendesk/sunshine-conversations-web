@@ -57,7 +57,8 @@ export class ReactTelephoneInput extends Component {
         autoFormat: true,
         onlyCountries: allCountries,
         defaultCountry: allCountries[0].iso2,
-        onEnterKeyPress() {},
+        onEnterKeyPress() {
+},
         preferredCountries: []
     };
 
@@ -457,7 +458,7 @@ export class ReactTelephoneInput extends Component {
             }, function() {
                 self.scrollTo(self.getElement(self.state.highlightCountryIndex), true);
             });
-        }
+}
 
         switch (event.which) {
             case keys.DOWN:
