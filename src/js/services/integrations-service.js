@@ -63,10 +63,17 @@ export function linkTwilioChannel(userId, data) {
                 linkState: 'pending'
             });
         })
-        .catch(() => {
+        .catch((e) => {
+            const {response: {status}} = e;
+            let errorMessage;
+            if (status === 429) {
+                errorMessage = 'A link was attempted recently for this phone number. Please wait before trying again.';
+            } else {
+                errorMessage = 'We were unable to communicate with this number. Please enter a different one.';
+            }
             updateTwilioAttributes({
                 hasError: true,
-                errorMessage: 'We were unable to communicate with this number. Please enter a different one.'
+                errorMessage: errorMessage
             });
         });
 }
@@ -87,10 +94,35 @@ export function unlinkTwilioChannel(userId) {
                 appUserNumberValid: false
             });
         })
+        .catch((e) => {
+            const {response: {status}} = e;
+            const {ui: {text: {smsBadRequestError}}} = store.getState();
+            // Deleting a client that was never linked
+            if (status === 400) {
+                updateTwilioAttributes({
+                    linkState: 'unlinked'
+                });
+            } else {
+                updateTwilioAttributes({
+                    linkState: 'unlinked',
+                    hasError: true,
+                    errorMessage: smsBadRequestError
+                });
+            }
+        });
+}
+
+export function pingTwilioChannel(userId) {
+    return core().appUsers.pingChannel(userId, 'twilio')
+        .then(() => {
+            updateTwilioAttributes({
+                linkState: 'linked'
+            });
+        })
         .catch(() => {
             updateTwilioAttributes({
                 hasError: true,
-                errorMessage: 'We were unable to communicate with this number. Please enter a different one.'
+                errorMessage: 'There was an error sending a message to your number.'
             });
         });
 }

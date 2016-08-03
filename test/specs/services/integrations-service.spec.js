@@ -31,6 +31,7 @@ describe('Integrations service', () => {
         coreMock = createMock(sandbox);
         coreMock.appUsers.linkChannel.resolves(pendingAppUser);
         coreMock.appUsers.unlinkChannel.resolves();
+        coreMock.appUsers.pingChannel.resolves();
         sandbox.stub(coreService, 'core', () => {
             return coreMock;
         });
@@ -72,7 +73,14 @@ describe('Integrations service', () => {
             return integrationsService.unlinkTwilioChannel('1').then(() => {
                 coreMock.appUsers.unlinkChannel.should.have.been.calledWith('1', 'twilio');
             });
+        });
+    });
 
+    describe('pingTwilioChannel', () => {
+        it('should call the ping channel API', () => {
+            return integrationsService.pingTwilioChannel('1').then(() => {
+                coreMock.appUsers.pingChannel.should.have.been.calledWith('1', 'twilio');
+            });
         });
     });
 });
