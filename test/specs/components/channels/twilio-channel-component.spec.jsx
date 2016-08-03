@@ -11,7 +11,12 @@ import { TwilioChannelContentComponent } from '../../../../src/js/components/cha
 const sandbox = sinon.sandbox.create();
 
 const context = {
-    settings: {}
+    settings: {},
+    ui: {
+        text: {
+            smsInvalidNumberError: 'Your phone number isn\'t valid. Please try again.'
+        }
+    }
 };
 
 const store = {};
@@ -92,7 +97,7 @@ describe('Twilio Channel Content Component', () => {
                 };
                 component = renderComponent(context, store, props);
                 const warning = TestUtils.findRenderedDOMComponentWithClass(component, 'warning-message');
-                warning.textContent.should.eq('Your phone number isn\'t valid. Please try again.');
+                warning.textContent.should.eq(context.ui.text.smsInvalidNumberError);
             });
 
             it('should warn if error', () => {

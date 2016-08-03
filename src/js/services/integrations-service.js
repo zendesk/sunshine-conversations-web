@@ -96,6 +96,7 @@ export function unlinkTwilioChannel(userId) {
         })
         .catch((e) => {
             const {response: {status}} = e;
+            const {ui: {text: {smsBadRequestError}}} = store.getState();
             // Deleting a client that was never linked
             if (status === 400) {
                 updateTwilioAttributes({
@@ -105,7 +106,7 @@ export function unlinkTwilioChannel(userId) {
                 updateTwilioAttributes({
                     linkState: 'unlinked',
                     hasError: true,
-                    errorMessage: 'We were unable to communicate with this number. Please enter a different one.'
+                    errorMessage: smsBadRequestError
                 });
             }
         });

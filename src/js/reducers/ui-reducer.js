@@ -32,7 +32,12 @@ const INITIAL_STATE = {
         telegramChannelDescription: 'To talk to us using Telegram, add our bot:',
         wechatChannelDescriptionMobile: 'To send us a message from WeChat, save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.',
         wechatChannelDescription: 'To send us a message from WeChat, scan this QR code using the WeChat app.',
-        lineChannelDescription: 'To talk to us using LINE, search for our official account using the LINE app and send us a message:'
+        lineChannelDescription: 'To talk to us using LINE, search for our official account using the LINE app and send us a message:',
+        smsInvalidNumberError: 'Your phone number isn\'t valid. Please try again.',
+        smsTooManyRequestsError: 'A link was attempted recently for this phone number. Please wait before trying.',
+        smsBadRequestError: 'We were unable to communicate with this number. Please enter a different one.',
+        smsUnhandledError: 'Something went wrong. Please try again.',
+        smsPingChannelError: 'There was an error sending a message to your number.'
     }
 };
 

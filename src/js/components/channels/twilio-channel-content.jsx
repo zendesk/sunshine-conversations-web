@@ -9,7 +9,8 @@ import isMobile from 'ismobilejs';
 export class TwilioChannelContentComponent extends Component {
 
     static contextTypes = {
-        settings: PropTypes.object
+        settings: PropTypes.object,
+        ui: PropTypes.object
     };
 
     linkTwilioNumber = () => {
@@ -58,7 +59,7 @@ export class TwilioChannelContentComponent extends Component {
 
     render() {
         const {appUserNumber, appUserNumberValid, phoneNumber, linkState, errorMessage, hasError} = this.props;
-        const {settings: {linkColor}} = this.context;
+        const {settings: {linkColor}, ui: {text: {smsInvalidNumberError}}} = this.context;
         let iconStyle = {};
         if (linkColor) {
             iconStyle = {
@@ -70,7 +71,7 @@ export class TwilioChannelContentComponent extends Component {
                                                         onClick={ this.linkTwilioNumber }>
                                                     Continue
                                                 </button> : '';
-        const invalidNumberMessage = appUserNumber && !appUserNumberValid ? 'Your phone number isn\'t valid. Please try again.' : '';
+        const invalidNumberMessage = appUserNumber && !appUserNumberValid ? smsInvalidNumberError : '';
         const warningMessage = invalidNumberMessage || hasError ? <div className='warning-message'>
                                                                       { invalidNumberMessage ? invalidNumberMessage : errorMessage }
                                                                   </div> : '';
