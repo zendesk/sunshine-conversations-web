@@ -87,6 +87,7 @@ export class ReactTelephoneInput extends Component {
             queryString: '',
             freezeSelection: false,
             isValid: false,
+            isEmpty: true,
             debouncedQueryStingSearcher: debounce(this.searchCountry, 100)
         };
     }
@@ -190,6 +191,7 @@ export class ReactTelephoneInput extends Component {
         const countries = countryData.allCountries;
         const strippedNumber = inputNumber.replace(/\D/g, '');
         const currentlyValid = this.state.isValid;
+        const isEmpty = inputNumber.length === 0;
 
         const isValid = countries.some((country) => {
             return strippedNumber.startsWith(country.dialCode);
@@ -200,7 +202,8 @@ export class ReactTelephoneInput extends Component {
         }
 
         this.setState({
-            isValid
+            isValid,
+            isEmpty
         });
     }
 
@@ -551,7 +554,8 @@ export class ReactTelephoneInput extends Component {
 
         const inputClasses = classNames({
             'form-control': true,
-            'invalid-number': !this.state.isValid
+            'invalid-number': !this.state.isValid,
+            'empty': this.state.isEmpty
         });
 
         const flagViewClasses = classNames({
