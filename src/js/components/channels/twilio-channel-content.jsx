@@ -94,10 +94,13 @@ export class TwilioChannelContentComponent extends Component {
                                  </div>;
 
         const sendTextUrl = `sms://${phoneNumber}`;
-        const linkedComponentButton = isMobile.phone ? <a href={ sendTextUrl }>
-                                                           <button className='btn btn-sk-primary twilio-linking'
-                                                                   onClick={ this.onStartTexting }> Start Texting </button>
-                                                       </a> :
+        const linkStyle = {
+            color: 'white'
+        };
+        const linkedComponentButton = isMobile.phone ? <a href={ sendTextUrl }
+                                                          className='btn btn-sk-primary twilio-linking'
+                                                          onClick={ this.onStartTexting }
+                                                          style={ linkStyle }>Start Texting</a> :
             <button className='btn btn-sk-primary twilio-linking'
                     onClick={ this.onSendText }>
                 Send me a text
