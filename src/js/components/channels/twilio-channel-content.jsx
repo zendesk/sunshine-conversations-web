@@ -15,7 +15,7 @@ export class TwilioChannelContentComponent extends Component {
 
     linkTwilioNumber = () => {
         linkTwilioChannel(this.props.userId, {
-            type: 'twilio', 
+            type: 'twilio',
             phoneNumber: this.props.appUserNumber.replace(/[()\-\s]/g, '')
         });
     }
@@ -71,10 +71,16 @@ export class TwilioChannelContentComponent extends Component {
                                                         onClick={ this.linkTwilioNumber }>
                                                     Continue
                                                 </button> : '';
+
+        const onEnterKeyPress = appUserNumberValid ? this.linkTwilioNumber : () => {
+        };
+
         const invalidNumberMessage = appUserNumber && !appUserNumberValid ? smsInvalidNumberError : '';
+
         const warningMessage = invalidNumberMessage || hasError ? <div className='warning-message'>
                                                                       { invalidNumberMessage ? invalidNumberMessage : errorMessage }
                                                                   </div> : '';
+
         const unlinkedComponent = <div className='twilio-linking unlinked-state'>
                                       <ReactTelephoneInput ref={ (c) => this._telInput = c }
                                                            defaultCountry='ca'
@@ -82,10 +88,12 @@ export class TwilioChannelContentComponent extends Component {
                                                            onValid={ this.onNumberValid }
                                                            onInvalid={ this.onNumberInvalid }
                                                            preferredCountries={ ['ca', 'us'] }
+                                                           onEnterKeyPress={ onEnterKeyPress }
                                                            onBlur={ this.handleInputBlur } />
                                       { warningMessage }
                                       { linkButton }
                                   </div>;
+
         const pendingComponent = <div className='twilio-linking pending-state'>
                                      <i className='fa fa-phone'
                                         style={ iconStyle }></i>
