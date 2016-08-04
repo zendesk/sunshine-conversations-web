@@ -24,7 +24,7 @@ export class ConversationComponent extends Component {
 
     scrollTimeouts = [];
 
-    onTouchStart = () => {
+    onTouchMove = (e) => {
         // in embedded we need to let user scroll past the conversation
         if (!this.props.embedded) {
             const node = findDOMNode(this);
@@ -40,6 +40,15 @@ export class ConversationComponent extends Component {
                 node.scrollTop = 1;
             } else if (currentScroll === totalScroll) {
                 node.scrollTop = top - 1;
+            }
+
+            const containerNode = findDOMNode(this.refs.container);
+            const messagesNode = findDOMNode(this.refs.messages);
+            // On iOS devices, when the messages container is not scrollable,
+            // selecting it will cause the background page to scroll.
+            // In order to fix, prevent default scroll behavior.
+            if (isMobile.apple.device && containerNode.offsetHeight > messagesNode.offsetHeight) {
+                e.preventDefault();
             }
         }
 
@@ -104,7 +113,7 @@ export class ConversationComponent extends Component {
         return <div id='sk-conversation'
                     className={ errorNotificationMessage && 'notification-shown' }
                     ref='container'
-                    onTouchStart={ this.onTouchStart }>
+                    onTouchMove={ this.onTouchMove.bind(this) }>
                    <Introduction/>
                    <div className='sk-messages-container'
                         style={ messagesContainerStyle }>
