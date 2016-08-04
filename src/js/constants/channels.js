@@ -28,12 +28,12 @@ export const CHANNEL_DETAILS = {
     },
     twilio: {
         name: 'SMS',
-        getDescription: (configText, channel, linked, pendingLink) => {
-            if (pendingLink) {
-                return configText.smsChannelPendingDescription.replace('{number}', channel.phoneNumber);
+        getDescription: ({text, pendingClient}) => {
+            if (pendingClient) {
+                return text.smsChannelPendingDescription.replace('{number}', pendingClient.displayName);
             }
 
-            return configText.smsChannelDescription;
+            return text.smsChannelDescription;
         },
         isLinkable: true,
         ...integrationsAssets.sms,

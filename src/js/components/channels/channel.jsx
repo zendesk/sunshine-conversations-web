@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 import { ChannelPage } from './channel-page';
-import { isChannelLinked } from '../../utils/user';
 import { getAppChannelDetails } from '../../utils/app';
 
 export class ChannelComponent extends Component {
@@ -22,10 +21,10 @@ export class ChannelComponent extends Component {
         }
 
         const channelPages = getAppChannelDetails(appChannels).map(({channel, details}) => {
-            const linked = isChannelLinked(clients, channel.type);
-            const pendingLink = isChannelLinked(pendingClients, channel.type);
+            const client = clients.find((client) => client.platform === channel.type);
+            const pendingClient = pendingClients.find((client) => client.platform === channel.type);
 
-            if (!details.Component || (linked && !details.renderPageIfLinked)) {
+            if (!details.Component || (!!client && !details.renderPageIfLinked)) {
                 return null;
             }
 
@@ -34,14 +33,14 @@ export class ChannelComponent extends Component {
                                 channel={ channel }
                                 icon={ details.iconLarge }
                                 icon2x={ details.iconLarge2x }
-                                linked={ linked }
-                                pendingLink={ pendingLink }
+                                client={ client }
+                                pendingClient={ pendingClient }
                                 visible={ channel.type === visibleChannelType }>
                        <details.Component {...channel}
                                           channelState={ channelStates[channel.type] }
                                           getContent={ details.getContent }
                                           smoochId={ smoochId }
-                                          linked={ linked } />
+                                          linked={ !!client } />
                    </ChannelPage>;
         });
 
