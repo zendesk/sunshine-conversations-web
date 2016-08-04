@@ -5,6 +5,8 @@
     z-index: 1;
 
     .sk-notification {
+        position: absolute;
+        top: 0;
         width: 100%;
         border-top: 1px solid rgba(0, 0, 0, .1);
         background-color: white;
@@ -38,23 +40,5 @@
                 color: white;
             }
         }
-    }
-
-    .sk-notification-enter {
-        height: 0;
-    }
-
-    .sk-notification-enter-active {
-        .transition(height 500ms);
-        height: 100%;
-    }
-
-    .sk-notification-leave {
-        height: 100%;
-    }
-
-    .sk-notification-leave-active {
-        .transition(height 500ms);
-        height: 0;
     }
 }
