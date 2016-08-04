@@ -20,10 +20,17 @@ export class ChannelPage extends Component {
     };
 
     render() {
-        const {icon, icon2x, name, visible, children, channel, linked, pendingLink} = this.props;
+        const {icon, icon2x, name, visible, children, channel, client, pendingClient} = this.props;
+
         const description = this.props.getDescription ?
-            this.props.getDescription(this.context.ui.text, channel, linked, pendingLink)
+            this.props.getDescription({
+                text: this.context.ui.text,
+                channel,
+                client,
+                pendingClient
+            })
             : this.context.ui.text[this.props.descriptionKey];
+
         const descriptionHtml = this.context.ui.text[this.props.descriptionHtmlKey];
 
         const channelDescription = descriptionHtml ?

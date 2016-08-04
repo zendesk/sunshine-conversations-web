@@ -576,7 +576,7 @@ export class ReactTelephoneInput extends Component {
                           type={ 'tel' }
                           className={ inputClasses }
                           autoComplete={ 'tel' }
-                          placeholder={ '+1 (702) 123-4567' }>
+                          placeholder={ '+1 (XXX) XXX-XXXX' }>
                    </input>
                    <div ref={ 'flagDropDownButton' }
                         className={ flagViewClasses }
