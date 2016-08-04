@@ -28,7 +28,13 @@ export const CHANNEL_DETAILS = {
     },
     twilio: {
         name: 'SMS',
-        descriptionKey: 'smsChannelDescription',
+        getDescription: (configText, channel, linked, pendingLink) => {
+            if (pendingLink) {
+                return configText.smsChannelPendingDescription.replace('{number}', channel.phoneNumber);
+            }
+
+            return configText.smsChannelDescription;
+        },
         isLinkable: true,
         ...integrationsAssets.sms,
         renderPageIfLinked: true,

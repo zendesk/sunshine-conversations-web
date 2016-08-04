@@ -15,7 +15,7 @@ export class ChannelComponent extends Component {
     };
 
     render() {
-        const {appChannels, visibleChannelType, smoochId, clients, channelStates} = this.props;
+        const {appChannels, visibleChannelType, smoochId, clients, pendingClients, channelStates} = this.props;
 
         if (!smoochId) {
             return null;
@@ -23,14 +23,19 @@ export class ChannelComponent extends Component {
 
         const channelPages = getAppChannelDetails(appChannels).map(({channel, details}) => {
             const linked = isChannelLinked(clients, channel.type);
+            const pendingLink = isChannelLinked(pendingClients, channel.type);
+
             if (!details.Component || (linked && !details.renderPageIfLinked)) {
                 return null;
             }
 
             return <ChannelPage key={ channel.type }
                                 {...details}
+                                channel={ channel }
                                 icon={ details.iconLarge }
                                 icon2x={ details.iconLarge2x }
+                                linked={ linked }
+                                pendingLink={ pendingLink }
                                 visible={ channel.type === visibleChannelType }>
                        <details.Component {...channel}
                                           channelState={ channelStates[channel.type] }
@@ -53,6 +58,7 @@ export const Channel = connect(({appState, app, user, integrations}) => {
         appChannels: app.integrations,
         channelStates: integrations,
         smoochId: user._id,
-        clients: user.clients
+        clients: user.clients,
+        pendingClients: user.pendingClients
     };
 })(ChannelComponent);
