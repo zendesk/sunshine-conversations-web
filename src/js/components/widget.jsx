@@ -135,7 +135,7 @@ export class WidgetComponent extends Component {
         return <div>
                    <div id='sk-container'
                         className={ classNames.join(' ') }
-                        onTouchStart={ this.onTouchStart.bind(this) }
+                        onTouchStart={ this.onTouchStart }
                         onClick={ this.onClick }
                         onWheel={ this.onWheel }>
                        <MessageIndicator />

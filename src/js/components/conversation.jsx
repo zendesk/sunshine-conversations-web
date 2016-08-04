@@ -113,7 +113,7 @@ export class ConversationComponent extends Component {
         return <div id='sk-conversation'
                     className={ errorNotificationMessage && 'notification-shown' }
                     ref='container'
-                    onTouchMove={ this.onTouchMove.bind(this) }>
+                    onTouchMove={ this.onTouchMove }>
                    <Introduction/>
                    <div ref='messagesContainer'
                         className='sk-messages-container'
