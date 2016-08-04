@@ -42,7 +42,7 @@ export class ConversationComponent extends Component {
                 node.scrollTop = top - 1;
             }
 
-            const containerNode = findDOMNode(this.refs.container);
+            const containerNode = findDOMNode(this.refs.messagesContainer);
             const messagesNode = findDOMNode(this.refs.messages);
             // On iOS devices, when the messages container is not scrollable,
             // selecting it will cause the background page to scroll.
@@ -115,7 +115,8 @@ export class ConversationComponent extends Component {
                     ref='container'
                     onTouchMove={ this.onTouchMove.bind(this) }>
                    <Introduction/>
-                   <div className='sk-messages-container'
+                   <div ref='messagesContainer'
+                        className='sk-messages-container'
                         style={ messagesContainerStyle }>
                        <div ref='messages'
                             className='sk-messages'>
