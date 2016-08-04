@@ -57,8 +57,7 @@ export class ReactTelephoneInput extends Component {
         autoFormat: true,
         onlyCountries: allCountries,
         defaultCountry: allCountries[0].iso2,
-        onEnterKeyPress() {
-},
+        onEnterKeyPress: () => {},
         preferredCountries: []
     };
 

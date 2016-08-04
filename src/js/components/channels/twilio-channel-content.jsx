@@ -73,6 +73,7 @@ export class TwilioChannelContentComponent extends Component {
                                                 </button> : '';
 
         const onEnterKeyPress = appUserNumberValid ? this.linkTwilioNumber : () => {
+            // Do nothing on enter if the number is invalid
         };
 
         const invalidNumberMessage = appUserNumber && !appUserNumberValid ? smsInvalidNumberError : '';
