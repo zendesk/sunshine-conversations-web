@@ -83,6 +83,7 @@ export class ReactTelephoneInput extends Component {
             selectedCountry: selectedCountryGuess,
             highlightCountryIndex: selectedCountryGuessIndex,
             formattedNumber: formattedNumber,
+            dropdownList: [],
             showDropDown: false,
             queryString: '',
             freezeSelection: false,
@@ -106,6 +107,8 @@ export class ReactTelephoneInput extends Component {
         if (typeof this.props.onChange === 'function') {
             this.props.onChange(this.state.formattedNumber, this.state.selectedCountry);
         }
+
+        this.preloadCountryList();
     }
 
     componentWillUnmount() {
@@ -454,7 +457,7 @@ export class ReactTelephoneInput extends Component {
             }, function() {
                 self.scrollTo(self.getElement(self.state.highlightCountryIndex), true);
             });
-        }
+}
 
         switch (event.which) {
             case keys.DOWN:
@@ -494,9 +497,17 @@ export class ReactTelephoneInput extends Component {
         }
     }
 
+    preloadCountryList() {
+        const dropdownList = this.state.preferredCountries
+            .concat(this.props.onlyCountries);
+
+        this.setState({
+            dropdownList
+        });
+    }
+
     getCountryDropDownList() {
-        const countryDropDownList = this.state.preferredCountries
-            .concat(this.props.onlyCountries)
+        const countryDropDownList = this.state.dropdownList
             .map((country, index) => {
                 const itemClasses = classNames({
                     country: true,
