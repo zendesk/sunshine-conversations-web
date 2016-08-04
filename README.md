@@ -150,6 +150,7 @@ var skPromise = Smooch.init({
         messengerChannelDescription: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.',
         frontendEmailChannelDescription: 'To talk to us using email just send a message to our email address and we\'ll reply shortly:',
         smsChannelDescription: 'To talk to us using SMS, just send a text message to this number from your favorite SMS app:',
+        smsChannelPendingDescription: 'Check your messages at {number} to confirm your phone number.',
         telegramChannelDescription: 'To talk to us using Telegram, add our bot:',
         wechatChannelDescriptionMobile: 'To send us a message from WeChat, save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.',
         wechatChannelDescription: 'To send us a message from WeChat, scan this QR code using the WeChat app.',
