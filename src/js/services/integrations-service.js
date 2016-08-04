@@ -64,13 +64,19 @@ export function linkTwilioChannel(userId, data) {
             });
         })
         .catch((e) => {
+            const {ui: {text: {smsTooManyRequestsError, smsBadRequestError, smsUnhandledError}}} = store.getState();
+
             const {response: {status}} = e;
             let errorMessage;
+
             if (status === 429) {
-                errorMessage = 'A link was attempted recently for this phone number. Please wait before trying again.';
+                errorMessage = smsTooManyRequestsError.replace('{seconds}', e.response.headers.get('retry-after'));
+            } else if (status > 499) {
+                errorMessage = smsUnhandledError;
             } else {
-                errorMessage = 'We were unable to communicate with this number. Please enter a different one.';
+                errorMessage = smsBadRequestError;
             }
+
             updateTwilioAttributes({
                 hasError: true,
                 errorMessage: errorMessage
@@ -120,9 +126,10 @@ export function pingTwilioChannel(userId) {
             });
         })
         .catch(() => {
+            const {ui: {text: {smsPingChannelError}}} = store.getState();
             updateTwilioAttributes({
                 hasError: true,
-                errorMessage: 'There was an error sending a message to your number.'
+                errorMessage: smsPingChannelError
             });
         });
 }
