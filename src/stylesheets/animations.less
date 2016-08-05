@@ -4,9 +4,12 @@
 
     &.sk-appear {
         opacity: 0;
-        animation: sk-appear-button-frames .4s cubic-bezier(.62, .28, .23, .99);
-        animation-delay: .2s;
-        animation-fill-mode: both;
+        -webkit-animation: sk-appear-button-frames .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-appear-button-frames .4s cubic-bezier(.62, .28, .23, .99);
+        -webkit-animation-delay: .2s;
+                animation-delay: .2s;
+        -webkit-animation-fill-mode: both;
+                animation-fill-mode: both;
 
         @media (max-width: @screen-sm-min) {
             bottom: 0;
@@ -14,9 +17,12 @@
     }
 
     &.sk-close {
-        animation: sk-close-button-frames .4s cubic-bezier(.62, .28, .23, .99);
-        animation-delay: .0s;
-        animation-fill-mode: both;
+        -webkit-animation: sk-close-button-frames .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-close-button-frames .4s cubic-bezier(.62, .28, .23, .99);
+        -webkit-animation-delay: .0s;
+                animation-delay: .0s;
+        -webkit-animation-fill-mode: both;        
+                animation-fill-mode: both;
     }
 
     &.sk-init {
@@ -58,6 +64,37 @@
     }
 
     @keyframes sk-close-button-frames {
+        0% {
+            opacity: 1;
+            transform: scale(1, 1);
+        }
+        99% {
+            opacity: 0;
+            transform: scale(0.1, 0.1);
+        }
+        100% {
+            opacity: 0;
+            transform: scale(0, 0);
+        }
+    }
+
+    @-webkit-keyframes sk-appear-button-frames {
+        0% {
+            opacity: 0;
+            transform: scale(0, 0);
+        }
+        1% {
+            opacity: 0;
+            transform: scale(0.1, 0.1);
+        }
+        100% {
+            display: block;
+            opacity: 1;
+            transform: scale(1, 1);
+        }
+    }
+
+    @-webkit-keyframes sk-close-button-frames {
         0% {
             opacity: 1;
             transform: scale(1, 1);
