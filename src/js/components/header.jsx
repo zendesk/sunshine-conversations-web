@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { toggleWidget, showSettings, hideSettings, hideChannelPage } from '../services/app-service';
 import { hasChannels } from '../utils/app';
 import { CHANNEL_DETAILS } from '../constants/channels';
+import { WIDGET_STATE } from '../constants/app';
 
 export class HeaderComponent extends Component {
 
@@ -28,13 +29,14 @@ export class HeaderComponent extends Component {
     }
 
     render() {
-        const {appState: {emailCaptureEnabled, settingsVisible, widgetOpened, embedded, visibleChannelType}, unreadCount} = this.props;
+        const {appState: {emailCaptureEnabled, settingsVisible, widgetState, embedded, visibleChannelType}, unreadCount} = this.props;
         const {ui, settings} = this.context;
         const {settingsHeaderText, headerText} = ui.text;
         const {brandColor} = settings;
 
         const settingsMode = !!(settingsVisible || visibleChannelType);
         const showSettingsButton = (hasChannels(settings) || emailCaptureEnabled) && !settingsMode;
+        const widgetOpened = widgetState === WIDGET_STATE.OPENED;
 
         const unreadBadge = !settingsMode && unreadCount > 0 ? (
             <div className='unread-badge'>
@@ -96,12 +98,12 @@ export class HeaderComponent extends Component {
     }
 }
 
-function mapStateToProps({appState: {emailCaptureEnabled, settingsVisible, widgetOpened, embedded, visibleChannelType}, conversation}) {
+function mapStateToProps({appState: {emailCaptureEnabled, settingsVisible, widgetState, embedded, visibleChannelType}, conversation}) {
     return {
         appState: {
             emailCaptureEnabled,
             settingsVisible,
-            widgetOpened,
+            widgetState,
             embedded,
             visibleChannelType
         },

@@ -10,6 +10,7 @@ import { setIntroHeight } from '../actions/app-state-actions';
 
 import { createMarkup } from '../utils/html';
 import { getAppChannelDetails } from '../utils/app';
+import { WIDGET_STATE } from '../constants/app';
 
 export class IntroductionComponent extends Component {
     static propTypes = {
@@ -25,7 +26,6 @@ export class IntroductionComponent extends Component {
 
     constructor(...args) {
         super(...args);
-
         this._debounceHeightCalculation = debounce(this.calculateIntroHeight.bind(this), 150);
     }
 
@@ -43,14 +43,18 @@ export class IntroductionComponent extends Component {
     }
 
     calculateIntroHeight() {
-        const node = findDOMNode(this);
-        const {appState: {introHeight}, dispatch} = this.props;
+        const {appState: {introHeight, widgetState}, dispatch} = this.props;
 
-        const nodeRect = node.getBoundingClientRect();
-        const nodeHeight = Math.floor(nodeRect.height);
+        // don't recalculate height if widget is closed or closing
+        if (widgetState === WIDGET_STATE.OPENED) {
+            const node = findDOMNode(this);
 
-        if (introHeight !== nodeHeight) {
-            dispatch(setIntroHeight(nodeHeight));
+            const nodeRect = node.getBoundingClientRect();
+            const nodeHeight = Math.floor(nodeRect.height);
+
+            if (introHeight !== nodeHeight) {
+                dispatch(setIntroHeight(nodeHeight));
+            }
         }
     }
 
@@ -77,10 +81,11 @@ export class IntroductionComponent extends Component {
     }
 }
 
-export const Introduction = connect(({appState: {introHeight}}) => {
+export const Introduction = connect(({appState: {introHeight, widgetState}}) => {
     return {
         appState: {
-            introHeight
+            introHeight,
+            widgetState
         }
     };
 })(IntroductionComponent);
