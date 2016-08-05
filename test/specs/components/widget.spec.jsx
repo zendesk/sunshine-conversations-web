@@ -16,6 +16,7 @@ import { Channel } from '../../../src/js/components/channels/channel';
 import { MessengerButton } from '../../../src/js/components/messenger-button';
 
 import * as appUtils from '../../../src/js/utils/app';
+import { WIDGET_STATE } from '../../../src/js/constants/app';
 
 const sandbox = sinon.sandbox.create();
 
@@ -24,9 +25,10 @@ const defaultProps = {
         email: 'some@email.com'
     },
     appState: {
-        widgetOpened: false,
+        widgetState: WIDGET_STATE.CLOSED,
         settingsVisible: false,
-        embedded: false
+        embedded: false,
+        showAnimation: false
     },
     app: {
         settings: {
@@ -109,7 +111,7 @@ describe('Widget Component', () => {
     describe('is opened', () => {
         const props = Object.assign({}, defaultProps, {
             appState: {
-                widgetOpened: true
+                widgetState: WIDGET_STATE.OPENED
             }
         });
         store = createMockedStore(sandbox, props);
@@ -128,7 +130,7 @@ describe('Widget Component', () => {
     describe('conversation view', () => {
         const props = Object.assign({}, defaultProps, {
             appState: {
-                widgetOpened: true
+                widgetState: WIDGET_STATE.OPENED
             }
         });
         store = createMockedStore(sandbox, props);
@@ -157,7 +159,7 @@ describe('Widget Component', () => {
     describe('settings view', () => {
         const props = Object.assign({}, defaultProps, {
             appState: {
-                widgetOpened: true,
+                widgetState: WIDGET_STATE.OPENED,
                 settingsVisible: true
             }
         });
