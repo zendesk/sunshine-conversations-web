@@ -2,8 +2,6 @@
     position: fixed;
 
     right: @widget-horizontal-spacing;
-    bottom: @widget-vertical-spacing;
-    opacity: 0;
 
     height: @messenger-button-size;
     width: @messenger-button-size;
@@ -16,16 +14,20 @@
     cursor: pointer;
     transform-origin: bottom;
 
+    bottom: @widget-messenger-button-vertical-spacing;
+    opacity: 1;
+    transform: scale(1, 1);
+
     &.messenger-button-shown {
         animation: sk-messenger-button-shown-frames .4s cubic-bezier(.62, .28, .23, .99);
         animation-delay: .2s;
-        animation-fill-mode: forwards;
+        animation-fill-mode: both;
     }
 
     &.messenger-button-hidden {
         animation: sk-messenger-button-hidden-frames .4s cubic-bezier(.62, .28, .23, .99);
         animation-delay: .0s;
-        animation-fill-mode: forwards;
+        animation-fill-mode: both;
     }
 
     .default-icon {

@@ -6,7 +6,7 @@
         opacity: 0;
         animation: sk-appear-button-frames .4s cubic-bezier(.62, .28, .23, .99);
         animation-delay: .2s;
-        animation-fill-mode: forwards;
+        animation-fill-mode: both;
 
         @media (max-width: @screen-sm-min) {
             bottom: 0;
@@ -16,7 +16,7 @@
     &.sk-close {
         animation: sk-close-button-frames .4s cubic-bezier(.62, .28, .23, .99);
         animation-delay: .0s;
-        animation-fill-mode: forwards;
+        animation-fill-mode: both;
     }
 
     &.sk-init {
@@ -100,7 +100,7 @@
             }
         }
 
-        
+
     }
 
     &.sk-close {
