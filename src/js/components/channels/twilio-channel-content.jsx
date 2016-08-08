@@ -84,11 +84,11 @@ export class TwilioChannelContentComponent extends Component {
 
         const unlinkedComponent = <div className='twilio-linking unlinked-state'>
                                       <ReactTelephoneInput ref={ (c) => this._telInput = c }
-                                                           defaultCountry='ca'
+                                                           defaultCountry='us'
                                                            onChange={ this.handleInputChange }
                                                            onValid={ this.onNumberValid }
                                                            onInvalid={ this.onNumberInvalid }
-                                                           preferredCountries={ ['ca', 'us'] }
+                                                           preferredCountries={ ['us', 'ca'] }
                                                            onEnterKeyPress={ onEnterKeyPress }
                                                            onBlur={ this.handleInputBlur } />
                                       { warningMessage }
