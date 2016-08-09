@@ -1,6 +1,6 @@
 import { store } from '../stores/app-store';
 import { showConnectNotification } from '../services/app-service';
-import { addMessage, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction } from '../actions/conversation-actions';
+import { addMessage, addMessages, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages } from '../actions/conversation-actions';
 import { updateUser } from '../actions/user-actions';
 import { showErrorNotification } from '../actions/app-state-actions';
 import { unsetFayeSubscriptions } from '../actions/faye-actions';
@@ -162,8 +162,9 @@ export function uploadImage(file) {
 }
 
 export function getConversation() {
-    return core().conversations.get(getUserId()).then((response) => {
+    return core().appUsers.getMessages(getUserId()).then((response) => {
         store.dispatch(setConversation(response.conversation));
+        store.dispatch(setMessages(response.messages));
         return response;
     });
 }
