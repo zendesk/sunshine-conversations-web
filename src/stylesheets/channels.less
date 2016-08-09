@@ -86,7 +86,7 @@
         }
 
         .warning-message {
-            font-size: 10px;
+            font-size: 13px;
             color: red;
         }
 
@@ -102,6 +102,12 @@
             margin-top: 25px;
             text-align: center;
             border: 0px;
+
+            // Prevent button from going off the widget chat on
+            // small screens
+            @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
+                margin-top: 10px;
+            }
         }
 
         &.btn {
