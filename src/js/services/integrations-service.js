@@ -133,3 +133,16 @@ export function pingTwilioChannel(userId) {
             });
         });
 }
+
+export function cancelTwilioLink() {
+    const {user: {pendingClients}, integrations: {twilio: {appUserNumber}}, ui: {text: {smsLinkCancelled}}} = store.getState();
+
+    store.dispatch(updateUser({
+        pendingClients: pendingClients.filter((pendingClient) => pendingClient.platform !== 'twilio')
+    }));
+    updateTwilioAttributes({
+        linkState: 'unlinked',
+        hasError: true,
+        errorMessage: smsLinkCancelled.replace('{appUserNumber}', appUserNumber)
+    });
+}
