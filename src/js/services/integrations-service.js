@@ -140,6 +140,7 @@ export function cancelTwilioLink() {
     store.dispatch(updateUser({
         pendingClients: pendingClients.filter((pendingClient) => pendingClient.platform !== 'twilio')
     }));
+
     updateTwilioAttributes({
         linkState: 'unlinked',
         hasError: true,

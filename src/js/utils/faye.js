@@ -126,7 +126,10 @@ export function handleUserSubscription({appUser, event}) {
             }, ANIMATION_TIMINGS.PAGE_TRANSITION);
         }
     } else if (event.type === 'link:cancelled') {
-        return cancelTwilioLink();
+        const {platform} = appUser.pendingClients.find((c) => c.id === event.clientId);
+        if (platform === 'twilio') {
+            return cancelTwilioLink();
+        }
     }
 
     updateUser(currentAppUser, appUser);
