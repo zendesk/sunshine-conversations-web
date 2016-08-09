@@ -1,6 +1,7 @@
 import { store } from '../stores/app-store';
 import { core } from './core';
 import { setWeChatQRCode, setWeChatError, unsetWeChatError, setTwilioIntegrationState, resetTwilioIntegrationState } from '../actions/integrations-actions';
+import { handleConversationUpdated } from './conversation-service';
 import { getUserId } from './user-service';
 import { updateUser } from '../actions/user-actions';
 
@@ -57,6 +58,10 @@ export function linkTwilioChannel(userId, data) {
     return core().appUsers.linkChannel(userId, data)
         .then(({appUser}) => {
             store.dispatch(updateUser(appUser));
+
+            if (appUser.conversationStarted) {
+                return handleConversationUpdated();
+            }
         })
         .then(() => {
             updateTwilioAttributes({
