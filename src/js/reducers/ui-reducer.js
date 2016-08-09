@@ -39,7 +39,8 @@ const INITIAL_STATE = {
         smsTooManyRequestsOneMinuteError: 'A connection for that number was requested recently. Please try again in 1 minute',
         smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
         smsUnhandledError: 'Something went wrong. Please try again.',
-        smsPingChannelError: 'There was an error sending a message to your number.'
+        smsPingChannelError: 'There was an error sending a message to your number.',
+        smsLinkCancelled: 'Link to {appUserNumber} was cancelled.'
     }
 };
 
