@@ -64,13 +64,18 @@ export function linkTwilioChannel(userId, data) {
             });
         })
         .catch((e) => {
-            const {ui: {text: {smsTooManyRequestsError, smsBadRequestError, smsUnhandledError}}} = store.getState();
+            const {ui: {text: {smsTooManyRequestsError, smsTooManyRequestsOneMinuteError, smsBadRequestError, smsUnhandledError}}} = store.getState();
 
             const {response: {status}} = e;
             let errorMessage;
 
             if (status === 429) {
-                errorMessage = smsTooManyRequestsError.replace('{seconds}', e.response.headers.get('retry-after'));
+                const minutes = Math.ceil(e.response.headers.get('retry-after') / 60);
+                if (minutes > 1) {
+                    errorMessage = smsTooManyRequestsError.replace('{minutes}', minutes);
+                } else {
+                    errorMessage = smsTooManyRequestsOneMinuteError;
+                }
             } else if (status > 499) {
                 errorMessage = smsUnhandledError;
             } else {
