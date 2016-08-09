@@ -330,7 +330,7 @@ export class Smooch {
     }
 
     isOpened() {
-        return !!store.getState().appState.widgetState === WIDGET_STATE.OPENED;
+        return store.getState().appState.widgetState === WIDGET_STATE.OPENED;
     }
 
     render(container) {
