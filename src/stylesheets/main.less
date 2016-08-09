@@ -44,7 +44,11 @@
         width: @widget-width-lg;
         height: @widget-height-lg;
     }
-    @media (min-width: @screen-sm-min) and (max-height: @screen-sm-ht-min) {
+    @media (min-width: @screen-sm-min) and (min-height: @screen-sm-ht-min) and (max-height: @screen-sm-ht-max) {
+        width: @widget-width-md;
+        height: @widget-height-md;
+    }
+    @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
         width: @widget-width-sm;
         height: @widget-height-sm;
     }
@@ -114,6 +118,8 @@
     @import "reset.less";
     .container();
     height: 100%;
+    width: 100%;
+    position: absolute;
     #sk-wrapper {
         background: @background-color;
         width: 100%;

@@ -6,6 +6,7 @@ import { observable } from '../utils/events';
 import { hasLinkableChannels, isChannelLinked } from '../utils/user';
 import { getIntegration } from '../utils/app';
 import { CHANNEL_DETAILS } from '../constants/channels';
+import { WIDGET_STATE } from '../constants/app';
 
 export function openWidget() {
     const {embedded} = store.getState().appState;
@@ -29,9 +30,9 @@ export function closeWidget() {
 
 
 export function toggleWidget() {
-    const {embedded, widgetOpened} = store.getState().appState;
+    const {embedded, widgetState} = store.getState().appState;
     if (!embedded) {
-        if (widgetOpened) {
+        if (widgetState === WIDGET_STATE.OPENED) {
             closeWidget();
         } else {
             openWidget();

@@ -5,6 +5,7 @@ import TestUtils from 'react-addons-test-utils';
 import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId, getContext } from '../../utils/react';
 import * as appService from '../../../src/js/services/app-service';
 import * as appUtils from '../../../src/js/utils/app';
+import { WIDGET_STATE } from '../../../src/js/constants/app';
 import { HeaderComponent } from '../../../src/js/components/header';
 
 import { mockAppStore } from '../../utils/redux';
@@ -15,7 +16,7 @@ const defaultProps = {
     appState: {
         emailCaptureEnabled: false,
         settingsVisible: true,
-        widgetOpened: true,
+        widgetState: WIDGET_STATE.OPENED,
         embedded: false,
         visibleChannelType: false
     },
@@ -57,7 +58,10 @@ describe('Header Component', () => {
         beforeEach(() => {
             props = Object.assign(defaultProps, {});
             mockedStore = mockAppStore(sandbox, {});
-            header = wrapComponentWithContext(HeaderComponent, props, {...context, store: mockedStore});
+            header = wrapComponentWithContext(HeaderComponent, props, {
+                ...context,
+                store: mockedStore
+            });
             headerNode = ReactDOM.findDOMNode(header);
         });
 
@@ -96,7 +100,10 @@ describe('Header Component', () => {
                 }
             });
             mockedStore = mockAppStore(sandbox, {});
-            header = wrapComponentWithContext(HeaderComponent, props, {...context, store: mockedStore});
+            header = wrapComponentWithContext(HeaderComponent, props, {
+                ...context,
+                store: mockedStore
+            });
             headerNode = ReactDOM.findDOMNode(header);
         });
 

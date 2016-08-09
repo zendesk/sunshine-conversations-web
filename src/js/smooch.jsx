@@ -27,8 +27,8 @@ import { getDeviceId } from './utils/device';
 import { getIntegration, hasChannels } from './utils/app';
 
 import { stylesheet } from './constants/assets';
-
 import { VERSION } from './constants/version';
+import { WIDGET_STATE } from './constants/app';
 
 import { Root } from './root';
 
@@ -330,7 +330,7 @@ export class Smooch {
     }
 
     isOpened() {
-        return !!store.getState().appState.widgetOpened;
+        return store.getState().appState.widgetState === WIDGET_STATE.OPENED;
     }
 
     render(container) {
