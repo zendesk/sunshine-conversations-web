@@ -5,16 +5,17 @@ import { mockAppStore } from '../../utils/redux';
 
 import * as coreService from '../../../src/js/services/core';
 import * as integrationsService from '../../../src/js/services/integrations-service';
+import * as utilsFaye from '../../../src/js/utils/faye';
 
 const sandbox = sinon.sandbox.create();
 
 describe('Integrations service', () => {
     let coreMock;
     let mockedStore;
+    let pendingAppUser;
 
     beforeEach(() => {
-
-        const pendingAppUser = {
+        pendingAppUser = {
             appuser: {
                 _id: '1',
                 clients: [],
@@ -29,12 +30,22 @@ describe('Integrations service', () => {
         };
 
         coreMock = createMock(sandbox);
-        coreMock.appUsers.linkChannel.resolves(pendingAppUser);
+        coreMock.appUsers.linkChannel.resolves({
+            appUser: pendingAppUser
+        });
         coreMock.appUsers.unlinkChannel.resolves();
         coreMock.appUsers.pingChannel.resolves();
+        coreMock.conversations.get.resolves({
+            conversation: {
+                messages: []
+            }
+        });
+
         sandbox.stub(coreService, 'core', () => {
             return coreMock;
         });
+
+        sandbox.stub(utilsFaye, 'subscribeConversation').resolves();
 
         mockedStore = mockAppStore(sandbox, {
             user: {
@@ -44,8 +55,12 @@ describe('Integrations service', () => {
             },
             integrations: {
                 twilio: {}
+            },
+            faye: {
+                conversationSubscription: false
             }
         });
+
     });
 
     afterEach(() => {
@@ -64,6 +79,18 @@ describe('Integrations service', () => {
                     type: 'twilio',
                     phoneNumber: '+0123456789'
                 });
+            });
+        });
+
+        it('should start faye if user returns with conversationStarted', () => {
+            pendingAppUser.conversationStarted = true;
+
+            return integrationsService.linkTwilioChannel('1', {
+                type: 'twilio',
+                phoneNumber: '+0123456789'
+            }).then(() => {
+                coreMock.conversations.get.should.have.been.calledOnce;
+                utilsFaye.subscribeConversation.should.have.been.calledOnce;
             });
         });
     });
