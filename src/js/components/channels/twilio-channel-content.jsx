@@ -26,8 +26,7 @@ export class TwilioChannelContentComponent extends Component {
 
     handleInputChange = (telNumber) => {
         updateTwilioAttributes({
-            appUserNumber: telNumber,
-            hasError: false
+            appUserNumber: telNumber
         });
     }
 
@@ -43,7 +42,8 @@ export class TwilioChannelContentComponent extends Component {
 
     onNumberValid = () => {
         updateTwilioAttributes({
-            appUserNumberValid: true
+            appUserNumberValid: true,
+            hasError: false
         });
     }
 

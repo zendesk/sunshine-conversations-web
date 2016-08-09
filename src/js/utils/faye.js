@@ -9,6 +9,7 @@ import { getConversation, disconnectFaye, handleConversationUpdated } from '../s
 import { showSettings, hideChannelPage, hideConnectNotification } from '../services/app-service';
 import { getDeviceId } from './device';
 import { ANIMATION_TIMINGS } from '../constants/styles';
+import { cancelTwilioLink } from '../services/integrations-service';
 
 
 let client;
@@ -123,6 +124,11 @@ export function handleUserSubscription({appUser, event}) {
                     updateUser(currentAppUser, appUser);
                 }, ANIMATION_TIMINGS.PAGE_TRANSITION);
             }, ANIMATION_TIMINGS.PAGE_TRANSITION);
+        }
+    } else if (event.type === 'link:cancelled') {
+        const {platform} = appUser.pendingClients.find((c) => c.id === event.clientId);
+        if (platform === 'twilio') {
+            return cancelTwilioLink();
         }
     }
 
