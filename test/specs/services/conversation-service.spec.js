@@ -383,7 +383,7 @@ describe('Conversation service', () => {
         });
     });
 
-    describe('getConversation', () => {
+    describe('getMessages', () => {
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, {
                 user: {
@@ -393,13 +393,13 @@ describe('Conversation service', () => {
         });
 
         it('should call smooch-core conversation api and dispatch conversation', () => {
-            return conversationService.getConversation().then((response) => {
-                coreMock.conversations.get.should.have.been.calledWith('1');
+            return conversationService.getMessages().then((response) => {
+                coreMock.appUsers.getMessages.should.have.been.calledWith('1');
 
                 response.should.deep.eq({
                     conversation: {
-                        messages: []
-                    }
+                    },
+                    messages: []
                 });
 
                 conversationActions.setConversation.should.have.been.called;

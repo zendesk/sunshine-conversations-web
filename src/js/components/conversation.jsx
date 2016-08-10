@@ -8,11 +8,15 @@ import { ConnectNotification } from './connect-notification';
 import { logo, logo2x } from '../constants/assets';
 import { Introduction } from './introduction';
 
+import { setScrollToBottom } from '../actions/app-state-actions';
+import { fetchMoreMessages } from '../services/conversation-service';
+
 const INTRO_BOTTOM_SPACER = 10;
 
 export class ConversationComponent extends Component {
     static contextTypes = {
-        settings: PropTypes.object.isRequired
+        settings: PropTypes.object.isRequired,
+        ui: PropTypes.object.isRequired
     };
 
     static propTypes = {
@@ -54,15 +58,57 @@ export class ConversationComponent extends Component {
 
     };
 
-    scrollToBottom = () => {
-        const timeout = setTimeout(() => {
-            const container = findDOMNode(this);
-            const logo = this.refs.logo;
-            const scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight - INTRO_BOTTOM_SPACER;
-            container.scrollTop = scrollTop;
-        });
-        this.scrollTimeouts.push(timeout);
+    onScroll = () => {
+        const {dispatch, scrollToBottom, introHeight} = this.props;
+        const node = findDOMNode(this);
+
+        if(node.scrollTop === 0) {
+            fetchMoreMessages();
+        }
+
+        if(scrollToBottom) {
+            dispatch(setScrollToBottom(false));
+        }
     };
+
+    scrollToBottom = () => {
+        const {scrollToBottom, dispatch} = this.props;
+        if(scrollToBottom) {
+            const timeout = setTimeout(() => {
+                const container = findDOMNode(this);
+                const logo = this.refs.logo;
+                const scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight - INTRO_BOTTOM_SPACER;
+                container.scrollTop = scrollTop;
+                dispatch(setScrollToBottom(false));
+            });
+            this.scrollTimeouts.push(timeout);
+        } else if(this._firstMessageNode) {
+            const container = findDOMNode(this);
+            const node = this._firstMessageNode;
+            delete this._firstMessageNode;
+            delete this._lastTopMessageId;
+
+            const timeout = setTimeout(() => {
+                const rect = node.getBoundingClientRect();
+                console.log('container.scrollTop', container.scrollTop);
+                console.log('container.scrollHeight', container.scrollHeight);
+                console.log('container.offsetHeight', container.offsetHeight);
+                console.log('rect.top', rect.top);
+                console.log('rect.height', rect.height);
+                container.scrollTop = rect.top;
+            });
+            this.scrollTimeouts.push(timeout);
+        }
+    };
+
+    componentWillUpdate(nextProps) {
+        const {messages:currentMessages, isFetchingMoreMessages} = this.props;
+        const {messages: newMessages} = nextProps;
+
+        if (newMessages.length > currentMessages.length && currentMessages.length > 0) {
+            this._lastTopMessageId = currentMessages[0]._id;
+        }
+    }
 
     componentDidMount() {
         this.scrollToBottom();
@@ -77,11 +123,16 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const {connectNotificationTimestamp, introHeight, messages, errorNotificationMessage} = this.props;
-        const {accentColor, linkColor} = this.context.settings;
+        const {connectNotificationTimestamp, introHeight, messages, errorNotificationMessage, isFetchingMoreMessages} = this.props;
+        const {ui: {text: {fetchingHistory}}, settings: {accentColor, linkColor}} = this.context;
 
         let messageItems = messages.map((message) => {
+            const refCallback = this._lastTopMessageId === message._id ? (c) => {
+                this._firstMessageNode = findDOMNode(c);
+            } : undefined;
+
             return <MessageComponent key={ message._clientId || message._id }
+                                     ref={ refCallback }
                                      accentColor={ accentColor }
                                      linkColor={ linkColor }
                                      onLoad={ this.scrollToBottom }
@@ -110,14 +161,21 @@ export class ConversationComponent extends Component {
             maxHeight: `calc(100% - ${introHeight + INTRO_BOTTOM_SPACER}px)`
         };
 
+        const retrieveHistory = isFetchingMoreMessages ?
+            <div className='sk-fetch-history'>
+                { fetchingHistory }
+            </div> : null;
+
         return <div id='sk-conversation'
                     className={ errorNotificationMessage && 'notification-shown' }
                     ref='container'
-                    onTouchMove={ this.onTouchMove }>
+                    onTouchMove={ this.onTouchMove }
+                    onScroll={ this.onScroll }>
                    <Introduction/>
                    <div ref='messagesContainer'
                         className='sk-messages-container'
                         style={ messagesContainerStyle }>
+                       { retrieveHistory }
                        <div ref='messages'
                             className='sk-messages'>
                            { messageItems }
@@ -140,6 +198,8 @@ export const Conversation = connect(({appState, conversation}) => {
     return {
         messages: conversation.messages,
         embedded: appState.embedded,
+        scrollToBottom: appState.scrollToBottom,
+        isFetchingMoreMessages: appState.isFetchingMoreMessages,
         introHeight: appState.introHeight,
         connectNotificationTimestamp: appState.connectNotificationTimestamp,
         errorNotificationMessage: appState.errorNotificationMessage

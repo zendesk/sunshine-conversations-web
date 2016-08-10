@@ -3,7 +3,8 @@ import { RESET } from '../actions/common-actions';
 
 const INITIAL_STATE = {
     messages: [],
-    unreadCount: 0
+    unreadCount: 0,
+    hasMoreMessages: false
 };
 
 const sortMessages = (messages) => messages.sort((messageA, messageB) => {
@@ -116,7 +117,8 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             };
         case ConversationActions.SET_CONVERSATION:
             return {
-                ...action.conversation
+                ...action.conversation,
+                messages: state.messages
             };
         case ConversationActions.SET_MESSAGES:
             return {

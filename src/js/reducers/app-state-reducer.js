@@ -17,7 +17,9 @@ const INITIAL_STATE = {
     connectNotificationTimestamp: null,
     errorNotificationMessage: null,
     introHeight: 158,
-    showAnimation: false
+    showAnimation: false,
+    isFetchingMoreMessages: false,
+    scrollToBottom: true
 };
 
 export function AppStateReducer(state = INITIAL_STATE, action) {
@@ -176,6 +178,17 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             return {
                 ...state,
                 showAnimation: false
+            };
+
+        case AppStateActions.SET_FETCHING_MORE_MESSAGES:
+            return {
+                ...state,
+                isFetchingMoreMessages: action.value
+            };
+        case AppStateActions.SET_SCROLL_TO_BOTTOM:
+            return {
+                ...state,
+                scrollToBottom: action.value
             };
 
         default:

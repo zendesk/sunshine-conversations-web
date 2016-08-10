@@ -2,7 +2,7 @@ import { store } from '../stores/app-store';
 import { showConnectNotification } from '../services/app-service';
 import { addMessage, addMessages, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages } from '../actions/conversation-actions';
 import { updateUser } from '../actions/user-actions';
-import { showErrorNotification } from '../actions/app-state-actions';
+import { showErrorNotification, setFetchingMoreMessages, setScrollToBottom } from '../actions/app-state-actions';
 import { unsetFayeSubscriptions } from '../actions/faye-actions';
 import { core } from './core';
 import { immediateUpdate } from './user-service';
@@ -53,10 +53,16 @@ export function handleConnectNotification(response) {
 export function sendChain(sendFn) {
     const promise = immediateUpdate(store.getState().user);
 
+    const enableScrollToBottom = (response) => {
+        store.dispatch(setScrollToBottom(true));
+        return response;
+    };
+
     if (store.getState().user.conversationStarted) {
         return promise
             .then(connectFayeConversation)
             .then(sendFn)
+            .then(enableScrollToBottom)
             .then(handleConnectNotification);
     }
 
@@ -64,6 +70,7 @@ export function sendChain(sendFn) {
     // then get it and connect faye
     return promise
         .then(sendFn)
+        .then(enableScrollToBottom)
         .then(handleConnectNotification)
         .then(connectFayeConversation);
 }
@@ -161,9 +168,12 @@ export function uploadImage(file) {
     });
 }
 
-export function getConversation() {
+export function getMessages() {
     return core().appUsers.getMessages(getUserId()).then((response) => {
-        store.dispatch(setConversation(response.conversation));
+        store.dispatch(setConversation({
+            ...response.conversation,
+            hasMoreMessages: !!response.previous
+        }));
         store.dispatch(setMessages(response.messages));
         return response;
     });
@@ -220,7 +230,7 @@ export function handleConversationUpdated() {
     const {faye: {conversationSubscription}} = store.getState();
 
     if (!conversationSubscription) {
-        return getConversation()
+        return getMessages()
             .then((response) => {
                 return connectFayeConversation().then(() => {
                     return response;
@@ -234,5 +244,29 @@ export function handleConversationUpdated() {
 export function postPostback(actionId) {
     return core().conversations.postPostback(getUserId(), actionId).catch(() => {
         store.dispatch(showErrorNotification(store.getState().ui.text.actionPostbackError));
+    });
+}
+
+
+export function fetchMoreMessages() {
+    const {conversation: {hasMoreMessages, messages}, appState: {isFetchingMoreMessages}} = store.getState();
+
+    if (isFetchingMoreMessages || !hasMoreMessages) {
+        return Promise.resolve();
+    }
+
+    const id = messages[0]._id;
+    store.dispatch(setFetchingMoreMessages(true));
+    return core().appUsers.getMessages(getUserId(), {
+        before: id
+    }).then((response) => {
+        store.dispatch(setConversation({
+            ...response.conversation,
+            hasMoreMessages: !!response.previous
+        }));
+
+        store.dispatch(addMessages(response.messages, false));
+        store.dispatch(setFetchingMoreMessages(false));
+        return response;
     });
 }
