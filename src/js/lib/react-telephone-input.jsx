@@ -342,6 +342,7 @@ export class ReactTelephoneInput extends Component {
         this.setState({
             showDropDown: false
         });
+        this._cursorToEnd();
     }
 
     handleFlagItemClick = (country) => {
@@ -389,6 +390,7 @@ export class ReactTelephoneInput extends Component {
         }
 
         this._fillDialCode();
+        this._cursorToEnd();
     }
 
     _fillDialCode() {
@@ -543,6 +545,7 @@ export class ReactTelephoneInput extends Component {
         if (typeof this.props.onBlur === 'function') {
             this.props.onBlur(this.state.formattedNumber, this.state.selectedCountry);
         }
+        this._cursorToEnd(true);
     }
 
     render() {
