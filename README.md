@@ -1,10 +1,13 @@
-# [Smooch Javascript SDK](smooch.io)
+# Smooch Javascript SDK
 
-[![Circle CI](https://circleci.com/gh/smooch/smooch-js.svg?style=svg)](https://circleci.com/gh/smooch/smooch-js) [![npm version](https://badge.fury.io/js/smooch.svg)](http://badge.fury.io/js/smooch) [![Bower version](https://badge.fury.io/bo/smooch.svg)](http://badge.fury.io/bo/smooch)
+  The best way to have personal, rich conversations with your users on any device.
 
-Smooch is the best way to have personal, rich conversations with people on your website or customers on any device. Our features, integrations and developer-friendly APIs empower companies to connect with their customers in a whole new way.
+  [![Circle CI](https://circleci.com/gh/smooch/smooch-js.svg?style=svg)](https://circleci.com/gh/smooch/smooch-js)
+  [![npm version](https://badge.fury.io/js/smooch.svg)](http://badge.fury.io/js/smooch)
+  [![Bower version](https://badge.fury.io/bo/smooch.svg)](http://badge.fury.io/bo/smooch)
 
-The Smooch Javascript SDK will add [live web messaging](https://smooch.io/live-web-chat/) to your website or web app. Customers will be able to talk to you from your website, while you manage conversations using your favorite business systems.
+
+Our features, integrations and developer-friendly APIs empower companies to connect with their customers in a whole new way. The Smooch Javascript SDK will add [live web messaging](https://smooch.io/live-web-chat/) to your website or web app. Customers will be able to talk to you from your website, while you manage conversations using your favorite business systems.
 
 - Let your customers talk to you the way they want by seamlessly [moving web chat conversations](https://smooch.io/cross-channel-messaging/) to any messaging app.
 - Sync conversations across every device and channel your customers use.
