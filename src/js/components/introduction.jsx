@@ -26,7 +26,7 @@ export class IntroductionComponent extends Component {
 
     constructor(...args) {
         super(...args);
-        this._debounceHeightCalculation = debounce(this.calculateIntroHeight.bind(this), 150);
+        this._debounceHeightCalculation = debounce(this.calculateIntroHeight.bind(this), 400);
     }
 
     componentDidMount() {
