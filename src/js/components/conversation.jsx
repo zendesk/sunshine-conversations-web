@@ -10,6 +10,7 @@ import { Introduction } from './introduction';
 
 import { setScrollToBottom } from '../actions/app-state-actions';
 import { fetchMoreMessages } from '../services/conversation-service';
+import { getTop } from '../utils/dom';
 
 const INTRO_BOTTOM_SPACER = 10;
 
@@ -59,7 +60,7 @@ export class ConversationComponent extends Component {
     };
 
     onScroll = () => {
-        const {dispatch, scrollToBottom, introHeight} = this.props;
+        const {dispatch, scrollToBottom} = this.props;
         const node = findDOMNode(this);
 
         if(node.scrollTop === 0) {
@@ -73,40 +74,50 @@ export class ConversationComponent extends Component {
 
     scrollToBottom = () => {
         const {scrollToBottom, dispatch} = this.props;
-        if(scrollToBottom) {
+        if(!this._isScrolling && (scrollToBottom || this._forceScrollToBottom)) {
+            this._isScrolling = true;
             const timeout = setTimeout(() => {
                 const container = findDOMNode(this);
                 const logo = this.refs.logo;
                 const scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight - INTRO_BOTTOM_SPACER;
                 container.scrollTop = scrollTop;
+                this._isScrolling = false;
+                this._forceScrollToBottom = false;
                 dispatch(setScrollToBottom(false));
-            });
-            this.scrollTimeouts.push(timeout);
-        } else if(this._firstMessageNode) {
-            const container = findDOMNode(this);
-            const node = this._firstMessageNode;
-            delete this._firstMessageNode;
-            delete this._lastTopMessageId;
-
-            const timeout = setTimeout(() => {
-                const rect = node.getBoundingClientRect();
-                console.log('container.scrollTop', container.scrollTop);
-                console.log('container.scrollHeight', container.scrollHeight);
-                console.log('container.offsetHeight', container.offsetHeight);
-                console.log('rect.top', rect.top);
-                console.log('rect.height', rect.height);
-                container.scrollTop = rect.top;
             });
             this.scrollTimeouts.push(timeout);
         }
     };
 
-    componentWillUpdate(nextProps) {
-        const {messages:currentMessages, isFetchingMoreMessages} = this.props;
-        const {messages: newMessages} = nextProps;
+    scrollToPreviousFirstMessage = () => {
+        if(this._firstMessageNode && !this._isScrolling) {
+            const container = findDOMNode(this);
+            const node = this._firstMessageNode;
+            delete this._firstMessageNode;
+            delete this._lastTopMessageId;
 
-        if (newMessages.length > currentMessages.length && currentMessages.length > 0) {
+            this._isScrolling = true;
+
+            const timeout = setTimeout(() => {
+                container.scrollTop = getTop(node, container);
+                this._isScrolling = false;
+            });
+
+            this.scrollTimeouts.push(timeout);
+        }
+    };
+
+    componentWillUpdate(nextProps) {
+        const {messages:currentMessages, introHeight: currentIntroHeight} = this.props;
+        const {messages: newMessages, introHeight: newIntroHeight} = nextProps;
+
+        // make sure the last message is one from the server, otherwise it doesn't need to scroll to previous first message
+        if (currentMessages.length > 0 && newMessages.length > currentMessages.length && newMessages[newMessages.length - 1]._id) {
             this._lastTopMessageId = currentMessages[0]._id;
+        }
+
+        if(currentIntroHeight !== newIntroHeight) {
+            this._forceScrollToBottom = true;
         }
     }
 
@@ -115,11 +126,17 @@ export class ConversationComponent extends Component {
     }
 
     componentDidUpdate() {
-        this.scrollToBottom();
+        if (this._lastTopMessageId) {
+            this.scrollToPreviousFirstMessage();
+        } else {
+            this.scrollToBottom();
+        }
     }
 
     componentWillUnmount() {
         this.scrollTimeouts.forEach(clearTimeout);
+        delete this._firstMessageNode;
+        delete this._lastTopMessageId;
     }
 
     render() {
