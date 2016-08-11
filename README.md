@@ -1,4 +1,4 @@
-# Smooch Javascript SDK
+# [Smooch Javascript SDK](https://smooch.io)
 
   [![Circle CI](https://circleci.com/gh/smooch/smooch-js.svg?style=svg)](https://circleci.com/gh/smooch/smooch-js)
   [![npm version](https://badge.fury.io/js/smooch.svg)](http://badge.fury.io/js/smooch)
