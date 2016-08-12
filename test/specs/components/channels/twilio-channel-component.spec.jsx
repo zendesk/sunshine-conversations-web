@@ -14,7 +14,13 @@ const context = {
     settings: {},
     ui: {
         text: {
-            smsInvalidNumberError: 'Your phone number isn\'t valid. Please try again.'
+            smsInvalidNumberError: 'Your phone number isn\'t valid. Please try again.',
+            smsLinkPending: 'Pending',
+            smsStartTexting: 'Start Texting',
+            smsRetry: 'Retry',
+            smsChangeNumber: 'Change my number',
+            smsSendText: 'Send me a text',
+            smsContinue: 'Continue'
         }
     }
 };
@@ -56,8 +62,11 @@ describe('Twilio Channel Content Component', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'linked-state').length.should.eq(1);
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedTelephoneInput').length.should.eq(0);
 
-            const appUserPhoneNumber = TestUtils.findRenderedDOMComponentWithClass(component, 'phone-number');
-            appUserPhoneNumber.textContent.should.eq(linkedProps.appUserNumber);
+            const appUserPhoneNumber = TestUtils.findRenderedDOMComponentWithClass(component, 'linked-state');
+            appUserPhoneNumber.textContent.should.eq(`${linkedProps.appUserNumber}${context.ui.text.smsChangeNumber}`);
+
+            const button = TestUtils.findRenderedDOMComponentWithClass(component, 'btn-sk-primary');
+            button.textContent.should.eql(context.ui.text.smsSendText);
         });
     });
 
@@ -84,6 +93,11 @@ describe('Twilio Channel Content Component', () => {
                     };
                     component = renderComponent(context, store, props);
                     TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-primary').length.should.eq(appUserNumberValid ? 1 : 0);
+
+                    if (appUserNumberValid) {
+                        const button = TestUtils.findRenderedDOMComponentWithClass(component, 'btn-sk-primary');
+                        button.textContent.should.eql(context.ui.text.smsContinue);
+                    }
                 });
             });
         });
@@ -127,7 +141,7 @@ describe('Twilio Channel Content Component', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedTelephoneInput').length.should.eq(0);
 
             const appUserPhoneNumber = TestUtils.findRenderedDOMComponentWithClass(component, 'phone-number');
-            appUserPhoneNumber.textContent.should.eq(`${pendingProps.appUserNumber} - Pending`);
+            appUserPhoneNumber.textContent.should.eq(`${pendingProps.appUserNumber} - ${context.ui.text.smsLinkPending}`);
         });
     });
 });
