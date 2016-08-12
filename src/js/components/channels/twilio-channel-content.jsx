@@ -99,7 +99,7 @@ export class TwilioChannelContentComponent extends Component {
                                      <i className='fa fa-phone'
                                         style={ iconStyle }></i>
                                      <span className='phone-number'>{ appUserNumber } - Pending</span>
-                                     <a onClick={ this.unlinkChannel }>Retry</a>
+                                     <a onClick={ this.unlinkChannel }>Cancel</a>
                                  </div>;
 
         const sendTextUrl = `sms://${phoneNumber}`;
