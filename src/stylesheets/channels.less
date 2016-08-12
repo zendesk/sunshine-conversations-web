@@ -29,6 +29,12 @@
     }
 
     .channel-header {
+        .channel-icon, .channel-name {
+            @media (max-height: 400px) {
+                display: none;
+            }
+        }
+
         .channel-icon {
             margin-bottom: 40px;
             height: 65px;
