@@ -28,11 +28,25 @@ const INITIAL_STATE = {
         wechatQRCodeError: 'An error occurred while fetching your WeChat QR code. Please try again.',
         messengerChannelDescription: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.',
         frontendEmailChannelDescription: 'To talk to us using email just send a message to our email address and we\'ll reply shortly:',
-        smsChannelDescription: 'To talk to us using SMS, just send a text message to this number from your favorite SMS app:',
+        smsChannelDescription: 'Connect your SMS number to text with us and receive notifications over SMS.',
+        smsChannelPendingDescription: 'Check your messages at {number} to confirm your phone number.',
         telegramChannelDescription: 'To talk to us using Telegram, add our bot:',
         wechatChannelDescriptionMobile: 'To send us a message from WeChat, save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.',
         wechatChannelDescription: 'To send us a message from WeChat, scan this QR code using the WeChat app.',
-        lineChannelDescription: 'To talk to us using LINE, search for our official account using the LINE app and send us a message:'
+        lineChannelDescription: 'To talk to us using LINE, search for our official account using the LINE app and send us a message:',
+        smsInvalidNumberError: 'Your phone number isn\'t valid. Please try again.',
+        smsTooManyRequestsError: 'A connection for that number was requested recently. Please try again in {minutes} minutes.',
+        smsTooManyRequestsOneMinuteError: 'A connection for that number was requested recently. Please try again in 1 minute.',
+        smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
+        smsUnhandledError: 'Something went wrong. Please try again.',
+        smsPingChannelError: 'There was an error sending a message to your number.',
+        smsLinkCancelled: 'Link to {appUserNumber} was cancelled.',
+        smsLinkPending: 'Pending',
+        smsStartTexting: 'Start Texting',
+        smsChangeNumber: 'Change my number',
+        smsSendText: 'Send me a text',
+        smsContinue: 'Continue',
+        smsCancel: 'Cancel'
     }
 };
 
