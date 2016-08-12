@@ -75,10 +75,15 @@ export class ConversationComponent extends Component {
     };
 
     fetchHistory = () => {
-        const {dispatch, hasMoreMessages, isFetchingMoreMessages} = this.props;
+        const {dispatch, hasMoreMessages, isFetchingMoreMessages, messages} = this.props;
 
         const node = findDOMNode(this);
         if(hasMoreMessages && !isFetchingMoreMessages) {
+            // make sure the last message is one from the server, otherwise it doesn't need to scroll to previous first message
+            if (messages.length > 0 && messages[messages.length - 1]._id) {
+                this._lastTopMessageId = messages[0]._id;
+            }
+            
             const top = getTop(this._topMessageNode, node);
             this._lastTopMessageNodePosition = top - node.scrollTop;
             dispatch(setFetchingMoreMessages(true));
@@ -108,7 +113,6 @@ export class ConversationComponent extends Component {
         if(this._lastTopMessageNodePosition && !this._isScrolling) {
             const container = findDOMNode(this);
             const node = this._lastTopMessageNode;
-            delete this._lastTopMessageId;
 
             this._isScrolling = true;
 
@@ -135,7 +139,7 @@ export class ConversationComponent extends Component {
     }
 
     componentDidUpdate() {
-        if (this._lastTopMessageId) {
+        if (this._lastTopMessageNode) {
             this.scrollToPreviousFirstMessage();
         } else {
             this.scrollToBottom();
@@ -155,6 +159,10 @@ export class ConversationComponent extends Component {
             const refCallback = (c) => {
                 if (index === 0) {
                     this._topMessageNode = findDOMNode(c);
+                }
+
+                if (this._lastTopMessageId === message._id) {
+                    this._lastTopMessageNode = findDOMNode(c);
                 }
             };
 
