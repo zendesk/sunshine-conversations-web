@@ -47,7 +47,8 @@ const INITIAL_STATE = {
         smsSendText: 'Send me a text',
         smsContinue: 'Continue',
         smsCancel: 'Cancel',
-        fetchingHistory: 'Retrieving history...'
+        fetchingHistory: 'Retrieving history...',
+        fetchHistory: 'Load more'
     }
 };
 

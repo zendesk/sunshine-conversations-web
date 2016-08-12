@@ -8,7 +8,7 @@ import { ConnectNotification } from './connect-notification';
 import { logo, logo2x } from '../constants/assets';
 import { Introduction } from './introduction';
 
-import { setScrollToBottom } from '../actions/app-state-actions';
+import { setShouldScrollToBottom, setFetchingMoreMessages } from '../actions/app-state-actions';
 import { fetchMoreMessages } from '../services/conversation-service';
 import { getTop } from '../utils/dom';
 
@@ -60,21 +60,37 @@ export class ConversationComponent extends Component {
     };
 
     onScroll = () => {
-        const {dispatch, scrollToBottom} = this.props;
-        const node = findDOMNode(this);
+        // HINT: might want to consider debouncing or throttling this since it would be executed a lot on scroll
+        const {dispatch, shouldScrollToBottom} = this.props;
 
+        const node = findDOMNode(this);
         if(node.scrollTop === 0) {
-            fetchMoreMessages();
+            this.fetchHistory();
+        } else if(shouldScrollToBottom) {
+            // HINT : this will be triggered when an appMaker message is added, which is probably why it's not scrolling to bottom when receiving one
+            dispatch(setShouldScrollToBottom(false));
         }
 
-        if(scrollToBottom) {
-            dispatch(setScrollToBottom(false));
+        // HINT: might want to check if scroll is at the bottom to reactivate auto scrolling
+    };
+
+    fetchHistory = () => {
+        const {dispatch, hasMoreMessages, isFetchingMoreMessages} = this.props;
+
+        const node = findDOMNode(this);
+        if(hasMoreMessages && !isFetchingMoreMessages) {
+            const top = getTop(this._topMessageNode, node);
+            this._lastTopMessageNodePosition = top - node.scrollTop;
+            dispatch(setFetchingMoreMessages(true));
+            setTimeout(() => {
+                fetchMoreMessages();
+            }, 400);
         }
     };
 
     scrollToBottom = () => {
-        const {scrollToBottom, dispatch} = this.props;
-        if(!this._isScrolling && (scrollToBottom || this._forceScrollToBottom)) {
+        const {shouldScrollToBottom} = this.props;
+        if(!this._isScrolling && (shouldScrollToBottom || this._forceScrollToBottom)) {
             this._isScrolling = true;
             const timeout = setTimeout(() => {
                 const container = findDOMNode(this);
@@ -83,23 +99,21 @@ export class ConversationComponent extends Component {
                 container.scrollTop = scrollTop;
                 this._isScrolling = false;
                 this._forceScrollToBottom = false;
-                dispatch(setScrollToBottom(false));
             });
             this.scrollTimeouts.push(timeout);
         }
     };
 
     scrollToPreviousFirstMessage = () => {
-        if(this._firstMessageNode && !this._isScrolling) {
+        if(this._lastTopMessageNodePosition && !this._isScrolling) {
             const container = findDOMNode(this);
-            const node = this._firstMessageNode;
-            delete this._firstMessageNode;
+            const node = this._lastTopMessageNode;
             delete this._lastTopMessageId;
 
             this._isScrolling = true;
 
             const timeout = setTimeout(() => {
-                container.scrollTop = getTop(node, container);
+                container.scrollTop = getTop(node, container) - this._lastTopMessageNodePosition;
                 this._isScrolling = false;
             });
 
@@ -108,15 +122,10 @@ export class ConversationComponent extends Component {
     };
 
     componentWillUpdate(nextProps) {
-        const {messages:currentMessages, introHeight: currentIntroHeight} = this.props;
-        const {messages: newMessages, introHeight: newIntroHeight} = nextProps;
+        const {introHeight: currentIntroHeight} = this.props;
+        const {introHeight: newIntroHeight} = nextProps;
 
-        // make sure the last message is one from the server, otherwise it doesn't need to scroll to previous first message
-        if (currentMessages.length > 0 && newMessages.length > currentMessages.length && newMessages[newMessages.length - 1]._id) {
-            this._lastTopMessageId = currentMessages[0]._id;
-        }
-
-        if(currentIntroHeight !== newIntroHeight) {
+        if (currentIntroHeight !== newIntroHeight) {
             this._forceScrollToBottom = true;
         }
     }
@@ -135,18 +144,19 @@ export class ConversationComponent extends Component {
 
     componentWillUnmount() {
         this.scrollTimeouts.forEach(clearTimeout);
-        delete this._firstMessageNode;
-        delete this._lastTopMessageId;
+        // TODO cleanup any this.flags assigned
     }
 
     render() {
-        const {connectNotificationTimestamp, introHeight, messages, errorNotificationMessage, isFetchingMoreMessages} = this.props;
-        const {ui: {text: {fetchingHistory}}, settings: {accentColor, linkColor}} = this.context;
+        const {connectNotificationTimestamp, introHeight, messages, errorNotificationMessage, isFetchingMoreMessages, hasMoreMessages} = this.props;
+        const {ui: {text: {fetchingHistory, fetchHistory}}, settings: {accentColor, linkColor}} = this.context;
 
-        let messageItems = messages.map((message) => {
-            const refCallback = this._lastTopMessageId === message._id ? (c) => {
-                this._firstMessageNode = findDOMNode(c);
-            } : undefined;
+        let messageItems = messages.map((message, index) => {
+            const refCallback = (c) => {
+                if (index === 0) {
+                    this._topMessageNode = findDOMNode(c);
+                }
+            };
 
             return <MessageComponent key={ message._clientId || message._id }
                                      ref={ refCallback }
@@ -178,10 +188,26 @@ export class ConversationComponent extends Component {
             maxHeight: `calc(100% - ${introHeight + INTRO_BOTTOM_SPACER}px)`
         };
 
-        const retrieveHistory = isFetchingMoreMessages ?
-            <div className='sk-fetch-history'>
-                { fetchingHistory }
-            </div> : null;
+        let retrieveHistory;
+        if (hasMoreMessages) {
+            if (isFetchingMoreMessages) {
+                retrieveHistory = <div className='sk-fetch-history'>
+                                      { fetchingHistory }
+                                  </div>;
+            } else {
+                const onClick = (e) => {
+                    e.preventDefault();
+                    this.fetchHistory();
+                };
+
+                retrieveHistory = <div className='sk-fetch-history'>
+                                      <a href='#'
+                                         onClick={ onClick }>
+                                          { fetchHistory }
+                                      </a>
+                                  </div>;
+            }
+        }
 
         return <div id='sk-conversation'
                     className={ errorNotificationMessage && 'notification-shown' }
@@ -215,8 +241,9 @@ export const Conversation = connect(({appState, conversation}) => {
     return {
         messages: conversation.messages,
         embedded: appState.embedded,
-        scrollToBottom: appState.scrollToBottom,
+        shouldScrollToBottom: appState.shouldScrollToBottom,
         isFetchingMoreMessages: appState.isFetchingMoreMessages,
+        hasMoreMessages: conversation.hasMoreMessages,
         introHeight: appState.introHeight,
         connectNotificationTimestamp: appState.connectNotificationTimestamp,
         errorNotificationMessage: appState.errorNotificationMessage

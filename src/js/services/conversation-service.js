@@ -2,7 +2,7 @@ import { store } from '../stores/app-store';
 import { showConnectNotification } from '../services/app-service';
 import { addMessage, addMessages, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages } from '../actions/conversation-actions';
 import { updateUser } from '../actions/user-actions';
-import { showErrorNotification, setFetchingMoreMessages, setScrollToBottom } from '../actions/app-state-actions';
+import { showErrorNotification, setFetchingMoreMessages, setShouldScrollToBottom } from '../actions/app-state-actions';
 import { unsetFayeSubscriptions } from '../actions/faye-actions';
 import { core } from './core';
 import { immediateUpdate } from './user-service';
@@ -54,7 +54,7 @@ export function sendChain(sendFn) {
     const promise = immediateUpdate(store.getState().user);
 
     const enableScrollToBottom = (response) => {
-        store.dispatch(setScrollToBottom(true));
+        store.dispatch(setShouldScrollToBottom(true));
         return response;
     };
 
@@ -249,9 +249,10 @@ export function postPostback(actionId) {
 
 
 export function fetchMoreMessages() {
-    const {conversation: {hasMoreMessages, messages}, appState: {isFetchingMoreMessages}} = store.getState();
+    const {conversation: {hasMoreMessages, messages}} = store.getState();
 
-    if (isFetchingMoreMessages || !hasMoreMessages) {
+    // TODO : add independent guard against parallel fetching
+    if (!hasMoreMessages) {
         return Promise.resolve();
     }
 

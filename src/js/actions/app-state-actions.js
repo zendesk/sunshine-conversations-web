@@ -24,7 +24,7 @@ export const HIDE_CHANNEL_PAGE = 'HIDE_CHANNEL_PAGE';
 export const SET_INTRO_HEIGHT = 'SET_INTRO_HEIGHT';
 export const DISABLE_ANIMATION = 'DISABLE_ANIMATION';
 export const SET_FETCHING_MORE_MESSAGES = 'SET_FETCHING_MORE_MESSAGES';
-export const SET_SCROLL_TO_BOTTOM = 'SET_SCROLL_TO_BOTTOM';
+export const SET_SHOULD_SCROLL_TO_BOTTOM = 'SET_SHOULD_SCROLL_TO_BOTTOM';
 
 export function toggleWidget() {
     return {
@@ -183,9 +183,9 @@ export function setFetchingMoreMessages(value) {
     };
 }
 
-export function setScrollToBottom(value) {
+export function setShouldScrollToBottom(value) {
     return {
-        type: SET_SCROLL_TO_BOTTOM,
+        type: SET_SHOULD_SCROLL_TO_BOTTOM,
         value
     };
 }

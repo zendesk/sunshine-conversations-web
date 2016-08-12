@@ -19,7 +19,7 @@ const INITIAL_STATE = {
     introHeight: 158,
     showAnimation: false,
     isFetchingMoreMessages: false,
-    scrollToBottom: true
+    shouldScrollToBottom: true
 };
 
 export function AppStateReducer(state = INITIAL_STATE, action) {
@@ -185,10 +185,10 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
                 ...state,
                 isFetchingMoreMessages: action.value
             };
-        case AppStateActions.SET_SCROLL_TO_BOTTOM:
+        case AppStateActions.SET_SHOULD_SCROLL_TO_BOTTOM:
             return {
                 ...state,
-                scrollToBottom: action.value
+                shouldScrollToBottom: action.value
             };
 
         default:
