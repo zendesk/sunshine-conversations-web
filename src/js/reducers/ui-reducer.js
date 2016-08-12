@@ -36,11 +36,17 @@ const INITIAL_STATE = {
         lineChannelDescription: 'To talk to us using LINE, search for our official account using the LINE app and send us a message:',
         smsInvalidNumberError: 'Your phone number isn\'t valid. Please try again.',
         smsTooManyRequestsError: 'A connection for that number was requested recently. Please try again in {minutes} minutes.',
-        smsTooManyRequestsOneMinuteError: 'A connection for that number was requested recently. Please try again in 1 minute',
+        smsTooManyRequestsOneMinuteError: 'A connection for that number was requested recently. Please try again in 1 minute.',
         smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
         smsUnhandledError: 'Something went wrong. Please try again.',
         smsPingChannelError: 'There was an error sending a message to your number.',
-        smsLinkCancelled: 'Link to {appUserNumber} was cancelled.'
+        smsLinkCancelled: 'Link to {appUserNumber} was cancelled.',
+        smsLinkPending: 'Pending',
+        smsStartTexting: 'Start Texting',
+        smsChangeNumber: 'Change my number',
+        smsSendText: 'Send me a text',
+        smsContinue: 'Continue',
+        smsCancel: 'Cancel'
     }
 };
 
