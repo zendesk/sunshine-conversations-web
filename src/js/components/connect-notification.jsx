@@ -2,9 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { findDOMNode } from 'react-dom';
 
-import { hasChannels } from '../utils/app';
+import { getAppChannelDetails, hasChannels } from '../utils/app';
 import { createMarkup } from '../utils/html';
-import { getAppChannelDetails } from '../utils/app';
 import { showChannelPage, showSettings } from '../services/app-service';
 
 export class ConnectNotificationComponent extends Component {
@@ -14,8 +13,8 @@ export class ConnectNotificationComponent extends Component {
     };
 
     static contextTypes = {
-        ui: PropTypes.object,
-        settings: PropTypes.object
+        ui: PropTypes.object.isRequired,
+        settings: PropTypes.object.isRequired
     };
 
     bindHandler() {
@@ -67,9 +66,9 @@ export class ConnectNotificationComponent extends Component {
                     const separator = index !== array.length - 1 ? ',' : '';
 
                     return <div style={ linkStyle }
-                                className='channel-details'>
-                               <a key={ channel.type }
-                                  style={ linkStyle }
+                                className='channel-details'
+                                key={channel.type}>
+                               <a style={ linkStyle }
                                   href
                                   className='channel-link'
                                   onClick={ onClick }>

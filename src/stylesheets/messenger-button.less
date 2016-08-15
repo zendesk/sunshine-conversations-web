@@ -1,0 +1,130 @@
+#sk-messenger-button {
+    position: fixed;
+
+    right: @widget-horizontal-spacing;
+
+    height: @messenger-button-size;
+    width: @messenger-button-size;
+
+    border-radius: 50%;
+
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.26);
+    z-index: 9998; // 1 less than Stripe Checkout
+
+    cursor: pointer;
+    transform-origin: bottom;
+
+    bottom: @widget-messenger-button-vertical-spacing;
+    opacity: 1;
+    transform: scale(1, 1);
+
+    &.messenger-button-shown {
+        -webkit-animation: sk-messenger-button-shown-frames .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-messenger-button-shown-frames .4s cubic-bezier(.62, .28, .23, .99);
+        -webkit-animation-delay: .2s;
+                animation-delay: .2s;
+        -webkit-animation-fill-mode: both;        
+                animation-fill-mode: both;
+    }
+
+    &.messenger-button-hidden {
+        -webkit-animation: sk-messenger-button-hidden-frames .4s cubic-bezier(.62, .28, .23, .99);
+                animation: sk-messenger-button-hidden-frames .4s cubic-bezier(.62, .28, .23, .99);
+        -webkit-animation-delay: .0s;
+                animation-delay: .0s;
+        -webkit-animation-fill-mode: both;
+                animation-fill-mode: both;
+    }
+
+    .default-icon {
+        width: 55%;
+        margin-left: 50%;
+        margin-top: 50%;
+        -webkit-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+    }
+
+    .messenger-button-icon {
+        height: @messenger-button-size;
+        width: @messenger-button-size;
+
+        border-radius: 50%;
+        overflow: hidden;
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    }
+}
+
+@keyframes sk-messenger-button-shown-frames {
+    0% {
+        transform: scale(0, 0);
+        bottom: @widget-vertical-spacing;
+        opacity: 0;
+    }
+    1% {
+        transform: scale(1, 1);
+        bottom: @widget-vertical-spacing;
+        opacity: 0;
+    }
+    100% {
+        bottom: @widget-messenger-button-vertical-spacing;
+        opacity: 1;
+    }
+}
+
+@keyframes sk-messenger-button-hidden-frames {
+    0% {
+        bottom: @widget-messenger-button-vertical-spacing;
+        opacity: 1;
+        transform: scale(1, 1);
+    }
+    99% {
+        bottom: @widget-vertical-spacing;
+        opacity: 0;
+        transform: scale(1, 1);
+    }
+    100% {
+        bottom: @widget-vertical-spacing;
+        opacity: 0;
+        transform: scale(0, 0);
+    }
+}
+
+@-webkit-keyframes sk-messenger-button-shown-frames {
+    0% {
+        transform: scale(0, 0);
+        bottom: @widget-vertical-spacing;
+        opacity: 0;
+    }
+    1% {
+        transform: scale(1, 1);
+        bottom: @widget-vertical-spacing;
+        opacity: 0;
+    }
+    100% {
+        bottom: @widget-messenger-button-vertical-spacing;
+        opacity: 1;
+    }
+}
+
+
+@-webkit-keyframes sk-messenger-button-hidden-frames {
+    0% {
+        bottom: @widget-messenger-button-vertical-spacing;
+        opacity: 1;
+        transform: scale(1, 1);
+    }
+    99% {
+        bottom: @widget-vertical-spacing;
+        opacity: 0;
+        transform: scale(1, 1);
+    }
+    100% {
+        bottom: @widget-vertical-spacing;
+        opacity: 0;
+        transform: scale(0, 0);
+    }
+}

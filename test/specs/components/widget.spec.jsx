@@ -1,21 +1,22 @@
 import sinon from 'sinon';
 import React from 'react';
-import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 import { Provider } from 'react-redux';
 
-import { mockComponent } from '../../utils/react';
+import { mockComponent, findRenderedDOMComponentsWithId } from '../../utils/react';
 import { createMockedStore, mockAppStore } from '../../utils/redux';
 
-import { HeaderComponent } from '../../../src/js/components/header';
+import { Header } from '../../../src/js/components/header';
 import { Settings } from '../../../src/js/components/settings';
-import { ConversationComponent } from '../../../src/js/components/conversation';
-import { ChatInputComponent } from '../../../src/js/components/chat-input';
-import { ErrorNotificationComponent } from '../../../src/js/components/error-notification';
+import { Conversation } from '../../../src/js/components/conversation';
+import { ChatInput } from '../../../src/js/components/chat-input';
+import { ErrorNotification } from '../../../src/js/components/error-notification';
 import { WidgetComponent } from '../../../src/js/components/widget';
-import { ChannelComponent } from '../../../src/js/components/channels/channel';
+import { Channel } from '../../../src/js/components/channels/channel';
+import { MessengerButton } from '../../../src/js/components/messenger-button';
 
 import * as appUtils from '../../../src/js/utils/app';
+import { WIDGET_STATE } from '../../../src/js/constants/app';
 
 const sandbox = sinon.sandbox.create();
 
@@ -24,9 +25,10 @@ const defaultProps = {
         email: 'some@email.com'
     },
     appState: {
-        widgetOpened: false,
+        widgetState: WIDGET_STATE.CLOSED,
         settingsVisible: false,
-        embedded: false
+        embedded: false,
+        showAnimation: false
     },
     app: {
         settings: {
@@ -46,32 +48,34 @@ const defaultProps = {
 };
 
 
-describe('Widget', () => {
+describe('Widget Component', () => {
 
     let component;
-    let componentNode;
     let mockedStore;
     let props;
     let store;
 
     beforeEach(() => {
-        mockComponent(sandbox, HeaderComponent, 'div', {
+        mockComponent(sandbox, Header, 'div', {
             className: 'mockedHeader'
         });
-        mockComponent(sandbox, ChatInputComponent, 'div', {
+        mockComponent(sandbox, ChatInput, 'div', {
             className: 'mockedInput'
         });
         mockComponent(sandbox, Settings, 'div', {
             className: 'mockedSettings'
         });
-        mockComponent(sandbox, ConversationComponent, 'div', {
+        mockComponent(sandbox, Conversation, 'div', {
             className: 'mockedConversation'
         });
-        mockComponent(sandbox, ErrorNotificationComponent, 'div', {
+        mockComponent(sandbox, ErrorNotification, 'div', {
             className: 'mockedErrorNotification'
         });
-        mockComponent(sandbox, ChannelComponent, 'div', {
+        mockComponent(sandbox, Channel, 'div', {
             className: 'mockedChannel'
+        });
+        mockComponent(sandbox, MessengerButton, 'div', {
+            className: 'mockedMessengerButton'
         });
         sandbox.stub(appUtils, 'hasChannels').returns(true);
     });
@@ -97,18 +101,17 @@ describe('Widget', () => {
             component = TestUtils.renderIntoDocument(<Provider store={ store }>
                                                          <WidgetComponent {...props} />
                                                      </Provider>);
-            componentNode = ReactDOM.findDOMNode(component);
         });
 
         it('should have a sk-close class', () => {
-            componentNode.className.should.eq('sk-close');
+            findRenderedDOMComponentsWithId(component, 'sk-container').className.indexOf('sk-close').should.be.gt(-1);
         });
     });
 
     describe('is opened', () => {
         const props = Object.assign({}, defaultProps, {
             appState: {
-                widgetOpened: true
+                widgetState: WIDGET_STATE.OPENED
             }
         });
         store = createMockedStore(sandbox, props);
@@ -117,18 +120,17 @@ describe('Widget', () => {
             component = TestUtils.renderIntoDocument(<Provider store={ store }>
                                                          <WidgetComponent {...props} />
                                                      </Provider>);
-            componentNode = ReactDOM.findDOMNode(component);
         });
 
         it('should have a sk-appear class', () => {
-            componentNode.className.should.eq('sk-appear');
+            findRenderedDOMComponentsWithId(component, 'sk-container').className.indexOf('sk-appear').should.be.gt(-1);
         });
     });
 
     describe('conversation view', () => {
         const props = Object.assign({}, defaultProps, {
             appState: {
-                widgetOpened: true
+                widgetState: WIDGET_STATE.OPENED
             }
         });
         store = createMockedStore(sandbox, props);
@@ -137,7 +139,6 @@ describe('Widget', () => {
             component = TestUtils.renderIntoDocument(<Provider store={ store }>
                                                          <WidgetComponent {...props} />
                                                      </Provider>);
-            componentNode = ReactDOM.findDOMNode(component);
         });
 
         it('should render the conversation view', () => {
@@ -158,7 +159,7 @@ describe('Widget', () => {
     describe('settings view', () => {
         const props = Object.assign({}, defaultProps, {
             appState: {
-                widgetOpened: true,
+                widgetState: WIDGET_STATE.OPENED,
                 settingsVisible: true
             }
         });
@@ -168,7 +169,6 @@ describe('Widget', () => {
             component = TestUtils.renderIntoDocument(<Provider store={ store }>
                                                          <WidgetComponent {...props} />
                                                      </Provider>);
-            componentNode = ReactDOM.findDOMNode(component);
         });
 
         it('should render the settings view', () => {
@@ -230,11 +230,63 @@ describe('Widget', () => {
             component = TestUtils.renderIntoDocument(<Provider store={ store }>
                                                          <WidgetComponent {...props} />
                                                      </Provider>);
-            componentNode = ReactDOM.findDOMNode(component);
         });
 
         it('should render the channels view', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedChannel').length.should.eq(1);
+        });
+
+    });
+
+    describe('messenger button', () => {
+
+        it('should not render the button in tab mode', () => {
+            const props = {
+                ...defaultProps,
+                settings: {
+                    displayStyle: 'tab'
+                }
+            };
+            store = createMockedStore(sandbox, props);
+            component = TestUtils.renderIntoDocument(<Provider store={ store }>
+                                                         <WidgetComponent {...props} />
+                                                     </Provider>);
+
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedMessengerButton').length.should.eq(0);
+        });
+
+        it('should not render the button in embedded mode', () => {
+            const props = {
+                ...defaultProps,
+                appState: {
+                    ...defaultProps.appState,
+                    embedded: true
+                },
+                settings: {
+                    displayStyle: 'button'
+                }
+            };
+            store = createMockedStore(sandbox, props);
+            component = TestUtils.renderIntoDocument(<Provider store={ store }>
+                                                         <WidgetComponent {...props} />
+                                                     </Provider>);
+
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedMessengerButton').length.should.eq(0);
+        });
+
+        it('should render the button in button mode', () => {
+            const props = {
+                ...defaultProps,
+                settings: {
+                    displayStyle: 'button'
+                }
+            };
+            store = createMockedStore(sandbox, props);
+            component = TestUtils.renderIntoDocument(<Provider store={ store }>
+                                                         <WidgetComponent {...props} />
+                                                     </Provider>);
+
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedMessengerButton').length.should.eq(1);
         });
 
     });

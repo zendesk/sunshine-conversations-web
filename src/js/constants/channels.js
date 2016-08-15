@@ -2,7 +2,7 @@ import isMobile from 'ismobilejs';
 
 import { integrations as integrationsAssets } from '../constants/assets';
 
-import { fetchWeChatQRCode } from '../services/integrations-service';
+import { fetchWeChatQRCode, fetchTwilioAttributes } from '../services/integrations-service';
 
 import { MessengerChannelContent } from '../components/channels/messenger-channel-content';
 import { EmailChannelContent } from '../components/channels/email-channel-content';
@@ -28,10 +28,18 @@ export const CHANNEL_DETAILS = {
     },
     twilio: {
         name: 'SMS',
-        descriptionKey: 'smsChannelDescription',
-        isLinkable: false,
+        getDescription: ({text, pendingClient}) => {
+            if (pendingClient) {
+                return text.smsChannelPendingDescription.replace('{number}', pendingClient.displayName);
+            }
+
+            return text.smsChannelDescription;
+        },
+        isLinkable: true,
         ...integrationsAssets.sms,
-        Component: TwilioChannelContent
+        renderPageIfLinked: true,
+        Component: TwilioChannelContent,
+        onChannelPage: fetchTwilioAttributes
     },
     telegram: {
         name: 'Telegram',
@@ -61,7 +69,8 @@ export const CHANNEL_DETAILS = {
 Object.keys(CHANNEL_DETAILS).forEach((key) => {
     CHANNEL_DETAILS[key] = {
         renderPageIfLinked: false,
-        getURL: () => {},
+        getURL: () => {
+        },
         onChannelPage: () => Promise.resolve(),
         ...CHANNEL_DETAILS[key]
     };

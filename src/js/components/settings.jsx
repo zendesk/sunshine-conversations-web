@@ -6,7 +6,7 @@ import { hasChannels } from '../utils/app';
 
 export class Settings extends Component {
     static contextTypes = {
-        settings: PropTypes.object
+        settings: PropTypes.object.isRequired
     };
 
     static propTypes = {

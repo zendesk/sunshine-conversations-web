@@ -12,7 +12,7 @@ export class ChannelPage extends Component {
     };
 
     static contextTypes = {
-        ui: PropTypes.object
+        ui: PropTypes.object.isRequired
     };
 
     static defaultProps = {
@@ -20,12 +20,21 @@ export class ChannelPage extends Component {
     };
 
     render() {
-        const {icon, icon2x, name, visible, children} = this.props;
-        const description = this.context.ui.text[this.props.descriptionKey];
+        const {icon, icon2x, name, visible, children, channel, client, pendingClient} = this.props;
+
+        const description = this.props.getDescription ?
+            this.props.getDescription({
+                text: this.context.ui.text,
+                channel,
+                client,
+                pendingClient
+            })
+            : this.context.ui.text[this.props.descriptionKey];
+
         const descriptionHtml = this.context.ui.text[this.props.descriptionHtmlKey];
 
         const channelDescription = descriptionHtml ?
-            <span dangerouslySetInnerHTML={ { __html: descriptionHtml } } /> :
+            <span dangerouslySetInnerHTML={ {    __html: descriptionHtml} } /> :
             <span>{ description }</span>;
 
         return <div className={ `sk-channel ${visible ? 'sk-channel-visible' : 'sk-channel-hidden'}` }>
