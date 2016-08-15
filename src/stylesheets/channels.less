@@ -1,3 +1,5 @@
+@import "telephone-input";
+
 .sk-channel {
     box-sizing: border-box;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
@@ -23,13 +25,23 @@
     }
 
     .content-wrapper {
-        padding: 40px 40px;
+        padding: @widget-padding-channel @widget-padding-channel;
     }
 
     .channel-header {
+        .channel-icon, .channel-name {
+            @media (max-height: 400px) and (max-width: @screen-sm-min) {
+                display: none;
+            }
+        }
+
         .channel-icon {
             margin-bottom: 40px;
             height: 65px;
+
+            @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
+                margin-bottom: 20px;
+            }
         }
         .channel-name {
             font-size: 18px;
@@ -44,8 +56,6 @@
     }
 
     .channel-content {
-        overflow: hidden;
-
         a, a:visited {
             color: @sk-blue;
 
@@ -60,7 +70,10 @@
             color: @settings-header-color;
         }
 
-
+        .btn {
+            width: 150px;
+            border-radius: 20px;
+        }
     }
 
     .sk-fb-button-wrapper {
@@ -69,4 +82,57 @@
         transform: translateX(-76px);
         margin-left: 50%;
     }
+}
+
+.twilio-linking {
+
+        .phone-number {
+            padding-right: 10px;
+            padding-left: 10px;
+        }
+
+        .warning-message {
+            font-size: 13px;
+            color: red;
+        }
+
+        a {
+            font-size: smaller;
+            text-decoration: underline;
+            float: right;
+            padding-right: 3px;
+            cursor: pointer;
+        }
+
+        .btn {
+            margin-top: 25px;
+            text-align: center;
+            border: 0px;
+
+            // Prevent button from going off the widget chat on
+            // small screens
+            @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
+                margin-top: 10px;
+            }
+        }
+
+        &.btn {
+            margin-top: 25px;
+        }
+
+        &.pending-state {
+            border-bottom: #e4e4e4 1px solid;
+            text-align: left;
+            padding-left: 5px;
+
+            .phone-number {
+                color: darkgray;
+            }
+        }
+
+        &.linked-state {
+            border-bottom: #e4e4e4 1px solid;
+            text-align: left;
+            padding-left: 5px;
+        }
 }

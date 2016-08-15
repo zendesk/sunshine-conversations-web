@@ -1,6 +1,8 @@
-# [Smooch Javascript SDK](smooch.io)
+# [Smooch Javascript SDK](https://smooch.io)
 
-[![Circle CI](https://circleci.com/gh/smooch/smooch-js.svg?style=svg)](https://circleci.com/gh/smooch/smooch-js) [![npm version](https://badge.fury.io/js/smooch.svg)](http://badge.fury.io/js/smooch) [![Bower version](https://badge.fury.io/bo/smooch.svg)](http://badge.fury.io/bo/smooch)
+  [![Circle CI](https://circleci.com/gh/smooch/smooch-js.svg?style=svg)](https://circleci.com/gh/smooch/smooch-js)
+  [![npm version](https://badge.fury.io/js/smooch.svg)](http://badge.fury.io/js/smooch)
+  [![Bower version](https://badge.fury.io/bo/smooch.svg)](http://badge.fury.io/bo/smooch)
 
 Smooch is the best way to have personal, rich conversations with people on your website or customers on any device. Our features, integrations and developer-friendly APIs empower companies to connect with their customers in a whole new way.
 
@@ -148,10 +150,15 @@ var skPromise = Smooch.init({
         messengerChannelDescription: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.',
         frontendEmailChannelDescription: 'To talk to us using email just send a message to our email address and we\'ll reply shortly:',
         smsChannelDescription: 'To talk to us using SMS, just send a text message to this number from your favorite SMS app:',
+        smsChannelPendingDescription: 'Check your messages at {number} to confirm your phone number.',
         telegramChannelDescription: 'To talk to us using Telegram, add our bot:',
         wechatChannelDescriptionMobile: 'To send us a message from WeChat, save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.',
         wechatChannelDescription: 'To send us a message from WeChat, scan this QR code using the WeChat app.',
-        lineChannelDescription: 'To talk to us using LINE, search for our official account using the LINE app and send us a message:'
+        lineChannelDescription: 'To talk to us using LINE, search for our official account using the LINE app and send us a message:',
+        smsTooManyRequestsError: 'A connection for that number was requested recently. Please try again in {seconds} seconds.',
+        smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
+        smsUnhandledError: 'Something went wrong. Please try again.',
+        smsPingChannelError: 'There was an error sending a message to your number.'
     }
 });
 
@@ -329,12 +336,20 @@ The embedded widget will take full width and height of the container. You must g
 ## How to contribute
 
 ### Clone the git repo
-```git clone https://github.com/smooch/smooch-js```
+```
+git clone https://github.com/smooch/smooch-js
+```
 
 ### Install Node.js and run the following
 
-```npm install```
+```
+npm install
+```
 
 In one console, run `npm run start-dev` to start the web server. In another, run `npm run hot-dev-server` to start the webpack dev server.
 
 Then, go to `http://localhost:8282` to test the normal widget or `http://localhost:8282/embedded` for the embedded one.
+
+## Acknowledgements
+
+https://github.com/lipis/flag-icon-css

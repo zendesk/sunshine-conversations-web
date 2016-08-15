@@ -75,7 +75,8 @@ describe('Channel Component', () => {
                 {
                     platform: 'web'
                 }
-            ]
+            ],
+            pendingClients: []
         };
 
         appUtils.getAppChannelDetails.returns([
@@ -113,7 +114,8 @@ describe('Channel Component', () => {
                 {
                     platform: 'messenger'
                 }
-            ]
+            ],
+            pendingClients: []
         };
 
         appUtils.getAppChannelDetails.returns([
@@ -145,7 +147,8 @@ describe('Channel Component', () => {
                 {
                     platform: 'web'
                 }
-            ]
+            ],
+            pendingClients: []
         };
 
         appUtils.getAppChannelDetails.returns([
@@ -181,7 +184,8 @@ describe('Channel Component', () => {
                 {
                     platform: 'wechat'
                 }
-            ]
+            ],
+            pendingClients: []
         };
 
         appUtils.getAppChannelDetails.returns([
