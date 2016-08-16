@@ -11,6 +11,7 @@ import { Introduction } from './introduction';
 import { setShouldScrollToBottom, setFetchingMoreMessages } from '../actions/app-state-actions';
 import { fetchMoreMessages } from '../services/conversation-service';
 import { getTop } from '../utils/dom';
+import debounce from 'lodash.debounce';
 
 const INTRO_BOTTOM_SPACER = 10;
 
@@ -26,6 +27,11 @@ export class ConversationComponent extends Component {
         messages: PropTypes.array.isRequired,
         errorNotificationMessage: PropTypes.string
     };
+
+    constructor(...args) {
+        super(...args);
+        this.debounceOnScroll = debounce(this.onScroll.bind(this), 200);
+    }
 
     scrollTimeouts = [];
 
@@ -60,18 +66,14 @@ export class ConversationComponent extends Component {
     };
 
     onScroll = () => {
-        // HINT: might want to consider debouncing or throttling this since it would be executed a lot on scroll
         const {dispatch, shouldScrollToBottom} = this.props;
 
         const node = findDOMNode(this);
         if(node.scrollTop === 0) {
             this.fetchHistory();
         } else if(shouldScrollToBottom) {
-            // HINT : this will be triggered when an appMaker message is added, which is probably why it's not scrolling to bottom when receiving one
             dispatch(setShouldScrollToBottom(false));
         }
-
-        // HINT: might want to check if scroll is at the bottom to reactivate auto scrolling
     };
 
     fetchHistory = () => {
@@ -221,7 +223,7 @@ export class ConversationComponent extends Component {
                     className={ errorNotificationMessage && 'notification-shown' }
                     ref='container'
                     onTouchMove={ this.onTouchMove }
-                    onScroll={ this.onScroll }>
+                    onScroll={ isMobile.any ? this.onScroll : this.debounceOnScroll }>
                    <Introduction/>
                    <div ref='messagesContainer'
                         className='sk-messages-container'
