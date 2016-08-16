@@ -10,7 +10,6 @@ import { setIntroHeight } from '../actions/app-state-actions';
 
 import { createMarkup } from '../utils/html';
 import { getAppChannelDetails } from '../utils/app';
-import { WIDGET_STATE } from '../constants/app';
 
 export class IntroductionComponent extends Component {
     static propTypes = {
@@ -30,31 +29,27 @@ export class IntroductionComponent extends Component {
     }
 
     componentDidMount() {
-        setTimeout(() => this.calculateIntroHeight());
-        window.addEventListener('resize', this._debounceHeightCalculation);
-    }
+        // Make sure Introduction Component has fully rendered before computing height
+        setTimeout(() => {
+            this.calculateIntroHeight();
+        }, 200);
 
-    componentWillUpdate() {
-        this._debounceHeightCalculation();
+        window.addEventListener('resize', () => {
+            this.calculateIntroHeight();
+        });
     }
 
     componentWillUnmount() {
-        window.removeEventListener('resize', this._debounceHeightCalculation);
+        window.removeEventListener('resize', this.calculateIntroHeight());
     }
 
     calculateIntroHeight() {
-        const {appState: {introHeight, widgetState}, dispatch} = this.props;
+        const {appState: {introHeight}, dispatch} = this.props;
+        const node = findDOMNode(this.refs.introductionContainer);
+        const nodeHeight = node.offsetHeight;
 
-        // don't recalculate height if widget is closed or closing
-        if (widgetState === WIDGET_STATE.OPENED) {
-            const node = findDOMNode(this);
-
-            const nodeRect = node.getBoundingClientRect();
-            const nodeHeight = Math.floor(nodeRect.height);
-
-            if (introHeight !== nodeHeight) {
-                dispatch(setIntroHeight(nodeHeight));
-            }
+        if (introHeight !== nodeHeight) {
+            dispatch(setIntroHeight(nodeHeight));
         }
     }
 
@@ -65,7 +60,8 @@ export class IntroductionComponent extends Component {
         const channelsAvailable = channelDetailsList.length > 0;
         const introText = channelsAvailable ? `${text.introductionText} ${text.introAppText}` : text.introductionText;
 
-        return <div className='sk-intro-section'>
+        return <div className='sk-intro-section'
+                    ref='introductionContainer'>
                    { app.iconUrl ? <img className='app-icon'
                                         src={ app.iconUrl } />
                          : <DefaultAppIcon /> }
