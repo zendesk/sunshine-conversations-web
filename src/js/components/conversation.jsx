@@ -124,15 +124,31 @@ export class ConversationComponent extends Component {
             });
 
             this.scrollTimeouts.push(timeout);
+            this._lastTopMessageNode = undefined;
         }
     };
 
     componentWillUpdate(nextProps) {
-        const {introHeight: currentIntroHeight} = this.props;
-        const {introHeight: newIntroHeight} = nextProps;
+        const {introHeight: currentIntroHeight, messages: currentMessages, isFetchingMoreMessages} = this.props;
+        const {introHeight: newIntroHeight, messages: newMessages} = nextProps;
 
         if (currentIntroHeight !== newIntroHeight) {
             this._forceScrollToBottom = true;
+        }
+
+        // Check for new appMaker messages
+        const isAppMakerMessage = newMessages.length - currentMessages.length === 1 ? newMessages.slice(-1)[0].role === 'appMaker' : false;
+        if (isAppMakerMessage && !isFetchingMoreMessages) {
+            const container = findDOMNode(this);
+            const appMakerMessageBottom = this._lastMessageNode.getBoundingClientRect().bottom;
+            const containerBottom = container.getBoundingClientRect().bottom;
+
+            // If appMaker message is 'in view', we should scroll to bottom
+            if (appMakerMessageBottom <= containerBottom) {
+                this._forceScrollToBottom = true;
+            } else {
+                this._forceScrollToBottom = false;
+            }
         }
     }
 
@@ -141,7 +157,7 @@ export class ConversationComponent extends Component {
     }
 
     componentDidUpdate() {
-        if (this._lastTopMessageNode) {
+        if (this.props.isFetchingMoreMessages) {
             this.scrollToPreviousFirstMessage();
         } else {
             this.scrollToBottom();
@@ -150,7 +166,14 @@ export class ConversationComponent extends Component {
 
     componentWillUnmount() {
         this.scrollTimeouts.forEach(clearTimeout);
-        // TODO cleanup any this.flags assigned
+        delete this._lastTopMessageNode;
+        delete this._lastTopMessageId;
+        delete this._lastTopMessageNodePosition;
+        delete this._topMessageNode;
+        delete this._forceScrollToBottom;
+        delete this._isScrolling;
+        delete this._lastMessageNode;
+        delete this._lastMessageId;
     }
 
     render() {
@@ -165,6 +188,11 @@ export class ConversationComponent extends Component {
 
                 if (this._lastTopMessageId === message._id) {
                     this._lastTopMessageNode = findDOMNode(c);
+                }
+
+                if (index === messages.length - 1) {
+                    this._lastMessageNode = findDOMNode(c);
+                    this._lastMessageId = message._id;
                 }
             };
 
