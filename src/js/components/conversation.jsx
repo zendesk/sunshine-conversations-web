@@ -68,6 +68,7 @@ export class ConversationComponent extends Component {
     onScroll = () => {
         const {dispatch, shouldScrollToBottom} = this.props;
 
+        // If top of Conversation component is reached, we need to fetch older messages
         const node = findDOMNode(this);
         if(node.scrollTop === 0) {
             this.fetchHistory();
@@ -115,8 +116,10 @@ export class ConversationComponent extends Component {
         if(this._lastTopMessageNodePosition && !this._isScrolling) {
             const container = findDOMNode(this);
             const node = this._lastTopMessageNode;
-
             this._isScrolling = true;
+
+            // When fetching more messages, we want to make sure that after 
+            // render, the messages stay in the same places
             container.scrollTop = getTop(node, container) - this._lastTopMessageNodePosition;
 
             const timeout = setTimeout(() => {
@@ -143,7 +146,8 @@ export class ConversationComponent extends Component {
             const appMakerMessageBottom = this._lastMessageNode.getBoundingClientRect().bottom;
             const containerBottom = container.getBoundingClientRect().bottom;
 
-            // If appMaker message is 'in view', we should scroll to bottom
+            // If appMaker message is 'in view', we should scroll to bottom.
+            // Otherwise, don't scroll
             if (appMakerMessageBottom <= containerBottom) {
                 this._forceScrollToBottom = true;
             } else {
@@ -153,6 +157,8 @@ export class ConversationComponent extends Component {
     }
 
     componentDidMount() {
+        // On component render, force scroll to bottom, or else conversation will
+        // find itself at a random spot
         this.scrollToBottom();
     }
 
@@ -216,7 +222,6 @@ export class ConversationComponent extends Component {
                 messageItems.push(<ConnectNotification key='connect-notification' />);
             }
         }
-
 
         const logoStyle = isMobile.apple.device ? {
             paddingBottom: 10

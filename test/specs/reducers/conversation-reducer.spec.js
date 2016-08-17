@@ -1,5 +1,5 @@
 import { ConversationReducer } from '../../../src/js/reducers/conversation-reducer';
-import { ADD_MESSAGE, REPLACE_MESSAGE, RESET_CONVERSATION, REMOVE_MESSAGE, SET_CONVERSATION, RESET_UNREAD_COUNT, INCREMENT_UNREAD_COUNT } from '../../../src/js/actions/conversation-actions';
+import { ADD_MESSAGE, REPLACE_MESSAGE, RESET_CONVERSATION, REMOVE_MESSAGE, SET_CONVERSATION, RESET_UNREAD_COUNT, INCREMENT_UNREAD_COUNT, ADD_MESSAGES, SET_MESSAGES } from '../../../src/js/actions/conversation-actions';
 
 const INITIAL_STATE = ConversationReducer(undefined, {});
 const MESSAGE_1 = {
@@ -295,6 +295,50 @@ describe('Conversation reducer', () => {
             });
             afterState.messages.length.should.eq(0);
         });
+    });
+
+    describe('SET_MESSAGES action', () => {
+        it('should set action messages to state', () => {
+            const beforeState = INITIAL_STATE;
+            const afterState = ConversationReducer(beforeState, {
+                type: SET_MESSAGES,
+                messages: MESSAGES
+            });
+            afterState.messages.should.eql(MESSAGES);
+        });
+
+        it('should not add duplicate messages', () => {
+            const beforeState = INITIAL_STATE;
+            const afterState = ConversationReducer(beforeState, {
+                type: SET_MESSAGES,
+                messages: [...MESSAGES, ...MESSAGES]
+            });
+            afterState.messages.should.eql(MESSAGES);
+        });
+    });
+
+    describe('ADD_MESSAGES action', () => {
+        [true, false].forEach((shouldAppend) => {
+            describe(`append option is set to ${shouldAppend}`, () => {
+                it(`should add messages to the ${shouldAppend ? 'end' : 'beginning'} of the state messages`, () => {
+                    const beforeState = {
+                        messages: [MESSAGE_1]
+                    };
+                    const afterState = ConversationReducer(beforeState, {
+                        type: ADD_MESSAGES,
+                        messages: [MESSAGE_2],
+                        append: shouldAppend
+                    });
+                    const messages = shouldAppend ? [...MESSAGE_1, ...MESSAGE_2] : [...MESSAGE_1, ...MESSAGE_2];
+                    afterState.messages.should.eql(messages);
+                });
+            });
+        });
+
+        it('should not add duplicates', () => {
+
+        });
+
     });
 
     it('should set to initial state on RESET_CONVERSATION', () => {

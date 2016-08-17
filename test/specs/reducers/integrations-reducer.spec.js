@@ -11,13 +11,6 @@ describe('Integrations reducer', () => {
         appUserNumberValid: true
     };
 
-    const INITIAL_STATE = IntegrationsReducer(undefined, {});
-    const TWILIO_ATTRIBUTES = {
-        linkState: 'linked',
-        appUserNumber: '+15145555555',
-        appUserNumberValid: true
-    };
-
     it('should set the WeChat QR Code with the actions prop on SET_WECHAT_QR_CODE', () => {
         IntegrationsReducer(undefined, {
             type: SET_WECHAT_QR_CODE,
@@ -51,7 +44,7 @@ describe('Integrations reducer', () => {
             type: RESET_INTEGRATIONS
         }).some).to.not.exist;
     });
-    
+
     describe('SET_TWILIO_INTEGRATION_STATE action', () => {
         it('should update with new twilio attributes', () => {
             const beforeState = INITIAL_STATE;

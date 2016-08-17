@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import debounce from 'lodash.debounce';
 import { findDOMNode } from 'react-dom';
 
 import { AlternateChannels } from './alternate-channels';
@@ -25,11 +24,11 @@ export class IntroductionComponent extends Component {
 
     constructor(...args) {
         super(...args);
-        this._debounceHeightCalculation = debounce(this.calculateIntroHeight.bind(this), 400);
     }
 
     componentDidMount() {
-        // Make sure Introduction Component has fully rendered before computing height
+        // Height of Introduction component will be computed on render and on resize only
+        // Make sure Introduction component has fully rendered before computing height
         setTimeout(() => {
             this.calculateIntroHeight();
         }, 200);
