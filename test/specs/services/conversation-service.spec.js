@@ -74,10 +74,10 @@ describe('Conversation service', () => {
 
     beforeEach(() => {
         coreMock = createMock(sandbox);
-        coreMock.conversations.get.resolves({
+        coreMock.appUsers.getMessages.resolves({
             conversation: {
-                messages: []
-            }
+            },
+            messages: []
         });
 
         sandbox.stub(coreService, 'core', () => {
@@ -528,9 +528,9 @@ describe('Conversation service', () => {
 
                     return conversationService.handleConversationUpdated().then(() => {
                         if (active) {
-                            coreMock.conversations.get.should.not.have.been.called;
+                            coreMock.appUsers.getMessages.should.not.have.been.called;
                         } else {
-                            coreMock.conversations.get.should.have.been.calledOnce;
+                            coreMock.appUsers.getMessages.should.have.been.calledOnce;
                         }
                     });
                 });

@@ -118,7 +118,7 @@ export class ConversationComponent extends Component {
 
             this._isScrolling = true;
             container.scrollTop = getTop(node, container) - this._lastTopMessageNodePosition;
-            
+
             const timeout = setTimeout(() => {
                 this._isScrolling = false;
             });

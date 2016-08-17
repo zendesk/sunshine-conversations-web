@@ -52,7 +52,13 @@ describe('Conversation Component', () => {
 
         mockedStore = mockAppStore(sandbox, {});
         context = getContext({
-            store: mockedStore
+            store: mockedStore,
+            ui: {
+                text: {
+                    fetchingHistory: 'fetching-history',
+                    fetchHistory: 'fetch-history'
+                }
+            }
         });
     });
 
