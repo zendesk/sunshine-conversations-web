@@ -70,9 +70,10 @@ export class ConversationComponent extends Component {
 
         // If top of Conversation component is reached, we need to fetch older messages
         const node = findDOMNode(this);
-        if(node.scrollTop === 0) {
+        if (node.scrollTop === 0) {
             this.fetchHistory();
-        } else if(shouldScrollToBottom) {
+        } else if (shouldScrollToBottom) {
+            // Once we've started scrolling, we don't want the default behavior to force the scroll to the bottom afterwards
             dispatch(setShouldScrollToBottom(false));
         }
     };
@@ -81,7 +82,7 @@ export class ConversationComponent extends Component {
         const {dispatch, hasMoreMessages, isFetchingMoreMessages, messages} = this.props;
 
         const node = findDOMNode(this);
-        if(hasMoreMessages && !isFetchingMoreMessages) {
+        if (hasMoreMessages && !isFetchingMoreMessages) {
             // make sure the last message is one from the server, otherwise it doesn't need to scroll to previous first message
             if (messages.length > 0 && messages[messages.length - 1]._id) {
                 this._lastTopMessageId = messages[0]._id;
@@ -113,7 +114,7 @@ export class ConversationComponent extends Component {
     };
 
     scrollToPreviousFirstMessage = () => {
-        if(this._lastTopMessageNodePosition && !this._isScrolling) {
+        if (this._lastTopMessageNodePosition && !this._isScrolling) {
             const container = findDOMNode(this);
             const node = this._lastTopMessageNode;
             this._isScrolling = true;
@@ -139,8 +140,8 @@ export class ConversationComponent extends Component {
             this._forceScrollToBottom = true;
         }
 
-        // Check for new appMaker messages
-        const isAppMakerMessage = newMessages.length - currentMessages.length === 1 ? newMessages.slice(-1)[0].role === 'appMaker' : false;
+        // Check for new appMaker (and whisper) messages
+        const isAppMakerMessage = newMessages.length - currentMessages.length === 1 ? newMessages.slice(-1)[0].role !== 'appUser' : false;
         if (isAppMakerMessage && !isFetchingMoreMessages) {
             const container = findDOMNode(this);
             const appMakerMessageBottom = this._lastMessageNode.getBoundingClientRect().bottom;
@@ -172,14 +173,6 @@ export class ConversationComponent extends Component {
 
     componentWillUnmount() {
         this.scrollTimeouts.forEach(clearTimeout);
-        delete this._lastTopMessageNode;
-        delete this._lastTopMessageId;
-        delete this._lastTopMessageNodePosition;
-        delete this._topMessageNode;
-        delete this._forceScrollToBottom;
-        delete this._isScrolling;
-        delete this._lastMessageNode;
-        delete this._lastMessageId;
     }
 
     render() {

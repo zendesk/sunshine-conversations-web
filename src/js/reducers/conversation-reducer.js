@@ -4,7 +4,8 @@ import { RESET } from '../actions/common-actions';
 const INITIAL_STATE = {
     messages: [],
     unreadCount: 0,
-    hasMoreMessages: false
+    hasMoreMessages: false,
+    isFetchingMoreMessagesFromServer: false
 };
 
 const sortMessages = (messages) => messages.sort((messageA, messageB) => {
@@ -152,6 +153,10 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
         case ConversationActions.RESET_UNREAD_COUNT:
             return Object.assign({}, state, {
                 unreadCount: 0
+            });
+        case ConversationActions.SET_FETCHING_MORE_MESSAGES_FROM_SERVER:
+            return Object.assign({}, state, {
+                isFetchingMoreMessagesFromServer: action.value
             });
         default:
             return state;

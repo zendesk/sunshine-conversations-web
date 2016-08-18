@@ -1,8 +1,8 @@
 import { store } from '../stores/app-store';
 import { showConnectNotification } from '../services/app-service';
-import { addMessage, addMessages, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages } from '../actions/conversation-actions';
+import { addMessage, addMessages, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages, setFetchingMoreMessagesFromServer } from '../actions/conversation-actions';
 import { updateUser } from '../actions/user-actions';
-import { showErrorNotification, setFetchingMoreMessages, setShouldScrollToBottom } from '../actions/app-state-actions';
+import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi } from '../actions/app-state-actions';
 import { unsetFayeSubscriptions } from '../actions/faye-actions';
 import { core } from './core';
 import { immediateUpdate } from './user-service';
@@ -249,15 +249,14 @@ export function postPostback(actionId) {
 
 
 export function fetchMoreMessages() {
-    const {conversation: {hasMoreMessages, messages}} = store.getState();
+    const {conversation: {hasMoreMessages, messages, isFetchingMoreMessagesFromServer}} = store.getState();
 
-    // TODO : add independent guard against parallel fetching
-    if (!hasMoreMessages) {
+    if (!hasMoreMessages || isFetchingMoreMessagesFromServer) {
         return Promise.resolve();
     }
 
     const id = messages[0]._id;
-    store.dispatch(setFetchingMoreMessages(true));
+    store.dispatch(setFetchingMoreMessagesFromServer(true));
     return core().appUsers.getMessages(getUserId(), {
         before: id
     }).then((response) => {
@@ -267,7 +266,8 @@ export function fetchMoreMessages() {
         }));
 
         store.dispatch(addMessages(response.messages, false));
-        store.dispatch(setFetchingMoreMessages(false));
+        store.dispatch(setFetchingMoreMessagesFromServer(false));
+        store.dispatch(setFetchingMoreMessagesUi(false));
         return response;
     });
 }

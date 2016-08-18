@@ -141,7 +141,8 @@ describe('Conversation reducer', () => {
             const afterState = {
                 messages: [MESSAGE_FROM_APP_USER],
                 unreadCount: 0,
-                hasMoreMessages: false
+                hasMoreMessages: false,
+                isFetchingMoreMessagesFromServer: false
             };
             ConversationReducer(beforeState, {
                 type: ADD_MESSAGE,
@@ -212,7 +213,8 @@ describe('Conversation reducer', () => {
             const afterState = ConversationReducer(beforeState, {
                 type: ADD_MESSAGE,
                 message: WHISPER_MESSAGE,
-                hasMoreMessages: false
+                hasMoreMessages: false,
+                isFetchingMoreMessagesFromServer: false
             });
             afterState.messages.length.should.eq(1);
             afterState.messages[0].should.eql(WHISPER_MESSAGE);
@@ -336,9 +338,17 @@ describe('Conversation reducer', () => {
         });
 
         it('should not add duplicates', () => {
-
+            const beforeState = {
+                messages: [MESSAGE_1]
+            };
+            const afterState = ConversationReducer(beforeState, {
+                type: ADD_MESSAGES,
+                messages: [MESSAGE_1],
+                append: true
+            });
+            afterState.messages.length.should.eq(1);
+            afterState.messages[0].should.eq(MESSAGE_1);
         });
-
     });
 
     it('should set to initial state on RESET_CONVERSATION', () => {
@@ -357,7 +367,8 @@ describe('Conversation reducer', () => {
         const afterState = {
             messages: [],
             unreadCount: 1,
-            hasMoreMessages: false
+            hasMoreMessages: false,
+            isFetchingMoreMessagesFromServer: false
         };
         ConversationReducer(beforeState, {
             type: INCREMENT_UNREAD_COUNT
@@ -368,7 +379,8 @@ describe('Conversation reducer', () => {
         const beforeState = {
             messages: [],
             unreadCount: 100,
-            hasMoreMessages: false
+            hasMoreMessages: false,
+            isFetchingMoreMessagesFromServer: false
         };
         const afterState = INITIAL_STATE;
         ConversationReducer(beforeState, {
