@@ -71,7 +71,6 @@ export class ConversationComponent extends Component {
 
         // If top of Conversation component is reached, we need to fetch older messages
         const node = findDOMNode(this);
-        console.log(node.scrollTop);
         if (node.scrollTop === 0) {
             this.fetchHistory();
         } else if (shouldScrollToBottom) {
@@ -116,7 +115,6 @@ export class ConversationComponent extends Component {
     };
 
     scrollToPreviousFirstMessage = (node = undefined) => {
-
         // This will scroll to specified node if we've reached the oldest messages.
         // Otherwise, scroll to this._lastTopMessageNode
         if (node) {
@@ -137,9 +135,9 @@ export class ConversationComponent extends Component {
                 });
 
                 this.scrollTimeouts.push(timeout);
-                this._lastTopMessageNode = undefined;
             }
         }
+        this._lastTopMessageNode = undefined;
         
     };
 
@@ -172,9 +170,11 @@ export class ConversationComponent extends Component {
 
     componentDidUpdate() {
         if (this.props.isFetchingMoreMessages) {
-            this.scrollToPreviousFirstMessage();
-        } else if (!this.props.hasMoreMessages && this._lastTopMessageNode) {
-            this.scrollToPreviousFirstMessage(this._lastTopMessageNode);
+            if (this.props.hasMoreMessages) {
+                this.scrollToPreviousFirstMessage();
+            } else {
+                this.scrollToPreviousFirstMessage(this._lastTopMessageNode);
+            }
         } else {
             this.scrollToBottom();
         }
