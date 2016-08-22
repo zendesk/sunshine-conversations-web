@@ -70,6 +70,7 @@ export class ConversationComponent extends Component {
 
         // If top of Conversation component is reached, we need to fetch older messages
         const node = findDOMNode(this);
+        console.log(node.scrollTop);
         if (node.scrollTop === 0) {
             this.fetchHistory();
         } else if (shouldScrollToBottom) {
@@ -221,7 +222,7 @@ export class ConversationComponent extends Component {
         } : undefined;
 
         const messagesContainerStyle = {
-            maxHeight: `calc(100% - ${introHeight + INTRO_BOTTOM_SPACER}px)`
+            maxHeight: hasMoreMessages ? '100%' : `calc(100% - ${introHeight + INTRO_BOTTOM_SPACER}px)`
         };
 
         let retrieveHistory;
@@ -245,12 +246,14 @@ export class ConversationComponent extends Component {
             }
         }
 
+        const introduction = hasMoreMessages ? '' : <Introduction/>;
+
         return <div id='sk-conversation'
                     className={ errorNotificationMessage && 'notification-shown' }
                     ref='container'
                     onTouchMove={ this.onTouchMove }
                     onScroll={ isMobile.any ? this.onScroll : this.debounceOnScroll }>
-                   <Introduction/>
+                   { introduction }
                    <div ref='messagesContainer'
                         className='sk-messages-container'
                         style={ messagesContainerStyle }>
