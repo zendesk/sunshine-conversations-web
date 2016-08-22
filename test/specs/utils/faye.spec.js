@@ -10,7 +10,7 @@ import * as conversationActions from '../../../src/js/actions/conversation-actio
 import * as conversationService from '../../../src/js/services/conversation-service';
 import * as appService from '../../../src/js/services/app-service';
 
-function getProps(props = {}){
+function getProps(props = {}) {
     const state = {
         user: {
             conversationStarted: true
@@ -43,7 +43,7 @@ describe('Faye utils', () => {
 
     beforeEach(() => {
         sandbox.stub(Client.prototype, 'addExtension');
-        sandbox.stub(conversationService, 'getConversation');
+        sandbox.stub(conversationService, 'getMessages');
         sandbox.stub(conversationService, 'disconnectFaye');
         sandbox.stub(conversationService, 'handleConversationUpdated');
         sandbox.stub(appService, 'showSettings');
@@ -71,10 +71,10 @@ describe('Faye utils', () => {
             });
         });
         describe('when conversation is started', () => {
-            it('should call getconversation when transport:up event is emitted', () => {
+            it('should call getMessages when transport:up event is emitted', () => {
                 const client = utilsFaye.getClient();
                 client.subscribe();
-                conversationService.getConversation.should.have.been.calledOnce;
+                conversationService.getMessages.should.have.been.calledOnce;
             });
         });
 
@@ -87,10 +87,10 @@ describe('Faye utils', () => {
                 }));
             });
 
-            it('should not call getconversation when transport:up event is emitted', () => {
+            it('should not call getMessages when transport:up event is emitted', () => {
                 const client = utilsFaye.getClient();
                 client.subscribe();
-                conversationService.getConversation.should.not.have.been.called;
+                conversationService.getMessages.should.not.have.been.called;
             });
         });
     });
@@ -114,7 +114,7 @@ describe('Faye utils', () => {
                             source: {
                                 id: 1
                             },
-                            role: appUser ? 'appUser' :  'appMaker'
+                            role: appUser ? 'appUser' : 'appMaker'
                         };
                         utilsFaye.handleConversationSubscription(message);
                         appUser ? conversationActions.resetUnreadCount.should.have.been.calledOnce : conversationActions.resetUnreadCount.should.not.have.been.called;
@@ -186,7 +186,7 @@ describe('Faye utils', () => {
                 it('should fetch conversation', () => {
                     currentAppUser.conversationStarted = true;
                     utilsFaye.updateUser(currentAppUser, nextAppUser);
-                    conversationService.getConversation.should.have.been.calledOnce;
+                    conversationService.getMessages.should.have.been.calledOnce;
                 });
             });
             describe('next appUser started conversation', () => {

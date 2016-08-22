@@ -74,10 +74,10 @@ describe('Conversation service', () => {
 
     beforeEach(() => {
         coreMock = createMock(sandbox);
-        coreMock.conversations.get.resolves({
+        coreMock.appUsers.getMessages.resolves({
             conversation: {
-                messages: []
-            }
+            },
+            messages: []
         });
 
         sandbox.stub(coreService, 'core', () => {
@@ -383,7 +383,7 @@ describe('Conversation service', () => {
         });
     });
 
-    describe('getConversation', () => {
+    describe('getMessages', () => {
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, {
                 user: {
@@ -393,13 +393,13 @@ describe('Conversation service', () => {
         });
 
         it('should call smooch-core conversation api and dispatch conversation', () => {
-            return conversationService.getConversation().then((response) => {
-                coreMock.conversations.get.should.have.been.calledWith('1');
+            return conversationService.getMessages().then((response) => {
+                coreMock.appUsers.getMessages.should.have.been.calledWith('1');
 
                 response.should.deep.eq({
                     conversation: {
-                        messages: []
-                    }
+                    },
+                    messages: []
                 });
 
                 conversationActions.setConversation.should.have.been.called;
@@ -528,9 +528,9 @@ describe('Conversation service', () => {
 
                     return conversationService.handleConversationUpdated().then(() => {
                         if (active) {
-                            coreMock.conversations.get.should.not.have.been.called;
+                            coreMock.appUsers.getMessages.should.not.have.been.called;
                         } else {
-                            coreMock.conversations.get.should.have.been.calledOnce;
+                            coreMock.appUsers.getMessages.should.have.been.calledOnce;
                         }
                     });
                 });

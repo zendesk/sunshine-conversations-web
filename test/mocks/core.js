@@ -10,7 +10,8 @@ export function createMock(sinon) {
             updateDevice: sinon.stub(),
             linkChannel: sinon.stub(),
             unlinkChannel: sinon.stub(),
-            pingChannel: sinon.stub()
+            pingChannel: sinon.stub(),
+            getMessages: sinon.stub()
         },
 
         conversations: {
