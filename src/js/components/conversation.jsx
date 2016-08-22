@@ -14,6 +14,7 @@ import { getTop } from '../utils/dom';
 import debounce from 'lodash.debounce';
 
 const INTRO_BOTTOM_SPACER = 10;
+const LOAD_MORE_LINK_HEIGHT = 28;
 
 export class ConversationComponent extends Component {
     static contextTypes = {
@@ -114,32 +115,37 @@ export class ConversationComponent extends Component {
         }
     };
 
-    scrollToPreviousFirstMessage = () => {
-        if (this._lastTopMessageNodePosition && !this._isScrolling) {
+    scrollToPreviousFirstMessage = (node = undefined) => {
+
+        // This will scroll to specified node if we've reached the oldest messages.
+        // Otherwise, scroll to this._lastTopMessageNode
+        if (node) {
             const container = findDOMNode(this);
-            const node = this._lastTopMessageNode;
-            this._isScrolling = true;
+            container.scrollTop = getTop(node, container) - LOAD_MORE_LINK_HEIGHT;
+        } else {
+            if (this._lastTopMessageNodePosition && !this._isScrolling) {
+                const container = findDOMNode(this);
+                const node = this._lastTopMessageNode;
+                this._isScrolling = true;
 
-            // When fetching more messages, we want to make sure that after 
-            // render, the messages stay in the same places
-            container.scrollTop = getTop(node, container) - this._lastTopMessageNodePosition;
+                // When fetching more messages, we want to make sure that after 
+                // render, the messages stay in the same places
+                container.scrollTop = getTop(node, container) - this._lastTopMessageNodePosition;
 
-            const timeout = setTimeout(() => {
-                this._isScrolling = false;
-            });
+                const timeout = setTimeout(() => {
+                    this._isScrolling = false;
+                });
 
-            this.scrollTimeouts.push(timeout);
-            this._lastTopMessageNode = undefined;
+                this.scrollTimeouts.push(timeout);
+                this._lastTopMessageNode = undefined;
+            }
         }
+        
     };
 
     componentWillUpdate(nextProps) {
-        const {introHeight: currentIntroHeight, messages: currentMessages, isFetchingMoreMessages} = this.props;
-        const {introHeight: newIntroHeight, messages: newMessages} = nextProps;
-
-        if (currentIntroHeight !== newIntroHeight) {
-            this._forceScrollToBottom = true;
-        }
+        const {messages: currentMessages, isFetchingMoreMessages} = this.props;
+        const {messages: newMessages} = nextProps;
 
         // Check for new appMaker (and whisper) messages
         const isAppMakerMessage = newMessages.length - currentMessages.length === 1 ? newMessages.slice(-1)[0].role !== 'appUser' : false;
@@ -167,6 +173,8 @@ export class ConversationComponent extends Component {
     componentDidUpdate() {
         if (this.props.isFetchingMoreMessages) {
             this.scrollToPreviousFirstMessage();
+        } else if (!this.props.hasMoreMessages && this._lastTopMessageNode) {
+            this.scrollToPreviousFirstMessage(this._lastTopMessageNode);
         } else {
             this.scrollToBottom();
         }
