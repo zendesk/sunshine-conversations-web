@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import debounce from 'lodash.debounce';
 import { findDOMNode } from 'react-dom';
 
 import { AlternateChannels } from './alternate-channels';
@@ -24,6 +25,7 @@ export class IntroductionComponent extends Component {
 
     constructor(...args) {
         super(...args);
+        this._debounceClientHeightCalculation = debounce(this.calculateIntroHeight.bind(this), 150);
     }
 
     componentDidMount() {
@@ -33,13 +35,11 @@ export class IntroductionComponent extends Component {
             this.calculateIntroHeight();
         }, 200);
 
-        window.addEventListener('resize', () => {
-            this.calculateIntroHeight();
-        });
+        window.addEventListener('resize', this._debounceClientHeightCalculation);
     }
 
     componentWillUnmount() {
-        window.removeEventListener('resize', this.calculateIntroHeight());
+        window.removeEventListener('resize', this._debounceClientHeightCalculation);
     }
 
     calculateIntroHeight() {
