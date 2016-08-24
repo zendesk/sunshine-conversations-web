@@ -67,11 +67,11 @@ export class ConversationComponent extends Component {
     };
 
     onScroll = () => {
-        const {dispatch, shouldScrollToBottom} = this.props;
+        const {dispatch, shouldScrollToBottom, hasMoreMessages, isFetchingMoreMessages} = this.props;
 
         // If top of Conversation component is reached, we need to fetch older messages
         const node = findDOMNode(this);
-        if (node.scrollTop === 0) {
+        if (node.scrollTop === 0 && hasMoreMessages && !isFetchingMoreMessages) {
             this.fetchHistory();
         } else if (shouldScrollToBottom) {
             // Once we've started scrolling, we don't want the default behavior to force the scroll to the bottom afterwards
@@ -80,22 +80,22 @@ export class ConversationComponent extends Component {
     };
 
     fetchHistory = () => {
-        const {dispatch, hasMoreMessages, isFetchingMoreMessages, messages} = this.props;
-
+        const {dispatch, messages} = this.props;
         const node = findDOMNode(this);
-        if (hasMoreMessages && !isFetchingMoreMessages) {
-            // make sure the last message is one from the server, otherwise it doesn't need to scroll to previous first message
-            if (messages.length > 0 && messages[messages.length - 1]._id) {
-                this._lastTopMessageId = messages[0]._id;
-            }
-            
-            const top = getTop(this._topMessageNode, node);
-            this._lastTopMessageNodePosition = top - node.scrollTop;
-            dispatch(setFetchingMoreMessages(true));
-            setTimeout(() => {
-                fetchMoreMessages();
-            }, 400);
+
+        // make sure the last message is one from the server, otherwise it doesn't need to scroll to previous first message
+        if (messages.length > 0 && messages[messages.length - 1]._id) {
+            this._lastTopMessageId = messages[0]._id;
         }
+        
+        const top = getTop(this._topMessageNode, node);
+        this._lastTopMessageNodePosition = top - node.scrollTop;
+        dispatch(setFetchingMoreMessages(true));
+
+        // Timeout is needed because we need to compute sizes of HTML elements and thus need to make sure everything has rendered
+        setTimeout(() => {
+            fetchMoreMessages();
+        }, 400);
     };
 
     scrollToBottom = () => {
@@ -114,16 +114,15 @@ export class ConversationComponent extends Component {
         }
     };
 
-    scrollToPreviousFirstMessage = (node = undefined) => {
+    scrollToPreviousFirstMessage = () => {
+        const node = this._lastTopMessageNode;
+        const container = findDOMNode(this);
         // This will scroll to specified node if we've reached the oldest messages.
         // Otherwise, scroll to this._lastTopMessageNode
-        if (node) {
-            const container = findDOMNode(this);
+        if (!this.props.hasMoreMessages) {
             container.scrollTop = getTop(node, container) - LOAD_MORE_LINK_HEIGHT;
         } else {
             if (this._lastTopMessageNodePosition && !this._isScrolling) {
-                const container = findDOMNode(this);
-                const node = this._lastTopMessageNode;
                 this._isScrolling = true;
 
                 // When fetching more messages, we want to make sure that after 
@@ -170,11 +169,7 @@ export class ConversationComponent extends Component {
 
     componentDidUpdate() {
         if (this.props.isFetchingMoreMessages) {
-            if (this.props.hasMoreMessages) {
-                this.scrollToPreviousFirstMessage();
-            } else {
-                this.scrollToPreviousFirstMessage(this._lastTopMessageNode);
-            }
+            this.scrollToPreviousFirstMessage();
         } else {
             this.scrollToBottom();
         }
