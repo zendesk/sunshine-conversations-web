@@ -29,12 +29,11 @@ export class ConversationComponent extends Component {
         errorNotificationMessage: PropTypes.string
     };
 
-    constructor(...args) {
-        super(...args);
-        this.debounceOnScroll = debounce(this.onScroll.bind(this), 200);
-    }
-
     scrollTimeouts = [];
+
+    debounceOnScroll = debounce(() => {
+        this.onScroll();
+    }, 200);
 
     onTouchMove = (e) => {
         // in embedded we need to let user scroll past the conversation
