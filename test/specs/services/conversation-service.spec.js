@@ -187,7 +187,7 @@ describe('Conversation service', () => {
         };
 
         beforeEach(() => {
-            coreMock.conversations.sendMessage.resolves(message);
+            coreMock.appUsers.sendMessage.resolves(message);
         });
 
         describe('conversation started', () => {
@@ -204,7 +204,7 @@ describe('Conversation service', () => {
                 return conversationService.sendMessage('message').then(() => {
                     userService.immediateUpdate.should.have.been.calledOnce;
 
-                    coreMock.conversations.sendMessage.should.have.been.calledWithMatch('1', {
+                    coreMock.appUsers.sendMessage.should.have.been.calledWithMatch('1', {
                         text: 'message',
                         role: 'appUser'
                     });
@@ -231,14 +231,14 @@ describe('Conversation service', () => {
                 return conversationService.sendMessage('message').then(() => {
                     userService.immediateUpdate.should.have.been.calledOnce;
 
-                    coreMock.conversations.sendMessage.should.have.been.calledWithMatch('1', {
+                    coreMock.appUsers.sendMessage.should.have.been.calledWithMatch('1', {
                         text: 'message',
                         role: 'appUser'
                     });
 
                     conversationActions.addMessage.should.have.been.called;
                     conversationActions.setConversation.should.have.been.called;
-                    conversationActions.replaceMessage.should.not.have.been.called;
+                    conversationActions.replaceMessage.should.have.been.called;
                     userActions.updateUser.should.have.been.called;
                 });
             });
@@ -261,7 +261,7 @@ describe('Conversation service', () => {
         };
 
         beforeEach(() => {
-            coreMock.conversations.uploadImage.resolves(image);
+            coreMock.appUsers.uploadImage.resolves(image);
         });
 
         describe('conversation started', () => {
@@ -280,7 +280,7 @@ describe('Conversation service', () => {
                 return conversationService.uploadImage({}).then(() => {
                     userService.immediateUpdate.should.have.been.calledOnce;
 
-                    coreMock.conversations.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
+                    coreMock.appUsers.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
                         role: 'appUser',
                         deviceId: '1234'
                     });
@@ -308,12 +308,12 @@ describe('Conversation service', () => {
                 return conversationService.uploadImage({}).then(() => {
                     userService.immediateUpdate.should.have.been.calledOnce;
 
-                    coreMock.conversations.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
+                    coreMock.appUsers.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
                         role: 'appUser'
                     });
 
                     conversationActions.setConversation.should.have.been.called;
-                    conversationActions.replaceMessage.should.not.have.been.called;
+                    conversationActions.replaceMessage.should.have.been.called;
                     userActions.updateUser.should.have.been.called;
                 });
             });
@@ -336,7 +336,7 @@ describe('Conversation service', () => {
 
             describe('unsupported file type', () => {
                 beforeEach(() => {
-                    coreMock.conversations.uploadImage.resolves({
+                    coreMock.appUsers.uploadImage.resolves({
                         conversation: 'conversation'
                     });
                     utilsMedia.isFileTypeSupported.returns(false);
@@ -352,7 +352,7 @@ describe('Conversation service', () => {
 
             describe('resize error', () => {
                 beforeEach(() => {
-                    coreMock.conversations.uploadImage.resolves({
+                    coreMock.appUsers.uploadImage.resolves({
                         conversation: 'conversation'
                     });
                     utilsMedia.isFileTypeSupported.returns(true);
@@ -370,7 +370,7 @@ describe('Conversation service', () => {
                 beforeEach(() => {
                     utilsMedia.isFileTypeSupported.returns(true);
                     utilsMedia.resizeImage.resolves({});
-                    coreMock.conversations.uploadImage.rejects();
+                    coreMock.appUsers.uploadImage.rejects();
                 });
 
                 it('should show an error notification', () => {

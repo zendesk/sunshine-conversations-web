@@ -89,18 +89,17 @@ export function sendMessage(text) {
 
         const {user} = store.getState();
 
-        return core().conversations.sendMessage(getUserId(), message).then((response) => {
+        return core().appUsers.sendMessage(getUserId(), message).then((response) => {
             if (!user.conversationStarted) {
                 // use setConversation to set the conversation id in the store
                 store.dispatch(setConversation(response.conversation));
                 store.dispatch(updateUser({
                     conversationStarted: true
                 }));
-            } else {
-                store.dispatch(replaceMessage({
-                    _clientId: message._clientId
-                }, response.message));
             }
+            store.dispatch(replaceMessage({
+                _clientId: message._clientId
+            }, response.message));
 
             observable.trigger('message:sent', response.message);
             return response;
@@ -137,7 +136,7 @@ export function uploadImage(file) {
             const {user} = store.getState();
             const blob = getBlobFromDataUrl(dataUrl);
 
-            return core().conversations.uploadImage(getUserId(), blob, {
+            return core().appUsers.uploadImage(getUserId(), blob, {
                 role: 'appUser',
                 deviceId: getDeviceId()
             }).then((response) => {
@@ -147,11 +146,10 @@ export function uploadImage(file) {
                     store.dispatch(updateUser({
                         conversationStarted: true
                     }));
-                } else {
-                    store.dispatch(replaceMessage({
-                        _clientId: message._clientId
-                    }, response.message));
                 }
+                store.dispatch(replaceMessage({
+                    _clientId: message._clientId
+                }, response.message));
 
                 observable.trigger('message:sent', response.message);
                 return response;
