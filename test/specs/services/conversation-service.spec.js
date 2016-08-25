@@ -238,7 +238,7 @@ describe('Conversation service', () => {
 
                     conversationActions.addMessage.should.have.been.called;
                     conversationActions.setConversation.should.have.been.called;
-                    conversationActions.replaceMessage.should.not.have.been.called;
+                    conversationActions.replaceMessage.should.have.been.called;
                     userActions.updateUser.should.have.been.called;
                 });
             });
@@ -313,7 +313,7 @@ describe('Conversation service', () => {
                     });
 
                     conversationActions.setConversation.should.have.been.called;
-                    conversationActions.replaceMessage.should.not.have.been.called;
+                    conversationActions.replaceMessage.should.have.been.called;
                     userActions.updateUser.should.have.been.called;
                 });
             });

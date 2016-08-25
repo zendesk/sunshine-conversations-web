@@ -96,11 +96,10 @@ export function sendMessage(text) {
                 store.dispatch(updateUser({
                     conversationStarted: true
                 }));
-            } else {
-                store.dispatch(replaceMessage({
-                    _clientId: message._clientId
-                }, response.message));
             }
+            store.dispatch(replaceMessage({
+                _clientId: message._clientId
+            }, response.message));
 
             observable.trigger('message:sent', response.message);
             return response;
@@ -147,11 +146,10 @@ export function uploadImage(file) {
                     store.dispatch(updateUser({
                         conversationStarted: true
                     }));
-                } else {
-                    store.dispatch(replaceMessage({
-                        _clientId: message._clientId
-                    }, response.message));
                 }
+                store.dispatch(replaceMessage({
+                    _clientId: message._clientId
+                }, response.message));
 
                 observable.trigger('message:sent', response.message);
                 return response;
