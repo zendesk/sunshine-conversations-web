@@ -29,7 +29,8 @@ const defaultProps = {
             received: 4
         }
     ],
-    introHeight: 100
+    introHeight: 100,
+    hasMoreMessages: false
 };
 
 describe('Conversation Component', () => {
@@ -52,7 +53,13 @@ describe('Conversation Component', () => {
 
         mockedStore = mockAppStore(sandbox, {});
         context = getContext({
-            store: mockedStore
+            store: mockedStore,
+            ui: {
+                text: {
+                    fetchingHistory: 'fetching-history',
+                    fetchHistory: 'fetch-history'
+                }
+            }
         });
     });
 
@@ -85,6 +92,20 @@ describe('Conversation Component', () => {
 
         it('should render', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedConnectNotification').length.should.eq(1);
+        });
+    });
+
+    describe('Introduction component', () => {
+        [true, false].forEach((hasMoreMessages) => {
+            describe(`${hasMoreMessages ? '' : 'no'} more messages to fetch`, () => {
+                it(`should ${hasMoreMessages ? 'not' : ''} render`, () => {
+                    const props = Object.assign(defaultProps, {
+                        hasMoreMessages: hasMoreMessages
+                    });
+                    component = wrapComponentWithContext(ConversationComponent, props, context);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedIntroduction').length.should.eq(hasMoreMessages ? 0 : 1);
+                });
+            });
         });
     });
 });

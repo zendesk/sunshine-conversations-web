@@ -5,7 +5,7 @@ import { store } from '../stores/app-store';
 import { setUser } from '../actions/user-actions';
 import { setFayeConversationSubscription, setFayeUserSubscription } from '../actions/faye-actions';
 import { addMessage, incrementUnreadCount, resetUnreadCount } from '../actions/conversation-actions';
-import { getConversation, disconnectFaye, handleConversationUpdated } from '../services/conversation-service';
+import { getMessages, disconnectFaye, handleConversationUpdated } from '../services/conversation-service';
 import { showSettings, hideChannelPage, hideConnectNotification } from '../services/app-service';
 import { getDeviceId } from './device';
 import { ANIMATION_TIMINGS } from '../constants/styles';
@@ -43,7 +43,7 @@ export function getClient() {
             const {user} = store.getState();
 
             if (user.conversationStarted) {
-                getConversation();
+                getMessages();
             }
         });
     }
@@ -95,7 +95,7 @@ export function updateUser(currentAppUser, nextAppUser) {
         if (currentAppUser.conversationStarted) {
             // if the conversation is already started,
             // fetch the conversation for merged messages
-            getConversation();
+            getMessages();
         } else if (nextAppUser.conversationStarted) {
             // if the conversation wasn't already started,
             // `handleConversationUpdated` will connect faye and fetch it
