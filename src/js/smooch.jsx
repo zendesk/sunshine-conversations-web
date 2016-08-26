@@ -17,7 +17,7 @@ import { openWidget, closeWidget, hideSettings, hideChannelPage } from './servic
 import { login } from './services/auth-service';
 import { getAccount } from './services/stripe-service';
 import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, updateNowViewing, immediateUpdate as immediateUpdateUser } from './services/user-service';
-import { getConversation, sendMessage, connectFayeConversation, disconnectFaye, handleConversationUpdated } from './services/conversation-service';
+import { sendMessage, disconnectFaye, handleConversationUpdated } from './services/conversation-service';
 
 import { observable, observeStore } from './utils/events';
 import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState } from './utils/dom';
@@ -238,7 +238,7 @@ export class Smooch {
             return immediateUpdateUser(attributes).then(() => {
                 const user = store.getState().user;
                 if (user.conversationStarted) {
-                    return getConversation().then(connectFayeConversation);
+                    return handleConversationUpdated();
                 }
             });
         }).then(() => {

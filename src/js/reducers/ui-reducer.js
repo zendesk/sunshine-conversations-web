@@ -46,7 +46,9 @@ const INITIAL_STATE = {
         smsChangeNumber: 'Change my number',
         smsSendText: 'Send me a text',
         smsContinue: 'Continue',
-        smsCancel: 'Cancel'
+        smsCancel: 'Cancel',
+        fetchingHistory: 'Retrieving history...',
+        fetchHistory: 'Load more'
     }
 };
 

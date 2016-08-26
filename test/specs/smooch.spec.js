@@ -93,8 +93,8 @@ describe('Smooch', () => {
 
     describe('Login', () => {
         let loginStub;
-        let getConversationStub;
         let immediateUpdateStub;
+        let handleConversationUpdatedStub;
 
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, defaultState);
@@ -111,11 +111,11 @@ describe('Smooch', () => {
             immediateUpdateStub = sandbox.stub(userService, 'immediateUpdate');
             immediateUpdateStub.resolves({});
 
-            getConversationStub = sandbox.stub(conversationService, 'getConversation');
-            getConversationStub.resolves({});
-
             connectFayeStub = sandbox.stub(conversationService, 'connectFayeConversation');
             connectFayeStub.resolves({});
+
+            handleConversationUpdatedStub = sandbox.stub(conversationService, 'handleConversationUpdated');
+            handleConversationUpdatedStub.resolves({});
 
             disconnectFayeStub = sandbox.stub(conversationService, 'disconnectFaye');
 
@@ -124,6 +124,9 @@ describe('Smooch', () => {
 
             const getIntegrationStub = sandbox.stub(appUtils, 'getIntegration');
             getIntegrationStub.returns({});
+
+            const getMessagesStub = sandbox.stub(conversationService, 'getMessages');
+            getMessagesStub.resolves({});
 
         });
 
@@ -177,8 +180,8 @@ describe('Smooch', () => {
                     immediateUpdateStub.should.have.been.calledWith, {
                         email: 'some@email.com'
                     };
-                    getConversationStub.should.have.been.calledOnce;
-                    connectFayeStub.should.have.been.calledOnce;
+                    handleConversationUpdatedStub.should.have.been.calledOnce;
+                    connectFayeStub.should.not.have.been.called;
                 });
             });
         });
@@ -209,7 +212,7 @@ describe('Smooch', () => {
                     immediateUpdateStub.should.have.been.calledWith, {
                         email: 'some@email.com'
                     };
-                    getConversationStub.should.not.have.been.called;
+                    handleConversationUpdatedStub.should.not.have.been.called;
                     connectFayeStub.should.not.have.been.called;
                 });
             });
@@ -254,19 +257,20 @@ describe('Smooch', () => {
     });
 
     describe('Get conversation', () => {
+
+        let handleConversationUpdatedStub;
+
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, defaultState);
-            sandbox.stub(conversationService, 'handleConversationUpdated');
+            handleConversationUpdatedStub = sandbox.stub(conversationService, 'handleConversationUpdated');
+            handleConversationUpdatedStub.resolves({});
         });
 
         describe('conversation exists', () => {
-            beforeEach(() => {
-                conversationService.handleConversationUpdated.resolves({});
-            });
 
             it('should call handleConversationUpdated', () => {
                 return smooch.getConversation().then(() => {
-                    conversationService.handleConversationUpdated.should.have.been.calledOnce;
+                    handleConversationUpdatedStub.should.have.been.calledOnce;
                 });
             });
 
@@ -292,7 +296,7 @@ describe('Smooch', () => {
 
         describe('conversation does not exist', () => {
             beforeEach(() => {
-                conversationService.handleConversationUpdated.rejects();
+                handleConversationUpdatedStub.rejects();
             });
 
             it('should reject', (done) => {

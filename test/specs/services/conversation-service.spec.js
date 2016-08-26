@@ -74,10 +74,10 @@ describe('Conversation service', () => {
 
     beforeEach(() => {
         coreMock = createMock(sandbox);
-        coreMock.conversations.get.resolves({
+        coreMock.appUsers.getMessages.resolves({
             conversation: {
-                messages: []
-            }
+            },
+            messages: []
         });
 
         sandbox.stub(coreService, 'core', () => {
@@ -187,7 +187,7 @@ describe('Conversation service', () => {
         };
 
         beforeEach(() => {
-            coreMock.conversations.sendMessage.resolves(message);
+            coreMock.appUsers.sendMessage.resolves(message);
         });
 
         describe('conversation started', () => {
@@ -204,7 +204,7 @@ describe('Conversation service', () => {
                 return conversationService.sendMessage('message').then(() => {
                     userService.immediateUpdate.should.have.been.calledOnce;
 
-                    coreMock.conversations.sendMessage.should.have.been.calledWithMatch('1', {
+                    coreMock.appUsers.sendMessage.should.have.been.calledWithMatch('1', {
                         text: 'message',
                         role: 'appUser'
                     });
@@ -231,14 +231,14 @@ describe('Conversation service', () => {
                 return conversationService.sendMessage('message').then(() => {
                     userService.immediateUpdate.should.have.been.calledOnce;
 
-                    coreMock.conversations.sendMessage.should.have.been.calledWithMatch('1', {
+                    coreMock.appUsers.sendMessage.should.have.been.calledWithMatch('1', {
                         text: 'message',
                         role: 'appUser'
                     });
 
                     conversationActions.addMessage.should.have.been.called;
                     conversationActions.setConversation.should.have.been.called;
-                    conversationActions.replaceMessage.should.not.have.been.called;
+                    conversationActions.replaceMessage.should.have.been.called;
                     userActions.updateUser.should.have.been.called;
                 });
             });
@@ -261,7 +261,7 @@ describe('Conversation service', () => {
         };
 
         beforeEach(() => {
-            coreMock.conversations.uploadImage.resolves(image);
+            coreMock.appUsers.uploadImage.resolves(image);
         });
 
         describe('conversation started', () => {
@@ -280,7 +280,7 @@ describe('Conversation service', () => {
                 return conversationService.uploadImage({}).then(() => {
                     userService.immediateUpdate.should.have.been.calledOnce;
 
-                    coreMock.conversations.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
+                    coreMock.appUsers.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
                         role: 'appUser',
                         deviceId: '1234'
                     });
@@ -308,12 +308,12 @@ describe('Conversation service', () => {
                 return conversationService.uploadImage({}).then(() => {
                     userService.immediateUpdate.should.have.been.calledOnce;
 
-                    coreMock.conversations.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
+                    coreMock.appUsers.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
                         role: 'appUser'
                     });
 
                     conversationActions.setConversation.should.have.been.called;
-                    conversationActions.replaceMessage.should.not.have.been.called;
+                    conversationActions.replaceMessage.should.have.been.called;
                     userActions.updateUser.should.have.been.called;
                 });
             });
@@ -336,7 +336,7 @@ describe('Conversation service', () => {
 
             describe('unsupported file type', () => {
                 beforeEach(() => {
-                    coreMock.conversations.uploadImage.resolves({
+                    coreMock.appUsers.uploadImage.resolves({
                         conversation: 'conversation'
                     });
                     utilsMedia.isFileTypeSupported.returns(false);
@@ -352,7 +352,7 @@ describe('Conversation service', () => {
 
             describe('resize error', () => {
                 beforeEach(() => {
-                    coreMock.conversations.uploadImage.resolves({
+                    coreMock.appUsers.uploadImage.resolves({
                         conversation: 'conversation'
                     });
                     utilsMedia.isFileTypeSupported.returns(true);
@@ -370,7 +370,7 @@ describe('Conversation service', () => {
                 beforeEach(() => {
                     utilsMedia.isFileTypeSupported.returns(true);
                     utilsMedia.resizeImage.resolves({});
-                    coreMock.conversations.uploadImage.rejects();
+                    coreMock.appUsers.uploadImage.rejects();
                 });
 
                 it('should show an error notification', () => {
@@ -383,7 +383,7 @@ describe('Conversation service', () => {
         });
     });
 
-    describe('getConversation', () => {
+    describe('getMessages', () => {
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, {
                 user: {
@@ -393,13 +393,13 @@ describe('Conversation service', () => {
         });
 
         it('should call smooch-core conversation api and dispatch conversation', () => {
-            return conversationService.getConversation().then((response) => {
-                coreMock.conversations.get.should.have.been.calledWith('1');
+            return conversationService.getMessages().then((response) => {
+                coreMock.appUsers.getMessages.should.have.been.calledWith('1');
 
                 response.should.deep.eq({
                     conversation: {
-                        messages: []
-                    }
+                    },
+                    messages: []
                 });
 
                 conversationActions.setConversation.should.have.been.called;
@@ -528,9 +528,9 @@ describe('Conversation service', () => {
 
                     return conversationService.handleConversationUpdated().then(() => {
                         if (active) {
-                            coreMock.conversations.get.should.not.have.been.called;
+                            coreMock.appUsers.getMessages.should.not.have.been.called;
                         } else {
-                            coreMock.conversations.get.should.have.been.calledOnce;
+                            coreMock.appUsers.getMessages.should.have.been.calledOnce;
                         }
                     });
                 });
@@ -565,6 +565,61 @@ describe('Conversation service', () => {
             return conversationService.postPostback(actionId).catch(() => {
                 coreMock.conversations.postPostback.should.have.been.calledWithMatch('1', actionId);
                 appStateActions.showErrorNotification.should.have.been.calledWithMatch('action postback error');
+            });
+        });
+    });
+
+    describe('fetchMoreMessages', () => {
+        beforeEach(() => {
+            coreMock.appUsers.getMessages.resolves({
+                conversation: {},
+                previous: '23'
+            });
+        });
+
+        it('should use timestamp of first message as before parameter', () => {
+            mockedStore = mockAppStore(sandbox, getProps({
+                user: {
+                    _id: '1'
+                },
+                conversation: {
+                    hasMoreMessages: true,
+                    isFetchingMoreMessagesFromServer: false,
+                    messages: [{
+                        received: 123
+                    }]
+                }
+            }));
+            return conversationService.fetchMoreMessages().then(() => {
+                coreMock.appUsers.getMessages.should.have.been.calledWithMatch('1', {
+                    before: 123
+                });
+            });
+        });
+
+        it('should not fetch if there are no more messages', () => {
+            mockedStore = mockAppStore(sandbox, getProps({
+                conversation: {
+                    hasMoreMessages: false,
+                    isFetchingMoreMessagesFromServer: false,
+                    messages: []
+                }
+            }));
+            return conversationService.fetchMoreMessages().then(() => {
+                coreMock.appUsers.getMessages.should.not.have.been.called;
+            });
+        });
+
+        it('should not fetch if already fetching from server', () => {
+            mockedStore = mockAppStore(sandbox, getProps({
+                conversation: {
+                    hasMoreMessages: true,
+                    isFetchingMoreMessagesFromServer: true,
+                    messages: []
+                }
+            }));
+            return conversationService.fetchMoreMessages().then(() => {
+                coreMock.appUsers.getMessages.should.not.have.been.called;
             });
         });
     });

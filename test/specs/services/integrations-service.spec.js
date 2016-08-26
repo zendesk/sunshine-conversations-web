@@ -35,10 +35,10 @@ describe('Integrations service', () => {
         });
         coreMock.appUsers.unlinkChannel.resolves();
         coreMock.appUsers.pingChannel.resolves();
-        coreMock.conversations.get.resolves({
+        coreMock.appUsers.getMessages.resolves({
             conversation: {
-                messages: []
-            }
+            },
+            messages: []
         });
 
         sandbox.stub(coreService, 'core', () => {
@@ -89,7 +89,7 @@ describe('Integrations service', () => {
                 type: 'twilio',
                 phoneNumber: '+0123456789'
             }).then(() => {
-                coreMock.conversations.get.should.have.been.calledOnce;
+                coreMock.appUsers.getMessages.should.have.been.calledOnce;
                 utilsFaye.subscribeConversation.should.have.been.calledOnce;
             });
         });

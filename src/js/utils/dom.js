@@ -102,3 +102,15 @@ export function getElementProperties(element) {
         fontSize: style.getPropertyValue('font-size')
     };
 }
+
+export function getTop(node, container = document.body) {
+    let top = 0;
+    if (node && node.offsetParent) {
+        do {
+            top += node.offsetTop;
+            node = node.offsetParent;
+        } while (node && node !== container);
+
+        return top;
+    }
+}

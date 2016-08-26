@@ -3,7 +3,9 @@ import { RESET } from '../actions/common-actions';
 
 const INITIAL_STATE = {
     messages: [],
-    unreadCount: 0
+    unreadCount: 0,
+    hasMoreMessages: false,
+    isFetchingMoreMessagesFromServer: false
 };
 
 const sortMessages = (messages) => messages.sort((messageA, messageB) => {
@@ -87,20 +89,20 @@ const assignGroups = (messages) => {
         const author = message.role === 'appUser' ? message.role : message.name;
 
         if (!lastAuthor) {
-                lastAuthor = author;
-                message.firstInGroup = true;
-                message.lastInGroup = true;
-            }
+            lastAuthor = author;
+            message.firstInGroup = true;
+            message.lastInGroup = true;
+        }
 
         if (lastAuthor === author) {
-                if (index > 0) {
-                   messages[index - 1].lastInGroup = false;
-                   message.lastInGroup = true;
-                }
-            } else {
-                message.firstInGroup = true;
+            if (index > 0) {
+                messages[index - 1].lastInGroup = false;
                 message.lastInGroup = true;
             }
+        } else {
+            message.firstInGroup = true;
+            message.lastInGroup = true;
+        }
 
         lastAuthor = author;
     });
@@ -111,11 +113,27 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case RESET:
         case ConversationActions.RESET_CONVERSATION:
-            return Object.assign({}, INITIAL_STATE);
+            return {
+                ...INITIAL_STATE
+            };
         case ConversationActions.SET_CONVERSATION:
-            return Object.assign({}, action.conversation, {
-                messages: assignGroups(sortMessages(removeDuplicates(action.conversation.messages)))
-            });
+            return {
+                ...action.conversation,
+                messages: state.messages
+            };
+        case ConversationActions.SET_MESSAGES:
+            return {
+                ...state,
+                messages: assignGroups(sortMessages(removeDuplicates(action.messages)))
+            };
+        case ConversationActions.ADD_MESSAGES:
+            return {
+                ...state,
+                messages: assignGroups(sortMessages(removeDuplicates(action.append ?
+                    [...state.messages, ...action.messages] :
+                    [...action.messages, ...state.messages]
+                )))
+            };
         case ConversationActions.ADD_MESSAGE:
             return Object.assign({}, state, {
                 messages: addMessage(state.messages, action.message)
@@ -135,6 +153,10 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
         case ConversationActions.RESET_UNREAD_COUNT:
             return Object.assign({}, state, {
                 unreadCount: 0
+            });
+        case ConversationActions.SET_FETCHING_MORE_MESSAGES_FROM_SERVER:
+            return Object.assign({}, state, {
+                isFetchingMoreMessagesFromServer: action.value
             });
         default:
             return state;
