@@ -253,10 +253,10 @@ export function fetchMoreMessages() {
         return Promise.resolve();
     }
 
-    const id = messages[0]._id;
+    const timestamp = messages[0].received;
     store.dispatch(setFetchingMoreMessagesFromServer(true));
     return core().appUsers.getMessages(getUserId(), {
-        before: id
+        before: timestamp
     }).then((response) => {
         store.dispatch(setConversation({
             ...response.conversation,

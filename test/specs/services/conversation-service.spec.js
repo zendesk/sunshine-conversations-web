@@ -568,4 +568,59 @@ describe('Conversation service', () => {
             });
         });
     });
+
+    describe('fetchMoreMessages', () => {
+        beforeEach(() => {
+            coreMock.appUsers.getMessages.resolves({
+                conversation: {},
+                previous: '23'
+            });
+        });
+
+        it('should use timestamp of first message as before parameter', () => {
+            mockedStore = mockAppStore(sandbox, getProps({
+                user: {
+                    _id: '1'
+                },
+                conversation: {
+                    hasMoreMessages: true,
+                    isFetchingMoreMessagesFromServer: false,
+                    messages: [{
+                        received: 123
+                    }]
+                }
+            }));
+            return conversationService.fetchMoreMessages().then(() => {
+                coreMock.appUsers.getMessages.should.have.been.calledWithMatch('1', {
+                    before: 123
+                });
+            });
+        });
+
+        it('should not fetch if there are no more messages', () => {
+            mockedStore = mockAppStore(sandbox, getProps({
+                conversation: {
+                    hasMoreMessages: false,
+                    isFetchingMoreMessagesFromServer: false,
+                    messages: []
+                }
+            }));
+            return conversationService.fetchMoreMessages().then(() => {
+                coreMock.appUsers.getMessages.should.not.have.been.called;
+            });
+        });
+
+        it('should not fetch if already fetching from server', () => {
+            mockedStore = mockAppStore(sandbox, getProps({
+                conversation: {
+                    hasMoreMessages: true,
+                    isFetchingMoreMessagesFromServer: true,
+                    messages: []
+                }
+            }));
+            return conversationService.fetchMoreMessages().then(() => {
+                coreMock.appUsers.getMessages.should.not.have.been.called;
+            });
+        });
+    });
 });
