@@ -40,7 +40,6 @@
   "homepage": "https://smooch.io",
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
-    "blueimp-load-image": "2.6.0",
     "deep-equal": "1.0.1",
     "faye": "1.1.2",
     "ismobilejs": "0.3.9",
