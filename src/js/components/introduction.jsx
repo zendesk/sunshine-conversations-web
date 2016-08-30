@@ -31,7 +31,7 @@ export class IntroductionComponent extends Component {
     componentDidMount() {
         // Height of Introduction component will be computed on render and on resize only
         window.addEventListener('resize', this._debounceClientHeightCalculation);
-        this.calculateIntroHeight();
+        setTimeout(this.calculateIntroHeight.bind(this));
     }
 
     componentWillUnmount() {
@@ -39,7 +39,7 @@ export class IntroductionComponent extends Component {
     }
 
     componentDidUpdate() {
-        this.calculateIntroHeight();
+        setTimeout(this.calculateIntroHeight.bind(this));
     }
 
     calculateIntroHeight() {
