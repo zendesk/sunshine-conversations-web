@@ -103,7 +103,7 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | jwt | Yes | - | Token to authenticate your communication with the server (see http://docs.smooch.io/javascript/#authenticating-users-optional)
 | userId | Yes | - | User's id |
 | properties | Yes | - | An object with all properties you want to set on your user |
-| emailCaptureEnabled | Yes | `false` | Enables prompt for email after the first user's message. You can retrieve that email in Slack using `/sk !profile`. We are aware of this limitation and are working on improving it. |
+| emailCaptureEnabled | Yes | `false` | *Deprecated* won't be supported in 4.x - Enables prompt for email after the first user's message. You can retrieve that email in Slack using `/sk !profile`. Forced to false if other messaging channels are enabled in your Smooch app |
 | soundNotificationEnabled | Yes | `true` | Enables the sound notification for new messages |
 | imageUploadEnabled | Yes | `true` | Enables the image upload feature. |
 | embedded | Yes | False | Tells the widget it will be embedded. (see Embedded section below) |
@@ -122,7 +122,6 @@ var skPromise = Smooch.init({
     properties: {
         'anything': 'whatever_you_want'    
     },
-    emailCaptureEnabled: false,
     customText: {
         headerText: 'How can we help?',
         inputPlaceholder: 'Type a message...',
