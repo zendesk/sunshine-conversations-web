@@ -2,8 +2,8 @@ node_modules
 bower_components
 *.log
 tmp
-dist/
-lib/
+/dist/
+/lib/
 grunt-aws.json
 grunt-maxcdn.json
 *.sublime-workspace

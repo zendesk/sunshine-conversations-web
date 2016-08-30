@@ -41,12 +41,7 @@ module.exports = function(options) {
         'css': cssLoader,
         'less': [cssLoader, 'less-loader']
     };
-    var additionalLoaders = [
-        {
-            test: /load-image/,
-            loader: 'imports?define=>false'
-        }
-    ];
+    var additionalLoaders = [];
 
     var alias = {};
 

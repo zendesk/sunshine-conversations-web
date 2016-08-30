@@ -51,18 +51,7 @@ Smooch.init({appToken: 'your_app_token'});
 ```
 
 #### Notes about Webpack
-Since not all Smooch JS dependencies are "webpack-friendly", you might want to tweak your config a bit.
-
-You will need to disable AMD support for `blueimp-load-image` by adding the following snippet to your loaders :
-
-```javascript
-{
-    test: /load-image/,
-    loader: 'imports?define=>false'
-}
-```
-
-Also, if you are building an isomorphic app, make sure you init the widget in client code only. It currently won't work on the server side. You'll also need to add the following to your plugins since `iconv-loader` doesn't work very well with webpack :
+If you are building an isomorphic app, make sure you init the widget in client code only. It currently won't work on the server side. You'll also need to add the following to your plugins since `iconv-loader` doesn't work very well with webpack :
 
 ```javascript
 new webpack.NormalModuleReplacementPlugin(/\/iconv-loader$/, 'node-noop')
