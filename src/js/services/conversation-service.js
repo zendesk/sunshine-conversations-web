@@ -85,6 +85,7 @@ export function sendMessage(text) {
             deviceId: getDeviceId()
         };
 
+        store.dispatch(setShouldScrollToBottom(true));
         store.dispatch(addMessage(message));
 
         const {user} = store.getState();
