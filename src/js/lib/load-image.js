@@ -1,6 +1,6 @@
-import 'blueimp-load-image/js/load-image-exif';
-import 'blueimp-load-image/js/load-image-orientation';
-import loadImage from 'blueimp-load-image/js/load-image';
+import './blueimp-load-image/load-image-exif';
+import './blueimp-load-image/load-image-orientation';
+import loadImage from './blueimp-load-image/load-image';
 
 const renderImageToCanvas = loadImage.renderImageToCanvas;
 // monkey patch loadImage to use a white background

@@ -40,7 +40,6 @@
   "homepage": "https://smooch.io",
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
-    "blueimp-load-image": "2.6.0",
     "deep-equal": "1.0.1",
     "faye": "1.1.2",
     "ismobilejs": "0.3.9",
@@ -50,14 +49,14 @@
     "react-addons-css-transition-group": "15.1.0",
     "react-document-title": "2.0.1",
     "react-imageloader": "2.1.0",
-    "react-messenger-plugin": "1.0.0",
+    "react-messenger-plugin": "1.0.1",
     "react-onclickoutside": "5.3.1",
     "react-redux": "4.4.5",
     "react-spinkit": "1.1.4",
     "react-stripe-checkout": "1.7.2",
     "redux": "3.3.1",
     "redux-thunk": "2.1.0",
-    "smooch-core": "1.5.0",
+    "smooch-core": "2.0.0",
     "urljoin": "0.1.5",
     "uuid": "2.0.1"
   },
@@ -149,5 +148,8 @@
     "babel-runtime": "6.9.x",
     "react": "15.x.x",
     "react-dom": "15.x.x"
+  },
+  "browser": {
+    "faye": "faye/browser/faye-browser"
   }
 }

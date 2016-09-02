@@ -1,8 +1,8 @@
 import { store } from '../stores/app-store';
 import { showConnectNotification } from '../services/app-service';
-import { addMessage, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction } from '../actions/conversation-actions';
+import { addMessage, addMessages, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages, setFetchingMoreMessagesFromServer } from '../actions/conversation-actions';
 import { updateUser } from '../actions/user-actions';
-import { showErrorNotification } from '../actions/app-state-actions';
+import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi } from '../actions/app-state-actions';
 import { unsetFayeSubscriptions } from '../actions/faye-actions';
 import { core } from './core';
 import { immediateUpdate } from './user-service';
@@ -53,10 +53,16 @@ export function handleConnectNotification(response) {
 export function sendChain(sendFn) {
     const promise = immediateUpdate(store.getState().user);
 
+    const enableScrollToBottom = (response) => {
+        store.dispatch(setShouldScrollToBottom(true));
+        return response;
+    };
+
     if (store.getState().user.conversationStarted) {
         return promise
             .then(connectFayeConversation)
             .then(sendFn)
+            .then(enableScrollToBottom)
             .then(handleConnectNotification);
     }
 
@@ -64,6 +70,7 @@ export function sendChain(sendFn) {
     // then get it and connect faye
     return promise
         .then(sendFn)
+        .then(enableScrollToBottom)
         .then(handleConnectNotification)
         .then(connectFayeConversation);
 }
@@ -78,22 +85,22 @@ export function sendMessage(text) {
             deviceId: getDeviceId()
         };
 
+        store.dispatch(setShouldScrollToBottom(true));
         store.dispatch(addMessage(message));
 
         const {user} = store.getState();
 
-        return core().conversations.sendMessage(getUserId(), message).then((response) => {
+        return core().appUsers.sendMessage(getUserId(), message).then((response) => {
             if (!user.conversationStarted) {
                 // use setConversation to set the conversation id in the store
                 store.dispatch(setConversation(response.conversation));
                 store.dispatch(updateUser({
                     conversationStarted: true
                 }));
-            } else {
-                store.dispatch(replaceMessage({
-                    _clientId: message._clientId
-                }, response.message));
             }
+            store.dispatch(replaceMessage({
+                _clientId: message._clientId
+            }, response.message));
 
             observable.trigger('message:sent', response.message);
             return response;
@@ -130,7 +137,7 @@ export function uploadImage(file) {
             const {user} = store.getState();
             const blob = getBlobFromDataUrl(dataUrl);
 
-            return core().conversations.uploadImage(getUserId(), blob, {
+            return core().appUsers.uploadImage(getUserId(), blob, {
                 role: 'appUser',
                 deviceId: getDeviceId()
             }).then((response) => {
@@ -140,11 +147,10 @@ export function uploadImage(file) {
                     store.dispatch(updateUser({
                         conversationStarted: true
                     }));
-                } else {
-                    store.dispatch(replaceMessage({
-                        _clientId: message._clientId
-                    }, response.message));
                 }
+                store.dispatch(replaceMessage({
+                    _clientId: message._clientId
+                }, response.message));
 
                 observable.trigger('message:sent', response.message);
                 return response;
@@ -161,9 +167,13 @@ export function uploadImage(file) {
     });
 }
 
-export function getConversation() {
-    return core().conversations.get(getUserId()).then((response) => {
-        store.dispatch(setConversation(response.conversation));
+export function getMessages() {
+    return core().appUsers.getMessages(getUserId()).then((response) => {
+        store.dispatch(setConversation({
+            ...response.conversation,
+            hasMoreMessages: !!response.previous
+        }));
+        store.dispatch(setMessages(response.messages));
         return response;
     });
 }
@@ -219,7 +229,7 @@ export function handleConversationUpdated() {
     const {faye: {conversationSubscription}} = store.getState();
 
     if (!conversationSubscription) {
-        return getConversation()
+        return getMessages()
             .then((response) => {
                 return connectFayeConversation().then(() => {
                     return response;
@@ -233,5 +243,30 @@ export function handleConversationUpdated() {
 export function postPostback(actionId) {
     return core().conversations.postPostback(getUserId(), actionId).catch(() => {
         store.dispatch(showErrorNotification(store.getState().ui.text.actionPostbackError));
+    });
+}
+
+
+export function fetchMoreMessages() {
+    const {conversation: {hasMoreMessages, messages, isFetchingMoreMessagesFromServer}} = store.getState();
+
+    if (!hasMoreMessages || isFetchingMoreMessagesFromServer) {
+        return Promise.resolve();
+    }
+
+    const timestamp = messages[0].received;
+    store.dispatch(setFetchingMoreMessagesFromServer(true));
+    return core().appUsers.getMessages(getUserId(), {
+        before: timestamp
+    }).then((response) => {
+        store.dispatch(setConversation({
+            ...response.conversation,
+            hasMoreMessages: !!response.previous
+        }));
+
+        store.dispatch(addMessages(response.messages, false));
+        store.dispatch(setFetchingMoreMessagesFromServer(false));
+        store.dispatch(setFetchingMoreMessagesUi(false));
+        return response;
     });
 }

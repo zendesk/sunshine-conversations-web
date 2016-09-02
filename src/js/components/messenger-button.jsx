@@ -20,7 +20,7 @@ export class DefaultButtonIcon extends Component {
                        <feOffset dx='0'
                                  dy='4'
                                  result='offsetblur' />
-                       <feFlood flood-color={ `#${brandColor}` } />
+                       <feFlood floodColor={ `#${brandColor}` } />
                        <feComponentTransfer>
                            <feFuncA type='linear'
                                     slope='0.4' />
