@@ -6,7 +6,7 @@ import { SK_DARK_CONTRAST } from '../constants/styles';
 
 export class DefaultButtonIcon extends Component {
     render() {
-        const {isBrandColorDark, brandColor} = this.props;
+        const {isBrandColorDark} = this.props;
 
         return <svg version='1.0'
                     x='0px'
@@ -20,7 +20,6 @@ export class DefaultButtonIcon extends Component {
                        <feOffset dx='0'
                                  dy='4'
                                  result='offsetblur' />
-                       <feFlood floodColor={ `#${brandColor}` } />
                        <feComponentTransfer>
                            <feFuncA type='linear'
                                     slope='0.4' />
