@@ -21,7 +21,7 @@ module.exports = function(options) {
     var entry = options.assetsOnly ? {
         assets: './src/js/constants/assets'
     } : {
-        smooch: ['./src/js/utils/polyfills', './src/js/main']
+        smooch: ['./src/js/utils/polyfills', './src/js/umd']
     };
 
     const fileLimit = options.bundleAll ? 100000 : 1;
@@ -60,8 +60,7 @@ module.exports = function(options) {
         chunkFilename: (options.devServer ? '[id].js' : '[name].js') + (options.longTermCaching ? '?[chunkhash]' : ''),
         sourceMapFilename: '[file].map',
         library: options.assetsOnly ? undefined : 'Smooch',
-        libraryTarget: options.assetsOnly ? 'commonjs2' : 'umd',
-        umdNamedDefine: true,
+        libraryTarget: 'var',
         pathinfo: options.debug
     };
 
