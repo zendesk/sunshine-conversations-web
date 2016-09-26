@@ -60,7 +60,7 @@ module.exports = function(options) {
         chunkFilename: (options.devServer ? '[id].js' : '[name].js') + (options.longTermCaching ? '?[chunkhash]' : ''),
         sourceMapFilename: '[file].map',
         library: options.assetsOnly ? undefined : 'Smooch',
-        libraryTarget: 'var',
+        libraryTarget: options.assetsOnly ? 'commonjs2' : 'var',
         pathinfo: options.debug
     };
 
