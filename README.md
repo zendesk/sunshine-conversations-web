@@ -41,7 +41,7 @@ Install from npm
 ```
 npm install --save smooch
 
-// The library also have peer dependencies. If you don't already have them in your project, go ahead and install them too
+// The library also has peer dependencies. If you don't already have them in your project, go ahead and install them too
 
 npm install --save babel-polyfill@6.9 babel-runtime@6.9 react@15 react-dom@15
 ```
