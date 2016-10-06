@@ -39,7 +39,11 @@ Initialize the plugin using this code snippet
 Install from npm
 
 ```
-npm install smooch
+npm install --save smooch
+
+// The library also has peer dependencies. If you don't already have them in your project, go ahead and install them too
+
+npm install --save babel-polyfill@6.9 babel-runtime@6.9 react@15 react-dom@15
 ```
 
 Require and init
