@@ -4,7 +4,7 @@ import { mockAppStore } from '../utils/redux';
 
 import * as authService from '../../src/js/services/auth-service';
 import * as conversationService from '../../src/js/services/conversation-service';
-import * as coreService from '../../src/js/services/core-service';
+import * as coreService from '../../src/js/services/core';
 import * as userService from '../../src/js/services/user-service';
 import * as appUtils from '../../src/js/utils/app';
 
@@ -481,8 +481,8 @@ describe('Smooch', () => {
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, defaultState);
 
-            getUserIdStub = sandbox.stub(conversationService, 'getUserId');
-            sendMessageStub.returns('1234');
+            getUserIdStub = sandbox.stub(userService, 'getUserId');
+            getUserIdStub.returns('1234');
         });
 
         it('should call the conversation service', () => {
@@ -492,7 +492,7 @@ describe('Smooch', () => {
 
     describe('Get Core', () => {
         beforeEach(() => {
-            coreStub = sandbox.stub(conversationService, 'core');
+            coreStub = sandbox.stub(coreService, 'core');
         });
 
         it('should call the core service', () => {
