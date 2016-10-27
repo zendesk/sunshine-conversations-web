@@ -1,4 +1,4 @@
-# [Smooch Javascript SDK](https://smooch.io)
+# [Smooch Web Messenger](https://smooch.io)
 
   [![Circle CI](https://circleci.com/gh/smooch/smooch-js.svg?style=svg)](https://circleci.com/gh/smooch/smooch-js)
   [![npm version](https://badge.fury.io/js/smooch.svg)](http://badge.fury.io/js/smooch)
@@ -6,7 +6,7 @@
 
 Smooch is the best way to have personal, rich conversations with people on your website or customers on any device. Our features, integrations and developer-friendly APIs empower companies to connect with their customers in a whole new way.
 
-The Smooch Javascript SDK will add [live web messaging](https://smooch.io/live-web-chat/) to your website or web app. Customers will be able to talk to you from your website, while you manage conversations using your favorite business systems.
+The Smooch Web Messenger will add [live web messaging](https://smooch.io/live-web-chat/) to your website or web app. Customers will be able to talk to you from your website, while you manage conversations using your favorite business systems.
 
 - Let your customers talk to you the way they want by seamlessly [moving web chat conversations](https://smooch.io/cross-channel-messaging/) to any messaging app.
 - Sync conversations across every device and channel your customers use.
@@ -241,6 +241,13 @@ Smooch.updateUser({
 });
 ```
 
+#### getUserId()
+Returns the userId of the current user.
+
+```javascript
+Smooch.getUser()
+```
+
 #### getConversation()
 Returns promise that resolves to conversation object, or rejects if none exists
 
@@ -254,6 +261,9 @@ Tracks an event for the current user.
 ```javascript
 Smooch.track('item-in-cart');
 ```
+
+#### getCore()
+Returns an instance of [smooch-core](https://github.com/smooch/smooch-core-js) to allow access to APIs the Web Messenger doesn't expose. For more information on how to use Smooch-Core, please visit the [documentation](http://docs.smooch.io/rest/?javascript).
 
 ### Events
 If you want to make sure your events are triggered, try to bind them before calling `Smooch.init`.
