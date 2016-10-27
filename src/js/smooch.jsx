@@ -18,7 +18,7 @@ import { login } from './services/auth-service';
 import { getAccount } from './services/stripe-service';
 import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, updateNowViewing, immediateUpdate as immediateUpdateUser, getUserId } from './services/user-service';
 import { sendMessage, disconnectFaye, handleConversationUpdated } from './services/conversation-service';
-import { core } from './services/core-service';
+import { core } from './services/core';
 
 import { observable, observeStore } from './utils/events';
 import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState } from './utils/dom';
