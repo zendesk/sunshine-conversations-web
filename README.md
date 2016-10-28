@@ -245,7 +245,7 @@ Smooch.updateUser({
 Returns the userId of the current user.
 
 ```javascript
-Smooch.getUser()
+Smooch.getUserId()
 ```
 
 #### getConversation()
