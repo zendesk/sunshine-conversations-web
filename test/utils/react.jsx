@@ -1,6 +1,9 @@
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
+import { Provider } from 'react-redux';
+
 import { ParentComponentWithContext } from './parent-component';
+import { createMockedStore } from './redux';
 
 export function scryRenderedDOMComponentsWithId(tree, id) {
     return TestUtils.findAllInRenderedTree(tree, function(inst) {
@@ -54,4 +57,16 @@ export function wrapComponentWithContext(Component, props, context = getContext(
     );
 
     return wrapper.getWrappedInstance();
+}
+
+export function wrapComponentWithStore(Component, props, store = createMockedStore()) {
+    let component;
+    TestUtils.renderIntoDocument(
+        <Provider store={ store }>
+            <Component {...props}
+                       ref={ (c) => component = c } />
+        </Provider>
+    );
+
+    return component;
 }
