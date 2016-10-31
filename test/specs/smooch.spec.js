@@ -2,11 +2,13 @@ import sinon from 'sinon';
 
 import { mockAppStore } from '../utils/redux';
 
-import { Smooch } from '../../src/js/smooch';
 import * as authService from '../../src/js/services/auth-service';
 import * as conversationService from '../../src/js/services/conversation-service';
+import * as coreService from '../../src/js/services/core';
 import * as userService from '../../src/js/services/user-service';
 import * as appUtils from '../../src/js/utils/app';
+
+import { Smooch } from '../../src/js/smooch';
 
 const defaultState = {
     user: {
@@ -42,6 +44,8 @@ describe('Smooch', () => {
     let disconnectFayeStub;
     let updateUserStub;
     let trackEventStub;
+    let getUserIdStub;
+    let coreStub;
     let mockedStore;
 
     after(() => {
@@ -470,6 +474,30 @@ describe('Smooch', () => {
                 smooch.close();
                 mockedStore.dispatch.should.not.have.been.called;
             });
+        });
+    });
+
+    describe('Get User Id', () => {
+        beforeEach(() => {
+            mockedStore = mockAppStore(sandbox, defaultState);
+
+            getUserIdStub = sandbox.stub(userService, 'getUserId');
+            getUserIdStub.returns('1234');
+        });
+
+        it('should call the conversation service', () => {
+            return smooch.getUserId().should.eq('1234');
+        });
+    });
+
+    describe('Get Core', () => {
+        beforeEach(() => {
+            coreStub = sandbox.stub(coreService, 'core');
+        });
+
+        it('should call the core service', () => {
+            smooch.getCore();
+            coreStub.should.have.been.calledOnce;
         });
     });
 });
