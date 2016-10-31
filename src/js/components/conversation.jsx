@@ -86,7 +86,7 @@ export class ConversationComponent extends Component {
         if (messages.length > 0 && messages[messages.length - 1]._id) {
             this._lastTopMessageId = messages[0]._id;
         }
-        
+
         const top = getTop(this._topMessageNode, node);
         this._lastTopMessageNodePosition = top - node.scrollTop;
         dispatch(setFetchingMoreMessages(true));
@@ -124,7 +124,7 @@ export class ConversationComponent extends Component {
             if (this._lastTopMessageNodePosition && !this._isScrolling) {
                 this._isScrolling = true;
 
-                // When fetching more messages, we want to make sure that after 
+                // When fetching more messages, we want to make sure that after
                 // render, the messages stay in the same places
                 container.scrollTop = getTop(node, container) - this._lastTopMessageNodePosition;
 
@@ -136,12 +136,17 @@ export class ConversationComponent extends Component {
             }
         }
         this._lastTopMessageNode = undefined;
-        
+
     };
 
     componentWillUpdate(nextProps) {
         const {messages: currentMessages, isFetchingMoreMessages} = this.props;
         const {messages: newMessages} = nextProps;
+
+        if (!this._lastMessageNode) {
+            this._forceScrollToBottom = true;
+            return;
+        }
 
         // Check for new appMaker (and whisper) messages
         const isAppMakerMessage = newMessages.length - currentMessages.length === 1 ? newMessages.slice(-1)[0].role !== 'appUser' : false;
