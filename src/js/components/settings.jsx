@@ -1,13 +1,11 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 
 import { EmailSettings } from './email-settings';
 import { NotificationsSettings } from './notifications-settings';
 import { hasChannels } from '../utils/app';
 
-export class Settings extends Component {
-    static contextTypes = {
-        settings: PropTypes.object.isRequired
-    };
+export class SettingsComponent extends Component {
 
     static propTypes = {
         className: PropTypes.string
@@ -22,3 +20,9 @@ export class Settings extends Component {
                </div>;
     }
 }
+
+export const Settings = connect(({app}) => {
+    return {
+        settings: app.settings.web
+    };
+})(SettingsComponent);
