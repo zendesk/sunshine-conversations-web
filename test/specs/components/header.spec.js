@@ -3,14 +3,13 @@ import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
 
-import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId, getContext } from '../../utils/react';
 import * as appService from '../../../src/js/services/app-service';
 import * as appUtils from '../../../src/js/utils/app';
 import { WIDGET_STATE } from '../../../src/js/constants/app';
 import { Header, HeaderComponent } from '../../../src/js/components/header';
 
 import { mockAppStore } from '../../utils/redux';
-import { wrapComponentWithStore } from '../../utils/react';
+import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId, wrapComponentWithStore } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
 

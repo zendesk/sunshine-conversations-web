@@ -17,12 +17,6 @@ export class IntroductionComponent extends Component {
         appState: PropTypes.object.isRequired
     };
 
-    static contextTypes = {
-        ui: PropTypes.object.isRequired,
-        settings: PropTypes.object.isRequired,
-        app: PropTypes.object.isRequired
-    };
-
     constructor(...args) {
         super(...args);
         this._debounceClientHeightCalculation = debounce(this.calculateIntroHeight.bind(this), 150);
@@ -53,11 +47,11 @@ export class IntroductionComponent extends Component {
     }
 
     render() {
-        const {app, ui: {text}} = this.context;
+        const {app, introductionText, introAppText} = this.props;
         const channelDetailsList = getAppChannelDetails(app.integrations);
 
         const channelsAvailable = channelDetailsList.length > 0;
-        const introText = channelsAvailable ? `${text.introductionText} ${text.introAppText}` : text.introductionText;
+        const introText = channelsAvailable ? `${introductionText} ${introAppText}` : introductionText;
 
         return <div className='sk-intro-section'
                     ref='introductionContainer'>
@@ -70,17 +64,20 @@ export class IntroductionComponent extends Component {
                    <div className='intro-text'
                         dangerouslySetInnerHTML={ createMarkup(introText) } />
                    { channelsAvailable ?
-                         <AlternateChannels items={ channelDetailsList } />
-                         : null }
+                         <AlternateChannels items={ channelDetailsList } /> :
+                         null }
                </div>;
     }
 }
 
-export const Introduction = connect(({appState: {introHeight, widgetState}}) => {
+export const Introduction = connect(({app, appState: {introHeight, widgetState}, ui: {text}}) => {
     return {
+        app,
         appState: {
             introHeight,
             widgetState
-        }
+        },
+        introAppText: text.introAppText,
+        introductionText: text.introductionText
     };
 })(IntroductionComponent);
