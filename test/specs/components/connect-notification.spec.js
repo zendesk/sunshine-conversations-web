@@ -1,75 +1,84 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
-import { ConnectNotificationComponent } from '../../../src/js/components/connect-notification';
+import { ConnectNotification } from '../../../src/js/components/connect-notification';
 import * as appService from '../../../src/js/services/app-service';
 import * as appUtils from '../../../src/js/utils/app';
 import { CHANNEL_DETAILS } from '../../../src/js/constants/channels';
 
-import { wrapComponentWithContext } from '../../utils/react';
+import { wrapComponentWithStore } from '../../utils/react';
+import { mockAppStore } from '../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
 
-const baseContext = {
-    ui: {
-        text: {
-            settingsNotificationText: 'settingsNotificationText'
+function getStoreState(state = {}) {
+    const defaultState = {
+        app: {
+            settings: {
+                web: {
+                    channels: {}
+                }
+            },
+            integrations: []
+        },
+        ui: {
+            text: {
+                settingsNotificationText: 'settingsNotificationText',
+                connectNotificationText: 'connectNotificationText'
+            }
+        },
+        appState: {
+            emailCaptureEnabled: false
         }
-    },
-    settings: {
-        channels: {}
-    }
-};
+    };
 
-const baseProps = {
-    appChannels: [],
-    emailCaptureEnabled: false
-};
+    return Object.assign(defaultState, state);
+}
 
 describe('ConnectNotification Component', () => {
+    let mockedStore;
 
     beforeEach(() => {
         sandbox.stub(appService, 'showChannelPage');
         sandbox.stub(appService, 'showSettings');
         sandbox.stub(appUtils, 'hasChannels');
         sandbox.stub(appUtils, 'getAppChannelDetails');
+        mockedStore = mockAppStore(sandbox, getStoreState());
     });
 
     afterEach(() => {
         sandbox.restore();
+        mockedStore.restore();
     });
 
     it('should render nothing if has no channels and email capture is disabled', () => {
-        const component = wrapComponentWithContext(ConnectNotificationComponent, baseProps, baseContext);
+        const component = wrapComponentWithStore(ConnectNotification, null, mockedStore);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'connect-notification').length.should.eq(0);
     });
 
     describe('emailCaptureEnabled', () => {
         beforeEach(() => {
             appUtils.getAppChannelDetails.returns([]);
+            mockedStore = mockAppStore(sandbox, getStoreState({
+                appState: {
+                    emailCaptureEnabled: true
+                }
+            }));
         });
 
         it('should render the email capture link', () => {
             appUtils.hasChannels.returns(false);
-            const props = {
-                ...baseProps,
-                emailCaptureEnabled: true
-            };
 
-            const component = wrapComponentWithContext(ConnectNotificationComponent, props, baseContext);
+            const component = wrapComponentWithStore(ConnectNotification, null, mockedStore);
 
             const node = TestUtils.findRenderedDOMComponentWithTag(component, 'span');
-            node.textContent.should.be.eq(baseContext.ui.text.settingsNotificationText);
+            node.textContent.should.be.eq(getStoreState().ui.text.settingsNotificationText);
         });
 
         it('should not render the email capture link if has channels', () => {
             appUtils.hasChannels.returns(true);
-            const props = {
-                ...baseProps,
-                emailCaptureEnabled: true
-            };
 
-            const component = wrapComponentWithContext(ConnectNotificationComponent, props, baseContext);
+            const component = wrapComponentWithStore(ConnectNotification, null, mockedStore);
 
             const nodes = TestUtils.scryRenderedDOMComponentsWithTag(component, 'span');
             nodes.length.should.eq(0);
@@ -103,7 +112,7 @@ describe('ConnectNotification Component', () => {
                 }
             ]);
 
-            const component = wrapComponentWithContext(ConnectNotificationComponent, baseProps, baseContext);
+            const component = wrapComponentWithStore(ConnectNotification, null, mockedStore);
             const nodes = TestUtils.scryRenderedDOMComponentsWithTag(component, 'a');
 
             // should be 2 because frontendEmail isn't linkable
@@ -120,7 +129,7 @@ describe('ConnectNotification Component', () => {
                 }
             ]);
 
-            const component = wrapComponentWithContext(ConnectNotificationComponent, baseProps, baseContext);
+            const component = wrapComponentWithStore(ConnectNotification, null, mockedStore);
             const node = TestUtils.findRenderedDOMComponentWithTag(component, 'a');
             TestUtils.Simulate.click(node);
             appService.showChannelPage.should.have.been.calledWith('messenger');
