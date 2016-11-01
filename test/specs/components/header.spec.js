@@ -1,39 +1,51 @@
 import sinon from 'sinon';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
+import deepAssign from 'deep-assign';
 
 import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId, getContext } from '../../utils/react';
 import * as appService from '../../../src/js/services/app-service';
 import * as appUtils from '../../../src/js/utils/app';
 import { WIDGET_STATE } from '../../../src/js/constants/app';
-import { HeaderComponent } from '../../../src/js/components/header';
+import { Header, HeaderComponent } from '../../../src/js/components/header';
 
 import { mockAppStore } from '../../utils/redux';
-import { wrapComponentWithContext } from '../../utils/react';
+import { wrapComponentWithStore } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
-const defaultProps = {
-    appState: {
-        emailCaptureEnabled: false,
-        settingsVisible: true,
-        widgetState: WIDGET_STATE.OPENED,
-        embedded: false,
-        visibleChannelType: false
-    },
-    unreadCount: 0
-};
-const context = getContext({
-    settings: {},
-    ui: {
-        text: {
-            settingsHeaderText: 'settings header text',
-            headerText: 'header text'
+
+function getStoreState(state = {}) {
+    const defaultState = {
+        app: {
+            settings: {
+                web: {
+                    channels: {}
+                }
+            },
+            integrations: []
+        },
+        ui: {
+            text: {
+                headerText: 'headerText',
+                settingsHeaderText: 'settingsHeaderText'
+            }
+        },
+        appState: {
+            emailCaptureEnabled: false,
+            settingsVisible: true,
+            widgetState: WIDGET_STATE.OPENED,
+            embedded: false,
+            visibleChannelType: false
+        },
+        conversation: {
+            unreadCount: 0
         }
-    }
-});
+    };
+
+    return deepAssign(defaultState, state);
+}
 
 describe('Header Component', () => {
-    let props;
     let mockedStore;
     let header;
     let headerNode;
@@ -56,17 +68,13 @@ describe('Header Component', () => {
     describe('settings view', () => {
 
         beforeEach(() => {
-            props = Object.assign(defaultProps, {});
-            mockedStore = mockAppStore(sandbox, {});
-            header = wrapComponentWithContext(HeaderComponent, props, {
-                ...context,
-                store: mockedStore
-            });
+            mockedStore = mockAppStore(sandbox, getStoreState());
+            header = wrapComponentWithStore(Header, null, mockedStore);
             headerNode = ReactDOM.findDOMNode(header);
         });
 
         it('should display the main header', () => {
-            headerNode.textContent.should.eq(context.ui.text.settingsHeaderText);
+            headerNode.textContent.should.eq(mockedStore.getState().ui.text.settingsHeaderText);
         });
 
         it('should contain the back button', () => {
@@ -94,21 +102,18 @@ describe('Header Component', () => {
     describe('settings view in embedded mode', () => {
 
         beforeEach(() => {
-            props = Object.assign(defaultProps, {
+            mockedStore = mockAppStore(sandbox, getStoreState({
                 appState: {
+                    settingsVisible: false,
                     embedded: true
                 }
-            });
-            mockedStore = mockAppStore(sandbox, {});
-            header = wrapComponentWithContext(HeaderComponent, props, {
-                ...context,
-                store: mockedStore
-            });
+            }));
+            header = wrapComponentWithStore(Header, null, mockedStore);
             headerNode = ReactDOM.findDOMNode(header);
         });
 
         it('should display the main header', () => {
-            headerNode.textContent.should.eq(context.ui.text.headerText);
+            headerNode.textContent.should.eq(mockedStore.getState().ui.text.headerText);
         });
 
         it('should not contain the back button', () => {
