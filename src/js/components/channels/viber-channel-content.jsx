@@ -1,20 +1,17 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import { LoadingComponent } from '../../components/loading';
 import { fetchViberQRCode } from '../../services/integrations-service';
 
 
-export class ViberChannelContent extends Component {
-    static contextTypes = {
-        ui: PropTypes.object
-    };
-
+class ViberChannelContentComponent extends Component {
     static propTypes = {
-        channelState: PropTypes.object.isRequired
+        channelState: PropTypes.object.isRequired,
+        ui: PropTypes.object.isRequired
     };
 
     render() {
-        const {channelState = {}} = this.props;
-        const {ui: {text}} = this.context;
+        const {channelState, ui: {text}} = this.props;
 
         if (channelState.hasError) {
             return <a className={ 'sk-error-link' }
@@ -38,3 +35,9 @@ export class ViberChannelContent extends Component {
                                  style={ loadingStyle } />;
     }
 }
+
+export const ViberChannelContent = connect(({ui}) => {
+    return {
+        ui
+    };
+})(ViberChannelContentComponent);
