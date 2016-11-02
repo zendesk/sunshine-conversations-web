@@ -14,7 +14,10 @@ import { getAppChannelDetails } from '../utils/app';
 export class IntroductionComponent extends Component {
     static propTypes = {
         dispatch: PropTypes.func.isRequired,
-        appState: PropTypes.object.isRequired
+        appState: PropTypes.object.isRequired,
+        app: PropTypes.object.isRequired,
+        introAppText: PropTypes.string.isRequired,
+        introductionText: PropTypes.string.isRequired
     };
 
     constructor(...args) {
