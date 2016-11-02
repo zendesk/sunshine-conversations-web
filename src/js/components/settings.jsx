@@ -8,7 +8,7 @@ import { hasChannels } from '../utils/app';
 export class SettingsComponent extends Component {
 
     static propTypes = {
-        className: PropTypes.string
+        settings: PropTypes.object.isRequired
     };
 
     render() {
