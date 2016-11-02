@@ -12,7 +12,7 @@ export class SettingsComponent extends Component {
     };
 
     render() {
-        const {settings} = this.context;
+        const {settings} = this.props;
         const settingsComponent = hasChannels(settings) ? <NotificationsSettings /> : <EmailSettings />;
 
         return <div className='sk-settings'>
