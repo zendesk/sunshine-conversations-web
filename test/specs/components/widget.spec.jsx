@@ -1,7 +1,5 @@
 import sinon from 'sinon';
-import React from 'react';
 import TestUtils from 'react-addons-test-utils';
-import { Provider } from 'react-redux';
 import deepAssign from 'deep-assign';
 
 import { mockComponent, findRenderedDOMComponentsWithId, wrapComponentWithStore } from '../../utils/react';
@@ -35,6 +33,7 @@ function getStoreState(state = {}) {
         app: {
             settings: {
                 web: {
+                    displayStyle: 'button',
                     accentColor: '#009933'
                 }
             }
@@ -49,7 +48,22 @@ function getStoreState(state = {}) {
         }
     };
 
-    return deepAssign(defaultState, state);
+    // appState is cloned on its own because `widgetState` is a Symbol
+    // and `deep-assign` has trouble dealing with it.
+    const newAppState = {
+        ...defaultState.appState,
+        ...state.appState
+    };
+
+    delete defaultState.appState;
+    delete state.appState;
+
+    const newState = deepAssign(defaultState, state);
+
+    return {
+        ...newState,
+        appState: newAppState
+    };
 }
 
 const sandbox = sinon.sandbox.create();
@@ -58,7 +72,6 @@ describe('Widget Component', () => {
 
     let component;
     let mockedStore;
-    let props;
 
     beforeEach(() => {
         mockComponent(sandbox, Header, 'div', {
