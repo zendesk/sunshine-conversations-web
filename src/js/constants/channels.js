@@ -62,7 +62,11 @@ export const CHANNEL_DETAILS = {
         descriptionKey: 'lineChannelDescription',
         isLinkable: false,
         ...integrationsAssets.line,
-        Component: LineChannelContent
+        Component: !isMobile.phone ? LineChannelContent : undefined,
+        getURL: (appUser, {qrCodeUrl}) => {
+            const channelId = /^https?:\/\/qr-official.line.me\/sid\/L\/([a-zA-Z0-9]{3,})\.png$/.exec(qrCodeUrl)[1];
+            return `https://line.me/R/ti/p/@${channelId}`;
+        }
     }
 };
 
