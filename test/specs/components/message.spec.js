@@ -4,11 +4,12 @@ import TestUtils from 'react-addons-test-utils';
 import { mockComponent } from '../../utils/react';
 
 import { MessageComponent } from '../../../src/js/components/message';
-import { ActionComponent } from '../../../src/js/components/action';
+import { Action } from '../../../src/js/components/action';
 import { ImageMessage } from '../../../src/js/components/image-message';
 import { TextMessage } from '../../../src/js/components/text-message';
 
-import { wrapComponentWithContext } from '../../utils/react';
+import { wrapComponentWithStore } from '../../utils/react';
+import { mockAppStore } from '../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
 
@@ -18,11 +19,13 @@ const defaultProps = {
     actions: []
 };
 
+let mockedStore;
+
 describe('Message Component', () => {
-    var component;
+    let component;
 
     beforeEach(() => {
-        mockComponent(sandbox, ActionComponent, 'div', {
+        mockComponent(sandbox, Action, 'div', {
             className: 'mockedAction'
         });
         mockComponent(sandbox, ImageMessage, 'div', {
@@ -31,10 +34,24 @@ describe('Message Component', () => {
         mockComponent(sandbox, TextMessage, 'div', {
             className: 'mockedText'
         });
+
+        mockedStore = mockAppStore(sandbox, {
+            ui: {
+                text: {}
+            },
+            app: {
+                settings: {
+                    web: {}
+                },
+                integrations: {}
+            },
+            integrations: []
+        });
     });
 
     afterEach(() => {
         sandbox.restore();
+        mockedStore.restore();
     });
 
     [true, false].forEach((isImage) => {
@@ -46,7 +63,7 @@ describe('Message Component', () => {
             };
 
             beforeEach(() => {
-                component = wrapComponentWithContext(MessageComponent, props);
+                component = wrapComponentWithStore(MessageComponent, props, mockedStore);
             });
 
             it('should not contain any actions', () => {
@@ -67,7 +84,7 @@ describe('Message Component', () => {
         const props = Object.assign({}, defaultProps);
 
         beforeEach(() => {
-            component = wrapComponentWithContext(MessageComponent, props);
+            component = wrapComponentWithStore(MessageComponent, props, mockedStore);
         });
 
         it('should not have an avatar', () => {
@@ -106,12 +123,13 @@ describe('Message Component', () => {
             const lastMessageProps = Object.assign({}, props, {
                 lastInGroup: true
             });
-            const firstMessageComponent = wrapComponentWithContext(MessageComponent, firstMessageProps);
-            const lastMessageComponent = wrapComponentWithContext(MessageComponent, lastMessageProps);
+            let firstMessageComponent;
+            let lastMessageComponent;
 
             beforeEach(() => {
-                component = wrapComponentWithContext(MessageComponent, props);
-
+                firstMessageComponent = wrapComponentWithStore(MessageComponent, firstMessageProps, mockedStore);
+                lastMessageComponent = wrapComponentWithStore(MessageComponent, lastMessageProps, mockedStore);
+                component = wrapComponentWithStore(MessageComponent, props, mockedStore);
             });
 
             it('should be on the left', () => {
@@ -170,7 +188,7 @@ describe('Message Component', () => {
             });
 
             beforeEach(() => {
-                component = wrapComponentWithContext(MessageComponent, props);
+                component = wrapComponentWithStore(MessageComponent, props, mockedStore);
             });
 
             it('should be on the left', () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
-import { ParentComponentWithContext } from './parent-component';
+import { Provider } from 'react-redux';
 
 export function scryRenderedDOMComponentsWithId(tree, id) {
     return TestUtils.findAllInRenderedTree(tree, function(inst) {
@@ -32,26 +32,14 @@ export function mockComponent(sinon, module, mockTagName = 'div', props = null) 
     });
 }
 
-export function getContext(context = {}) {
-    const defaultContext = {
-        app: {},
-        settings: {},
-        ui: {}
-    };
-
-    return {
-        ...defaultContext,
-        ...context
-    };
-}
-
-export function wrapComponentWithContext(Component, props, context = getContext()) {
-    const wrapper = TestUtils.renderIntoDocument(
-        <ParentComponentWithContext context={ context }
-                                    withRef={ true }>
-            <Component {...props} />
-        </ParentComponentWithContext>
+export function wrapComponentWithStore(Component, props, store) {
+    let component;
+    TestUtils.renderIntoDocument(
+        <Provider store={ store }>
+            <Component {...props}
+                       ref={ (c) => component = c } />
+        </Provider>
     );
 
-    return wrapper.getWrappedInstance();
+    return component;
 }

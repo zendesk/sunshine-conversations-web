@@ -39,13 +39,11 @@ export class DefaultButtonIcon extends Component {
 }
 
 export class MessengerButtonComponent extends Component {
-    static contextTypes = {
-        settings: PropTypes.object.isRequired
-    };
 
     static propTypes = {
-        shown: PropTypes.bool,
-        unreadCount: PropTypes.number
+        shown: PropTypes.bool.isRequired,
+        unreadCount: PropTypes.number.isRequired,
+        settings: PropTypes.object.isRequired
     };
 
     static defaultProps = {
@@ -59,8 +57,8 @@ export class MessengerButtonComponent extends Component {
     };
 
     render() {
-        const {unreadCount, shown} = this.props;
-        const {settings: {brandColor, isBrandColorDark, buttonIconUrl}} = this.context;
+        const {unreadCount, shown, settings} = this.props;
+        const {brandColor, isBrandColorDark, buttonIconUrl} = settings;
 
         const style = {
             backgroundColor: `#${brandColor}`
@@ -94,8 +92,9 @@ export class MessengerButtonComponent extends Component {
     }
 }
 
-export const MessengerButton = connect(({conversation: {unreadCount}}) => {
+export const MessengerButton = connect(({app, conversation: {unreadCount}}) => {
     return {
+        settings: app.settings.web,
         unreadCount
     };
 })(MessengerButtonComponent);

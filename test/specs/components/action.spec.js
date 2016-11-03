@@ -5,9 +5,9 @@ import deepAssign from 'deep-assign';
 import StripeCheckout from 'react-stripe-checkout';
 
 import { mockAppStore } from '../../utils/redux';
-import { mockComponent, getContext, wrapComponentWithContext } from '../../utils/react';
+import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
-import { ActionComponent } from '../../../src/js/components/action.jsx';
+import { Action } from '../../../src/js/components/action.jsx';
 import { LoadingComponent } from '../../../src/js/components/loading.jsx';
 
 import * as stripeService from '../../../src/js/services/stripe-service';
@@ -54,8 +54,16 @@ function getPostbackProps(props = {}) {
 
 function getStoreState(state = {}) {
     const defaultState = {
+        app: {
+            integrations: []
+        },
         user: {
             email: 'test'
+        },
+        ui: {
+            text: {
+                actionPaymentCompleted: 'payment completed text'
+            }
         }
     };
 
@@ -66,14 +74,6 @@ describe('Action Component', () => {
     let component;
     let componentNode;
     let mockedStore;
-
-    const context = getContext({
-        ui: {
-            text: {
-                actionPaymentCompleted: 'payment completed text'
-            }
-        }
-    });
 
     beforeEach(() => {
         mockComponent(sandbox, StripeCheckout, 'div', {
@@ -108,7 +108,7 @@ describe('Action Component', () => {
 
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, getStoreState());
-            component = wrapComponentWithContext(ActionComponent, props, context);
+            component = wrapComponentWithStore(Action, props, mockedStore);
             componentNode = ReactDOM.findDOMNode(component);
         });
 
@@ -127,7 +127,7 @@ describe('Action Component', () => {
 
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, getStoreState());
-            component = wrapComponentWithContext(ActionComponent, props, context);
+            component = wrapComponentWithStore(Action, props, mockedStore);
             componentNode = ReactDOM.findDOMNode(component);
         });
 
@@ -140,7 +140,7 @@ describe('Action Component', () => {
     });
 
     describe('Stripe', () => {
-        const context = getContext({
+        const storeState = getStoreState({
             app: {
                 integrations: [
                     {
@@ -151,16 +151,16 @@ describe('Action Component', () => {
                     appName: 'app-name',
                     iconUrl: 'iconUrl'
                 }
-            },
-            ui: {
-                text: {
-                    actionPaymentCompleted: 'payment completed text'
-                }
             }
         });
 
+        beforeEach(() => {
+            mockedStore = mockAppStore(sandbox, storeState);
+        });
+
         afterEach(() => {
-            appUtils.getIntegration.should.have.been.calledWithMatch(context.app.integrations, 'stripeConnect');
+            appUtils.getIntegration.should.have.been.calledWithMatch(storeState.app.integrations, 'stripeConnect');
+            mockedStore.restore();
         });
 
         describe('buy action with stripe keys and offered state', () => {
@@ -169,7 +169,7 @@ describe('Action Component', () => {
             });
 
             beforeEach(() => {
-                component = wrapComponentWithContext(ActionComponent, props, context);
+                component = wrapComponentWithStore(Action, props, mockedStore);
             });
 
             it('should render a Stripe button', () => {
@@ -186,7 +186,7 @@ describe('Action Component', () => {
             });
 
             beforeEach(() => {
-                component = wrapComponentWithContext(ActionComponent, props, context);
+                component = wrapComponentWithStore(Action, props, mockedStore);
                 componentNode = ReactDOM.findDOMNode(component);
             });
 
@@ -204,7 +204,7 @@ describe('Action Component', () => {
             });
 
             beforeEach(() => {
-                component = wrapComponentWithContext(ActionComponent, props, context);
+                component = wrapComponentWithStore(Action, props, mockedStore);
                 componentNode = ReactDOM.findDOMNode(component);
             });
 
@@ -223,19 +223,30 @@ describe('Action Component', () => {
 
                 beforeEach(() => {
                     mockedStore = mockAppStore(sandbox, getStoreState({
+                        app: {
+                            integrations: [
+                                {
+                                    type: 'stripeConnect'
+                                }
+                            ],
+                            stripe: {
+                                appName: 'app-name',
+                                iconUrl: 'iconUrl'
+                            }
+                        },
                         user: {
                             email: ''
                         }
                     }));
 
-                    component = wrapComponentWithContext(ActionComponent, props, context);
+                    component = wrapComponentWithStore(Action, props, mockedStore);
 
                     sandbox.stub(stripeService, 'createTransaction');
                     stripeService.createTransaction.resolves();
                 });
 
                 it('call user update', () => {
-                    return component.onStripeToken({
+                    return component.getWrappedInstance().onStripeToken({
                         email: 'email'
                     }).then(() => {
                         userService.immediateUpdate.should.have.been.calledWith({
@@ -248,14 +259,13 @@ describe('Action Component', () => {
             describe('user has email', () => {
                 const props = getBuyProps();
                 beforeEach(() => {
-                    mockedStore = mockAppStore(sandbox, getStoreState());
-                    component = wrapComponentWithContext(ActionComponent, props, context);
+                    component = wrapComponentWithStore(Action, props, mockedStore);
                     sandbox.stub(stripeService, 'createTransaction');
                     stripeService.createTransaction.resolves();
                 });
 
                 it('call user update', () => {
-                    return component.onStripeToken({
+                    return component.getWrappedInstance().onStripeToken({
                         email: 'email'
                     }).then(() => {
                         userService.immediateUpdate.should.not.have.been.called;
@@ -269,8 +279,7 @@ describe('Action Component', () => {
                 });
 
                 beforeEach(() => {
-                    mockedStore = mockAppStore(sandbox, getStoreState());
-                    component = wrapComponentWithContext(ActionComponent, props, context);
+                    component = wrapComponentWithStore(Action, props, mockedStore).getWrappedInstance();
                     sandbox.stub(stripeService, 'createTransaction');
                     stripeService.createTransaction.resolves();
                 });
@@ -291,8 +300,7 @@ describe('Action Component', () => {
                 });
 
                 beforeEach(() => {
-                    mockedStore = mockAppStore(sandbox, getStoreState());
-                    component = wrapComponentWithContext(ActionComponent, props, context);
+                    component = wrapComponentWithStore(Action, props, mockedStore).getWrappedInstance();
                     sandbox.stub(stripeService, 'createTransaction');
                     stripeService.createTransaction.rejects();
 
@@ -313,8 +321,7 @@ describe('Action Component', () => {
             const props = getBuyProps();
 
             beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, getStoreState());
-                component = wrapComponentWithContext(ActionComponent, props, context);
+                component = wrapComponentWithStore(Action, props, mockedStore).getWrappedInstance();
             });
 
             it('set state to processing', () => {
@@ -330,8 +337,7 @@ describe('Action Component', () => {
             });
 
             beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, getStoreState());
-                component = wrapComponentWithContext(ActionComponent, props, context);
+                component = wrapComponentWithStore(Action, props, mockedStore).getWrappedInstance();
             });
 
             it('should set state to offered if no token', () => {
@@ -352,7 +358,7 @@ describe('Action Component', () => {
 
     describe('buy action without stripe keys', () => {
         const props = getBuyProps();
-        const context = getContext({
+        const storeState = getStoreState({
             app: {
                 stripe: {
                     appName: 'app-name',
@@ -368,8 +374,8 @@ describe('Action Component', () => {
 
         beforeEach(() => {
             appUtils.getIntegration.returns(undefined);
-            mockedStore = mockAppStore(sandbox, getStoreState());
-            component = wrapComponentWithContext(ActionComponent, props, context);
+            mockedStore = mockAppStore(sandbox, storeState);
+            component = wrapComponentWithStore(Action, props, mockedStore).getWrappedInstance();
         });
 
         it('should render a link', () => {
@@ -384,7 +390,7 @@ describe('Action Component', () => {
         const props = getPostbackProps();
 
         beforeEach(() => {
-            component = wrapComponentWithContext(ActionComponent, props, context);
+            component = wrapComponentWithStore(Action, props, mockedStore).getWrappedInstance();
             componentNode = ReactDOM.findDOMNode(component);
         });
 
