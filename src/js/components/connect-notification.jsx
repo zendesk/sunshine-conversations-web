@@ -9,19 +9,17 @@ import { showChannelPage, showSettings } from '../services/app-service';
 export class ConnectNotificationComponent extends Component {
     static propTypes = {
         appChannels: PropTypes.array.isRequired,
-        emailCaptureEnabled: PropTypes.bool.isRequired
-    };
-
-    static contextTypes = {
-        ui: PropTypes.object.isRequired,
-        settings: PropTypes.object.isRequired
+        emailCaptureEnabled: PropTypes.bool.isRequired,
+        settings: PropTypes.object.isRequired,
+        connectNotificationText: PropTypes.string.isRequired,
+        settingsNotificationText: PropTypes.string.isRequired
     };
 
     bindHandler() {
         const node = findDOMNode(this);
         if (node) {
             const linkNode = node.querySelector('[data-ui-settings-link]');
-            const {settings: {linkColor}} = this.context;
+            const {settings: {linkColor}} = this.props;
             if (linkNode) {
                 linkNode.onclick = (e) => {
                     e.preventDefault();
@@ -44,8 +42,7 @@ export class ConnectNotificationComponent extends Component {
     }
 
     render() {
-        const {ui: {text: {connectNotificationText, settingsNotificationText}}, settings} = this.context;
-        const {appChannels, emailCaptureEnabled} = this.props;
+        const {appChannels, emailCaptureEnabled, connectNotificationText, settingsNotificationText, settings} = this.props;
 
         const isConnectNotification = hasChannels(settings);
 
@@ -67,7 +64,7 @@ export class ConnectNotificationComponent extends Component {
 
                     return <div style={ linkStyle }
                                 className='channel-details'
-                                key={channel.type}>
+                                key={ channel.type }>
                                <a style={ linkStyle }
                                   href
                                   className='channel-link'
@@ -99,9 +96,12 @@ export class ConnectNotificationComponent extends Component {
     }
 }
 
-export const ConnectNotification = connect(({app, appState}) => {
+export const ConnectNotification = connect(({app, appState, ui: {text}}) => {
     return {
         appChannels: app.integrations,
-        emailCaptureEnabled: appState.emailCaptureEnabled
+        emailCaptureEnabled: appState.emailCaptureEnabled,
+        connectNotificationText: text.connectNotificationText,
+        settingsNotificationText: text.settingsNotificationText,
+        settings: app.settings.web
     };
 })(ConnectNotificationComponent);

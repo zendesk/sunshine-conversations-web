@@ -62,7 +62,10 @@ export const CHANNEL_DETAILS = {
         descriptionKey: 'lineChannelDescription',
         isLinkable: false,
         ...integrationsAssets.line,
-        Component: LineChannelContent
+        Component: !isMobile.any ? LineChannelContent : undefined,
+        getURL: (appUser, {lineId}) => {
+            return `https://line.me/R/ti/p/@${lineId}`;
+        }
     }
 };
 

@@ -8,9 +8,11 @@ import { WIDGET_STATE } from '../constants/app';
 
 export class HeaderComponent extends Component {
 
-    static contextTypes = {
-        ui: PropTypes.object.isRequired,
-        settings: PropTypes.object.isRequired
+    static propTypes = {
+        appState: PropTypes.object.isRequired,
+        settings: PropTypes.object.isRequired,
+        text: PropTypes.object.isRequired,
+        unreadCount: PropTypes.number.isRequired
     };
 
     showSettings(e) {
@@ -29,9 +31,8 @@ export class HeaderComponent extends Component {
     }
 
     render() {
-        const {appState: {emailCaptureEnabled, settingsVisible, widgetState, embedded, visibleChannelType}, unreadCount} = this.props;
-        const {ui, settings} = this.context;
-        const {settingsHeaderText, headerText} = ui.text;
+        const {appState: {emailCaptureEnabled, settingsVisible, widgetState, embedded, visibleChannelType}, unreadCount, settings, text} = this.props;
+        const {settingsHeaderText, headerText} = text;
         const {brandColor} = settings;
 
         const settingsMode = !!(settingsVisible || visibleChannelType);
@@ -98,7 +99,7 @@ export class HeaderComponent extends Component {
     }
 }
 
-function mapStateToProps({appState: {emailCaptureEnabled, settingsVisible, widgetState, embedded, visibleChannelType}, conversation}) {
+function mapStateToProps({app, ui: {text}, appState: {emailCaptureEnabled, settingsVisible, widgetState, embedded, visibleChannelType}, conversation}) {
     return {
         appState: {
             emailCaptureEnabled,
@@ -107,7 +108,9 @@ function mapStateToProps({appState: {emailCaptureEnabled, settingsVisible, widge
             embedded,
             visibleChannelType
         },
-        unreadCount: conversation.unreadCount
+        unreadCount: conversation.unreadCount,
+        settings: app.settings.web,
+        text
     };
 }
 

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 
-export class ChannelPage extends Component {
+export class ChannelPageComponent extends Component {
     static propTypes = {
         name: PropTypes.string.isRequired,
         description: PropTypes.string,
@@ -8,11 +9,8 @@ export class ChannelPage extends Component {
         visible: PropTypes.bool,
         icon: PropTypes.string.isRequired,
         icon2x: PropTypes.string.isRequired,
-        children: PropTypes.element.isRequired
-    };
-
-    static contextTypes = {
-        ui: PropTypes.object.isRequired
+        children: PropTypes.element.isRequired,
+        text: PropTypes.object.isRequired
     };
 
     static defaultProps = {
@@ -20,18 +18,18 @@ export class ChannelPage extends Component {
     };
 
     render() {
-        const {icon, icon2x, name, visible, children, channel, client, pendingClient} = this.props;
+        const {icon, icon2x, name, visible, children, channel, client, pendingClient, text} = this.props;
 
         const description = this.props.getDescription ?
             this.props.getDescription({
-                text: this.context.ui.text,
+                text,
                 channel,
                 client,
                 pendingClient
-            })
-            : this.context.ui.text[this.props.descriptionKey];
+            }) :
+            text[this.props.descriptionKey];
 
-        const descriptionHtml = this.context.ui.text[this.props.descriptionHtmlKey];
+        const descriptionHtml = text[this.props.descriptionHtmlKey];
 
         const channelDescription = descriptionHtml ?
             <span dangerouslySetInnerHTML={ {    __html: descriptionHtml} } /> :
@@ -57,3 +55,9 @@ export class ChannelPage extends Component {
                </div>;
     }
 }
+
+export const ChannelPage = connect(({ui: {text}}) => {
+    return {
+        text
+    };
+})(ChannelPageComponent);
