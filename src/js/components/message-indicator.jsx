@@ -5,8 +5,10 @@ import DocumentTitle from 'react-document-title';
 const BLINKING_INTERVAL = 1500;
 
 export class MessageIndicatorComponent extends Component {
-    static contextTypes = {
-        ui: PropTypes.object.isRequired
+    static propTypes = {
+        unreadCount: PropTypes.number.isRequired,
+        messageIndicatorTitleSingular: PropTypes.string.isRequired,
+        messageIndicatorTitlePlural: PropTypes.string.isRequired
     };
 
     state = {
@@ -18,8 +20,7 @@ export class MessageIndicatorComponent extends Component {
     blinkTitle() {
         if (!this.blinkInterval) {
             const fn = () => {
-                const {ui:{text:{messageIndicatorTitleSingular, messageIndicatorTitlePlural}}} = this.context;
-                const {unreadCount} = this.props;
+                const {messageIndicatorTitleSingular, messageIndicatorTitlePlural, unreadCount} = this.props;
                 const {currentTitle, lastSetTitle} = this.state;
                 let {initialDocumentTitle} = this.state;
 
@@ -95,8 +96,10 @@ export class MessageIndicatorComponent extends Component {
     }
 }
 
-export const MessageIndicator = connect(({conversation: {unreadCount}}) => {
+export const MessageIndicator = connect(({ui: {text}, conversation: {unreadCount}}) => {
     return {
-        unreadCount
+        unreadCount,
+        messageIndicatorTitleSingular: text.messageIndicatorTitleSingular,
+        messageIndicatorTitlePlural: text.messageIndicatorTitlePlural
     };
 })(MessageIndicatorComponent);

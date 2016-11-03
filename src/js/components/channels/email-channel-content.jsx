@@ -1,17 +1,19 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 
-export class EmailChannelContent extends Component {
-    static contextTypes = {
-        settings: PropTypes.object.isRequired
-    }
+export class EmailChannelContentComponent extends Component {
+    static propTypes = {
+        linkColor: PropTypes.string,
+        fromAddress: PropTypes.string,
+        smoochAddress: PropTypes.string.isRequired
+    };
 
     render() {
-        const {settings} = this.context;
-        const {fromAddress, smoochAddress} = this.props;
+        const {linkColor, fromAddress, smoochAddress} = this.props;
         const email = fromAddress || smoochAddress;
 
-        const styleOverride = settings.linkColor ? {
-            color: `#${settings.linkColor}`
+        const styleOverride = linkColor ? {
+            color: `#${linkColor}`
         } : null;
 
         return <a href={ `mailto:${email}` }
@@ -21,3 +23,9 @@ export class EmailChannelContent extends Component {
                </a>;
     }
 }
+
+export const EmailChannelContent = connect(({app}) => {
+    return {
+        linkColor: app.settings.web.linkColor
+    };
+})(EmailChannelContentComponent);

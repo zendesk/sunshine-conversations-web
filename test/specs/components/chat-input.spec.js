@@ -2,28 +2,32 @@ import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
 import { mockAppStore } from '../../utils/redux';
-import { mockComponent, getContext, wrapComponentWithContext } from '../../utils/react';
+import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
-import { ChatInputComponent } from '../../../src/js/components/chat-input';
+import { ChatInput, ChatInputComponent } from '../../../src/js/components/chat-input';
 import { ImageUpload } from '../../../src/js/components/image-upload';
 const conversationService = require('../../../src/js/services/conversation-service');
 
 const sandbox = sinon.sandbox.create();
 
-const props = {
-    imageUploadEnabled: true,
-    ui: {
-        text: {
-            inputPlaceholder: 'Placeholder',
-            sendButtonText: 'Button'
-        }
-    }
-};
-
 function getStoreState(state = {}) {
     const defaultState = {
+        app: {
+            settings: {
+                web: {}
+            }
+        },
+        appState: {
+            imageUploadEnabled: true
+        },
         conversation: {
             unreadCount: 0
+        },
+        ui: {
+            text: {
+                inputPlaceholder: 'Placeholder',
+                sendButtonText: 'Button'
+            }
         }
     };
 
@@ -33,7 +37,6 @@ function getStoreState(state = {}) {
 describe('ChatInput Component', () => {
     let component;
     let mockedStore;
-    let context;
 
     let onChangeSpy;
     let onSendMessageSpy;
@@ -55,15 +58,6 @@ describe('ChatInput Component', () => {
         resetUnreadCountStub = sandbox.stub(conversationService, 'resetUnreadCount');
         serviceSendMessageStub = sandbox.stub(conversationService, 'sendMessage');
 
-        context = getContext({
-            ui: {
-                text: {
-                    sendButtonText: 'send button text',
-                    inputPlaceholder: 'input placeholder'
-                }
-            }
-        });
-
         // spy on it after rendering to avoid triggering it when the component mounts
         setStateSpy = sandbox.spy(ChatInputComponent.prototype, 'setState');
     });
@@ -75,12 +69,9 @@ describe('ChatInput Component', () => {
 
     it('should use the ui text', () => {
         mockedStore = mockAppStore(sandbox, getStoreState());
-        component = wrapComponentWithContext(ChatInputComponent, props, {
-            ...context,
-            store: mockedStore
-        });
-        component.refs.input.placeholder.should.eq(context.ui.text.inputPlaceholder);
-        component.refs.button.textContent.should.eq(context.ui.text.sendButtonText);
+        component = wrapComponentWithStore(ChatInput, null, mockedStore).getWrappedInstance();
+        component.refs.input.placeholder.should.eq(mockedStore.getState().ui.text.inputPlaceholder);
+        component.refs.button.textContent.should.eq(mockedStore.getState().ui.text.sendButtonText);
     });
 
     describe('focus input', () => {
@@ -91,27 +82,20 @@ describe('ChatInput Component', () => {
                 }
             }));
 
-            component = wrapComponentWithContext(ChatInputComponent, props, {
-                ...context,
-                store: mockedStore
-            });
-
+            component = wrapComponentWithStore(ChatInput, null, mockedStore).getWrappedInstance();
             component.onFocus();
 
             resetUnreadCountStub.should.have.been.calledOnce;
         });
 
         it('should not reset unread count if == 0', () => {
-            mockedStore = mockAppStore(sandbox, {
+            mockedStore = mockAppStore(sandbox, getStoreState({
                 conversation: {
                     unreadCount: 0
                 }
-            });
+            }));
 
-            component = wrapComponentWithContext(ChatInputComponent, props, {
-                ...context,
-                store: mockedStore
-            });
+            component = wrapComponentWithStore(ChatInput, null, mockedStore).getWrappedInstance();
 
             component.onFocus();
 
@@ -124,10 +108,7 @@ describe('ChatInput Component', () => {
         it('should call onChange when input triggers change', () => {
             mockedStore = mockAppStore(sandbox, getStoreState());
 
-            component = wrapComponentWithContext(ChatInputComponent, props, {
-                ...context,
-                store: mockedStore
-            });
+            component = wrapComponentWithStore(ChatInput, null, mockedStore).getWrappedInstance();
 
             TestUtils.Simulate.change(component.refs.input);
             onChangeSpy.should.have.been.calledOnce;
@@ -136,10 +117,7 @@ describe('ChatInput Component', () => {
         it('should change state when calling onChange', () => {
             mockedStore = mockAppStore(sandbox, getStoreState());
 
-            component = wrapComponentWithContext(ChatInputComponent, props, {
-                ...context,
-                store: mockedStore
-            });
+            component = wrapComponentWithStore(ChatInput, null, mockedStore).getWrappedInstance();
 
             component.state.text.should.eq('');
 
@@ -156,16 +134,13 @@ describe('ChatInput Component', () => {
             component.state.text.should.eq('some text');
         });
         it('should reset unread count if > 0', () => {
-            mockedStore = mockAppStore(sandbox, {
+            mockedStore = mockAppStore(sandbox, getStoreState({
                 conversation: {
                     unreadCount: 1
                 }
-            });
+            }));
 
-            component = wrapComponentWithContext(ChatInputComponent, props, {
-                ...context,
-                store: mockedStore
-            });
+            component = wrapComponentWithStore(ChatInput, null, mockedStore).getWrappedInstance();
 
             TestUtils.Simulate.change(component.refs.input);
 
@@ -173,11 +148,11 @@ describe('ChatInput Component', () => {
         });
 
         it('should not reset unread count if == 0', () => {
-            mockedStore = mockAppStore(sandbox, {
+            mockedStore = mockAppStore(sandbox, getStoreState({
                 conversation: {
                     unreadCount: 0
                 }
-            });
+            }));
             TestUtils.Simulate.change(component.refs.input);
 
             resetUnreadCountStub.should.not.have.been.called;
@@ -189,10 +164,7 @@ describe('ChatInput Component', () => {
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, getStoreState());
 
-            component = wrapComponentWithContext(ChatInputComponent, props, {
-                ...context,
-                store: mockedStore
-            });
+            component = wrapComponentWithStore(ChatInput, null, mockedStore).getWrappedInstance();
         });
 
         it('should call sendMessage when clicking the button', () => {
@@ -240,15 +212,13 @@ describe('ChatInput Component', () => {
     describe('Image upload button', () => {
         [true, false].forEach((imageUploadEnabled) => {
             it(`should${imageUploadEnabled ? '' : 'not'} display the image upload button`, () => {
-                mockedStore = mockAppStore(sandbox, getStoreState());
-                const componentProps = Object.assign({}, props, {
-                    imageUploadEnabled
-                });
+                mockedStore = mockAppStore(sandbox, getStoreState({
+                    appState: {
+                        imageUploadEnabled
+                    }
+                }));
 
-                component = wrapComponentWithContext(ChatInputComponent, componentProps, {
-                    ...context,
-                    store: mockedStore
-                });
+                component = wrapComponentWithStore(ChatInput, null, mockedStore).getWrappedInstance();
 
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'image-upload').length.should.be.eq(imageUploadEnabled ? 1 : 0);
             });

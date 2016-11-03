@@ -17,10 +17,6 @@ const INTRO_BOTTOM_SPACER = 10;
 const LOAD_MORE_LINK_HEIGHT = 47;
 
 export class ConversationComponent extends Component {
-    static contextTypes = {
-        settings: PropTypes.object.isRequired,
-        ui: PropTypes.object.isRequired
-    };
 
     static propTypes = {
         connectNotificationTimestamp: PropTypes.number,
@@ -184,8 +180,9 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const {connectNotificationTimestamp, introHeight, messages, errorNotificationMessage, isFetchingMoreMessages, hasMoreMessages} = this.props;
-        const {ui: {text: {fetchingHistory, fetchHistory}}, settings: {accentColor, linkColor}} = this.context;
+        const {connectNotificationTimestamp, introHeight, messages, errorNotificationMessage, isFetchingMoreMessages, hasMoreMessages, text, settings} = this.props;
+        const {fetchingHistory, fetchHistory} = text;
+        const {accentColor, linkColor} = settings;
 
         let messageItems = messages.map((message, index) => {
             const refCallback = (c) => {
@@ -283,7 +280,7 @@ export class ConversationComponent extends Component {
     }
 }
 
-export const Conversation = connect(({appState, conversation}) => {
+export const Conversation = connect(({appState, conversation, ui: {text}, app}) => {
     return {
         messages: conversation.messages,
         embedded: appState.embedded,
@@ -292,6 +289,11 @@ export const Conversation = connect(({appState, conversation}) => {
         hasMoreMessages: conversation.hasMoreMessages,
         introHeight: appState.introHeight,
         connectNotificationTimestamp: appState.connectNotificationTimestamp,
-        errorNotificationMessage: appState.errorNotificationMessage
+        errorNotificationMessage: appState.errorNotificationMessage,
+        settings: app.settings.web,
+        text: {
+            fetchingHistory: text.fetchingHistory,
+            fetchHistory: text.fetchHistory
+        }
     };
 })(ConversationComponent);

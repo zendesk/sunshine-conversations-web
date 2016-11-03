@@ -51,9 +51,8 @@ export class ChannelComponent extends Component {
 }
 
 export const Channel = connect(({appState, app, user, integrations}) => {
-    const channelType = appState.visibleChannelType;
     return {
-        visibleChannelType: channelType,
+        visibleChannelType: appState.visibleChannelType,
         appChannels: app.integrations,
         channelStates: integrations,
         smoochId: user._id,

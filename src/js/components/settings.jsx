@@ -1,20 +1,18 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 
 import { EmailSettings } from './email-settings';
 import { NotificationsSettings } from './notifications-settings';
 import { hasChannels } from '../utils/app';
 
-export class Settings extends Component {
-    static contextTypes = {
+export class SettingsComponent extends Component {
+
+    static propTypes = {
         settings: PropTypes.object.isRequired
     };
 
-    static propTypes = {
-        className: PropTypes.string
-    };
-
     render() {
-        const {settings} = this.context;
+        const {settings} = this.props;
         const settingsComponent = hasChannels(settings) ? <NotificationsSettings /> : <EmailSettings />;
 
         return <div className='sk-settings'>
@@ -22,3 +20,9 @@ export class Settings extends Component {
                </div>;
     }
 }
+
+export const Settings = connect(({app}) => {
+    return {
+        settings: app.settings.web
+    };
+})(SettingsComponent);
