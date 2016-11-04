@@ -92,7 +92,7 @@ const removeDuplicates = (messages) => {
 const assignGroups = (messages) => {
     let lastAuthor;
     messages.forEach((message, index) => {
-        const author = message.role === 'appUser' ? message.role : message.name;
+        const author = message.role === 'appUser' || !message.name ? message.role : message.name;
 
         if (!lastAuthor) {
             lastAuthor = author;
