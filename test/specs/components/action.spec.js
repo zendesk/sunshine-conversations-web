@@ -22,7 +22,7 @@ function getNormalProps(props = {}) {
         _id: 'action id',
         type: 'link',
         text: 'action text',
-        uri: 'action uri'
+        uri: 'http://some-uri/'
     };
 
     return Object.assign(defaultProps, props);
@@ -33,7 +33,7 @@ function getBuyProps(props = {}) {
         _id: 'action id',
         type: 'buy',
         text: 'action text',
-        uri: 'action uri',
+        uri: 'http://some-uri/',
         currency: 'usd',
         state: 'offered'
     };
@@ -114,9 +114,9 @@ describe('Action Component', () => {
 
         it('should render a link with target blank', () => {
             const link = TestUtils.findRenderedDOMComponentWithTag(component, 'a');
-            link.textContent = 'action text';
-            link.href = 'action uri';
-            link.target = '_blank';
+            link.textContent.should.eq('action text');
+            link.href.should.eq('http://some-uri/');
+            link.target.should.eq('_blank');
         });
     });
 
@@ -133,9 +133,9 @@ describe('Action Component', () => {
 
         it('should render a link with target self', () => {
             const link = TestUtils.findRenderedDOMComponentWithTag(component, 'a');
-            link.textContent = 'action text';
-            link.href = 'javascript:someAction()';
-            link.target = '_self';
+            link.textContent.should.eq('action text');
+            link.href.should.eq('javascript:someAction()');
+            link.target.should.eq('_self');
         });
     });
 
@@ -165,7 +165,7 @@ describe('Action Component', () => {
 
         describe('buy action with stripe keys and offered state', () => {
             const props = getBuyProps({
-                uri: 'fallback uri'
+                uri: 'http://some-fallback-uri/'
             });
 
             beforeEach(() => {
@@ -380,9 +380,9 @@ describe('Action Component', () => {
 
         it('should render a link', () => {
             const link = TestUtils.findRenderedDOMComponentWithTag(component, 'a');
-            link.textContent = 'action text';
-            link.href = 'fallback uri';
-            link.target = '_blank';
+            link.textContent.should.eq('action text');
+            link.href.should.eq('http://some-uri/');
+            link.target.should.eq('_blank');
         });
     });
 

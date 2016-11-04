@@ -165,7 +165,7 @@ export class ActionComponent extends Component {
                            { buttonText }
                        </button>
                    </div>;
-        } else if (type === 'link') {
+        } else if (type === 'link' || type === 'buy' && !stripeIntegration) {
             const isJavascript = uri.startsWith('javascript:');
 
             return <div className='sk-action'>

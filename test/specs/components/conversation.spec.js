@@ -38,19 +38,23 @@ function getStoreState(state = {}) {
             messages: [
                 {
                     _id: 1,
-                    received: 1
+                    received: 1,
+                    role: 'appMaker'
                 },
                 {
                     _id: 2,
-                    received: 2
+                    received: 2,
+                    role: 'appMaker'
                 },
                 {
                     _id: 3,
-                    received: 3
+                    received: 3,
+                    role: 'appMaker'
                 },
                 {
                     _id: 4,
-                    received: 4
+                    received: 4,
+                    role: 'appMaker'
                 }
             ],
             hasMoreMessages: false

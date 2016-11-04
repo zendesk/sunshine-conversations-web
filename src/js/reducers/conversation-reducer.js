@@ -32,13 +32,19 @@ const addMessage = (messages, message) => {
         const previousMessage = messages[messagesLength - 1];
         const messageAuthor = message.role === 'appUser' ? message.role : message.name;
         const previousMessageAuthor = previousMessage.role === 'appUser' ? previousMessage.role : previousMessage.name;
-        if (messageAuthor !== previousMessageAuthor) {
+
+        if (previousMessage.role !== message.role) {
+            previousMessage.lastInGroup = true;
             message.firstInGroup = true;
-            message.lastInGroup = true;
         } else {
-            message.lastInGroup = true;
-            previousMessage.lastInGroup = false;
-            messages[messagesLength - 1] = previousMessage;
+            if (messageAuthor !== previousMessageAuthor) {
+                message.firstInGroup = true;
+                message.lastInGroup = true;
+            } else {
+                message.lastInGroup = true;
+                previousMessage.lastInGroup = false;
+                messages[messagesLength - 1] = previousMessage;
+            }
         }
     } else {
         message.firstInGroup = true;
