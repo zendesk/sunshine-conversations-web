@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 
 import { TextMessage } from './text-message';
 import { ImageMessage } from './image-message';
@@ -7,8 +7,22 @@ import { findDOMNode } from 'react-dom';
 import { getElementProperties } from '../utils/dom';
 
 export class MessageComponent extends Component {
+    static propTypes = {
+        name: PropTypes.string,
+        actions: PropTypes.array,
+        role: PropTypes.string.isRequired,
+        mediaUrl: PropTypes.string,
+        text: PropTypes.string.isRequired,
+        accentColor: PropTypes.string,
+        linkColor: PropTypes.string,
+        firstInGroup: PropTypes.bool,
+        lastInGroup: PropTypes.bool
+    };
+
     static defaultProps = {
-        actions: []
+        actions: [],
+        firstInGroup: true,
+        lastInGroup: true
     };
 
     componentDidMount() {
