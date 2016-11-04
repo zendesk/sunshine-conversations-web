@@ -31,55 +31,58 @@ export class MessageComponent extends Component {
     }
 
     render() {
-        const actions = this.props.actions.map((action) => {
-            return <Action key={ action._id }
-                                    buttonColor={ this.props.linkColor }
-                                    {...action} />;
-        });
+        const {name, actions, role, mediaUrl, avatarUrl, text, accentColor, firstInGroup, lastInGroup, linkColor} = this.props;
+        const actionList = actions
+            .filter((a) => a.type !== 'reply')
+            .map((action) => {
+                return <Action key={ action._id }
+                               buttonColor={ linkColor }
+                               {...action} />;
+            });
 
-        const isAppUser = this.props.role === 'appUser';
+        const isAppUser = role === 'appUser';
 
-        const avatarClass = this.props.mediaUrl ? ['sk-msg-avatar', 'sk-msg-avatar-img'] : ['sk-msg-avatar'];
+        const avatarClass = mediaUrl ? ['sk-msg-avatar', 'sk-msg-avatar-img'] : ['sk-msg-avatar'];
         const avatar = isAppUser ? null : (
             <img className={ avatarClass.join(' ') }
-                 src={ this.props.avatarUrl } />
+                 src={ avatarUrl } />
             );
         const avatarPlaceHolder = isAppUser ? null : (<div className='sk-msg-avatar-placeholder' />);
 
-        const message = this.props.mediaUrl ?
+        const message = mediaUrl ?
             <ImageMessage {...this.props} /> :
             <TextMessage {...this.props} />;
 
-        const containerClass = [this.props.mediaUrl ? 'sk-msg-image' : 'sk-msg'];
+        const containerClass = [mediaUrl ? 'sk-msg-image' : 'sk-msg'];
 
-        const hasContent = (this.props.text && this.props.text.trim()) || (this.props.mediaUrl && this.props.mediaUrl.trim());
+        const hasContent = (text && text.trim()) || (mediaUrl && mediaUrl.trim());
 
-        if (hasContent && this.props.actions.length > 0) {
+        if (hasContent && actions.length > 0) {
             containerClass.push('has-actions');
         }
 
         const style = {};
 
-        if (!this.props.mediaUrl) {
-            if (isAppUser && this.props.accentColor) {
-                style.backgroundColor = style.borderLeftColor = `#${this.props.accentColor}`;
+        if (!mediaUrl) {
+            if (isAppUser && accentColor) {
+                style.backgroundColor = style.borderLeftColor = `#${accentColor}`;
             }
         }
-        if (this.props.firstInGroup && !this.props.lastInGroup) {
+        if (firstInGroup && !lastInGroup) {
             if (isAppUser) {
                 containerClass.push('sk-msg-appuser-first');
             } else {
                 containerClass.push('sk-msg-appmaker-first');
             }
         }
-        if (this.props.lastInGroup && !this.props.firstInGroup) {
+        if (lastInGroup && !firstInGroup) {
             if (isAppUser) {
                 containerClass.push('sk-msg-appuser-last');
             } else {
                 containerClass.push('sk-msg-appmaker-last');
             }
         }
-        if (!this.props.firstInGroup && !this.props.lastInGroup) {
+        if (!firstInGroup && !lastInGroup) {
             if (isAppUser) {
                 containerClass.push('sk-msg-appuser-middle');
             } else {
@@ -88,18 +91,18 @@ export class MessageComponent extends Component {
         }
 
         const fromName = <div className='sk-from'>
-                             { isAppUser ? '' : this.props.name }
+                             { isAppUser ? '' : name }
                          </div>;
 
         return <div className={ 'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row') }>
-                   { !isAppUser && this.props.firstInGroup ? fromName : '' }
-                   { this.props.lastInGroup ? avatar : avatarPlaceHolder }
+                   { !isAppUser && firstInGroup ? fromName : '' }
+                   { lastInGroup ? avatar : avatarPlaceHolder }
                    <div className='sk-msg-wrapper'>
                        <div className={ containerClass.join(' ') }
                             style={ style }
                             ref='messageContent'>
                            { message }
-                           { actions }
+                           { actionList }
                        </div>
                    </div>
                    <div className='sk-clear'></div>

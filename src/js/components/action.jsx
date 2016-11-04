@@ -165,7 +165,7 @@ export class ActionComponent extends Component {
                            { buttonText }
                        </button>
                    </div>;
-        } else {
+        } else if (type === 'link') {
             const isJavascript = uri.startsWith('javascript:');
 
             return <div className='sk-action'>
@@ -176,6 +176,8 @@ export class ActionComponent extends Component {
                            { text }
                        </a>
                    </div>;
+        } else {
+            return null;
         }
     }
 }

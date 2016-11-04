@@ -7,6 +7,7 @@ import { MessageComponent } from './message';
 import { ConnectNotification } from './connect-notification';
 import { logo, logo2x } from '../constants/assets';
 import { Introduction } from './introduction';
+import { QuickReplies } from './quick-replies';
 
 import { setShouldScrollToBottom, setFetchingMoreMessages } from '../actions/app-state-actions';
 import { fetchMoreMessages } from '../services/conversation-service';
@@ -207,6 +208,23 @@ export class ConversationComponent extends Component {
                                      onLoad={ this.scrollToBottom }
                                      {...message} />;
         });
+
+        if (messages.length > 0) {
+            const lastMessage = messages[messages.length - 1];
+            const replies = lastMessage.actions ? lastMessage.actions.filter((a) => a.type === 'reply') : [];
+
+            if (replies.length > 0) {
+                const choices = replies.map(({text, payload, iconUrl}) => {
+                    return {
+                        text,
+                        payload,
+                        iconUrl
+                    };
+                });
+                messageItems.push(<QuickReplies choices={ choices }
+                                                key='quick-replies' />);
+            }
+        }
 
         if (connectNotificationTimestamp) {
             const notificationIndex = messages.findIndex((message) => message.received > connectNotificationTimestamp);
