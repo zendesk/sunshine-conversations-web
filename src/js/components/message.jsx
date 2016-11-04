@@ -12,7 +12,7 @@ export class MessageComponent extends Component {
         actions: PropTypes.array,
         role: PropTypes.string.isRequired,
         mediaUrl: PropTypes.string,
-        text: PropTypes.string.isRequired,
+        text: PropTypes.string,
         accentColor: PropTypes.string,
         linkColor: PropTypes.string,
         firstInGroup: PropTypes.bool,
@@ -20,9 +20,7 @@ export class MessageComponent extends Component {
     };
 
     static defaultProps = {
-        actions: [],
-        firstInGroup: true,
-        lastInGroup: true
+        actions: []
     };
 
     componentDidMount() {
@@ -45,27 +43,31 @@ export class MessageComponent extends Component {
     }
 
     render() {
-        const {name, actions, role, mediaUrl, avatarUrl, text, accentColor, firstInGroup, lastInGroup, linkColor} = this.props;
-        const actionList = actions
-            .filter((a) => a.type !== 'reply')
-            .map((action) => {
-                return <Action key={ action._id }
-                               buttonColor={ linkColor }
-                               {...action} />;
-            });
+        const {name, role, mediaUrl, avatarUrl, text, accentColor, firstInGroup, lastInGroup, linkColor} = this.props;
+        const actions = this.props.actions.filter((a) => a.type !== 'reply');
+
+        const actionList = actions.map((action) => {
+            return <Action key={ action._id }
+                           buttonColor={ linkColor }
+                           {...action} />;
+        });
 
         const isAppUser = role === 'appUser';
 
         const avatarClass = mediaUrl ? ['sk-msg-avatar', 'sk-msg-avatar-img'] : ['sk-msg-avatar'];
-        const avatar = isAppUser ? null : (
+
+        const avatar = isAppUser ?
+            null :
             <img className={ avatarClass.join(' ') }
-                 src={ avatarUrl } />
-            );
+                 src={ avatarUrl } />;
+
         const avatarPlaceHolder = isAppUser ? null : (<div className='sk-msg-avatar-placeholder' />);
 
         const message = mediaUrl ?
-            <ImageMessage {...this.props} /> :
-            <TextMessage {...this.props} />;
+            <ImageMessage {...this.props}
+                          actions={ actions } /> :
+            <TextMessage {...this.props}
+                         actions={ actions } />;
 
         const containerClass = [mediaUrl ? 'sk-msg-image' : 'sk-msg'];
 
