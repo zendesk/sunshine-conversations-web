@@ -17,7 +17,7 @@ export class ActionComponent extends Component {
         text: PropTypes.string.isRequired,
         type: PropTypes.string,
         buttonColor: PropTypes.string,
-        amount: PropTypes.string,
+        amount: PropTypes.number,
         currency: PropTypes.string,
         uri: PropTypes.string,
         state: PropTypes.string,
