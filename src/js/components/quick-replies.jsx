@@ -6,7 +6,7 @@ import { getRGB, rgbToHsl } from '../utils/colors';
 
 export class QuickRepliesComponent extends Component {
     static propTypes = {
-        linkColor: PropTypes.string.isRequired,
+        accentColor: PropTypes.string.isRequired,
         isLinkColorDark: PropTypes.bool.isRequired,
         choices: PropTypes.array.isRequired
     };
@@ -18,16 +18,16 @@ export class QuickRepliesComponent extends Component {
     };
 
     render() {
-        const {choices, linkColor, isLinkColorDark} = this.props;
+        const {choices, accentColor, isLinkColorDark} = this.props;
 
         const buttonStyle = {};
 
-        if (linkColor) {
-            const rgb = getRGB(`#${linkColor}`);
+        if (accentColor) {
+            const rgb = getRGB(`#${accentColor}`);
             const {h} = rgbToHsl(...rgb);
             buttonStyle.backgroundColor = isLinkColorDark ? `hsl(${h}, 100%, 95%)` : `hsl(${h}, 100%, 98%)`;
-            buttonStyle.borderColor = `#${linkColor}`;
-            buttonStyle.color = `#${linkColor}`;
+            buttonStyle.borderColor = `#${accentColor}`;
+            buttonStyle.color = `#${accentColor}`;
         }
 
         const items = choices.map(({text, payload, iconUrl} , index) => {
@@ -61,7 +61,7 @@ export class QuickRepliesComponent extends Component {
 
 export const QuickReplies = connect(({app}) => {
     return {
-        linkColor: app.settings.web.linkColor,
+        accentColor: app.settings.web.accentColor,
         isLinkColorDark: app.settings.web.isLinkColorDark
     };
 })(QuickRepliesComponent);
