@@ -1,8 +1,12 @@
 import { RESET_APP } from '../actions/app-actions';
 import { RESET } from '../actions/common-actions';
-import { SET_WECHAT_QR_CODE, SET_WECHAT_ERROR, UNSET_WECHAT_ERROR, SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE, RESET_INTEGRATIONS } from '../actions/integrations-actions';
+import { SET_WECHAT_QR_CODE, SET_WECHAT_ERROR, UNSET_WECHAT_ERROR, SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE, RESET_INTEGRATIONS, SET_VIBER_QR_CODE, SET_VIBER_ERROR, UNSET_VIBER_ERROR } from '../actions/integrations-actions';
 
 const INITIAL_STATE = {
+    viber: {
+        hasError: false,
+        qrCode: ''
+    },
     wechat: {
         hasError: false,
         qrCode: ''
@@ -43,6 +47,30 @@ export function IntegrationsReducer(state = INITIAL_STATE, action) {
                 ...state,
                 wechat: {
                     ...state.wechat,
+                    hasError: false
+                }
+            };
+        case SET_VIBER_QR_CODE:
+            return {
+                ...state,
+                viber: {
+                    ...state.viber,
+                    qrCode: action.code
+                }
+            };
+        case SET_VIBER_ERROR:
+            return {
+                ...state,
+                viber: {
+                    ...state.viber,
+                    hasError: true
+                }
+            };
+        case UNSET_VIBER_ERROR:
+            return {
+                ...state,
+                viber: {
+                    ...state.viber,
                     hasError: false
                 }
             };
