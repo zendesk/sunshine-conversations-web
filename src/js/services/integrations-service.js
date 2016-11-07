@@ -1,11 +1,12 @@
 import { store } from '../stores/app-store';
 import { core } from './core';
-import { setWeChatQRCode, setWeChatError, unsetWeChatError, setTwilioIntegrationState, resetTwilioIntegrationState } from '../actions/integrations-actions';
+import { setWeChatQRCode, setWeChatError, unsetWeChatError, setTwilioIntegrationState, resetTwilioIntegrationState, setViberQRCode, setViberError, unsetViberError } from '../actions/integrations-actions';
 import { handleConversationUpdated } from './conversation-service';
 import { getUserId } from './user-service';
 import { updateUser } from '../actions/user-actions';
 
 let fetchingWeChat = false;
+let fetchingViber = false;
 
 export function fetchWeChatQRCode() {
     const {integrations: {wechat}} = store.getState();
@@ -156,4 +157,25 @@ export function cancelTwilioLink() {
         hasError: true,
         errorMessage: smsLinkCancelled.replace('{appUserNumber}', appUserNumber)
     });
+}
+
+export function fetchViberQRCode() {
+    const {integrations: {viber}} = store.getState();
+
+    if (viber.qrCode || fetchingViber) {
+        return Promise.resolve();
+    }
+
+    store.dispatch(unsetViberError());
+    fetchingViber = true;
+    return core().appUsers.viber.getQRCode(getUserId())
+        .then(({url}) => {
+            store.dispatch(setViberQRCode(url));
+        })
+        .catch(() => {
+            store.dispatch(setViberError());
+        })
+        .then(() => {
+            fetchingViber = false;
+        });
 }
