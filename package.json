@@ -2,7 +2,7 @@
   "name": "smooch",
   "description": "Smooch.io powered web messaging",
   "analyze": false,
-  "version": "3.5.2",
+  "version": "3.6.0",
   "keywords": [
     "smooch",
     "javascript",
