@@ -6,13 +6,11 @@ import { immediateUpdate } from '../services/user-service';
 import { hideSettings } from '../actions/app-state-actions';
 
 export class EmailSettingsComponent extends Component {
-    static contextTypes = {
-        ui: PropTypes.object.isRequired,
-        settings: PropTypes.object.isRequired
-    };
-
-    static defaultProps = {
-        settings: {}
+    static propTypes = {
+        text: PropTypes.object.isRequired,
+        appState: PropTypes.object.isRequired,
+        user: PropTypes.object.isRequired,
+        linkColor: PropTypes.string
     };
 
     state = {
@@ -54,13 +52,12 @@ export class EmailSettingsComponent extends Component {
 
     render() {
         const hasError = this.state.hasError;
-        const {settings, ui: {text}} = this.context;
-        const {appState, user} = this.props;
+        const {appState, user, linkColor, text} = this.props;
 
         const style = {};
 
-        if (settings.linkColor) {
-            style.backgroundColor = style.borderColor = `#${settings.linkColor}`;
+        if (linkColor) {
+            style.backgroundColor = style.borderColor = `#${linkColor}`;
         }
 
         const button = appState.readOnlyEmail ? null : (
@@ -97,10 +94,19 @@ export class EmailSettingsComponent extends Component {
     }
 }
 
-export const EmailSettings = connect((state) => {
+export const EmailSettings = connect(({appState: {readOnlyEmail}, user, ui: {text}, app}) => {
     return {
-        appState: state.appState,
-        user: state.user
+        appState: {
+            readOnlyEmail
+        },
+        user,
+        linkColor: app.settings.web.linkColor,
+        text: {
+            settingsInputPlaceholder: text.settingsInputPlaceholder,
+            settingsReadOnlyText: text.settingsReadOnlyText,
+            settingsSaveButtonText: text.settingsSaveButtonText,
+            settingsText: text.settingsText,
+        }
     };
 }, (dispatch) => {
     return {
@@ -108,4 +114,6 @@ export const EmailSettings = connect((state) => {
             hideSettings
         }, dispatch)
     };
+}, null, {
+    withRef: true
 })(EmailSettingsComponent);

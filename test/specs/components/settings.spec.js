@@ -7,7 +7,7 @@ import { EmailSettings } from '../../../src/js/components/email-settings';
 import * as appUtils from '../../../src/js/utils/app';
 
 import { mockAppStore } from '../../utils/redux';
-import { mockComponent, getContext, wrapComponentWithContext } from '../../utils/react';
+import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
 const props = {
@@ -28,11 +28,15 @@ describe('Settings Component', () => {
                     className: 'mockedEmailSettings'
                 });
 
-                const context = getContext({
-                    store: mockAppStore(sandbox, {})
+                const store = mockAppStore(sandbox, {
+                    app: {
+                        settings: {
+                            web: {}
+                        }
+                    }
                 });
 
-                component = wrapComponentWithContext(Settings, props, context);
+                component = wrapComponentWithStore(Settings, props, store);
             });
 
             afterEach(() => {

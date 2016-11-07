@@ -1,45 +1,39 @@
 import sinon from 'sinon';
-import React from 'react';
 import TestUtils from 'react-addons-test-utils';
 
-import { mockComponent } from '../../../utils/react';
+import { mockComponent, wrapComponentWithStore } from '../../../utils/react';
+import { mockAppStore } from '../../../utils/redux';
 import { ReactTelephoneInput } from '../../../../src/js/lib/react-telephone-input';
-import { ParentComponentWithContext } from '../../../utils/parent-component';
 
-import { TwilioChannelContentComponent } from '../../../../src/js/components/channels/twilio-channel-content';
+import { TwilioChannelContent } from '../../../../src/js/components/channels/twilio-channel-content';
 
 const sandbox = sinon.sandbox.create();
 
-const context = {
-    settings: {},
-    ui: {
-        text: {
-            smsInvalidNumberError: 'Your phone number isn\'t valid. Please try again.',
-            smsLinkPending: 'Pending',
-            smsStartTexting: 'Start Texting',
-            smsRetry: 'Retry',
-            smsChangeNumber: 'Change my number',
-            smsSendText: 'Send me a text',
-            smsContinue: 'Continue'
-        }
-    }
-};
-
-const store = {};
-
-function renderComponent(context, store, props) {
-    const parentComponent = TestUtils.renderIntoDocument(<ParentComponentWithContext context={ context }
-                                                                                     store={ store }
-                                                                                     withRef={ true }>
-                                                             <TwilioChannelContentComponent {...props} />
-                                                         </ParentComponentWithContext>);
-    return parentComponent.refs.childElement;
-}
-
 describe('Twilio Channel Content Component', () => {
     let component;
+    let mockedStore;
+
+    const storeState = {
+        app: {
+            settings: {
+                web: {}
+            }
+        },
+        ui: {
+            text: {
+                smsInvalidNumberError: 'Your phone number isn\'t valid. Please try again.',
+                smsLinkPending: 'Pending',
+                smsStartTexting: 'Start Texting',
+                smsRetry: 'Retry',
+                smsChangeNumber: 'Change my number',
+                smsSendText: 'Send me a text',
+                smsContinue: 'Continue'
+            }
+        }
+    };
 
     beforeEach(() => {
+        mockedStore = mockAppStore(sandbox, storeState);
         mockComponent(sandbox, ReactTelephoneInput, 'div', {
             className: 'mockedTelephoneInput'
         });
@@ -51,36 +45,40 @@ describe('Twilio Channel Content Component', () => {
 
     describe('user has sms linking enabled', () => {
         const linkedProps = {
-            appUserNumber: '+151455555555',
-            linkState: 'linked',
+            smoochId: '12345',
             phoneNumber: '123456789',
-            appUserNumberValid: true,
-            settings: {}
+            channelState: {
+                appUserNumber: '+151455555555',
+                linkState: 'linked',
+                appUserNumberValid: true
+            }
         };
         it('should render linked component', () => {
-            component = renderComponent(context, store, linkedProps);
+            component = wrapComponentWithStore(TwilioChannelContent, linkedProps, mockedStore);
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'linked-state').length.should.eq(1);
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedTelephoneInput').length.should.eq(0);
 
             const appUserPhoneNumber = TestUtils.findRenderedDOMComponentWithClass(component, 'linked-state');
-            appUserPhoneNumber.textContent.should.eq(`${linkedProps.appUserNumber}${context.ui.text.smsChangeNumber}`);
+            appUserPhoneNumber.textContent.should.eq(`${linkedProps.channelState.appUserNumber}${storeState.ui.text.smsChangeNumber}`);
 
             const button = TestUtils.findRenderedDOMComponentWithClass(component, 'btn-sk-primary');
-            button.textContent.should.eql(context.ui.text.smsSendText);
+            button.textContent.should.eql(storeState.ui.text.smsSendText);
         });
     });
 
     describe('user has sms linking disabled', () => {
         const unlinkedProps = {
-            appUserNumber: '',
-            linkState: 'unlinked',
+            smoochId: '12345',
             phoneNumber: '123456789',
-            appUserNumberValid: true,
-            settings: {}
+            channelState: {
+                appUserNumber: '',
+                linkState: 'unlinked',
+                appUserNumberValid: true
+            }
         };
 
         it('should render unlinked component', () => {
-            component = renderComponent(context, store, unlinkedProps);
+            component = wrapComponentWithStore(TwilioChannelContent, unlinkedProps, mockedStore);
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedTelephoneInput').length.should.eq(1);
         });
 
@@ -89,14 +87,17 @@ describe('Twilio Channel Content Component', () => {
                 it(`should ${appUserNumberValid ? '' : 'not'} display Continue button`, () => {
                     const props = {
                         ...unlinkedProps,
-                        appUserNumberValid: appUserNumberValid
+                        channelState: {
+                            ...unlinkedProps.channelState,
+                            appUserNumberValid: appUserNumberValid
+                        }
                     };
-                    component = renderComponent(context, store, props);
+                    component = wrapComponentWithStore(TwilioChannelContent, props, mockedStore);
                     TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-primary').length.should.eq(appUserNumberValid ? 1 : 0);
 
                     if (appUserNumberValid) {
                         const button = TestUtils.findRenderedDOMComponentWithClass(component, 'btn-sk-primary');
-                        button.textContent.should.eql(context.ui.text.smsContinue);
+                        button.textContent.should.eql(storeState.ui.text.smsContinue);
                     }
                 });
             });
@@ -106,42 +107,50 @@ describe('Twilio Channel Content Component', () => {
             it('should warn if phone number is invalid', () => {
                 const props = {
                     ...unlinkedProps,
-                    appUserNumber: '+0000000000',
-                    appUserNumberValid: false
+                    channelState: {
+                        ...unlinkedProps.channelState,
+                        appUserNumber: '+0000000000',
+                        appUserNumberValid: false
+                    }
                 };
-                component = renderComponent(context, store, props);
+                component = wrapComponentWithStore(TwilioChannelContent, props, mockedStore);
                 const warning = TestUtils.findRenderedDOMComponentWithClass(component, 'warning-message');
-                warning.textContent.should.eq(context.ui.text.smsInvalidNumberError);
+                warning.textContent.should.eq(storeState.ui.text.smsInvalidNumberError);
             });
 
             it('should warn if error', () => {
                 const props = {
                     ...unlinkedProps,
-                    hasError: true,
-                    errorMessage: 'error-message'
+                    channelState: {
+                        ...unlinkedProps.channelState,
+                        hasError: true,
+                        errorMessage: 'error-message'
+                    }
                 };
-                component = renderComponent(context, store, props);
+                component = wrapComponentWithStore(TwilioChannelContent, props, mockedStore);
                 const warning = TestUtils.findRenderedDOMComponentWithClass(component, 'warning-message');
-                warning.textContent.should.eq(props.errorMessage);
+                warning.textContent.should.eq(props.channelState.errorMessage);
             });
         });
     });
 
     describe('user is in pending state', () => {
         const pendingProps = {
-            appUserNumber: '+15145555555',
-            linkState: 'pending',
-            phoneNumber: '123456789',
-            appUserNumberValid: true,
-            settings: {}
+            smoochId: '12345',
+            channelState: {
+                appUserNumberValid: true,
+                appUserNumber: '+15145555555',
+                linkState: 'pending'
+            },
+            phoneNumber: '123456789'
         };
 
         it('should render pending component', () => {
-            component = renderComponent(context, store, pendingProps);
+            component = wrapComponentWithStore(TwilioChannelContent, pendingProps, mockedStore);
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedTelephoneInput').length.should.eq(0);
 
             const appUserPhoneNumber = TestUtils.findRenderedDOMComponentWithClass(component, 'phone-number');
-            appUserPhoneNumber.textContent.should.eq(`${pendingProps.appUserNumber} - ${context.ui.text.smsLinkPending}`);
+            appUserPhoneNumber.textContent.should.eq(`${pendingProps.channelState.appUserNumber} - ${storeState.ui.text.smsLinkPending}`);
         });
     });
 });
