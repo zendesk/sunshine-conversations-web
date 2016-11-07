@@ -45,6 +45,7 @@ export class MessageComponent extends Component {
     render() {
         const {name, role, mediaUrl, avatarUrl, text, accentColor, firstInGroup, lastInGroup, linkColor} = this.props;
         const actions = this.props.actions.filter((a) => a.type !== 'reply');
+        const hasQuickReplies = this.props.actions.length !== actions.length;
 
         const actionList = actions.map((action) => {
             return <Action key={ action._id }
@@ -84,6 +85,11 @@ export class MessageComponent extends Component {
                 style.backgroundColor = style.borderLeftColor = `#${accentColor}`;
             }
         }
+
+        if (hasQuickReplies) {
+            containerClass.push('sk-msg-has-quick-replies');
+        }
+
         if (firstInGroup && !lastInGroup) {
             if (isAppUser) {
                 containerClass.push('sk-msg-appuser-first');
@@ -91,6 +97,7 @@ export class MessageComponent extends Component {
                 containerClass.push('sk-msg-appmaker-first');
             }
         }
+
         if (lastInGroup && !firstInGroup) {
             if (isAppUser) {
                 containerClass.push('sk-msg-appuser-last');
@@ -98,6 +105,7 @@ export class MessageComponent extends Component {
                 containerClass.push('sk-msg-appmaker-last');
             }
         }
+
         if (!firstInGroup && !lastInGroup) {
             if (isAppUser) {
                 containerClass.push('sk-msg-appuser-middle');
