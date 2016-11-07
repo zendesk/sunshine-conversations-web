@@ -6,6 +6,7 @@ import { Conversation } from '../../../src/js/components/conversation';
 import { MessageComponent } from '../../../src/js/components/message';
 import { Introduction } from '../../../src/js/components/introduction';
 import { ConnectNotification } from '../../../src/js/components/connect-notification';
+import { QuickReplies } from '../../../src/js/components/quick-replies';
 
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 import { mockAppStore } from '../../utils/redux';
@@ -80,6 +81,9 @@ describe('Conversation Component', () => {
         mockComponent(sandbox, ConnectNotification, 'div', {
             className: 'mockedConnectNotification'
         });
+        mockComponent(sandbox, QuickReplies, 'div', {
+            className: 'mockedQuickReplies'
+        });
 
         mockedStore = mockAppStore(sandbox, getStoreState());
     });
@@ -100,6 +104,10 @@ describe('Conversation Component', () => {
 
         it('should render introduction text', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedIntroduction').length.should.eq(1);
+        });
+
+        it('should not render quick replies', () => {
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedQuickReplies').length.should.eq(0);
         });
     });
 
@@ -133,6 +141,53 @@ describe('Conversation Component', () => {
                     TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedIntroduction').length.should.eq(hasMoreMessages ? 0 : 1);
                 });
             });
+        });
+    });
+
+    describe('Quick Replies', () => {
+        beforeEach(() => {
+            mockedStore = mockAppStore(sandbox, getStoreState({
+                conversation: {
+                    messages: [
+                        {
+                            _id: 1,
+                            received: 1,
+                            role: 'appMaker'
+                        },
+                        {
+                            _id: 2,
+                            received: 2,
+                            role: 'appMaker'
+                        },
+                        {
+                            _id: 3,
+                            received: 3,
+                            role: 'appMaker'
+                        },
+                        {
+                            _id: 4,
+                            received: 4,
+                            role: 'appMaker'
+                        },
+                        {
+                            _id: 5,
+                            received: 5,
+                            role: 'appMaker',
+                            actions: [
+                                {
+                                    type: 'reply',
+                                    text: 'reply'
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }));
+            component = wrapComponentWithStore(Conversation, null, mockedStore);
+        });
+
+        it('should render quick replies', () => {
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedQuickReplies').length.should.eq(1);            
         });
     });
 });
