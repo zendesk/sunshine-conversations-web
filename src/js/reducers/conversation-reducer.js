@@ -36,6 +36,7 @@ const addMessage = (messages, message) => {
         if (previousMessage.role !== message.role) {
             previousMessage.lastInGroup = true;
             message.firstInGroup = true;
+            message.lastInGroup = true;
         } else {
             if (messageAuthor !== previousMessageAuthor) {
                 message.firstInGroup = true;
