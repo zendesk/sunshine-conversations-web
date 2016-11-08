@@ -94,10 +94,11 @@ const replaceMessage = (messages, query, newMessage) => {
     return [...messages.slice(0, index), newMessage, ...messages.slice(index + 1)];
 };
 
-const removeDuplicatesAndEmptyMessages = (messages) => {
+const cleanUpMessages = (messages) => {
     const cleanedMessages = [];
     const messagesHash = {};
 
+    // removes duplicate messages and empty messages 
     messages.forEach((message) => {
         const key = message._id + message.role + message.mediaType;
         const hasText = (message.text && !!message.text.trim()) || (message.mediaUrl && !!message.mediaUrl.trim());
@@ -132,13 +133,13 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
         case ConversationActions.SET_MESSAGES:
             return {
                 ...state,
-                messages: assignGroups(sortMessages(removeDuplicatesAndEmptyMessages(action.messages))),
+                messages: assignGroups(sortMessages(cleanUpMessages(action.messages))),
                 quickReplies: extractQuickReplies(action.messages[action.messages.length - 1])
             };
         case ConversationActions.ADD_MESSAGES:
             return {
                 ...state,
-                messages: assignGroups(sortMessages(removeDuplicatesAndEmptyMessages(action.append ?
+                messages: assignGroups(sortMessages(cleanUpMessages(action.append ?
                     [...state.messages, ...action.messages] :
                     [...action.messages, ...state.messages]
                 ))),

@@ -3,6 +3,7 @@
     text-align: right;
     position: relative;
     display: block;
+    padding-bottom: 5px;
 
     .btn-sk-quick-reply {
         padding: 3px 7px 4px;
@@ -14,10 +15,18 @@
         color: @sk-darker-grey;
         margin-bottom: 5px;
 
-        .sk-quick-reply-icon {
-            height: 20px;
-            vertical-align: bottom;
-            margin-right: 5px;
+        span {
+            max-width: 280px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            display: block;
+            white-space: nowrap;
+
+            .sk-quick-reply-icon {
+                height: 20px;
+                vertical-align: bottom;
+                margin-right: 5px;
+            }
         }
     }
 }

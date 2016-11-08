@@ -48,8 +48,7 @@ export class QuickRepliesComponent extends Component {
                            style={ buttonStyle }
                            onClick={ onClick }
                            key={ index }>
-                       { icon }
-                       { text }
+                       <span>{ icon } { text }</span>
                    </button>;
         });
 

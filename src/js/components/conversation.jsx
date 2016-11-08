@@ -138,19 +138,20 @@ export class ConversationComponent extends Component {
     };
 
     componentWillUpdate(nextProps) {
-        const {messages: currentMessages, isFetchingMoreMessages} = this.props;
-        const {messages: newMessages} = nextProps;
+        const {messages: currentMessages, quickReplies: currentQuickReplies, isFetchingMoreMessages} = this.props;
+        const {messages: newMessages, quickReplies: newQuickReplies} = nextProps;
 
-        if (!this._lastMessageNode) {
+        if (!this._lastNode) {
             this._forceScrollToBottom = true;
             return;
         }
 
         // Check for new appMaker (and whisper) messages
         const isAppMakerMessage = newMessages.length - currentMessages.length === 1 ? newMessages.slice(-1)[0].role !== 'appUser' : false;
-        if (isAppMakerMessage && !isFetchingMoreMessages) {
+        const quickRepliesChanged = currentQuickReplies.length !== newQuickReplies.length || currentQuickReplies.some((r, i) => r !== newQuickReplies[i]);
+        if ((isAppMakerMessage || quickRepliesChanged) && !isFetchingMoreMessages) {
             const container = findDOMNode(this);
-            const appMakerMessageBottom = this._lastMessageNode.getBoundingClientRect().bottom;
+            const appMakerMessageBottom = this._lastNode.getBoundingClientRect().bottom;
             const containerBottom = container.getBoundingClientRect().bottom;
 
             // If appMaker message is 'in view', we should scroll to bottom.
@@ -197,7 +198,7 @@ export class ConversationComponent extends Component {
                 }
 
                 if (index === messages.length - 1) {
-                    this._lastMessageNode = findDOMNode(c);
+                    this._lastNode = findDOMNode(c);
                     this._lastMessageId = message._id;
                 }
             };
@@ -218,7 +219,11 @@ export class ConversationComponent extends Component {
                     iconUrl
                 };
             });
-            messageItems.push(<QuickReplies choices={ choices }
+            const refCallback = (c) => {
+                this._lastNode = findDOMNode(c);
+            };
+            messageItems.push(<QuickReplies ref={ refCallback }
+                                            choices={ choices }
                                             key='quick-replies' />);
         }
 
