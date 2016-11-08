@@ -82,7 +82,7 @@ function onWindowBlur() {
 }
 
 export function monitorBrowserState() {
-    store.dispatch(hasFocus(document.hasFocus()));
+    store.dispatch(hasFocus(document.hasFocus ? document.hasFocus() : true));
     window.addEventListener('focus', onWindowFocus);
     window.addEventListener('blur', onWindowBlur);
 }
