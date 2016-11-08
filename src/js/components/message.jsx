@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { TextMessage } from './text-message';
 import { ImageMessage } from './image-message';
-import { ActionComponent } from './action';
+import { Action } from './action';
 import { findDOMNode } from 'react-dom';
 import { getElementProperties } from '../utils/dom';
 
@@ -32,7 +32,7 @@ export class MessageComponent extends Component {
 
     render() {
         const actions = this.props.actions.map((action) => {
-            return <ActionComponent key={ action._id }
+            return <Action key={ action._id }
                                     buttonColor={ this.props.linkColor }
                                     {...action} />;
         });
