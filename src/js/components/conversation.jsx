@@ -23,7 +23,8 @@ export class ConversationComponent extends Component {
         connectNotificationTimestamp: PropTypes.number,
         introHeight: PropTypes.number.isRequired,
         messages: PropTypes.array.isRequired,
-        errorNotificationMessage: PropTypes.string
+        errorNotificationMessage: PropTypes.string,
+        quickReplies: PropTypes.array.isRequired
     };
 
     scrollTimeouts = [];
@@ -181,7 +182,7 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const {connectNotificationTimestamp, introHeight, messages, errorNotificationMessage, isFetchingMoreMessages, hasMoreMessages, text, settings} = this.props;
+        const {connectNotificationTimestamp, introHeight, messages, quickReplies, errorNotificationMessage, isFetchingMoreMessages, hasMoreMessages, text, settings} = this.props;
         const {fetchingHistory, fetchHistory} = text;
         const {accentColor, linkColor} = settings;
 
@@ -209,21 +210,16 @@ export class ConversationComponent extends Component {
                                      {...message} />;
         });
 
-        if (messages.length > 0) {
-            const lastMessage = messages[messages.length - 1];
-            const replies = lastMessage.actions ? lastMessage.actions.filter((a) => a.type === 'reply') : [];
-
-            if (replies.length > 0) {
-                const choices = replies.map(({text, payload, iconUrl}) => {
-                    return {
-                        text,
-                        payload,
-                        iconUrl
-                    };
-                });
-                messageItems.push(<QuickReplies choices={ choices }
-                                                key='quick-replies' />);
-            }
+        if (quickReplies.length > 0) {
+            const choices = quickReplies.map(({text, payload, iconUrl}) => {
+                return {
+                    text,
+                    payload,
+                    iconUrl
+                };
+            });
+            messageItems.push(<QuickReplies choices={ choices }
+                                            key='quick-replies' />);
         }
 
         if (connectNotificationTimestamp) {
@@ -301,6 +297,7 @@ export class ConversationComponent extends Component {
 export const Conversation = connect(({appState, conversation, ui: {text}, app}) => {
     return {
         messages: conversation.messages,
+        quickReplies: conversation.quickReplies,
         embedded: appState.embedded,
         shouldScrollToBottom: appState.shouldScrollToBottom,
         isFetchingMoreMessages: appState.isFetchingMoreMessages,

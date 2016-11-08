@@ -3,6 +3,7 @@ import { RESET } from '../actions/common-actions';
 
 const INITIAL_STATE = {
     messages: [],
+    quickReplies: [],
     unreadCount: 0,
     hasMoreMessages: false,
     isFetchingMoreMessagesFromServer: false
@@ -26,10 +27,9 @@ const sortMessages = (messages) => messages.sort((messageA, messageB) => {
     return messageA.received - messageB.received;
 });
 
-const addMessage = (messages, message) => {
-    const messagesLength = messages.length;
-    if (messagesLength > 0) {
-        const previousMessage = messages[messagesLength - 1];
+const manageGroupsBetweenMessages = (messages, previousMessageIndex, message) => {
+    const previousMessage = previousMessageIndex >= 0 && messages[previousMessageIndex];
+    if (previousMessage) {
         const messageAuthor = message.role === 'appUser' ? message.role : message.name;
         const previousMessageAuthor = previousMessage.role === 'appUser' ? previousMessage.role : previousMessage.name;
 
@@ -44,15 +44,34 @@ const addMessage = (messages, message) => {
             } else {
                 message.lastInGroup = true;
                 previousMessage.lastInGroup = false;
-                messages[messagesLength - 1] = previousMessage;
             }
         }
+
+        messages[previousMessageIndex] = previousMessage;
     } else {
         message.firstInGroup = true;
         message.lastInGroup = true;
     }
+};
+
+const extractQuickReplies = ({actions=[]} = {}) => {
+    return actions.filter(({type}) => type === 'reply');
+};
+
+const addMessage = (messages, message) => {
+    const quickReplies = extractQuickReplies(message);
+    const hasText = (message.text && message.text.trim()) || (message.mediaUrl && message.mediaUrl.trim());
+    if (quickReplies.length > 0 && !hasText) {
+        // if the message contains quick replies and has no text,
+        // don't add it to the messages
+        return messages;
+    }
+
+    const messagesLength = messages.length;
+    manageGroupsBetweenMessages(messages, messagesLength - 1, message);
     return sortMessages([...messages, message]);
 };
+
 
 const matchMessage = (message, queryProps) => Object.keys(queryProps).every((key) => message[key] === queryProps[key]);
 
@@ -75,43 +94,25 @@ const replaceMessage = (messages, query, newMessage) => {
     return [...messages.slice(0, index), newMessage, ...messages.slice(index + 1)];
 };
 
-const removeDuplicates = (messages) => {
-    const messagesNoDuplicates = [];
+const removeDuplicatesAndEmptyMessages = (messages) => {
+    const cleanedMessages = [];
     const messagesHash = {};
 
     messages.forEach((message) => {
         const key = message._id + message.role + message.mediaType;
-        if (!(key in messagesHash)) {
+        const hasText = (message.text && !!message.text.trim()) || (message.mediaUrl && !!message.mediaUrl.trim());
+        if (!(key in messagesHash) && hasText) {
             messagesHash[key] = message;
-            messagesNoDuplicates.push(message);
+            cleanedMessages.push(message);
         }
     });
 
-    return messagesNoDuplicates;
+    return cleanedMessages;
 };
 
 const assignGroups = (messages) => {
-    let lastAuthor;
     messages.forEach((message, index) => {
-        const author = message.role === 'appUser' || !message.name ? message.role : message.name;
-
-        if (!lastAuthor) {
-            lastAuthor = author;
-            message.firstInGroup = true;
-            message.lastInGroup = true;
-        }
-
-        if (lastAuthor === author) {
-            if (index > 0) {
-                messages[index - 1].lastInGroup = false;
-                message.lastInGroup = true;
-            }
-        } else {
-            message.firstInGroup = true;
-            message.lastInGroup = true;
-        }
-
-        lastAuthor = author;
+        manageGroupsBetweenMessages(messages, index - 1, message);
     });
     return messages;
 };
@@ -125,25 +126,28 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             };
         case ConversationActions.SET_CONVERSATION:
             return {
-                ...action.conversation,
-                messages: state.messages
+                ...INITIAL_STATE,
+                ...action.conversation
             };
         case ConversationActions.SET_MESSAGES:
             return {
                 ...state,
-                messages: assignGroups(sortMessages(removeDuplicates(action.messages)))
+                messages: assignGroups(sortMessages(removeDuplicatesAndEmptyMessages(action.messages))),
+                quickReplies: extractQuickReplies(action.messages[action.messages.length - 1])
             };
         case ConversationActions.ADD_MESSAGES:
             return {
                 ...state,
-                messages: assignGroups(sortMessages(removeDuplicates(action.append ?
+                messages: assignGroups(sortMessages(removeDuplicatesAndEmptyMessages(action.append ?
                     [...state.messages, ...action.messages] :
                     [...action.messages, ...state.messages]
-                )))
+                ))),
+                quickReplies: extractQuickReplies(action.messages[action.messages.length - 1])
             };
         case ConversationActions.ADD_MESSAGE:
             return Object.assign({}, state, {
-                messages: addMessage(state.messages, action.message)
+                messages: addMessage(state.messages, action.message),
+                quickReplies: extractQuickReplies(action.message)
             });
         case ConversationActions.REPLACE_MESSAGE:
             return Object.assign({}, state, {

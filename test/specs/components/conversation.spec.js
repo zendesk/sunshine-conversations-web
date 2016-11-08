@@ -58,6 +58,7 @@ function getStoreState(state = {}) {
                     role: 'appMaker'
                 }
             ],
+            quickReplies: [],
             hasMoreMessages: false
         }
     };
@@ -180,6 +181,12 @@ describe('Conversation Component', () => {
                                 }
                             ]
                         }
+                    ],
+                    quickReplies: [
+                        {
+                            type: 'reply',
+                            text: 'reply'
+                        }
                     ]
                 }
             }));
@@ -187,7 +194,7 @@ describe('Conversation Component', () => {
         });
 
         it('should render quick replies', () => {
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedQuickReplies').length.should.eq(1);            
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedQuickReplies').length.should.eq(1);
         });
     });
 });
