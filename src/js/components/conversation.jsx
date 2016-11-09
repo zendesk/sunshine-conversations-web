@@ -8,6 +8,7 @@ import { ConnectNotification } from './connect-notification';
 import { logo, logo2x } from '../constants/assets';
 import { Introduction } from './introduction';
 import { QuickReplies } from './quick-replies';
+import { TypingIndicator } from './typing-indicator';
 
 import { setShouldScrollToBottom, setFetchingMoreMessages } from '../actions/app-state-actions';
 import { fetchMoreMessages } from '../services/conversation-service';
@@ -21,10 +22,17 @@ const LOAD_MORE_LINK_HEIGHT = 47;
 export class ConversationComponent extends Component {
 
     static propTypes = {
-        connectNotificationTimestamp: PropTypes.number,
-        introHeight: PropTypes.number.isRequired,
         messages: PropTypes.array.isRequired,
+        embedded: PropTypes.bool.isRequired,
+        shouldScrollToBottom: PropTypes.bool.isRequired,
+        isFetchingMoreMessages: PropTypes.bool.isRequired,
+        hasMoreMessages: PropTypes.bool.isRequired,
+        introHeight: PropTypes.number,
+        connectNotificationTimestamp: PropTypes.number,
         errorNotificationMessage: PropTypes.string,
+        settings: PropTypes.object.isRequired,
+        text: PropTypes.object.isRequired,
+        typingIndicatorShown: PropTypes.bool.isRequired,
         quickReplies: PropTypes.array.isRequired
     };
 
@@ -175,7 +183,7 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const {connectNotificationTimestamp, introHeight, messages, quickReplies, errorNotificationMessage, isFetchingMoreMessages, hasMoreMessages, text, settings} = this.props;
+        const {connectNotificationTimestamp, introHeight, messages, quickReplies, errorNotificationMessage, isFetchingMoreMessages, hasMoreMessages, text, settings, typingIndicatorShown} = this.props;
         const {fetchingHistory, fetchHistory} = text;
         const {accentColor, linkColor} = settings;
 
@@ -261,7 +269,8 @@ export class ConversationComponent extends Component {
             }
         }
 
-        const introduction = hasMoreMessages ? '' : <Introduction/>;
+        const introduction = hasMoreMessages ? null : <Introduction/>;
+        const typingIndicator = typingIndicatorShown ? <TypingIndicator /> : null;
 
         return <div id='sk-conversation'
                     className={ errorNotificationMessage && 'notification-shown' }
@@ -276,6 +285,7 @@ export class ConversationComponent extends Component {
                        <div ref='messages'
                             className='sk-messages'>
                            { messageItems }
+                           { typingIndicator }
                        </div>
                        <div className='sk-logo'
                             ref='logo'
@@ -306,6 +316,7 @@ export const Conversation = connect(({appState, conversation, ui: {text}, app}) 
         text: {
             fetchingHistory: text.fetchingHistory,
             fetchHistory: text.fetchHistory
-        }
+        },
+        typingIndicatorShown: appState.typingIndicatorShown
     };
 })(ConversationComponent);

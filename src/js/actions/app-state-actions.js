@@ -25,6 +25,8 @@ export const SET_INTRO_HEIGHT = 'SET_INTRO_HEIGHT';
 export const DISABLE_ANIMATION = 'DISABLE_ANIMATION';
 export const SET_FETCHING_MORE_MESSAGES = 'SET_FETCHING_MORE_MESSAGES';
 export const SET_SHOULD_SCROLL_TO_BOTTOM = 'SET_SHOULD_SCROLL_TO_BOTTOM';
+export const SHOW_TYPING_INDICATOR = 'SHOW_TYPING_INDICATOR';
+export const HIDE_TYPING_INDICATOR = 'HIDE_TYPING_INDICATOR';
 
 export function toggleWidget() {
     return {
@@ -187,5 +189,17 @@ export function setShouldScrollToBottom(value) {
     return {
         type: SET_SHOULD_SCROLL_TO_BOTTOM,
         value
+    };
+}
+
+export function showTypingIndicator() {
+    return {
+        type: SHOW_TYPING_INDICATOR
+    };
+}
+
+export function hideTypingIndicator() {
+    return {
+        type: HIDE_TYPING_INDICATOR
     };
 }

@@ -19,7 +19,8 @@ const INITIAL_STATE = {
     introHeight: 158,
     showAnimation: false,
     isFetchingMoreMessages: false,
-    shouldScrollToBottom: true
+    shouldScrollToBottom: true,
+    typingIndicatorShown: false
 };
 
 export function AppStateReducer(state = INITIAL_STATE, action) {
@@ -189,6 +190,17 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             return {
                 ...state,
                 shouldScrollToBottom: action.value
+            };
+
+        case AppStateActions.SHOW_TYPING_INDICATOR:
+            return {
+                ...state,
+                typingIndicatorShown: true
+            };
+        case AppStateActions.HIDE_TYPING_INDICATOR:
+            return {
+                ...state,
+                typingIndicatorShown: false
             };
 
         default:

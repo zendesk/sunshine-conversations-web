@@ -3,7 +3,8 @@ import urljoin from 'urljoin';
 
 import { store } from '../stores/app-store';
 import { setUser } from '../actions/user-actions';
-import { setFayeConversationSubscription, setFayeUserSubscription } from '../actions/faye-actions';
+import { showTypingIndicator, hideTypingIndicator } from '../actions/app-state-actions';
+import { setFayeConversationSubscription, setFayeUserSubscription, setFayeConversationActivitySubscription } from '../actions/faye-actions';
 import { addMessage, incrementUnreadCount, resetUnreadCount } from '../actions/conversation-actions';
 import { getMessages, disconnectFaye, handleConversationUpdated } from '../services/conversation-service';
 import { showSettings, hideChannelPage, hideConnectNotification } from '../services/app-service';
@@ -72,6 +73,29 @@ export function subscribeConversation() {
 
     return subscription.then(() => {
         store.dispatch(setFayeConversationSubscription(subscription));
+    });
+}
+
+export function handleConversationActivitySubscription({activity, role}) {
+    if (role === 'appMaker') {
+        // Web Messenger only handles appMaker activities for now
+
+        switch (activity) {
+            case 'typing:start':
+                return store.dispatch(showTypingIndicator());
+            case 'typing:stop':
+                return store.dispatch(hideTypingIndicator());
+        }
+    }
+}
+
+export function subscribeConversationActivity() {
+    const client = getClient();
+    const {conversation: {_id: conversationId}} = store.getState();
+    const subscription = client.subscribe(`/v1/conversations/${conversationId}/activity`, handleConversationActivitySubscription);
+
+    return subscription.then(() => {
+        store.dispatch(setFayeConversationActivitySubscription(subscription));
     });
 }
 
