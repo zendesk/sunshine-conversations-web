@@ -63,4 +63,6 @@ export const QuickReplies = connect(({app}) => {
         accentColor: app.settings.web.accentColor,
         isAccentColorDark: app.settings.web.isAccentColorDark
     };
+}, null, null, {
+    withRef: true
 })(QuickRepliesComponent);
