@@ -11,10 +11,11 @@ import { QuickReplies } from './quick-replies';
 
 import { setShouldScrollToBottom, setFetchingMoreMessages } from '../actions/app-state-actions';
 import { fetchMoreMessages } from '../services/conversation-service';
-import { getTop } from '../utils/dom';
+import { getTop, getBoundingRect } from '../utils/dom';
 import debounce from 'lodash.debounce';
 
 const INTRO_BOTTOM_SPACER = 10;
+const QUICK_REPLIES_BOTTOM_SPACER = 10;
 const LOAD_MORE_LINK_HEIGHT = 47;
 
 export class ConversationComponent extends Component {
@@ -26,8 +27,6 @@ export class ConversationComponent extends Component {
         errorNotificationMessage: PropTypes.string,
         quickReplies: PropTypes.array.isRequired
     };
-
-    scrollTimeouts = [];
 
     debounceOnScroll = debounce(() => {
         this.onScroll();
@@ -96,20 +95,23 @@ export class ConversationComponent extends Component {
     };
 
     scrollToBottom = () => {
-        const {shouldScrollToBottom} = this.props;
-        if(!this._isScrolling && (shouldScrollToBottom || this._forceScrollToBottom)) {
+        const {shouldScrollToBottom, quickReplies} = this.props;
+        if (!this._isScrolling && (shouldScrollToBottom || this._forceScrollToBottom)) {
             this._isScrolling = true;
-            const timeout = setTimeout(() => {
-                const container = findDOMNode(this);
-                const logo = this.refs.logo;
-                const scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight - INTRO_BOTTOM_SPACER;
-                container.scrollTop = scrollTop;
-                this._isScrolling = false;
-                this._forceScrollToBottom = false;
-            });
-            this.scrollTimeouts.push(timeout);
+            const container = findDOMNode(this);
+            const logo = this.refs.logo;
+            let scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight - INTRO_BOTTOM_SPACER;
+
+            if (quickReplies.length > 0) {
+                scrollTop = scrollTop + QUICK_REPLIES_BOTTOM_SPACER;
+            }
+
+            container.scrollTop = scrollTop;
+            this._forceScrollToBottom = false;
+            this._isScrolling = false;
         }
     };
+
 
     scrollToPreviousFirstMessage = () => {
         const node = this._lastTopMessageNode;
@@ -125,12 +127,7 @@ export class ConversationComponent extends Component {
                 // When fetching more messages, we want to make sure that after
                 // render, the messages stay in the same places
                 container.scrollTop = getTop(node, container) - this._lastTopMessageNodePosition;
-
-                const timeout = setTimeout(() => {
-                    this._isScrolling = false;
-                });
-
-                this.scrollTimeouts.push(timeout);
+                this._isScrolling = false;
             }
         }
         this._lastTopMessageNode = undefined;
@@ -138,8 +135,8 @@ export class ConversationComponent extends Component {
     };
 
     componentWillUpdate(nextProps) {
-        const {messages: currentMessages, quickReplies: currentQuickReplies, isFetchingMoreMessages} = this.props;
-        const {messages: newMessages, quickReplies: newQuickReplies} = nextProps;
+        const {messages: currentMessages, isFetchingMoreMessages} = this.props;
+        const {messages: newMessages} = nextProps;
 
         if (!this._lastNode) {
             this._forceScrollToBottom = true;
@@ -148,15 +145,14 @@ export class ConversationComponent extends Component {
 
         // Check for new appMaker (and whisper) messages
         const isAppMakerMessage = newMessages.length - currentMessages.length === 1 ? newMessages.slice(-1)[0].role !== 'appUser' : false;
-        const quickRepliesChanged = currentQuickReplies.length !== newQuickReplies.length || currentQuickReplies.some((r, i) => r !== newQuickReplies[i]);
-        if ((isAppMakerMessage || quickRepliesChanged) && !isFetchingMoreMessages) {
+        if (isAppMakerMessage && !isFetchingMoreMessages) {
             const container = findDOMNode(this);
-            const appMakerMessageBottom = this._lastNode.getBoundingClientRect().bottom;
-            const containerBottom = container.getBoundingClientRect().bottom;
+            const lastNodeBottom = getBoundingRect(this._lastNode).bottom;
+            const containerBottom = getBoundingRect(container).bottom;
 
             // If appMaker message is 'in view', we should scroll to bottom.
             // Otherwise, don't scroll
-            if (appMakerMessageBottom <= containerBottom) {
+            if (lastNodeBottom <= containerBottom) {
                 this._forceScrollToBottom = true;
             } else {
                 this._forceScrollToBottom = false;
@@ -176,10 +172,6 @@ export class ConversationComponent extends Component {
         } else {
             this.scrollToBottom();
         }
-    }
-
-    componentWillUnmount() {
-        this.scrollTimeouts.forEach(clearTimeout);
     }
 
     render() {
