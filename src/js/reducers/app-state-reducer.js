@@ -20,7 +20,8 @@ const INITIAL_STATE = {
     showAnimation: false,
     isFetchingMoreMessages: false,
     shouldScrollToBottom: true,
-    typingIndicatorShown: false
+    typingIndicatorShown: false,
+    typingIndicatorAvatarUrl: null
 };
 
 export function AppStateReducer(state = INITIAL_STATE, action) {
@@ -195,7 +196,8 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
         case AppStateActions.SHOW_TYPING_INDICATOR:
             return {
                 ...state,
-                typingIndicatorShown: true
+                typingIndicatorShown: true,
+                typingIndicatorAvatarUrl: action.avatarUrl
             };
         case AppStateActions.HIDE_TYPING_INDICATOR:
             return {

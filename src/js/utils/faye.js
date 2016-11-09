@@ -76,13 +76,13 @@ export function subscribeConversation() {
     });
 }
 
-export function handleConversationActivitySubscription({activity, role}) {
+export function handleConversationActivitySubscription({activity, role, data={}}) {
     if (role === 'appMaker') {
         // Web Messenger only handles appMaker activities for now
 
         switch (activity) {
             case 'typing:start':
-                return store.dispatch(showTypingIndicator());
+                return store.dispatch(showTypingIndicator(data));
             case 'typing:stop':
                 return store.dispatch(hideTypingIndicator());
         }

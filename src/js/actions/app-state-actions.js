@@ -192,9 +192,10 @@ export function setShouldScrollToBottom(value) {
     };
 }
 
-export function showTypingIndicator() {
+export function showTypingIndicator({avatarUrl}) {
     return {
-        type: SHOW_TYPING_INDICATOR
+        type: SHOW_TYPING_INDICATOR,
+        avatarUrl
     };
 }
 
