@@ -105,10 +105,10 @@ export function getElementProperties(element) {
 
 export function getTop(node, container = document.body) {
     let top = 0;
-    if (node && node.parentNode) {
+    if (node && node.offsetParent) {
         do {
             top += node.offsetTop;
-            node = node.parentNode;
+            node = node.offsetParent;
         } while (node && node !== container);
 
         return top;
