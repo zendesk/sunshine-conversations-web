@@ -46,6 +46,7 @@ describe('Integrations service', () => {
         });
 
         sandbox.stub(utilsFaye, 'subscribeConversation').resolves();
+        sandbox.stub(utilsFaye, 'subscribeConversationActivity').resolves();
 
         mockedStore = mockAppStore(sandbox, {
             user: {

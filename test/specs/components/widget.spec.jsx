@@ -28,7 +28,8 @@ function getStoreState(state = {}) {
             widgetState: WIDGET_STATE.CLOSED,
             settingsVisible: false,
             embedded: false,
-            showAnimation: false
+            showAnimation: false,
+            typingIndicatorShown: false
         },
         app: {
             settings: {
