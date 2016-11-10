@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 
 export class TypingIndicatorComponent extends Component {
     static propTypes = {
-        accentColor: PropTypes.string.isRequired,
         avatarUrl: PropTypes.string
     };
 
@@ -18,7 +17,7 @@ export class TypingIndicatorComponent extends Component {
     }
 
     render() {
-        const {accentColor, avatarUrl} = this.props;
+        const {avatarUrl} = this.props;
         const {mounted} = this.state;
 
         const avatar = avatarUrl ?
@@ -38,9 +37,8 @@ export class TypingIndicatorComponent extends Component {
 }
 
 
-export const TypingIndicator = connect(({app, appState}) => {
+export const TypingIndicator = connect(({appState}) => {
     return {
-        accentColor: app.settings.web.accentColor,
         avatarUrl: appState.typingIndicatorAvatarUrl
     };
 })(TypingIndicatorComponent);
