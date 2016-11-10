@@ -16,8 +16,9 @@ import { getTop, getBoundingRect } from '../utils/dom';
 import debounce from 'lodash.debounce';
 
 const INTRO_BOTTOM_SPACER = 10;
-const QUICK_REPLIES_BOTTOM_SPACER = 10;
+const EXTRA_COMPONENT_BOTTOM_SPACER = 10;
 const LOAD_MORE_LINK_HEIGHT = 47;
+const IS_APPLE_MOBILE_DEVICE = isMobile.apple.phone || isMobile.apple.tablet;
 
 export class ConversationComponent extends Component {
 
@@ -102,18 +103,16 @@ export class ConversationComponent extends Component {
         }, 400);
     };
 
-
     scrollToBottom = () => {
-        const {shouldScrollToBottom, quickReplies} = this.props;
-
+        const {shouldScrollToBottom, quickReplies, typingIndicatorShown} = this.props;
         if (!this._isScrolling && (shouldScrollToBottom || this._forceScrollToBottom)) {
             this._isScrolling = true;
             const container = findDOMNode(this);
             const logo = this.refs.logo;
             let scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight - INTRO_BOTTOM_SPACER;
 
-            if (quickReplies.length > 0) {
-                scrollTop = scrollTop + QUICK_REPLIES_BOTTOM_SPACER;
+            if (quickReplies.length > 0 || (typingIndicatorShown && IS_APPLE_MOBILE_DEVICE)) {
+                scrollTop = scrollTop + EXTRA_COMPONENT_BOTTOM_SPACER;
             }
 
             container.scrollTop = scrollTop;
@@ -121,7 +120,6 @@ export class ConversationComponent extends Component {
             this._isScrolling = false;
         }
     };
-
 
     scrollToPreviousFirstMessage = () => {
         const node = this._lastTopMessageNode;
