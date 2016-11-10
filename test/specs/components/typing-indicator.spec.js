@@ -10,13 +10,6 @@ import { mockAppStore } from '../../utils/redux';
 
 function getStoreState(state = {}) {
     const defaultState = {
-        app: {
-            settings: {
-                web: {
-                    accentColor: '#fff'
-                }
-            }
-        },
         appState: {
             typingIndicatorAvatarUrl: ''
         }
