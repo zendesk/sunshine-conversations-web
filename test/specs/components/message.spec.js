@@ -59,7 +59,7 @@ describe('Message Component', () => {
             const props = {
                 role: 'appUser',
                 text: 'This is a text!',
-                mediaUrl: isImage ? 'media-url' : false
+                mediaUrl: isImage ? 'media-url' : undefined
             };
 
             beforeEach(() => {

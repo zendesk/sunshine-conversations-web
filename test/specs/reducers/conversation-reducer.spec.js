@@ -101,37 +101,47 @@ const WHISPER_MESSAGE = {
     actions: []
 };
 
+const QUICK_REPLY = {
+    text: 'This is a reply!',
+    role: 'appMaker',
+    received: 1463682857.454,
+    authorId: '8a9445dadad4862c2322db52',
+    name: 'Calm Chimpanzee',
+    actions: [{
+        type: 'reply',
+        label: 'Reply'
+    }]
+};
+
+const EMPTY_QUICK_REPLY = {
+    text: '',
+    role: 'appMaker',
+    received: 1463682857.454,
+    authorId: '8a9445dadad4862c2322db52',
+    name: 'Calm Chimpanzee',
+    actions: [{
+        type: 'reply',
+        label: 'Reply'
+    }]
+};
+
 describe('Conversation reducer', () => {
 
     describe('SET_CONVERSATION action', () => {
-        it('should set state conversation with messages from action', () => {
+        it('should set state conversation with data from action', () => {
             const beforeState = {
-                messages: MESSAGES
-            };
-            const afterState = ConversationReducer(beforeState, {
-                type: SET_CONVERSATION,
-                conversation: {}
-            });
-            afterState.messages.length.should.eq(2);
-            afterState.messages.should.contain(MESSAGE_1);
-            afterState.messages.should.contain(MESSAGE_2);
-        });
-
-        it('should not add a duplicate message', () => {
-            const beforeState = {
-                unreadCount: 4,
-                messages: MESSAGES
+                unreadCount: 0,
+                hasMoreMessages: false
             };
             const afterState = ConversationReducer(beforeState, {
                 type: SET_CONVERSATION,
                 conversation: {
-                    messages: [...MESSAGES, MESSAGE_1],
-                    appUsers: [],
-                    appMakers: []
+                    unreadCount: 1,
+                    hasMoreMessages: true
                 }
             });
-            afterState.messages.length.should.eq(2);
-            afterState.messages.should.eql(MESSAGES);
+            afterState.unreadCount.should.eq(1);
+            afterState.hasMoreMessages.should.be.true;
         });
     });
 
@@ -140,6 +150,70 @@ describe('Conversation reducer', () => {
             const beforeState = INITIAL_STATE;
             const afterState = {
                 messages: [MESSAGE_FROM_APP_USER],
+                quickReplies: [],
+                unreadCount: 0,
+                hasMoreMessages: false,
+                isFetchingMoreMessagesFromServer: false
+            };
+            ConversationReducer(beforeState, {
+                type: ADD_MESSAGE,
+                message: MESSAGE_FROM_APP_USER
+            }).should.eql(afterState);
+        });
+
+        it('should not add empty messages', () => {
+            const beforeState = INITIAL_STATE;
+            const afterState = ConversationReducer(beforeState, {
+                type: ADD_MESSAGE,
+                message: EMPTY_QUICK_REPLY
+            });
+
+            afterState.messages.should.eql(beforeState.messages);
+        });
+
+        it('should add quick replies if present', () => {
+            const beforeState = INITIAL_STATE;
+            const afterState = ConversationReducer(beforeState, {
+                type: ADD_MESSAGE,
+                message: QUICK_REPLY
+            });
+
+            afterState.quickReplies.should.eql(QUICK_REPLY.actions);
+        });
+
+        it('should replace quick replies', () => {
+            const beforeState = {
+                ...INITIAL_STATE,
+                quickReplies: [{
+                    type: 'reply',
+                    label: 'Reply 1'
+                }]
+            };
+
+            const afterState = {
+                messages: [QUICK_REPLY],
+                quickReplies: QUICK_REPLY.actions,
+                unreadCount: 0,
+                hasMoreMessages: false,
+                isFetchingMoreMessagesFromServer: false
+            };
+            ConversationReducer(beforeState, {
+                type: ADD_MESSAGE,
+                message: QUICK_REPLY
+            }).should.eql(afterState);
+        });
+
+        it('should dismiss quick replies', () => {
+            const beforeState = {
+                ...INITIAL_STATE,
+                quickReplies: [{
+                    type: 'reply'
+                }]
+            };
+
+            const afterState = {
+                messages: [MESSAGE_FROM_APP_USER],
+                quickReplies: [],
                 unreadCount: 0,
                 hasMoreMessages: false,
                 isFetchingMoreMessagesFromServer: false
@@ -317,6 +391,68 @@ describe('Conversation reducer', () => {
             });
             afterState.messages.should.eql(MESSAGES);
         });
+
+        it('should not add empty messages', () => {
+            const beforeState = INITIAL_STATE;
+            const afterState = ConversationReducer(beforeState, {
+                type: SET_MESSAGES,
+                messages: [...MESSAGES, EMPTY_QUICK_REPLY]
+            });
+            afterState.messages.should.eql(MESSAGES);
+        });
+
+        it('should add quick replies if present', () => {
+            const beforeState = INITIAL_STATE;
+            const afterState = ConversationReducer(beforeState, {
+                type: SET_MESSAGES,
+                messages: [...MESSAGES, QUICK_REPLY]
+            });
+
+            afterState.quickReplies.should.eql(QUICK_REPLY.actions);
+        });
+
+        it('should replace quick replies', () => {
+            const beforeState = {
+                ...INITIAL_STATE,
+                quickReplies: [{
+                    type: 'reply',
+                    label: 'Reply 1'
+                }]
+            };
+
+            const afterState = {
+                messages: [QUICK_REPLY],
+                quickReplies: QUICK_REPLY.actions,
+                unreadCount: 0,
+                hasMoreMessages: false,
+                isFetchingMoreMessagesFromServer: false
+            };
+            ConversationReducer(beforeState, {
+                type: SET_MESSAGES,
+                messages: [QUICK_REPLY]
+            }).should.eql(afterState);
+        });
+
+        it('should dismiss quick replies', () => {
+            const beforeState = {
+                ...INITIAL_STATE,
+                quickReplies: [{
+                    type: 'reply'
+                }]
+            };
+
+            const afterState = {
+                messages: [MESSAGE_FROM_APP_USER],
+                quickReplies: [],
+                unreadCount: 0,
+                hasMoreMessages: false,
+                isFetchingMoreMessagesFromServer: false
+            };
+            ConversationReducer(beforeState, {
+                type: SET_MESSAGES,
+                messages: [MESSAGE_FROM_APP_USER]
+            }).should.eql(afterState);
+        });
     });
 
     describe('ADD_MESSAGES action', () => {
@@ -331,8 +467,73 @@ describe('Conversation reducer', () => {
                         messages: [MESSAGE_2],
                         append: shouldAppend
                     });
-                    const messages = shouldAppend ? [...MESSAGE_1, ...MESSAGE_2] : [...MESSAGE_1, ...MESSAGE_2];
+                    const messages = shouldAppend ? [MESSAGE_1, MESSAGE_2] : [MESSAGE_1, MESSAGE_2];
                     afterState.messages.should.eql(messages);
+                });
+
+                it('should not add empty messages', () => {
+                    const beforeState = INITIAL_STATE;
+                    const afterState = ConversationReducer(beforeState, {
+                        type: ADD_MESSAGES,
+                        append: shouldAppend,
+                        messages: [EMPTY_QUICK_REPLY]
+                    });
+                    afterState.messages.should.eql(beforeState.messages);
+                });
+
+                it('should add quick replies if present', () => {
+                    const beforeState = INITIAL_STATE;
+                    const afterState = ConversationReducer(beforeState, {
+                        type: ADD_MESSAGES,
+                        messages: [QUICK_REPLY],
+                        append: shouldAppend
+                    });
+
+                    afterState.quickReplies.should.eql(QUICK_REPLY.actions);
+                });
+
+                it('should replace quick replies', () => {
+                    const beforeState = {
+                        ...INITIAL_STATE,
+                        quickReplies: [{
+                            type: 'reply',
+                            label: 'Reply 1'
+                        }]
+                    };
+
+                    const afterState = {
+                        messages: [QUICK_REPLY],
+                        quickReplies: QUICK_REPLY.actions,
+                        unreadCount: 0,
+                        hasMoreMessages: false,
+                        isFetchingMoreMessagesFromServer: false
+                    };
+                    ConversationReducer(beforeState, {
+                        type: ADD_MESSAGES,
+                        messages: [QUICK_REPLY],
+                        shouldAppend
+                    }).should.eql(afterState);
+                });
+
+                it('should dismiss quick replies', () => {
+                    const beforeState = {
+                        ...INITIAL_STATE,
+                        quickReplies: [{
+                            type: 'reply'
+                        }]
+                    };
+
+                    const afterState = {
+                        messages: [MESSAGE_FROM_APP_USER],
+                        quickReplies: [],
+                        unreadCount: 0,
+                        hasMoreMessages: false,
+                        isFetchingMoreMessagesFromServer: false
+                    };
+                    ConversationReducer(beforeState, {
+                        type: ADD_MESSAGES,
+                        messages: [MESSAGE_FROM_APP_USER]
+                    }).should.eql(afterState);
                 });
             });
         });
@@ -366,6 +567,7 @@ describe('Conversation reducer', () => {
         const beforeState = INITIAL_STATE;
         const afterState = {
             messages: [],
+            quickReplies: [],
             unreadCount: 1,
             hasMoreMessages: false,
             isFetchingMoreMessagesFromServer: false
@@ -378,6 +580,7 @@ describe('Conversation reducer', () => {
     it('should reset unread count on RESET_UNREAD_COUNT', () => {
         const beforeState = {
             messages: [],
+            quickReplies: [],
             unreadCount: 100,
             hasMoreMessages: false,
             isFetchingMoreMessagesFromServer: false

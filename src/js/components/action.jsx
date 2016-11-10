@@ -17,7 +17,7 @@ export class ActionComponent extends Component {
         text: PropTypes.string.isRequired,
         type: PropTypes.string,
         buttonColor: PropTypes.string,
-        amount: PropTypes.string,
+        amount: PropTypes.number,
         currency: PropTypes.string,
         uri: PropTypes.string,
         state: PropTypes.string,
@@ -165,7 +165,7 @@ export class ActionComponent extends Component {
                            { buttonText }
                        </button>
                    </div>;
-        } else {
+        } else if (type === 'link' || (type === 'buy' && !stripeIntegration)) {
             const isJavascript = uri.startsWith('javascript:');
 
             return <div className='sk-action'>
@@ -176,6 +176,8 @@ export class ActionComponent extends Component {
                            { text }
                        </a>
                    </div>;
+        } else {
+            return null;
         }
     }
 }

@@ -15,6 +15,13 @@ function checkAndResetUnreadCount() {
 
 export class ChatInputComponent extends Component {
 
+    static propTypes = {
+        accentColor: PropTypes.string,
+        imageUploadEnabled: PropTypes.bool.isRequired,
+        inputPlaceholderText: PropTypes.string.isRequired,
+        sendButtonText: PropTypes.string.isRequired
+    };
+
     constructor(...args) {
         super(...args);
 
@@ -54,7 +61,7 @@ export class ChatInputComponent extends Component {
     }
 
     render() {
-        const {linkColor, imageUploadEnabled, inputPlaceholderText, sendButtonText} = this.props;
+        const {accentColor, imageUploadEnabled, inputPlaceholderText, sendButtonText} = this.props;
 
         let sendButton;
 
@@ -64,8 +71,8 @@ export class ChatInputComponent extends Component {
         if (this.state.text.trim()) {
             buttonClassNames.push('active');
 
-            if (linkColor) {
-                buttonStyle.color = `#${linkColor}`;
+            if (accentColor) {
+                buttonStyle.color = `#${accentColor}`;
             }
         }
 
@@ -87,7 +94,7 @@ export class ChatInputComponent extends Component {
 
         const imageUploadButton = imageUploadEnabled ?
             <ImageUpload ref='imageUpload'
-                         color={ linkColor } /> : null;
+                         color={ accentColor } /> : null;
 
         const inputContainerClasses = ['input-container'];
 
@@ -117,7 +124,7 @@ export class ChatInputComponent extends Component {
 export const ChatInput = connect(({appState, app, ui}) => {
     return {
         imageUploadEnabled: appState.imageUploadEnabled,
-        linkColor: app.settings.web.linkColor,
+        accentColor: app.settings.web.accentColor,
         sendButtonText: ui.text.sendButtonText,
         inputPlaceholderText: ui.text.inputPlaceholder
     };
