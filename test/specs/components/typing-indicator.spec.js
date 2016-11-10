@@ -36,6 +36,7 @@ describe('TypingIndicator Component', () => {
         const mockedStore = mockAppStore(sandbox, getStoreState());
         const component = wrapComponentWithStore(TypingIndicator, null, mockedStore);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-typing-indicator').length.should.eq(1);
+        TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-typing-indicator-avatar-placeholder').length.should.eq(1);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-typing-indicator-avatar').length.should.eq(0);
     });
 
@@ -47,8 +48,10 @@ describe('TypingIndicator Component', () => {
         }));
         const component = wrapComponentWithStore(TypingIndicator, null, mockedStore);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-typing-indicator').length.should.eq(1);
+        TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-typing-indicator-avatar-placeholder').length.should.eq(0);
         const node = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-typing-indicator-avatar');
-        node.querySelector('img').src.should.eq(mockedStore.getState().appState.typingIndicatorAvatarUrl);
+        expect(node).to.exist;
+        node.src.should.eq('http://some-url/');
     });
 
 });
