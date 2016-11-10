@@ -44,7 +44,7 @@ function computeColorsMetadata(settings) {
             metadata[metadataKey] = isDefaultDark;
         }
     });
-    
+
     return metadata;
 }
 

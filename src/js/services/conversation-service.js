@@ -75,14 +75,15 @@ export function sendChain(sendFn) {
         .then(connectFayeConversation);
 }
 
-export function sendMessage(text) {
+export function sendMessage(text, extra = {}) {
     return sendChain(() => {
         const message = {
             role: 'appUser',
             text,
             _clientId: Math.random(),
             _clientSent: new Date(),
-            deviceId: getDeviceId()
+            deviceId: getDeviceId(),
+            ...extra
         };
 
         store.dispatch(setShouldScrollToBottom(true));
