@@ -1,27 +1,31 @@
 import React, { Component, PropTypes } from 'react';
-import { updateTwilioAttributes, resetTwilioAttributes, linkTwilioChannel, unlinkTwilioChannel, pingTwilioChannel } from '../../services/integrations-service';
-
-import { ReactTelephoneInput } from '../../lib/react-telephone-input';
-
 import { connect } from 'react-redux';
 import isMobile from 'ismobilejs';
 
+import { updateTwilioAttributes, resetTwilioAttributes, linkTwilioChannel, unlinkTwilioChannel, pingTwilioChannel } from '../../services/integrations-service';
+import { ReactTelephoneInput } from '../../lib/react-telephone-input';
+
 export class TwilioChannelContentComponent extends Component {
 
-    static contextTypes = {
-        settings: PropTypes.object,
-        ui: PropTypes.object
+    static propTypes = {
+        linkColor: PropTypes.string,
+        phoneNumber: PropTypes.string.isRequired,
+        linkState: PropTypes.oneOf(['unlinked', 'pending', 'linked']),
+        smoochId: PropTypes.string.isRequired,
+        text: PropTypes.object.isRequired,
+        channelState: PropTypes.object.isRequired
     };
 
     linkTwilioNumber = () => {
-        linkTwilioChannel(this.props.userId, {
+        const { appUserNumber } = this.props.channelState;
+        linkTwilioChannel(this.props.smoochId, {
             type: 'twilio',
-            phoneNumber: this.props.appUserNumber.replace(/[()\-\s]/g, '')
+            phoneNumber: appUserNumber.replace(/[()\-\s]/g, '')
         });
     }
 
     unlinkChannel = () => {
-        unlinkTwilioChannel(this.props.userId);
+        unlinkTwilioChannel(this.props.smoochId);
     }
 
     handleInputChange = (telNumber) => {
@@ -37,7 +41,7 @@ export class TwilioChannelContentComponent extends Component {
     }
 
     onSendText = () => {
-        pingTwilioChannel(this.props.userId);
+        pingTwilioChannel(this.props.smoochId);
     }
 
     onNumberValid = () => {
@@ -48,7 +52,7 @@ export class TwilioChannelContentComponent extends Component {
     }
 
     onNumberInvalid = () => {
-        updateTwilioAttributes({ 
+        updateTwilioAttributes({
             appUserNumberValid: false
         });
     }
@@ -58,8 +62,10 @@ export class TwilioChannelContentComponent extends Component {
     }
 
     render() {
-        const {appUserNumber, appUserNumberValid, phoneNumber, linkState, errorMessage, hasError} = this.props;
-        const {settings: {linkColor}, ui: {text: {smsInvalidNumberError, smsLinkPending, smsStartTexting, smsCancel, smsChangeNumber, smsSendText, smsContinue}}} = this.context;
+        const {phoneNumber, linkColor, text, channelState} = this.props;
+        const {appUserNumber, appUserNumberValid, errorMessage, hasError, linkState} = channelState;
+        const {smsInvalidNumberError, smsLinkPending, smsStartTexting, smsCancel, smsChangeNumber, smsSendText, smsContinue} = text;
+
         let iconStyle = {};
         if (linkColor) {
             iconStyle = {
@@ -140,9 +146,17 @@ export class TwilioChannelContentComponent extends Component {
     }
 }
 
-export const TwilioChannelContent = connect((state) => {
+export const TwilioChannelContent = connect(({app, ui: {text}}) => {
     return {
-        ...state.integrations.twilio,
-        userId: state.user._id
+        linkColor: app.settings.web.linkColor,
+        text: {
+            smsInvalidNumberError: text.smsInvalidNumberError,
+            smsLinkPending: text.smsLinkPending,
+            smsStartTexting: text.smsStartTexting,
+            smsCancel: text.smsCancel,
+            smsChangeNumber: text.smsChangeNumber,
+            smsSendText: text.smsSendText,
+            smsContinue: text.smsContinue
+        }
     };
 })(TwilioChannelContentComponent);

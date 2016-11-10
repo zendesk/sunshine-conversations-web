@@ -16,6 +16,12 @@ export const integrations = {
         iconLarge: require('../../images/line_large.png'),
         iconLarge2x: require('../../images/line_large_2x.png')
     },
+    viber: {
+        icon: require('../../images/viber_icon.png'),
+        icon2x: require('../../images/viber_icon_2x.png'),
+        iconLarge: require('../../images/viber_large.png'),
+        iconLarge2x: require('../../images/viber_large_2x.png')
+    },
     wechat: {
         icon: require('../../images/wechat_icon.png'),
         icon2x: require('../../images/wechat_icon_2x.png'),

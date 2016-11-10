@@ -1,28 +1,27 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-
 import { LoadingComponent } from '../../components/loading';
-import { fetchWeChatQRCode } from '../../services/integrations-service';
+import { fetchViberQRCode } from '../../services/integrations-service';
 
-export class WeChatChannelContentComponent extends Component {
 
+class ViberChannelContentComponent extends Component {
     static propTypes = {
         channelState: PropTypes.object.isRequired,
-        qrCodeError: PropTypes.string.isRequired
+        ui: PropTypes.object.isRequired
     };
 
     render() {
-        const {channelState, qrCodeError} = this.props;
+        const {channelState, ui: {text}} = this.props;
 
         if (channelState.hasError) {
             return <a className={ 'sk-error-link' }
-                      onClick={ fetchWeChatQRCode }>
-                       { qrCodeError }
+                      onClick={ fetchViberQRCode }>
+                       { text.viberQRCodeError }
                    </a>;
         }
 
         if (channelState.qrCode) {
-            return <img style={ {    width: '40%'} }
+            return <img style={ { width: '40%' } }
                         src={ channelState.qrCode } />;
         }
 
@@ -37,8 +36,8 @@ export class WeChatChannelContentComponent extends Component {
     }
 }
 
-export const WeChatChannelContent = connect(({ui: {text}}) => {
+export const ViberChannelContent = connect(({ui}) => {
     return {
-        qrCodeError: text.wechatQRCodeError
+        ui
     };
-})(WeChatChannelContentComponent);
+})(ViberChannelContentComponent);

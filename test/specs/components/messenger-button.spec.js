@@ -1,14 +1,33 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
+import deepAssign from 'deep-assign';
 
-import { MessengerButtonComponent, DefaultButtonIcon } from '../../../src/js/components/messenger-button';
+import { MessengerButton, DefaultButtonIcon } from '../../../src/js/components/messenger-button';
 
-import { mockComponent, wrapComponentWithContext } from '../../utils/react';
+import { mockComponent, wrapComponentWithStore } from '../../utils/react';
+import { mockAppStore } from '../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
 
-describe('Messenger Button Component', () => {
+function getStoreState(state = {}) {
+    const defaultState = {
+        app: {
+            settings: {
+                web: {
+                    channels: {}
+                }
+            }
+        },
+        conversation: {
+            unreadCount: 0
+        }
+    };
 
+    return deepAssign(defaultState, state);
+}
+
+describe('Messenger Button Component', () => {
+    let mockedStore;
     beforeEach(() => {
         mockComponent(sandbox, DefaultButtonIcon, 'div', {
             className: 'mockedDefaultButtonIcon'
@@ -24,11 +43,9 @@ describe('Messenger Button Component', () => {
             shown: true
         };
 
-        const context = {
-            settings: {}
-        };
+        mockedStore = mockAppStore(sandbox, getStoreState());
 
-        const component = wrapComponentWithContext(MessengerButtonComponent, props, context);
+        const component = wrapComponentWithStore(MessengerButton, props, mockedStore);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedDefaultButtonIcon').length.should.eq(1);
         TestUtils.scryRenderedDOMComponentsWithTag(component, 'img').length.should.eq(0);
     });
@@ -38,40 +55,40 @@ describe('Messenger Button Component', () => {
             shown: true
         };
 
-        const context = {
-            settings: {
-                buttonIconUrl: 'http://some-url.com'
+        mockedStore = mockAppStore(sandbox, getStoreState({
+            app: {
+                settings: {
+                    web: {
+                        buttonIconUrl: 'http://some-url.com'
+                    }
+                }
             }
-        };
+        }));
 
-        const component = wrapComponentWithContext(MessengerButtonComponent, props, context);
+        const component = wrapComponentWithStore(MessengerButton, props, mockedStore);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedDefaultButtonIcon').length.should.eq(0);
         TestUtils.scryRenderedDOMComponentsWithTag(component, 'img').length.should.eq(1);
     });
 
     it('should not render unread count if none', () => {
-        const props = {
-            unreadCount: 0
-        };
+        mockedStore = mockAppStore(sandbox, getStoreState({
+            conversation: {
+                unreadCount: 0
+            }
+        }));
 
-        const context = {
-            settings: {}
-        };
-
-        const component = wrapComponentWithContext(MessengerButtonComponent, props, context);
+        const component = wrapComponentWithStore(MessengerButton, null, mockedStore);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'unread-badge').length.should.eq(0);
     });
 
     it('should render the correct unread count', () => {
-        const props = {
-            unreadCount: 3
-        };
+        mockedStore = mockAppStore(sandbox, getStoreState({
+            conversation: {
+                unreadCount: 3
+            }
+        }));
 
-        const context = {
-            settings: {}
-        };
-
-        const component = wrapComponentWithContext(MessengerButtonComponent, props, context);
+        const component = wrapComponentWithStore(MessengerButton, null, mockedStore);
         const unreadBadge = TestUtils.findRenderedDOMComponentWithClass(component, 'unread-badge');
         unreadBadge.textContent.should.eq('3');
     });

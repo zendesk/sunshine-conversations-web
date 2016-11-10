@@ -1,19 +1,21 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
+
 import { SK_DARK_CONTRAST } from '../constants/styles';
 
-export class DefaultAppIcon extends Component {
-    static contextTypes = {
+export class DefaultAppIconComponent extends Component {
+    static propTypes = {
         settings: PropTypes.object.isRequired
     };
 
     render() {
-        const {settings: {brandColor, isBrandColorDark}} = this.context;
+        const {settings: {brandColor, isBrandColorDark}} = this.props;
         const backgroundFill = `#${brandColor}`;
         const businessPathFill = isBrandColorDark ? 'transparent' : SK_DARK_CONTRAST;
 
         return <svg className='app-icon'
                     viewBox='0 0 80 80'
-                    style={ { enableBackground: 'new 0 0 80 80', shapeRendering: 'geometricPrecision' } }>
+                    style={ {    enableBackground: 'new 0 0 80 80',    shapeRendering: 'geometricPrecision'} }>
                    <rect fill={ backgroundFill }
                          x='31.3'
                          y='39.5'
@@ -57,13 +59,19 @@ export class DefaultAppIcon extends Component {
                          width='4.4'
                          height='4.4' />
                    <g>
-                       <path fill={businessPathFill}
+                       <path fill={ businessPathFill }
                              d='M56,76.7V64.2h5.8v9.3c1-0.7,2-1.3,2.9-2.1V60c0-0.7-0.6-1.3-1.3-1.3h-4.2V51c0-0.7-0.6-1.3-1.3-1.3h-4.8V26.3 v0c0-0.7-0.6-1.3-1.3-1.3h-7.4v-6c0,0,0,0,0,0c0-0.7-0.6-1.3-1.4-1.3h-1.5V7.5c0-0.8-0.7-1.5-1.5-1.5s-1.5,0.7-1.5,1.5v10.2H37 c0,0,0,0-0.1,0c-0.7,0-1.3,0.6-1.3,1.3V25h-7.4c-0.7,0-1.3,0.6-1.3,1.3v23.4h-4.5c-0.7,0-1.3,0.6-1.3,1.3v7.4h-4.5 c-0.7,0-1.3,0.6-1.3,1.3v11.7c0.9,0.7,1.9,1.4,2.9,2.1v-9.3H24v12.4c1,0.4,1.9,0.8,2.9,1.1V52.6h4.4v-5.8h4.4v33 c1,0.1,1.9,0.2,2.9,0.2V46.8h2.9V80c1,0,1.9-0.1,2.9-0.2v-33h4.4v5.8h4.4v25.2 M35.6,43.9h-4.4v-4.4h4.4V43.9z M35.6,36.6h-4.4 v-5.8h4.4V36.6z M41.5,43.9h-2.9v-4.4h2.9V43.9z M41.5,36.6h-2.9v-5.8h2.9V36.6z M48.7,43.9h-4.4v-4.4h4.4V43.9z M48.7,36.6h-4.4 v-5.8h4.4V36.6z' />
-                       <path fill={businessPathFill}
+                       <path fill={ businessPathFill }
                              d='M56.1,76.6C56.1,76.7,56,76.7,56.1,76.6L56.1,76.6C56,76.7,56.1,76.7,56.1,76.6z' />
-                       <path fill={businessPathFill}
+                       <path fill={ businessPathFill }
                              d='M18.2,73.6C18.2,73.6,18.2,73.6,18.2,73.6L18.2,73.6C18.2,73.6,18.2,73.6,18.2,73.6z' />
                    </g>
                </svg>;
     }
 }
+
+export const DefaultAppIcon = connect(({app}) => {
+    return {
+        settings: app.settings.web
+    };
+})(DefaultAppIconComponent);
