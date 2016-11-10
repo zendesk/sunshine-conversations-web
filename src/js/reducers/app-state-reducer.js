@@ -1,6 +1,6 @@
 import * as AppStateActions from '../actions/app-state-actions';
 import { RESET } from '../actions/common-actions';
-import { RESET_CONVERSATION } from '../actions/conversation-actions';
+import { RESET_CONVERSATION, ADD_MESSAGE } from '../actions/conversation-actions';
 import { WIDGET_STATE } from '../constants/app';
 
 const INITIAL_STATE = {
@@ -204,6 +204,16 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
                 ...state,
                 typingIndicatorShown: false
             };
+
+        case ADD_MESSAGE:
+            if (action.message.role === 'appMaker') {
+                return {
+                    ...state,
+                    typingIndicatorShown: false
+                };
+            }
+
+            return state;
 
         default:
             return state;

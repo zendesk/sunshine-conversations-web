@@ -102,8 +102,10 @@ export class ConversationComponent extends Component {
         }, 400);
     };
 
+
     scrollToBottom = () => {
         const {shouldScrollToBottom, quickReplies} = this.props;
+
         if (!this._isScrolling && (shouldScrollToBottom || this._forceScrollToBottom)) {
             this._isScrolling = true;
             const container = findDOMNode(this);
@@ -143,8 +145,8 @@ export class ConversationComponent extends Component {
     };
 
     componentWillUpdate(nextProps) {
-        const {messages: currentMessages, isFetchingMoreMessages} = this.props;
-        const {messages: newMessages} = nextProps;
+        const {messages: currentMessages, isFetchingMoreMessages, typingIndicatorShown: currentTypingIndicatorShown} = this.props;
+        const {messages: newMessages, typingIndicatorShown:newTypingIndicatorShown} = nextProps;
 
         if (!this._lastNode) {
             this._forceScrollToBottom = true;
@@ -153,7 +155,7 @@ export class ConversationComponent extends Component {
 
         // Check for new appMaker (and whisper) messages
         const isAppMakerMessage = newMessages.length - currentMessages.length === 1 ? newMessages.slice(-1)[0].role !== 'appUser' : false;
-        if (isAppMakerMessage && !isFetchingMoreMessages) {
+        if ((isAppMakerMessage || (currentTypingIndicatorShown !== newTypingIndicatorShown)) && !isFetchingMoreMessages) {
             const container = findDOMNode(this);
             const lastNodeBottom = getBoundingRect(this._lastNode).bottom;
             const containerBottom = getBoundingRect(container).bottom;
@@ -270,7 +272,7 @@ export class ConversationComponent extends Component {
         }
 
         const introduction = hasMoreMessages ? null : <Introduction/>;
-        const typingIndicator = typingIndicatorShown ? <TypingIndicator /> : null;
+        const typingIndicator = typingIndicatorShown ? <TypingIndicator ref={ (c) => this._lastNode = findDOMNode(c) } /> : null;
 
         return <div id='sk-conversation'
                     className={ errorNotificationMessage && 'notification-shown' }
