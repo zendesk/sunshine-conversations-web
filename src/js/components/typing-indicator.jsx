@@ -1,10 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import isMobile from 'ismobilejs';
-
-
-const INITIAL_OPACITY = 0.1;
-const INITIAL_MARGIN = 100;
 
 export class TypingIndicatorComponent extends Component {
     static propTypes = {
@@ -13,16 +8,13 @@ export class TypingIndicatorComponent extends Component {
     };
 
     state = {
-        mounted: false,
-        opacity: 0,
-        animating: false,
-        marginLeft: -INITIAL_MARGIN
+        mounted: false
     };
 
     componentDidMount() {
         this.setState({
             mounted: true
-        })
+        });
     }
 
     render() {
