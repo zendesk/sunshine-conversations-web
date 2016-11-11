@@ -22,7 +22,8 @@ const INITIAL_STATE = {
     shouldScrollToBottom: true,
     typingIndicatorShown: false,
     typingIndicatorAvatarUrl: null,
-    typingIndicatorName: null
+    typingIndicatorName: null,
+    typingIndicatorTimeoutId: null
 };
 
 export function AppStateReducer(state = INITIAL_STATE, action) {
@@ -199,19 +200,22 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
                 ...state,
                 typingIndicatorShown: true,
                 typingIndicatorAvatarUrl: action.avatarUrl,
-                typingIndicatorName: action.name
+                typingIndicatorName: action.name,
+                typingIndicatorTimeoutId: action.timeoutId
             };
         case AppStateActions.HIDE_TYPING_INDICATOR:
             return {
                 ...state,
-                typingIndicatorShown: false
+                typingIndicatorShown: false,
+                typingIndicatorTimeoutId: null
             };
 
         case ADD_MESSAGE:
             if (action.message.role === 'appMaker') {
                 return {
                     ...state,
-                    typingIndicatorShown: false
+                    typingIndicatorShown: false,
+                    typingIndicatorTimeoutId: null
                 };
             }
 

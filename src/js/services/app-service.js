@@ -93,3 +93,24 @@ export function showConnectNotification() {
 export function hideConnectNotification() {
     store.dispatch(AppStateActions.hideConnectNotification());
 }
+
+export function showTypingIndicator(data) {
+    const {typingIndicatorTimeoutId} = store.getState().appState;
+
+    if (typingIndicatorTimeoutId) {
+        clearTimeout(typingIndicatorTimeoutId);
+    }
+
+    const timeoutId = setTimeout(() => {
+        hideTypingIndicator();
+    }, 10 * 1000);
+
+    store.dispatch(AppStateActions.showTypingIndicator({
+        ...data,
+        timeoutId
+    }));
+}
+
+export function hideTypingIndicator() {
+    store.dispatch(AppStateActions.hideTypingIndicator());
+}

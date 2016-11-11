@@ -3,11 +3,10 @@ import urljoin from 'urljoin';
 
 import { store } from '../stores/app-store';
 import { setUser } from '../actions/user-actions';
-import { showTypingIndicator, hideTypingIndicator } from '../actions/app-state-actions';
 import { setFayeConversationSubscription, setFayeUserSubscription, setFayeConversationActivitySubscription } from '../actions/faye-actions';
 import { addMessage, incrementUnreadCount, resetUnreadCount } from '../actions/conversation-actions';
 import { getMessages, disconnectFaye, handleConversationUpdated } from '../services/conversation-service';
-import { showSettings, hideChannelPage, hideConnectNotification } from '../services/app-service';
+import { showSettings, hideChannelPage, hideConnectNotification, showTypingIndicator, hideTypingIndicator } from '../services/app-service';
 import { getDeviceId } from './device';
 import { ANIMATION_TIMINGS } from '../constants/styles';
 import { cancelTwilioLink } from '../services/integrations-service';
@@ -82,9 +81,9 @@ export function handleConversationActivitySubscription({activity, role, data={}}
 
         switch (activity) {
             case 'typing:start':
-                return store.dispatch(showTypingIndicator(data));
+                return showTypingIndicator(data);
             case 'typing:stop':
-                return store.dispatch(hideTypingIndicator());
+                return hideTypingIndicator();
         }
     }
 }
