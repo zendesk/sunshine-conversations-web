@@ -18,7 +18,6 @@ import debounce from 'lodash.debounce';
 const INTRO_BOTTOM_SPACER = 10;
 const EXTRA_COMPONENT_BOTTOM_SPACER = 10;
 const LOAD_MORE_LINK_HEIGHT = 47;
-const IS_APPLE_MOBILE_DEVICE = isMobile.apple.phone || isMobile.apple.tablet;
 
 export class ConversationComponent extends Component {
 
@@ -111,7 +110,7 @@ export class ConversationComponent extends Component {
             const logo = this.refs.logo;
             let scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight - INTRO_BOTTOM_SPACER;
 
-            if (quickReplies.length > 0 || (typingIndicatorShown && IS_APPLE_MOBILE_DEVICE)) {
+            if (quickReplies.length > 0 || typingIndicatorShown) {
                 scrollTop = scrollTop + EXTRA_COMPONENT_BOTTOM_SPACER;
             }
 
@@ -183,7 +182,7 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const {connectNotificationTimestamp, introHeight, messages, quickReplies, errorNotificationMessage, isFetchingMoreMessages, hasMoreMessages, text, settings, typingIndicatorShown} = this.props;
+        const {connectNotificationTimestamp, introHeight, messages, quickReplies, errorNotificationMessage, isFetchingMoreMessages, hasMoreMessages, text, settings, typingIndicatorShown, typingIndicatorName} = this.props;
         const {fetchingHistory, fetchHistory} = text;
         const {accentColor, linkColor} = settings;
 
@@ -203,13 +202,39 @@ export class ConversationComponent extends Component {
                 }
             };
 
+            let lastInGroup = message.lastInGroup;
+
+            if (index === messages.length - 1 && message.role !== 'appUser' && typingIndicatorShown && message.name === typingIndicatorName) {
+                lastInGroup = false;
+            }
+
             return <MessageComponent key={ message._clientId || message._id }
                                      ref={ refCallback }
                                      accentColor={ accentColor }
                                      linkColor={ linkColor }
                                      onLoad={ this.scrollToBottom }
-                                     {...message} />;
+                                     {...message}
+                                     lastInGroup={ lastInGroup } />;
         });
+
+        if (typingIndicatorShown) {
+            const refCallback = (c) => {
+                this._lastNode = findDOMNode(c);
+            };
+
+            let firstInGroup = true;
+
+            if (messages.length > 0) {
+                const lastMessage = messages[messages.length - 1];
+                if (lastMessage.role !== 'appUser' && lastMessage.name === typingIndicatorName) {
+                    firstInGroup = false;
+                }
+            }
+
+            messageItems.push(<TypingIndicator ref={ refCallback }
+                                               firstInGroup={ firstInGroup }
+                                               key='typing-indicator' />);
+        }
 
         if (quickReplies.length > 0) {
             const choices = quickReplies.map(({text, payload, iconUrl}) => {
@@ -270,7 +295,6 @@ export class ConversationComponent extends Component {
         }
 
         const introduction = hasMoreMessages ? null : <Introduction/>;
-        const typingIndicator = typingIndicatorShown ? <TypingIndicator ref={ (c) => this._lastNode = findDOMNode(c) } /> : null;
 
         return <div id='sk-conversation'
                     className={ errorNotificationMessage && 'notification-shown' }
@@ -285,7 +309,6 @@ export class ConversationComponent extends Component {
                        <div ref='messages'
                             className='sk-messages'>
                            { messageItems }
-                           { typingIndicator }
                        </div>
                        <div className='sk-logo'
                             ref='logo'
@@ -317,6 +340,7 @@ export const Conversation = connect(({appState, conversation, ui: {text}, app}) 
             fetchingHistory: text.fetchingHistory,
             fetchHistory: text.fetchHistory
         },
-        typingIndicatorShown: appState.typingIndicatorShown
+        typingIndicatorShown: appState.typingIndicatorShown,
+        typingIndicatorName: appState.typingIndicatorName
     };
 })(ConversationComponent);

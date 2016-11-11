@@ -3,7 +3,13 @@ import { connect } from 'react-redux';
 
 export class TypingIndicatorComponent extends Component {
     static propTypes = {
-        avatarUrl: PropTypes.string
+        avatarUrl: PropTypes.string,
+        name: PropTypes.string,
+        firstInGroup: PropTypes.bool
+    };
+
+    static defaultProps = {
+        firstInGroup: true
     };
 
     state = {
@@ -17,7 +23,7 @@ export class TypingIndicatorComponent extends Component {
     }
 
     render() {
-        const {avatarUrl} = this.props;
+        const {avatarUrl, name, firstInGroup} = this.props;
         const {mounted} = this.state;
 
         const avatar = avatarUrl ?
@@ -25,9 +31,14 @@ export class TypingIndicatorComponent extends Component {
                  className='sk-typing-indicator-avatar' /> :
             <div className='sk-typing-indicator-avatar-placeholder' />;
 
+        const fromName = name && firstInGroup ? <div className='sk-from'>
+                                                    { name }
+                                                </div> : null;
+
         return <div className={ `sk-typing-indicator-container ${mounted ? 'fade-in' : ''}` }>
+                   { fromName }
                    { avatar }
-                   <div className='sk-typing-indicator'>
+                   <div className={ `sk-typing-indicator ${firstInGroup ? 'sk-typing-indicator-first' : ''}` }>
                        <span></span>
                        <span></span>
                        <span></span>
@@ -39,6 +50,7 @@ export class TypingIndicatorComponent extends Component {
 
 export const TypingIndicator = connect(({appState}) => {
     return {
-        avatarUrl: appState.typingIndicatorAvatarUrl
+        avatarUrl: appState.typingIndicatorAvatarUrl,
+        name: appState.typingIndicatorName
     };
 })(TypingIndicatorComponent);

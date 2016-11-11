@@ -192,10 +192,11 @@ export function setShouldScrollToBottom(value) {
     };
 }
 
-export function showTypingIndicator({avatarUrl}) {
+export function showTypingIndicator({avatarUrl, name}) {
     return {
         type: SHOW_TYPING_INDICATOR,
-        avatarUrl
+        avatarUrl,
+        name
     };
 }
 

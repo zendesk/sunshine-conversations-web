@@ -1,6 +1,7 @@
 .sk-typing-indicator-container {
     display: block;
     clear: both;
+    padding-top: 2px;
     padding-bottom: 10px;
     margin-left: -100px;
     opacity: 0.1;
@@ -17,11 +18,16 @@
         width: auto;
         height: 35px;
         border-radius: 14px;
+        border-top-left-radius: 2px;
         padding: 14px;
         display: inline-block;
         position: relative;
         animation: 2s bulge infinite ease-out;
         vertical-align: middle;
+
+        &.sk-typing-indicator-first {
+            border-top-left-radius: 14px;
+        }
 
         span {
             height: 8px;
