@@ -11,7 +11,8 @@ import { mockAppStore } from '../../utils/redux';
 function getStoreState(state = {}) {
     const defaultState = {
         appState: {
-            typingIndicatorAvatarUrl: ''
+            typingIndicatorAvatarUrl: '',
+            typingIndicatorName: ''
         }
     };
 
@@ -45,6 +46,32 @@ describe('TypingIndicator Component', () => {
         const node = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-typing-indicator-avatar');
         expect(node).to.exist;
         node.src.should.eq('http://some-url/');
+    });
+
+    [true, false].forEach((firstInGroup) => {
+        ['', 'http://some-url/'].forEach((avatarUrl) => {
+            const mockedStore = mockAppStore(sandbox, getStoreState({
+                appState: {
+                    typingIndicatorAvatarUrl: avatarUrl,
+                    typingIndicatorName: 'Some name'
+                }
+            }));
+
+            describe(`is ${firstInGroup ? '' : ' not'} first in group ${avatarUrl ? 'with' : 'without'} avatar`, () => {
+                it(`should ${firstInGroup ? '' : 'not'} render a name`, () => {
+                    const component = wrapComponentWithStore(TypingIndicator, null, mockedStore);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-typing-indicator').length.should.eq(1);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-typing-indicator-avatar-placeholder').length.should.eq(avatarUrl ? 0 : 1);
+                    if (avatarUrl) {
+                        const node = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-typing-indicator-avatar');
+                        expect(node).to.exist;
+                        node.src.should.eq(avatarUrl);
+                    } else {
+                        TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-typing-indicator-avatar').length.should.eq(0);
+                    }
+                });
+            });
+        });
     });
 
 });

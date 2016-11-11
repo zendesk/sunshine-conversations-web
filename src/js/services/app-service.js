@@ -112,5 +112,11 @@ export function showTypingIndicator(data) {
 }
 
 export function hideTypingIndicator() {
+    const {typingIndicatorTimeoutId} = store.getState().appState;
+
+    if (typingIndicatorTimeoutId) {
+        clearTimeout(typingIndicatorTimeoutId);
+    }
+    
     store.dispatch(AppStateActions.hideTypingIndicator());
 }
