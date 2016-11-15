@@ -98,7 +98,7 @@ const cleanUpMessages = (messages) => {
     const cleanedMessages = [];
     const messagesHash = {};
 
-    // removes duplicate messages and empty messages 
+    // removes duplicate messages and empty messages
     messages.forEach((message) => {
         const key = message._id + message.role + message.mediaType;
         const hasText = (message.text && !!message.text.trim()) || (message.mediaUrl && !!message.mediaUrl.trim());
@@ -127,8 +127,8 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             };
         case ConversationActions.SET_CONVERSATION:
             return {
-                ...INITIAL_STATE,
-                ...action.conversation
+                ...action.conversation,
+                messages: state.messages
             };
         case ConversationActions.SET_MESSAGES:
             return {
