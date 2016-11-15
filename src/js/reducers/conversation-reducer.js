@@ -128,7 +128,8 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
         case ConversationActions.SET_CONVERSATION:
             return {
                 ...action.conversation,
-                messages: state.messages
+                messages: state.messages,
+                quickReplies: state.quickReplies
             };
         case ConversationActions.SET_MESSAGES:
             return {
