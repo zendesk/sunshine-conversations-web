@@ -143,7 +143,7 @@ export class ConversationComponent extends Component {
 
     componentWillUpdate(nextProps) {
         const {messages: currentMessages, isFetchingMoreMessages, typingIndicatorShown: currentTypingIndicatorShown} = this.props;
-        const {messages: newMessages, typingIndicatorShown:newTypingIndicatorShown} = nextProps;
+        const {messages: newMessages, typingIndicatorShown: newTypingIndicatorShown} = nextProps;
 
         if (!this._lastNode) {
             this._forceScrollToBottom = true;

@@ -207,6 +207,8 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             return {
                 ...state,
                 typingIndicatorShown: false,
+                typingIndicatorName: null,
+                typingIndicatorAvatarUrl: null,
                 typingIndicatorTimeoutId: null
             };
 
@@ -215,6 +217,8 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
                 return {
                     ...state,
                     typingIndicatorShown: false,
+                    typingIndicatorName: null,
+                    typingIndicatorAvatarUrl: null,
                     typingIndicatorTimeoutId: null
                 };
             }
