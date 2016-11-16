@@ -25,6 +25,7 @@ const INITIAL_STATE = {
         notificationSettingsChannelsTitle: 'Other Channels',
         notificationSettingsChannelsDescription: 'You can also talk to us from your favorite app or service.',
         notificationSettingsConnectedAs: 'Connected as {username}',
+        notificationSettingsConnected: 'Connected',
         viberQRCodeError: 'An error occurred while fetching your Viber QR code. Please try again.',
         wechatQRCodeError: 'An error occurred while fetching your WeChat QR code. Please try again.',
         messengerChannelDescription: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.',

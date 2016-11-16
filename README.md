@@ -138,6 +138,7 @@ var skPromise = Smooch.init({
         notificationSettingsChannelsTitle: 'Other Channels',
         notificationSettingsChannelsDescription: 'You can also talk to us from your favorite app or service.',
         notificationSettingsConnectedAs: 'Connected as {username}',
+        notificationSettingsConnected: 'Connected',
         wechatQRCodeError: 'An error occurred while fetching your WeChat QR code. Please try again.',
         messengerChannelDescription: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.',
         frontendEmailChannelDescription: 'To talk to us using email just send a message to our email address and we\'ll reply shortly:',
