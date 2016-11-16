@@ -56,7 +56,8 @@ export const CHANNEL_DETAILS = {
         ...integrationsAssets.viber,
         Component: !isMobile.any ? ViberChannelContent : undefined,
         onChannelPage: fetchViberQRCode,
-        getURL: (appUser, channel) => `viber://pa?chatURI=${channel.uri}&context=${appUser.id}`
+        getURL: (appUser, channel) => isMobile.any ? `viber://pa?chatURI=${channel.uri}&context=${appUser._id}` : undefined,
+        renderPageIfLinked: !isMobile.any
     },
     wechat: {
         name: 'WeChat',

@@ -1,0 +1,92 @@
+.sk-typing-indicator-container {
+    display: block;
+    clear: both;
+    padding-top: 2px;
+    padding-bottom: 10px;
+    margin-left: -100px;
+    opacity: 0.1;
+    transition: margin-left 250ms cubic-bezier(.55,0,.1,1) 300ms, opacity 250ms cubic-bezier(.55,0,.1,1) 300ms;
+
+    &.fade-in {
+        margin-left: 0px;
+        opacity: 1;
+    }
+
+    .sk-typing-indicator {
+        clear: both;
+        background-color: @sk-light-grey;
+        width: auto;
+        height: 35px;
+        border-radius: 14px;
+        border-top-left-radius: 2px;
+        padding: 14px;
+        display: inline-block;
+        position: relative;
+        animation: 2s bulge infinite ease-out;
+        vertical-align: middle;
+
+        &.sk-typing-indicator-first {
+            border-top-left-radius: 14px;
+        }
+
+        span {
+            height: 8px;
+            width: 8px;
+            float: left;
+            margin: 0 2px;
+            background-color: #787f8c;
+            display: block;
+            border-radius: 50%;
+            opacity: 0.4;
+
+            &:nth-of-type(1) {
+                animation: 1s blink infinite (1 * .3333s);
+            }
+
+            &:nth-of-type(2) {
+                animation: 1s blink infinite (2 * .3333s);
+            }
+
+            &:nth-of-type(3) {
+                animation: 1s blink infinite (3 * .3333s);
+            }
+        }
+    }
+
+    .sk-typing-indicator-avatar {
+        .sk-msg-avatar();
+        margin-bottom: 0px;
+        vertical-align: middle;
+    }
+
+    .sk-typing-indicator-avatar-placeholder {
+        .sk-msg-avatar-placeholder();
+    }
+
+    @-webkit-keyframes blink {
+        50% {
+            opacity: 1;
+        }
+    }
+    @-webkit-keyframes bulge {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+    @keyframes blink {
+        50% {
+            opacity: 1;
+        }
+    }
+    @keyframes bulge {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+}

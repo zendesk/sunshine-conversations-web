@@ -13,7 +13,8 @@ export class NotificationChannelItemComponent extends Component {
         icon2x: PropTypes.string.isRequired,
         displayName: PropTypes.string,
         linkColor: PropTypes.string,
-        notificationSettingsConnectedAsText: PropTypes.string.isRequired
+        notificationSettingsConnectedAsText: PropTypes.string.isRequired,
+        notificationSettingsConnectedText: PropTypes.string.isRequired
     };
 
     onClick = () => {
@@ -21,7 +22,7 @@ export class NotificationChannelItemComponent extends Component {
     };
 
     render() {
-        const {name, icon, icon2x, linked, hasURL, displayName, linkColor, notificationSettingsConnectedAsText} = this.props;
+        const {name, icon, icon2x, linked, hasURL, displayName, linkColor, notificationSettingsConnectedText, notificationSettingsConnectedAsText} = this.props;
 
         const itemRightStyle = linked && linkColor ? {
             color: `#${linkColor}`
@@ -46,7 +47,7 @@ export class NotificationChannelItemComponent extends Component {
                                { name }
                            </div>
                            { linked ? <div className='channel-item-connected-as'>
-                                          { notificationSettingsConnectedAsText.replace('{username}', displayName) }
+                                          { displayName ? notificationSettingsConnectedAsText.replace('{username}', displayName) : notificationSettingsConnectedText }
                                       </div> : null }
                        </div>
                        <div className='channel-item-right'
@@ -61,6 +62,7 @@ export class NotificationChannelItemComponent extends Component {
 export const NotificationChannelItem = connect(({app, ui}) => {
     return {
         linkColor: app.settings.web.linkColor,
-        notificationSettingsConnectedAsText: ui.text.notificationSettingsConnectedAs
+        notificationSettingsConnectedAsText: ui.text.notificationSettingsConnectedAs,
+        notificationSettingsConnectedText: ui.text.notificationSettingsConnected
     };
 })(NotificationChannelItemComponent);
