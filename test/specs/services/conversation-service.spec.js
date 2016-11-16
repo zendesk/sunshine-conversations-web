@@ -94,6 +94,7 @@ describe('Conversation service', () => {
 
         sandbox.stub(utilsFaye, 'disconnectClient').returns(null);
         sandbox.stub(utilsFaye, 'subscribeConversation').resolves();
+        sandbox.stub(utilsFaye, 'subscribeConversationActivity').resolves();
         sandbox.stub(utilsFaye, 'subscribeUser').resolves();
         sandbox.stub(utilsMedia, 'isImageUploadSupported').returns(true);
         sandbox.stub(utilsMedia, 'isFileTypeSupported');

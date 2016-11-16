@@ -7,6 +7,7 @@ import { MessageComponent } from '../../../src/js/components/message';
 import { Introduction } from '../../../src/js/components/introduction';
 import { ConnectNotification } from '../../../src/js/components/connect-notification';
 import { QuickReplies } from '../../../src/js/components/quick-replies';
+import { TypingIndicator } from '../../../src/js/components/typing-indicator';
 
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 import { mockAppStore } from '../../utils/redux';
@@ -33,7 +34,8 @@ function getStoreState(state = {}) {
             shouldScrollToBottom: true,
             isFetchingMoreMessages: false,
             introHeight: 100,
-            embedded: false
+            embedded: false,
+            typingIndicatorShown: false
         },
         conversation: {
             messages: [
@@ -84,6 +86,9 @@ describe('Conversation Component', () => {
         });
         mockComponent(sandbox, QuickReplies, 'div', {
             className: 'mockedQuickReplies'
+        });
+        mockComponent(sandbox, TypingIndicator, 'div', {
+            className: 'mockedTypingIndicator'
         });
 
         mockedStore = mockAppStore(sandbox, getStoreState());
@@ -195,6 +200,23 @@ describe('Conversation Component', () => {
 
         it('should render quick replies', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedQuickReplies').length.should.eq(1);
+
+        });
+    });
+    describe('TypingIndicator component', () => {
+        [true, false].forEach((typingIndicatorShown) => {
+            describe(`typingIndicatorShown is ${typingIndicatorShown ? 'on' : 'off'}`, () => {
+                it(`should ${typingIndicatorShown ? '' : 'not'} render`, () => {
+                    mockedStore = mockAppStore(sandbox, getStoreState({
+                        appState: {
+                            typingIndicatorShown
+                        }
+                    }));
+
+                    component = wrapComponentWithStore(Conversation, null, mockedStore);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedTypingIndicator').length.should.eq(typingIndicatorShown ? 1 : 0);
+                });
+            });
         });
     });
 });
