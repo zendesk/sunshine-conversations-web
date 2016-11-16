@@ -1,36 +1,49 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
+import deepAssign from 'deep-assign';
 
-import { EmailSettingsComponent } from '../../../src/js/components/email-settings';
+import { EmailSettings, EmailSettingsComponent } from '../../../src/js/components/email-settings';
 import * as userService from '../../../src/js/services/user-service';
 
-import { getContext, wrapComponentWithContext } from '../../utils/react';
+import { mockAppStore } from '../../utils/redux';
+import { wrapComponentWithStore } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
-const defaultProps = {
-    appState: {
-        settingsNotificationVisible: false,
-        readOnlyEmail: false
-    },
-    user: {
-        email: 'some@email.com'
-    }
-};
 
-const context = getContext({
-    ui: {
-        text: {
-            settingsReadOnlyText: 'This is readonly',
-            settingsText: 'This is settings',
-            settingsInputPlaceholder: 'This is a placeholder',
-            settingsSaveButtonText: 'This is a button text'
+function getStoreState(state = {}) {
+    const defaultState = {
+        user: {
+            email: ''
+        },
+        app: {
+            settings: {
+                web: {
+                    channels: {}
+                }
+            },
+            integrations: []
+        },
+        ui: {
+            text: {
+                settingsReadOnlyText: 'This is readonly',
+                settingsText: 'This is settings',
+                settingsInputPlaceholder: 'This is a placeholder',
+                settingsSaveButtonText: 'This is a button text'
+            }
+        },
+        appState: {
+            settingsNotificationVisible: false,
+            readOnlyEmail: false
         }
-    }
-});
+    };
+
+    return deepAssign(defaultState, state);
+}
 
 describe('Email Settings Component', () => {
 
-    var component;
+    let component;
+    let mockedStore;
 
     beforeEach(() => {
         sandbox.stub(userService, 'immediateUpdate');
@@ -42,21 +55,21 @@ describe('Email Settings Component', () => {
     });
 
     describe('Email read-only', () => {
-        var props = Object.assign({}, defaultProps, {
-            appState: Object.assign({}, defaultProps.appState, {
-                readOnlyEmail: true
-            })
+        beforeEach(() => {
+            mockedStore = mockAppStore(sandbox, getStoreState({
+                appState: {
+                    readOnlyEmail: true
+                }
+            }));
+            component = wrapComponentWithStore(EmailSettings, null, mockedStore).getWrappedInstance();
         });
 
-        beforeEach(() => {
-            component = wrapComponentWithContext(EmailSettingsComponent, props, context);
-        });
         it('should render the read-only text', () => {
-            component.refs.description.textContent.should.eq(context.ui.text.settingsReadOnlyText);
+            component.refs.description.textContent.should.eq(mockedStore.getState().ui.text.settingsReadOnlyText);
         });
 
         it('should put user email in input', () => {
-            component.refs.input.value.should.eq(props.user.email);
+            component.refs.input.value.should.eq(mockedStore.getState().user.email);
         });
 
         it('should disable the input', () => {
@@ -70,18 +83,18 @@ describe('Email Settings Component', () => {
     });
 
     describe('Email editable', () => {
-        var props = Object.assign({}, defaultProps);
 
         beforeEach(() => {
-            component = wrapComponentWithContext(EmailSettingsComponent, props, context);
+            mockedStore = mockAppStore(sandbox, getStoreState());
+            component = wrapComponentWithStore(EmailSettings, null, mockedStore).getWrappedInstance();
         });
 
         it('should render the normal text', () => {
-            component.refs.description.textContent.should.eq(context.ui.text.settingsText);
+            component.refs.description.textContent.should.eq(mockedStore.getState().ui.text.settingsText);
         });
 
         it('should put user email in input', () => {
-            component.refs.input.value.should.eq(props.user.email);
+            component.refs.input.value.should.eq(mockedStore.getState().user.email);
         });
 
         it('should enable the input', () => {
@@ -96,11 +109,10 @@ describe('Email Settings Component', () => {
 
     // TODO : figure how to spy on class properties
     xdescribe('Input', () => {
-        var props = Object.assign({}, defaultProps);
-
         beforeEach(() => {
             sandbox.stub(EmailSettingsComponent.prototype, 'onChange');
-            component = wrapComponentWithContext(EmailSettingsComponent, props, context);
+            mockedStore = mockAppStore(sandbox, getStoreState());
+            component = wrapComponentWithStore(EmailSettings, null, mockedStore);
         });
 
         it('should call onChange', () => {
@@ -113,15 +125,15 @@ describe('Email Settings Component', () => {
 
     // TODO : figure how to spy on class properties
     xdescribe('Save button', () => {
-        var props = Object.assign({}, defaultProps, {
-            user: {
-                email: 'some@email.com'
-            }
-        });
 
         beforeEach(() => {
             sandbox.stub(EmailSettingsComponent, 'save');
-            component = wrapComponentWithContext(EmailSettingsComponent, props, context);
+            mockedStore = mockAppStore(sandbox, getStoreState({
+                user: {
+                    email: 'some@email.com'
+                }
+            }));
+            component = wrapComponentWithStore(EmailSettings, null, mockedStore);
         });
 
         it('should call save', () => {
@@ -131,22 +143,22 @@ describe('Email Settings Component', () => {
     });
 
     describe('Save', () => {
-        var props = Object.assign({}, defaultProps, {
-            user: {
-                email: 'some@email.com'
-            }
-        });
-
-        var event;
+        let event;
 
         beforeEach(() => {
-            Object.assign(props, {
+            const props = {
                 actions: {
                     hideSettings: sandbox.stub()
                 }
-            });
+            };
 
-            component = wrapComponentWithContext(EmailSettingsComponent, props, context);
+            mockedStore = mockAppStore(sandbox, getStoreState({
+                user: {
+                    email: 'some@email.com'
+                }
+            }));
+
+            component = wrapComponentWithStore(EmailSettings, props, mockedStore).getWrappedInstance();
             sandbox.spy(component, 'setState');
             event = {
                 preventDefault: sandbox.stub()

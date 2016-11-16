@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import StripeCheckout from 'react-stripe-checkout';
+import { connect } from 'react-redux';
 
 import { store } from '../stores/app-store';
 import { createTransaction } from '../services/stripe-service';
@@ -11,19 +12,18 @@ import { getIntegration } from '../utils/app';
 import { LoadingComponent } from './loading';
 
 export class ActionComponent extends Component {
-    static contextTypes = {
-        app: PropTypes.object.isRequired,
-        ui: PropTypes.object.isRequired
-    };
 
     static propTypes = {
         text: PropTypes.string.isRequired,
         type: PropTypes.string,
         buttonColor: PropTypes.string,
-        amount: PropTypes.string,
+        amount: PropTypes.number,
         currency: PropTypes.string,
         uri: PropTypes.string,
-        state: PropTypes.string
+        state: PropTypes.string,
+        actionPaymentCompletedText: PropTypes.string.isRequired,
+        integrations: PropTypes.array.isRequired,
+        stripe: PropTypes.object
     };
 
     static defaultProps = {
@@ -102,11 +102,10 @@ export class ActionComponent extends Component {
     }
 
     render() {
-        const {app, ui: {text: {actionPaymentCompleted}}} = this.context;
-        const {buttonColor, amount, currency, text, uri, type} = this.props;
+        const {buttonColor, amount, currency, text, uri, type, actionPaymentCompletedText, integrations, stripe} = this.props;
         const {state} = this.state;
 
-        const stripeIntegration = getIntegration(app.integrations, 'stripeConnect');
+        const stripeIntegration = getIntegration(integrations, 'stripeConnect');
 
         let style = {};
         if (buttonColor) {
@@ -119,7 +118,7 @@ export class ActionComponent extends Component {
             const user = store.getState().user;
 
             // let's change this when we support other providers
-            const stripeAccount = app.stripe;
+            const stripeAccount = stripe;
             if (state === 'offered') {
                 return <StripeCheckout componentClass='div'
                                        className='sk-action'
@@ -139,7 +138,7 @@ export class ActionComponent extends Component {
                        </StripeCheckout>;
             } else {
                 const buttonText = state === 'paid' ?
-                    actionPaymentCompleted :
+                    actionPaymentCompletedText :
                     <LoadingComponent />;
 
                 if (state === 'paid') {
@@ -166,7 +165,7 @@ export class ActionComponent extends Component {
                            { buttonText }
                        </button>
                    </div>;
-        } else {
+        } else if (type === 'link' || (type === 'buy' && !stripeIntegration)) {
             const isJavascript = uri.startsWith('javascript:');
 
             return <div className='sk-action'>
@@ -177,6 +176,18 @@ export class ActionComponent extends Component {
                            { text }
                        </a>
                    </div>;
+        } else {
+            return null;
         }
     }
 }
+
+export const Action = connect(({app, ui: {text}}) => {
+    return {
+        actionPaymentCompletedText: text.actionPaymentCompleted,
+        integrations: app.integrations,
+        stripe: app.stripe
+    };
+}, null, null, {
+    withRef: true
+})(ActionComponent);

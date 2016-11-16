@@ -1,29 +1,28 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
+
 import { LoadingComponent } from '../../components/loading';
 import { fetchWeChatQRCode } from '../../services/integrations-service';
 
-export class WeChatChannelContent extends Component {
-    static contextTypes = {
-        ui: PropTypes.object.isRequired
-    };
+export class WeChatChannelContentComponent extends Component {
 
     static propTypes = {
-        channelState: PropTypes.object.isRequired
+        channelState: PropTypes.object.isRequired,
+        qrCodeError: PropTypes.string.isRequired
     };
 
     render() {
-        const {channelState} = this.props;
-        const {ui: {text}} = this.context;
+        const {channelState, qrCodeError} = this.props;
 
         if (channelState.hasError) {
             return <a className={ 'sk-error-link' }
                       onClick={ fetchWeChatQRCode }>
-                       { text.wechatQRCodeError }
+                       { qrCodeError }
                    </a>;
         }
 
         if (channelState.qrCode) {
-            return <img style={ { width: '40%' } }
+            return <img style={ {    width: '40%'} }
                         src={ channelState.qrCode } />;
         }
 
@@ -37,3 +36,9 @@ export class WeChatChannelContent extends Component {
                                  style={ loadingStyle } />;
     }
 }
+
+export const WeChatChannelContent = connect(({ui: {text}}) => {
+    return {
+        qrCodeError: text.wechatQRCodeError
+    };
+})(WeChatChannelContentComponent);

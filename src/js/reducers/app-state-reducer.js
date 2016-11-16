@@ -1,6 +1,6 @@
 import * as AppStateActions from '../actions/app-state-actions';
 import { RESET } from '../actions/common-actions';
-import { RESET_CONVERSATION } from '../actions/conversation-actions';
+import { RESET_CONVERSATION, ADD_MESSAGE } from '../actions/conversation-actions';
 import { WIDGET_STATE } from '../constants/app';
 
 const INITIAL_STATE = {
@@ -19,7 +19,11 @@ const INITIAL_STATE = {
     introHeight: 158,
     showAnimation: false,
     isFetchingMoreMessages: false,
-    shouldScrollToBottom: true
+    shouldScrollToBottom: true,
+    typingIndicatorShown: false,
+    typingIndicatorAvatarUrl: null,
+    typingIndicatorName: null,
+    typingIndicatorTimeoutId: null
 };
 
 export function AppStateReducer(state = INITIAL_STATE, action) {
@@ -190,6 +194,36 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
                 ...state,
                 shouldScrollToBottom: action.value
             };
+
+        case AppStateActions.SHOW_TYPING_INDICATOR:
+            return {
+                ...state,
+                typingIndicatorShown: true,
+                typingIndicatorAvatarUrl: action.avatarUrl,
+                typingIndicatorName: action.name,
+                typingIndicatorTimeoutId: action.timeoutId
+            };
+        case AppStateActions.HIDE_TYPING_INDICATOR:
+            return {
+                ...state,
+                typingIndicatorShown: false,
+                typingIndicatorName: null,
+                typingIndicatorAvatarUrl: null,
+                typingIndicatorTimeoutId: null
+            };
+
+        case ADD_MESSAGE:
+            if (action.message.role === 'appMaker') {
+                return {
+                    ...state,
+                    typingIndicatorShown: false,
+                    typingIndicatorName: null,
+                    typingIndicatorAvatarUrl: null,
+                    typingIndicatorTimeoutId: null
+                };
+            }
+
+            return state;
 
         default:
             return state;

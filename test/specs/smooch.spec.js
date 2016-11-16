@@ -27,9 +27,7 @@ const defaultState = {
         subscription: true
     },
     ui: {
-        text: {
-
-        }
+        text: {}
     },
     app: {}
 };
@@ -53,6 +51,7 @@ describe('Smooch', () => {
     });
 
     beforeEach(() => {
+        sandbox.stub(Smooch.prototype, 'render');
         smooch = new Smooch();
         smooch._container = '_container';
         sandbox.stub(document.body, 'appendChild');
@@ -62,6 +61,7 @@ describe('Smooch', () => {
                 cb();
             }
         });
+
     });
 
     afterEach(() => {
@@ -74,6 +74,7 @@ describe('Smooch', () => {
 
         beforeEach(() => {
             loginStub = sandbox.stub(smooch, 'login');
+            loginStub.resolves();
             mockedStore = mockAppStore(sandbox, state);
         });
 
@@ -85,11 +86,11 @@ describe('Smooch', () => {
                 email: 'some@email.com'
             };
 
-            smooch.init(props);
-
-            smooch.appToken.should.eq(props.appToken);
-            loginStub.should.have.been.calledWith(props.userId, props.jwt, {
-                email: 'some@email.com'
+            return smooch.init(props).then(() => {
+                smooch.appToken.should.eq(props.appToken);
+                loginStub.should.have.been.calledWith(props.userId, props.jwt, {
+                    email: 'some@email.com'
+                });
             });
         });
 

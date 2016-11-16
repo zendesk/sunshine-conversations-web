@@ -105,7 +105,6 @@
                 }
                 &.sk-msg-appmaker-last {
                     border-top-left-radius: 2px;
-                    margin-bottom: 3px;
                 }
                 &.sk-msg-appuser-first {
                     border-bottom-right-radius: 2px;
@@ -183,7 +182,7 @@
 
                 .btn {
                     white-space: inherit;
-                    .transition('width' 100ms);
+                    .transition(width 100ms);
                 }
                 &:last-child {
                     margin-bottom: 0px;
@@ -215,23 +214,6 @@
                         color: @sk-blue;
                     }
                 }
-            }
-            .sk-msg-avatar {
-                width: 31px;
-                height: auto;
-                border-radius: 50%;
-                margin-right: 5px;
-                margin-bottom: -11px;
-                display: inline-block;
-                margin-left: 9px;
-                &.sk-msg-avatar-img {
-                    margin-bottom: 0px;
-                }
-            }
-            .sk-msg-avatar-placeholder {
-                width: 35px;
-                display: inline-block;
-                margin-right: 10px;
             }
         }
         &.sk-right-row {
@@ -266,7 +248,7 @@
     .scrollbar-mixin();
 
     .sk-logo {
-        margin-bottom: 10px;
+        padding-bottom: 10px;
         margin-left: @logo-margin;
 
         a {
@@ -341,4 +323,22 @@
             }
         }
     }
+}
+
+.sk-msg-avatar {
+    width: 31px;
+    height: auto;
+    border-radius: 50%;
+    margin-right: 5px;
+    margin-bottom: -11px;
+    display: inline-block;
+    margin-left: 9px;
+    &.sk-msg-avatar-img {
+        margin-bottom: 0px;
+    }
+}
+.sk-msg-avatar-placeholder {
+    width: 35px;
+    display: inline-block;
+    margin-right: 10px;
 }

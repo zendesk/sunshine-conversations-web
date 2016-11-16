@@ -2,12 +2,13 @@ import isMobile from 'ismobilejs';
 
 import { integrations as integrationsAssets } from '../constants/assets';
 
-import { fetchWeChatQRCode, fetchTwilioAttributes } from '../services/integrations-service';
+import { fetchViberQRCode, fetchWeChatQRCode, fetchTwilioAttributes } from '../services/integrations-service';
 
 import { MessengerChannelContent } from '../components/channels/messenger-channel-content';
 import { EmailChannelContent } from '../components/channels/email-channel-content';
 import { TwilioChannelContent } from '../components/channels/twilio-channel-content';
 import { WeChatChannelContent } from '../components/channels/wechat-channel-content';
+import { ViberChannelContent } from '../components/channels/viber-channel-content';
 import { LineChannelContent } from '../components/channels/line-channel-content';
 
 export const CHANNEL_DETAILS = {
@@ -48,6 +49,16 @@ export const CHANNEL_DETAILS = {
         ...integrationsAssets.telegram,
         getURL: (appUser, channel, linked) => `https://telegram.me/${channel.username}${!linked ? '?start=' + appUser._id : ''}`
     },
+    viber: {
+        name: 'Viber',
+        descriptionHtmlKey: 'viberChannelDescription',
+        isLinkable: true,
+        ...integrationsAssets.viber,
+        Component: !isMobile.any ? ViberChannelContent : undefined,
+        onChannelPage: fetchViberQRCode,
+        getURL: (appUser, channel) => isMobile.any ? `viber://pa?chatURI=${channel.uri}&context=${appUser._id}` : undefined,
+        renderPageIfLinked: !isMobile.any
+    },
     wechat: {
         name: 'WeChat',
         descriptionHtmlKey: isMobile.any ? 'wechatChannelDescriptionMobile' : 'wechatChannelDescription',
@@ -62,7 +73,10 @@ export const CHANNEL_DETAILS = {
         descriptionKey: 'lineChannelDescription',
         isLinkable: false,
         ...integrationsAssets.line,
-        Component: LineChannelContent
+        Component: !isMobile.any ? LineChannelContent : undefined,
+        getURL: (appUser, {lineId}) => {
+            return `https://line.me/R/ti/p/@${lineId}`;
+        }
     }
 };
 

@@ -2,10 +2,8 @@ import React, { Component } from 'react';
 
 export class LineChannelContent extends Component {
     render() {
-        const {botName} = this.props;
-
-        return <span className='channel-content-value'>
-                   { botName }
-               </span>;
+        const {qrCodeUrl} = this.props;
+        return <img style={ {    width: '40%'} }
+                    src={ qrCodeUrl } />;
     }
 }

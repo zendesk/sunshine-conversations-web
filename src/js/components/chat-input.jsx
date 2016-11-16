@@ -7,10 +7,19 @@ import { store } from '../stores/app-store';
 
 import { ImageUpload } from './image-upload';
 
+function checkAndResetUnreadCount() {
+    if (store.getState().conversation.unreadCount > 0) {
+        resetUnreadCount();
+    }
+}
+
 export class ChatInputComponent extends Component {
-    static contextTypes = {
-        settings: PropTypes.object.isRequired,
-        ui: PropTypes.object.isRequired
+
+    static propTypes = {
+        accentColor: PropTypes.string,
+        imageUploadEnabled: PropTypes.bool.isRequired,
+        inputPlaceholderText: PropTypes.string.isRequired,
+        sendButtonText: PropTypes.string.isRequired
     };
 
     constructor(...args) {
@@ -52,7 +61,7 @@ export class ChatInputComponent extends Component {
     }
 
     render() {
-        const {settings: {linkColor}, ui} = this.context;
+        const {accentColor, imageUploadEnabled, inputPlaceholderText, sendButtonText} = this.props;
 
         let sendButton;
 
@@ -62,8 +71,8 @@ export class ChatInputComponent extends Component {
         if (this.state.text.trim()) {
             buttonClassNames.push('active');
 
-            if (linkColor) {
-                buttonStyle.color = `#${linkColor}`;
+            if (accentColor) {
+                buttonStyle.color = `#${accentColor}`;
             }
         }
 
@@ -73,23 +82,23 @@ export class ChatInputComponent extends Component {
             sendButton = <span ref='button'
                                className={ buttonClassNames.join(' ') }
                                onTouchStart={ this.onSendMessage }
-                               style={ buttonStyle }>{ ui.text.sendButtonText }</span>;
+                               style={ buttonStyle }>{ sendButtonText }</span>;
         } else {
             sendButton = <a ref='button'
                             className={ buttonClassNames.join(' ') }
                             onClick={ this.onSendMessage }
                             style={ buttonStyle }>
-                             { ui.text.sendButtonText }
+                             { sendButtonText }
                          </a>;
         }
 
-        const imageUploadButton = this.props.imageUploadEnabled ?
+        const imageUploadButton = imageUploadEnabled ?
             <ImageUpload ref='imageUpload'
-                         color={ linkColor } /> : null;
+                         color={ accentColor } /> : null;
 
         const inputContainerClasses = ['input-container'];
 
-        if (!this.props.imageUploadEnabled) {
+        if (!imageUploadEnabled) {
             inputContainerClasses.push('no-upload');
         }
 
@@ -99,12 +108,12 @@ export class ChatInputComponent extends Component {
                          action='#'>
                        <div className={ inputContainerClasses.join(' ') }>
                            <input ref='input'
-                                  placeholder={ ui.text.inputPlaceholder }
+                                  placeholder={ inputPlaceholderText }
                                   className='input message-input'
                                   onChange={ this.onChange }
                                   onFocus={ this.onFocus }
                                   value={ this.state.text }
-                                  title={ ui.text.sendButtonText }></input>
+                                  title={ sendButtonText }></input>
                        </div>
                    </form>
                    { sendButton }
@@ -112,16 +121,13 @@ export class ChatInputComponent extends Component {
     }
 }
 
-export const ChatInput = connect((state) => {
+export const ChatInput = connect(({appState, app, ui}) => {
     return {
-        imageUploadEnabled: state.appState.imageUploadEnabled
+        imageUploadEnabled: appState.imageUploadEnabled,
+        accentColor: app.settings.web.accentColor,
+        sendButtonText: ui.text.sendButtonText,
+        inputPlaceholderText: ui.text.inputPlaceholder
     };
 }, undefined, undefined, {
     withRef: true
 })(ChatInputComponent);
-
-function checkAndResetUnreadCount() {
-    if (store.getState().conversation.unreadCount > 0) {
-        resetUnreadCount();
-    }
-}

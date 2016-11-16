@@ -7,29 +7,34 @@ import { MessageComponent } from './message';
 import { ConnectNotification } from './connect-notification';
 import { logo, logo2x } from '../constants/assets';
 import { Introduction } from './introduction';
+import { QuickReplies } from './quick-replies';
+import { TypingIndicator } from './typing-indicator';
 
 import { setShouldScrollToBottom, setFetchingMoreMessages } from '../actions/app-state-actions';
 import { fetchMoreMessages } from '../services/conversation-service';
-import { getTop } from '../utils/dom';
+import { getTop, getBoundingRect } from '../utils/dom';
 import debounce from 'lodash.debounce';
 
 const INTRO_BOTTOM_SPACER = 10;
+const EXTRA_COMPONENT_BOTTOM_SPACER = 10;
 const LOAD_MORE_LINK_HEIGHT = 47;
 
 export class ConversationComponent extends Component {
-    static contextTypes = {
-        settings: PropTypes.object.isRequired,
-        ui: PropTypes.object.isRequired
-    };
 
     static propTypes = {
-        connectNotificationTimestamp: PropTypes.number,
-        introHeight: PropTypes.number.isRequired,
         messages: PropTypes.array.isRequired,
-        errorNotificationMessage: PropTypes.string
+        embedded: PropTypes.bool.isRequired,
+        shouldScrollToBottom: PropTypes.bool.isRequired,
+        isFetchingMoreMessages: PropTypes.bool.isRequired,
+        hasMoreMessages: PropTypes.bool.isRequired,
+        introHeight: PropTypes.number,
+        connectNotificationTimestamp: PropTypes.number,
+        errorNotificationMessage: PropTypes.string,
+        settings: PropTypes.object.isRequired,
+        text: PropTypes.object.isRequired,
+        typingIndicatorShown: PropTypes.bool.isRequired,
+        quickReplies: PropTypes.array.isRequired
     };
-
-    scrollTimeouts = [];
 
     debounceOnScroll = debounce(() => {
         this.onScroll();
@@ -86,7 +91,7 @@ export class ConversationComponent extends Component {
         if (messages.length > 0 && messages[messages.length - 1]._id) {
             this._lastTopMessageId = messages[0]._id;
         }
-        
+
         const top = getTop(this._topMessageNode, node);
         this._lastTopMessageNodePosition = top - node.scrollTop;
         dispatch(setFetchingMoreMessages(true));
@@ -98,18 +103,20 @@ export class ConversationComponent extends Component {
     };
 
     scrollToBottom = () => {
-        const {shouldScrollToBottom} = this.props;
-        if(!this._isScrolling && (shouldScrollToBottom || this._forceScrollToBottom)) {
+        const {shouldScrollToBottom, quickReplies, typingIndicatorShown} = this.props;
+        if (!this._isScrolling && (shouldScrollToBottom || this._forceScrollToBottom)) {
             this._isScrolling = true;
-            const timeout = setTimeout(() => {
-                const container = findDOMNode(this);
-                const logo = this.refs.logo;
-                const scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight - INTRO_BOTTOM_SPACER;
-                container.scrollTop = scrollTop;
-                this._isScrolling = false;
-                this._forceScrollToBottom = false;
-            });
-            this.scrollTimeouts.push(timeout);
+            const container = findDOMNode(this);
+            const logo = this.refs.logo;
+            let scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight - INTRO_BOTTOM_SPACER;
+
+            if (quickReplies.length > 0 || typingIndicatorShown) {
+                scrollTop = scrollTop + EXTRA_COMPONENT_BOTTOM_SPACER;
+            }
+
+            container.scrollTop = scrollTop;
+            this._forceScrollToBottom = false;
+            this._isScrolling = false;
         }
     };
 
@@ -124,35 +131,35 @@ export class ConversationComponent extends Component {
             if (this._lastTopMessageNodePosition && !this._isScrolling) {
                 this._isScrolling = true;
 
-                // When fetching more messages, we want to make sure that after 
+                // When fetching more messages, we want to make sure that after
                 // render, the messages stay in the same places
                 container.scrollTop = getTop(node, container) - this._lastTopMessageNodePosition;
-
-                const timeout = setTimeout(() => {
-                    this._isScrolling = false;
-                });
-
-                this.scrollTimeouts.push(timeout);
+                this._isScrolling = false;
             }
         }
         this._lastTopMessageNode = undefined;
-        
+
     };
 
     componentWillUpdate(nextProps) {
-        const {messages: currentMessages, isFetchingMoreMessages} = this.props;
-        const {messages: newMessages} = nextProps;
+        const {messages: currentMessages, isFetchingMoreMessages, typingIndicatorShown: currentTypingIndicatorShown} = this.props;
+        const {messages: newMessages, typingIndicatorShown: newTypingIndicatorShown} = nextProps;
+
+        if (!this._lastNode) {
+            this._forceScrollToBottom = true;
+            return;
+        }
 
         // Check for new appMaker (and whisper) messages
         const isAppMakerMessage = newMessages.length - currentMessages.length === 1 ? newMessages.slice(-1)[0].role !== 'appUser' : false;
-        if (isAppMakerMessage && !isFetchingMoreMessages) {
+        if ((isAppMakerMessage || (currentTypingIndicatorShown !== newTypingIndicatorShown)) && !isFetchingMoreMessages) {
             const container = findDOMNode(this);
-            const appMakerMessageBottom = this._lastMessageNode.getBoundingClientRect().bottom;
-            const containerBottom = container.getBoundingClientRect().bottom;
+            const lastNodeBottom = getBoundingRect(this._lastNode).bottom;
+            const containerBottom = getBoundingRect(container).bottom;
 
             // If appMaker message is 'in view', we should scroll to bottom.
             // Otherwise, don't scroll
-            if (appMakerMessageBottom <= containerBottom) {
+            if (lastNodeBottom <= containerBottom) {
                 this._forceScrollToBottom = true;
             } else {
                 this._forceScrollToBottom = false;
@@ -174,13 +181,10 @@ export class ConversationComponent extends Component {
         }
     }
 
-    componentWillUnmount() {
-        this.scrollTimeouts.forEach(clearTimeout);
-    }
-
     render() {
-        const {connectNotificationTimestamp, introHeight, messages, errorNotificationMessage, isFetchingMoreMessages, hasMoreMessages} = this.props;
-        const {ui: {text: {fetchingHistory, fetchHistory}}, settings: {accentColor, linkColor}} = this.context;
+        const {connectNotificationTimestamp, introHeight, messages, quickReplies, errorNotificationMessage, isFetchingMoreMessages, hasMoreMessages, text, settings, typingIndicatorShown, typingIndicatorName} = this.props;
+        const {fetchingHistory, fetchHistory} = text;
+        const {accentColor, linkColor} = settings;
 
         let messageItems = messages.map((message, index) => {
             const refCallback = (c) => {
@@ -193,18 +197,60 @@ export class ConversationComponent extends Component {
                 }
 
                 if (index === messages.length - 1) {
-                    this._lastMessageNode = findDOMNode(c);
+                    this._lastNode = findDOMNode(c);
                     this._lastMessageId = message._id;
                 }
             };
+
+            let lastInGroup = message.lastInGroup;
+
+            if (index === messages.length - 1 && message.role !== 'appUser' && typingIndicatorShown && message.name === typingIndicatorName) {
+                lastInGroup = false;
+            }
 
             return <MessageComponent key={ message._clientId || message._id }
                                      ref={ refCallback }
                                      accentColor={ accentColor }
                                      linkColor={ linkColor }
                                      onLoad={ this.scrollToBottom }
-                                     {...message} />;
+                                     {...message}
+                                     lastInGroup={ lastInGroup } />;
         });
+
+        if (typingIndicatorShown) {
+            const refCallback = (c) => {
+                this._lastNode = findDOMNode(c);
+            };
+
+            let firstInGroup = true;
+
+            if (messages.length > 0) {
+                const lastMessage = messages[messages.length - 1];
+                if (lastMessage.role !== 'appUser' && lastMessage.name === typingIndicatorName) {
+                    firstInGroup = false;
+                }
+            }
+
+            messageItems.push(<TypingIndicator ref={ refCallback }
+                                               firstInGroup={ firstInGroup }
+                                               key='typing-indicator' />);
+        }
+
+        if (quickReplies.length > 0) {
+            const choices = quickReplies.map(({text, payload, iconUrl}) => {
+                return {
+                    text,
+                    payload,
+                    iconUrl
+                };
+            });
+            const refCallback = (c) => {
+                this._lastNode = findDOMNode(c);
+            };
+            messageItems.push(<QuickReplies ref={ refCallback }
+                                            choices={ choices }
+                                            key='quick-replies' />);
+        }
 
         if (connectNotificationTimestamp) {
             const notificationIndex = messages.findIndex((message) => message.received > connectNotificationTimestamp);
@@ -248,7 +294,7 @@ export class ConversationComponent extends Component {
             }
         }
 
-        const introduction = hasMoreMessages ? '' : <Introduction/>;
+        const introduction = hasMoreMessages ? null : <Introduction/>;
 
         return <div id='sk-conversation'
                     className={ errorNotificationMessage && 'notification-shown' }
@@ -278,15 +324,23 @@ export class ConversationComponent extends Component {
     }
 }
 
-export const Conversation = connect(({appState, conversation}) => {
+export const Conversation = connect(({appState, conversation, ui: {text}, app}) => {
     return {
         messages: conversation.messages,
+        quickReplies: conversation.quickReplies,
         embedded: appState.embedded,
         shouldScrollToBottom: appState.shouldScrollToBottom,
         isFetchingMoreMessages: appState.isFetchingMoreMessages,
         hasMoreMessages: conversation.hasMoreMessages,
         introHeight: appState.introHeight,
         connectNotificationTimestamp: appState.connectNotificationTimestamp,
-        errorNotificationMessage: appState.errorNotificationMessage
+        errorNotificationMessage: appState.errorNotificationMessage,
+        settings: app.settings.web,
+        text: {
+            fetchingHistory: text.fetchingHistory,
+            fetchHistory: text.fetchHistory
+        },
+        typingIndicatorShown: appState.typingIndicatorShown,
+        typingIndicatorName: appState.typingIndicatorName
     };
 })(ConversationComponent);

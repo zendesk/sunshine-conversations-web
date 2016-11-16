@@ -29,12 +29,6 @@ export class WidgetComponent extends Component {
         appState: PropTypes.object.isRequired
     };
 
-    static childContextTypes = {
-        app: PropTypes.object.isRequired,
-        settings: PropTypes.object.isRequired,
-        ui: PropTypes.object.isRequired
-    };
-
     onTouchStart = (e) => {
         resetUnreadCount();
         // the behavior is problematic only on iOS devices
@@ -63,14 +57,6 @@ export class WidgetComponent extends Component {
     }, 250, {
         leading: true
     });
-
-    getChildContext() {
-        return {
-            app: this.props.app,
-            settings: this.props.settings,
-            ui: this.props.ui
-        };
-    }
 
     componentDidMount = () => {
         window.addEventListener('resize', this.handleResize);

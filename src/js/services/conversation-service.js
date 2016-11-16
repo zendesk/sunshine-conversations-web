@@ -6,7 +6,7 @@ import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages
 import { unsetFayeSubscriptions } from '../actions/faye-actions';
 import { core } from './core';
 import { immediateUpdate } from './user-service';
-import { disconnectClient, subscribeConversation, subscribeUser } from '../utils/faye';
+import { disconnectClient, subscribeConversation, subscribeUser, subscribeConversationActivity } from '../utils/faye';
 import { observable } from '../utils/events';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
 import { getDeviceId } from '../utils/device';
@@ -75,14 +75,15 @@ export function sendChain(sendFn) {
         .then(connectFayeConversation);
 }
 
-export function sendMessage(text) {
+export function sendMessage(text, extra = {}) {
     return sendChain(() => {
         const message = {
             role: 'appUser',
             text,
             _clientId: Math.random(),
             _clientSent: new Date(),
-            deviceId: getDeviceId()
+            deviceId: getDeviceId(),
+            ...extra
         };
 
         store.dispatch(setShouldScrollToBottom(true));
@@ -182,7 +183,10 @@ export function connectFayeConversation() {
     const {faye: {conversationSubscription}} = store.getState();
 
     if (!conversationSubscription) {
-        return subscribeConversation();
+        return Promise.all([
+            subscribeConversation(),
+            subscribeConversationActivity()
+        ]);
     }
 
     return Promise.resolve();
