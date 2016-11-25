@@ -11,7 +11,7 @@ export class TextMessage extends Component {
     render() {
         let text = this.props.text.split('\n').map((item, index) => {
             if (!item.trim()) {
-                return;
+                return <br key={ index } />;
             }
 
             const linkOptions = {
