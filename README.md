@@ -64,6 +64,9 @@ new webpack.NormalModuleReplacementPlugin(/\/iconv-loader$/, 'node-noop')
 You will need to install `node-noop` in your project.
 See https://github.com/andris9/encoding/issues/16
 
+#### Notes about Angular 2
+Some users reported that including the Smooch Web Messenger script in their app would cause some problem. The [workaround](https://github.com/smooch/smooch-js/issues/404#issuecomment-257768495) for that is to add it after all your scripts.
+
 ### Bower
 
 Install from bower
