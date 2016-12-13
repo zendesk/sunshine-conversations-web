@@ -6,6 +6,7 @@ import { ImageLoading } from './image-loading';
 export class ImageMessage extends Component {
     static propTypes = {
         mediaUrl: React.PropTypes.string.isRequired,
+        hasActions: React.PropTypes.bool.isRequired,
         accentColor: React.PropTypes.string
     };
 
@@ -39,6 +40,12 @@ export class ImageMessage extends Component {
         if (this.props.status === 'sending') {
             return <div className='image-container'>
                        <ImageLoading color={ this.props.accentColor } />
+                       { image }
+                   </div>;
+        }
+
+        if (this.props.hasActions) {
+            return <div className='has-actions'>
                        { image }
                    </div>;
         }

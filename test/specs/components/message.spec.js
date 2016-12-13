@@ -59,6 +59,7 @@ describe('Message Component', () => {
             const props = {
                 role: 'appUser',
                 text: 'This is a text!',
+                type: isImage ? 'image' : 'text',
                 mediaUrl: isImage ? 'media-url' : undefined
             };
 
@@ -70,8 +71,8 @@ describe('Message Component', () => {
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-action').length.should.be.eq(0);
             });
 
-            it(`should ${isImage ? 'not' : ''} render a text message`, () => {
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedText').length.should.be.eq(isImage ? 0 : 1);
+            it('should render a text message', () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedText').length.should.be.eq(1);
             });
 
             it(`should ${isImage ? '' : 'not'} render an image message`, () => {
@@ -81,7 +82,9 @@ describe('Message Component', () => {
     });
 
     describe('appUser', () => {
-        const props = Object.assign({}, defaultProps);
+        const props = Object.assign({
+            type: 'text'
+        }, defaultProps);
 
         beforeEach(() => {
             component = wrapComponentWithStore(MessageComponent, props, mockedStore);
@@ -115,6 +118,7 @@ describe('Message Component', () => {
             const props = Object.assign({}, defaultProps, {
                 role: role,
                 name: 'Smooch',
+                type: 'text',
                 avatarUrl: 'http://some-image.url'
             });
             const firstMessageProps = Object.assign({}, props, {
@@ -173,6 +177,8 @@ describe('Message Component', () => {
                 role: role,
                 name: `Smooch ${role}`,
                 avatarUrl: 'http://some-image.url',
+                type: 'image',
+                mediaUrl: 'media-url',
                 actions: [
                     {
                         _id: '1',
@@ -197,13 +203,17 @@ describe('Message Component', () => {
                 row.className.indexOf('sk-right-row').should.be.eq(-1);
             });
 
-            it('should contain any actions', () => {
+            it('should contain actions', () => {
                 const actionNodes = TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedAction');
                 actionNodes.length.should.be.eq(props.actions.length);
             });
 
             it('should render the text message', () => {
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedText').length.should.eq(1);
+            });
+
+            it('should render the image message', () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedImage').length.should.be.eq(1);
             });
         });
     });
