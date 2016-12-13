@@ -4,9 +4,7 @@ import { createMarkup, autolink, escapeHtml } from '../utils/html';
 export class TextMessage extends Component {
     static propTypes = {
         text: React.PropTypes.string.isRequired,
-        type: React.PropTypes.string.isRequired,
-        hasImage: React.PropTypes.bool.isRequired,
-        hasActions: React.PropTypes.bool.isRequired,
+        style: React.PropTypes.object,
         role: React.PropTypes.string.isRequired
     };
 
@@ -34,10 +32,6 @@ export class TextMessage extends Component {
                    </span>;
         });
 
-        if (this.props.hasImage || this.props.hasActions) {
-            return <span className='has-actions'>{ text }</span>;
-        } else {
-            return <span>{ text }</span>;
-        }
+        return <span style={ this.props.style }>{ text }</span>;
     }
 }

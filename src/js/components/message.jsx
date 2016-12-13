@@ -73,15 +73,15 @@ export class MessageComponent extends Component {
             <img className={ avatarClass.join(' ') }
                  src={ avatarUrl } />;
 
-        const textPart = hasText && <TextMessage {...this.props}
-                                                 hasActions={ hasActions }
-                                                 hasImage={ hasImage } />;
-        const imagePart = hasImage && <ImageMessage {...this.props}
-                                                    hasActions={ hasActions } />;
+        const extraSpacingStyle = {
+            marginBottom: '5px',
+            display: 'inline-block'
+        };
 
-        if ((hasText || hasImage) && hasActions) {
-            containerClass.push('has-actions');
-        }
+        const textPart = hasText && <TextMessage {...this.props}
+                                                 style={ hasActions || hasImage ? extraSpacingStyle : null } />;
+        const imagePart = hasImage && <ImageMessage {...this.props}
+                                                    style={ hasActions ? extraSpacingStyle : null } />;
 
         const style = {};
 

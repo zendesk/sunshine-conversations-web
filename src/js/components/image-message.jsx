@@ -6,7 +6,7 @@ import { ImageLoading } from './image-loading';
 export class ImageMessage extends Component {
     static propTypes = {
         mediaUrl: React.PropTypes.string.isRequired,
-        hasActions: React.PropTypes.bool.isRequired,
+        style: React.PropTypes.object,
         accentColor: React.PropTypes.string
     };
 
@@ -44,12 +44,8 @@ export class ImageMessage extends Component {
                    </div>;
         }
 
-        if (this.props.hasActions) {
-            return <div className='has-actions'>
-                       { image }
-                   </div>;
-        }
-
-        return image;
+        return <div style={ this.props.style }>
+                   { image }
+               </div>;
     }
 }
