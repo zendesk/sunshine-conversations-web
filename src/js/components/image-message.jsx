@@ -6,6 +6,7 @@ import { ImageLoading } from './image-loading';
 export class ImageMessage extends Component {
     static propTypes = {
         mediaUrl: React.PropTypes.string.isRequired,
+        style: React.PropTypes.object,
         accentColor: React.PropTypes.string
     };
 
@@ -43,6 +44,8 @@ export class ImageMessage extends Component {
                    </div>;
         }
 
-        return image;
+        return <div style={ this.props.style }>
+                   { image }
+               </div>;
     }
 }

@@ -43,8 +43,25 @@ export class MessageComponent extends Component {
     }
 
     render() {
-        const {name, role, mediaUrl, avatarUrl, text, accentColor, firstInGroup, lastInGroup, linkColor} = this.props;
+        const {name, role, avatarUrl, text, accentColor, firstInGroup, lastInGroup, linkColor, type} = this.props;
         const actions = this.props.actions.filter((a) => a.type !== 'reply');
+
+        const hasText = text && text.trim();
+        const hasImage = type === 'image';
+        const isAppUser = role === 'appUser';
+        const hasActions = actions.length > 0;
+
+        const avatarClass = hasImage ? ['sk-msg-avatar', 'sk-msg-avatar-img'] : ['sk-msg-avatar'];
+        const avatarPlaceHolder = isAppUser ? null : (<div className='sk-msg-avatar-placeholder' />);
+        const containerClass = [];
+
+        if (hasImage || actions.length > 0) {
+            containerClass.push('sk-msg-image');
+        }
+
+        if (hasText || hasActions) {
+            containerClass.push('sk-msg');
+        }
 
         const actionList = actions.map((action) => {
             return <Action key={ action._id }
@@ -52,34 +69,23 @@ export class MessageComponent extends Component {
                            {...action} />;
         });
 
-        const isAppUser = role === 'appUser';
-
-        const avatarClass = mediaUrl ? ['sk-msg-avatar', 'sk-msg-avatar-img'] : ['sk-msg-avatar'];
-
-        const avatar = isAppUser ?
-            null :
+        const avatar = isAppUser ? null :
             <img className={ avatarClass.join(' ') }
                  src={ avatarUrl } />;
 
-        const avatarPlaceHolder = isAppUser ? null : (<div className='sk-msg-avatar-placeholder' />);
+        const extraSpacingStyle = {
+            marginBottom: '5px',
+            display: 'inline-block'
+        };
 
-        const message = mediaUrl ?
-            <ImageMessage {...this.props}
-                          actions={ actions } /> :
-            <TextMessage {...this.props}
-                         actions={ actions } />;
-
-        const containerClass = [mediaUrl ? 'sk-msg-image' : 'sk-msg'];
-
-        const hasContent = (text && text.trim()) || (mediaUrl && mediaUrl.trim());
-
-        if (hasContent && actions.length > 0) {
-            containerClass.push('has-actions');
-        }
+        const textPart = hasText && <TextMessage {...this.props}
+                                                 style={ hasActions || hasImage ? extraSpacingStyle : null } />;
+        const imagePart = hasImage && <ImageMessage {...this.props}
+                                                    style={ hasActions ? extraSpacingStyle : null } />;
 
         const style = {};
 
-        if (!mediaUrl) {
+        if (!hasImage) {
             if (isAppUser && accentColor) {
                 style.backgroundColor = style.borderLeftColor = `#${accentColor}`;
             }
@@ -120,7 +126,8 @@ export class MessageComponent extends Component {
                        <div className={ containerClass.join(' ') }
                             style={ style }
                             ref='messageContent'>
-                           { message }
+                           { textPart ? textPart : null }
+                           { imagePart ? imagePart : null }
                            { actionList }
                        </div>
                    </div>
