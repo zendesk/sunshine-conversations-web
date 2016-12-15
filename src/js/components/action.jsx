@@ -39,7 +39,9 @@ export class ActionComponent extends Component {
         };
     }
 
-    onPostbackClick = () => {
+    onPostbackClick = (e) => {
+        e.preventDefault();
+
         this.setState({
             state: 'processing'
         });
@@ -87,7 +89,8 @@ export class ActionComponent extends Component {
         return Promise.all(promises);
     }
 
-    onStripeClick() {
+    onStripeClick(e) {
+        e.preventDefault();
         this.setState({
             state: 'processing'
         });
@@ -108,6 +111,7 @@ export class ActionComponent extends Component {
         const stripeIntegration = getIntegration(integrations, 'stripeConnect');
 
         let style = {};
+
         if (buttonColor) {
             style.backgroundColor = style.borderColor = `#${buttonColor}`;
         }
@@ -130,11 +134,11 @@ export class ActionComponent extends Component {
                                        name={ stripeAccount.appName }
                                        image={ stripeAccount.iconUrl }
                                        closed={ this.onStripeClose.bind(this) }>
-                           <button className='btn btn-sk-primary'
-                                   onClick={ this.onStripeClick.bind(this) }
-                                   style={ style }>
+                           <a className='btn btn-sk-primary'
+                              onClick={ this.onStripeClick.bind(this) }
+                              style={ style }>
                                { text }
-                           </button>
+                           </a>
                        </StripeCheckout>;
             } else {
                 const buttonText = state === 'paid' ?
@@ -159,11 +163,11 @@ export class ActionComponent extends Component {
                 text;
 
             return <div className='sk-action'>
-                       <button className='btn btn-sk-primary'
-                               style={ style }
-                               onClick={ !isProcessing && this.onPostbackClick }>
+                       <a className='btn btn-sk-primary'
+                          style={ style }
+                          onClick={ !isProcessing && this.onPostbackClick }>
                            { buttonText }
-                       </button>
+                       </a>
                    </div>;
         } else if (type === 'link' || (type === 'buy' && !stripeIntegration)) {
             const isJavascript = uri.startsWith('javascript:');

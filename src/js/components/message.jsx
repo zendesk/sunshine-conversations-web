@@ -50,17 +50,14 @@ export class MessageComponent extends Component {
         const hasImage = type === 'image';
         const isAppUser = role === 'appUser';
         const hasActions = actions.length > 0;
+        const lastItem = hasActions ? 'actions' : hasText ? 'text' : null;
 
         const avatarClass = hasImage ? ['sk-msg-avatar', 'sk-msg-avatar-img'] : ['sk-msg-avatar'];
         const avatarPlaceHolder = isAppUser ? null : (<div className='sk-msg-avatar-placeholder' />);
-        const containerClass = [];
+        const containerClass = ['sk-msg'];
 
         if (hasImage || actions.length > 0) {
             containerClass.push('sk-msg-image');
-        }
-
-        if (hasText || hasActions) {
-            containerClass.push('sk-msg');
         }
 
         const actionList = actions.map((action) => {
@@ -73,15 +70,9 @@ export class MessageComponent extends Component {
             <img className={ avatarClass.join(' ') }
                  src={ avatarUrl } />;
 
-        const extraSpacingStyle = {
-            marginBottom: '5px',
-            display: 'inline-block'
-        };
-
         const textPart = hasText && <TextMessage {...this.props}
-                                                 style={ hasActions || hasImage ? extraSpacingStyle : null } />;
-        const imagePart = hasImage && <ImageMessage {...this.props}
-                                                    style={ hasActions ? extraSpacingStyle : null } />;
+                                                 className={ `sk-message-item sk-message-text${lastItem === 'text' ? ' sk-last-item' : ''}` } />;
+        const imagePart = hasImage && <ImageMessage {...this.props} />;
 
         const style = {};
 
@@ -126,9 +117,11 @@ export class MessageComponent extends Component {
                        <div className={ containerClass.join(' ') }
                             style={ style }
                             ref='messageContent'>
-                           { textPart ? textPart : null }
                            { imagePart ? imagePart : null }
-                           { actionList }
+                           { textPart ? textPart : null }
+                           { hasActions ? <div className={ `sk-message-item${lastItem === 'actions' ? ' sk-last-item' : ''}` }>
+                                              { actionList }
+                                          </div> : null }
                        </div>
                    </div>
                    <div className='sk-clear'></div>
