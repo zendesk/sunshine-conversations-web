@@ -70,8 +70,11 @@ export class MessageComponent extends Component {
             <img className={ avatarClass.join(' ') }
                  src={ avatarUrl } />;
 
+        const textClasses = ['sk-message-item', 'sk-message-text'];
+        lastItem === 'text' && textClasses.push('sk-last-item');
+
         const textPart = hasText && <TextMessage {...this.props}
-                                                 className={ `sk-message-item sk-message-text${lastItem === 'text' ? ' sk-last-item' : ''}` } />;
+                                                 className={ textClasses.join(' ') } />;
         const imagePart = hasImage && <ImageMessage {...this.props} />;
 
         const style = {};
@@ -110,6 +113,9 @@ export class MessageComponent extends Component {
                              { isAppUser ? '' : name }
                          </div>;
 
+        const actionListClasses = ['sk-message-item'];
+        lastItem === 'actions' && actionListClasses.push('sk-last-item');
+
         return <div className={ 'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row') }>
                    { !isAppUser && firstInGroup ? fromName : null }
                    { lastInGroup ? avatar : avatarPlaceHolder }
@@ -119,7 +125,7 @@ export class MessageComponent extends Component {
                             ref='messageContent'>
                            { imagePart ? imagePart : null }
                            { textPart ? textPart : null }
-                           { hasActions ? <div className={ `sk-message-item${lastItem === 'actions' ? ' sk-last-item' : ''}` }>
+                           { hasActions ? <div className={ actionListClasses.join(' ') }>
                                               { actionList }
                                           </div> : null }
                        </div>
