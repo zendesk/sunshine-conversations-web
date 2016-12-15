@@ -71,7 +71,10 @@ export class MessageComponent extends Component {
                  src={ avatarUrl } />;
 
         const textClasses = ['sk-message-item', 'sk-message-text'];
-        lastItem === 'text' && textClasses.push('sk-last-item');
+
+        if (lastItem === 'text') {
+            textClasses.push('sk-last-item');
+        }
 
         const textPart = hasText && <TextMessage {...this.props}
                                                  className={ textClasses.join(' ') } />;
@@ -114,7 +117,10 @@ export class MessageComponent extends Component {
                          </div>;
 
         const actionListClasses = ['sk-message-item'];
-        lastItem === 'actions' && actionListClasses.push('sk-last-item');
+
+        if (lastItem === 'actions') {
+            actionListClasses.push('sk-last-item');
+        }
 
         return <div className={ 'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row') }>
                    { !isAppUser && firstInGroup ? fromName : null }
