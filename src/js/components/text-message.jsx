@@ -4,14 +4,14 @@ import { createMarkup, autolink, escapeHtml } from '../utils/html';
 export class TextMessage extends Component {
     static propTypes = {
         text: React.PropTypes.string.isRequired,
-        actions: React.PropTypes.array.isRequired,
+        className: React.PropTypes.string,
         role: React.PropTypes.string.isRequired
     };
 
     render() {
-        let text = this.props.text.split('\n').map((item, index) => {
+        const text = this.props.text.split('\n').map((item, index) => {
             if (!item.trim()) {
-                return;
+                return <br key={ index } />;
             }
 
             const linkOptions = {
@@ -32,12 +32,6 @@ export class TextMessage extends Component {
                    </span>;
         });
 
-        if (this.props.text.trim() && this.props.actions.length > 0) {
-            text = <span className='has-actions'>{ text }</span>;
-        } else {
-            text = <span>{ text }</span>;
-        }
-
-        return text;
+        return <span className={ this.props.className }>{ text }</span>;
     }
 }
