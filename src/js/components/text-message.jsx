@@ -4,7 +4,7 @@ import { createMarkup, autolink, escapeHtml } from '../utils/html';
 export class TextMessage extends Component {
     static propTypes = {
         text: React.PropTypes.string.isRequired,
-        style: React.PropTypes.object,
+        className: React.PropTypes.string,
         role: React.PropTypes.string.isRequired
     };
 
@@ -32,6 +32,6 @@ export class TextMessage extends Component {
                    </span>;
         });
 
-        return <span style={ this.props.style }>{ text }</span>;
+        return <span className={ this.props.className }>{ text }</span>;
     }
 }

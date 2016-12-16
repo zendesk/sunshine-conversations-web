@@ -325,9 +325,15 @@ describe('Action Component', () => {
             });
 
             it('set state to processing', () => {
+                const event = {
+                    preventDefault: sandbox.stub()
+                };
+
                 component.state.state.should.eq('offered');
-                component.onStripeClick();
+                component.onStripeClick(event);
                 component.state.state.should.eq('processing');
+
+                event.preventDefault.should.have.been.calledOnce;
             });
         });
 
@@ -399,7 +405,7 @@ describe('Action Component', () => {
         });
 
         it('should call the postPostback action on button click', (done) => {
-            const button = TestUtils.findRenderedDOMComponentWithTag(component, 'button');
+            const button = TestUtils.findRenderedDOMComponentWithTag(component, 'a');
             TestUtils.Simulate.click(button);
 
             // use setTimeout to let the promise chain resolve in onPostbackClick

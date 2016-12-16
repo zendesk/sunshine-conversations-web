@@ -38,7 +38,7 @@ describe('Notification Channel Item Component', () => {
                     },
                     ui: {
                         text: {
-                            notificationSettingsConnectedAs: 'connected as'
+                            notificationSettingsConnectedAs: 'connected as',
                             notificationSettingsConnected: 'connected'
                         }
                     }
