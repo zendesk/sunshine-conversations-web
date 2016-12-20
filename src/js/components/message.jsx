@@ -96,7 +96,7 @@ export class MessageComponent extends Component {
             rowClass.push('sk-left-row');
         }
 
-        if (firstInGroup && !lastInGroup) {
+        if (firstInGroup) {
             if (isAppUser) {
                 rowClass.push('sk-row-appuser-first');
             } else {
@@ -104,7 +104,7 @@ export class MessageComponent extends Component {
             }
         }
 
-        if (lastInGroup && !firstInGroup) {
+        if (lastInGroup) {
             if (isAppUser) {
                 rowClass.push('sk-row-appuser-last');
             } else {
