@@ -81,6 +81,55 @@
         clear: both;
         padding-bottom: 0px;
         padding-top: 2px;
+        margin-bottom: 10px;
+        &.sk-row-appmaker-first {
+            .sk-msg-wrapper {
+                .sk-msg, .sk-msg-image {
+                    border-bottom-left-radius: 2px;
+                }
+            }
+            margin-bottom: 0px;
+        }
+        &.sk-row-appmaker-middle {
+            .sk-msg-wrapper {
+                .sk-msg, .sk-msg-image {
+                    border-bottom-left-radius: 2px;
+                    border-top-left-radius: 2px;
+                }
+            }
+            margin-bottom: 0px;
+        }
+        &.sk-row-appmaker-last {
+            .sk-msg-wrapper {
+                .sk-msg, .sk-msg-image {
+                    border-top-left-radius: 2px;
+                }
+            }
+        }
+        &.sk-row-appuser-first {
+            .sk-msg-wrapper {
+                .sk-msg, .sk-msg-image {
+                    border-bottom-right-radius: 2px;
+                }
+            }
+            margin-bottom: 0px;
+        }
+        &.sk-row-appuser-middle {
+            .sk-msg-wrapper {
+                .sk-msg, .sk-msg-image {
+                    border-bottom-right-radius: 2px;
+                    border-top-right-radius: 2px;
+                }
+            }
+            margin-bottom: 0px;
+        }
+        &.sk-row-appuser-last {
+            .sk-msg-wrapper {
+                .sk-msg, .sk-msg-image {
+                    border-top-right-radius: 2px;
+                }
+            }
+        }
 
         .sk-msg-wrapper {
             max-width: 100%;
@@ -93,34 +142,8 @@
                 position: relative;
                 border-radius: 14px;
                 border-left-color: @sk-blue;
-                margin-bottom: 10px;
 
                 .word-break();
-
-                &.sk-msg-appmaker-first {
-                    border-bottom-left-radius: 2px;
-                    margin-bottom: 0px;
-                }
-                &.sk-msg-appmaker-middle {
-                    border-bottom-left-radius: 2px;
-                    border-top-left-radius: 2px;
-                    margin-bottom: 0px;
-                }
-                &.sk-msg-appmaker-last {
-                    border-top-left-radius: 2px;
-                }
-                &.sk-msg-appuser-first {
-                    border-bottom-right-radius: 2px;
-                    margin-bottom: 0px;
-                }
-                &.sk-msg-appuser-middle {
-                    border-bottom-right-radius: 2px;
-                    border-top-right-radius: 2px;
-                    margin-bottom: 0px;
-                }
-                &.sk-msg-appuser-last {
-                    border-top-right-radius: 2px;
-                }
 
                 .imageloader {
                     display: block;
@@ -330,7 +353,6 @@
     height: auto;
     border-radius: 50%;
     margin-right: 5px;
-    margin-bottom: -11px;
     display: inline-block;
     margin-left: 9px;
     &.sk-msg-avatar-img {
