@@ -88,27 +88,35 @@ export class MessageComponent extends Component {
             }
         }
 
-        if (firstInGroup && !lastInGroup) {
+        const rowClass = ['sk-row'];
+
+        if (isAppUser) {
+            rowClass.push('sk-right-row');
+        } else {
+            rowClass.push('sk-left-row');
+        }
+
+        if (firstInGroup) {
             if (isAppUser) {
-                containerClass.push('sk-msg-appuser-first');
+                rowClass.push('sk-row-appuser-first');
             } else {
-                containerClass.push('sk-msg-appmaker-first');
+                rowClass.push('sk-row-appmaker-first');
             }
         }
 
-        if (lastInGroup && !firstInGroup) {
+        if (lastInGroup) {
             if (isAppUser) {
-                containerClass.push('sk-msg-appuser-last');
+                rowClass.push('sk-row-appuser-last');
             } else {
-                containerClass.push('sk-msg-appmaker-last');
+                rowClass.push('sk-row-appmaker-last');
             }
         }
 
         if (!firstInGroup && !lastInGroup) {
             if (isAppUser) {
-                containerClass.push('sk-msg-appuser-middle');
+                rowClass.push('sk-row-appuser-middle');
             } else {
-                containerClass.push('sk-msg-appmaker-middle');
+                rowClass.push('sk-row-appmaker-middle');
             }
         }
 
@@ -122,7 +130,7 @@ export class MessageComponent extends Component {
             actionListClasses.push('sk-last-item');
         }
 
-        return <div className={ 'sk-row ' + (isAppUser ? 'sk-right-row' : 'sk-left-row') }>
+        return <div className={ rowClass.join(' ') }>
                    { !isAppUser && firstInGroup ? fromName : null }
                    { lastInGroup ? avatar : avatarPlaceHolder }
                    <div className='sk-msg-wrapper'>
