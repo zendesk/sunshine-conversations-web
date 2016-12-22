@@ -9,6 +9,7 @@ import { WIDGET_STATE } from '../../../src/js/constants/app';
 describe('App Service', () => {
     let mockedStore;
     let sandbox;
+    let clock;
     let openSpy;
     let closeSpy;
 
@@ -17,6 +18,7 @@ describe('App Service', () => {
     });
 
     beforeEach(() => {
+        clock = sandbox.useFakeTimers();
         openSpy = sandbox.spy();
         closeSpy = sandbox.spy();
 
@@ -45,6 +47,7 @@ describe('App Service', () => {
                 if (isEmbedded) {
                     it('should do nothing', () => {
                         openWidget();
+                        clock.tick(20);
                         mockedStore.dispatch.should.not.have.been.called;
                         openSpy.should.not.have.been.called;
                         closeSpy.should.not.have.been.called;
@@ -52,6 +55,7 @@ describe('App Service', () => {
                 } else {
                     it('should call dispatch with open action', () => {
                         openWidget();
+                        clock.tick(20);
                         mockedStore.dispatch.should.have.been.calledWith({
                             type: OPEN_WIDGET
                         });
@@ -65,6 +69,7 @@ describe('App Service', () => {
                 if (isEmbedded) {
                     it('should do nothing', () => {
                         closeWidget();
+                        clock.tick(20);
                         mockedStore.dispatch.should.not.have.been.called;
                         openSpy.should.not.have.been.called;
                         closeSpy.should.not.have.been.called;
@@ -72,6 +77,7 @@ describe('App Service', () => {
                 } else {
                     it('should call dispatch with close action', () => {
                         closeWidget();
+                        clock.tick(20);
                         mockedStore.dispatch.should.have.been.calledWith({
                             type: CLOSE_WIDGET
                         });
@@ -85,6 +91,7 @@ describe('App Service', () => {
                 if (isEmbedded) {
                     it('should do nothing', () => {
                         toggleWidget();
+                        clock.tick(20);
                         mockedStore.dispatch.should.not.have.been.called;
                         openSpy.should.not.have.been.called;
                         closeSpy.should.not.have.been.called;
@@ -104,6 +111,7 @@ describe('App Service', () => {
 
                             it(`should call dispatch with ${isOpened ? 'closed' : 'opened'} action`, () => {
                                 toggleWidget();
+                                clock.tick(20);
                                 if (isOpened) {
                                     mockedStore.dispatch.should.have.been.calledWith({
                                         type: CLOSE_WIDGET
