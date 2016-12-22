@@ -2,9 +2,14 @@ import sinon from 'sinon';
 
 import { Observable } from '../../../src/js/utils/events';
 
-const sandbox = sinon.sandbox.create();
 
 describe('Events utils', () => {
+    const sandbox = sinon.sandbox.create();
+    let clock;
+    beforeEach(() => {
+        clock = sandbox.useFakeTimers();
+    });
+
     afterEach(() => {
         sandbox.restore();
     });
@@ -23,6 +28,7 @@ describe('Events utils', () => {
             observable.on('2', thirdHandler);
             observable.on('2', fourthHandler);
             observable.trigger('1');
+            clock.tick(20);
 
             firstHandler.should.have.been.calledOnce;
             secondHandler.should.have.been.calledOnce;
@@ -35,6 +41,7 @@ describe('Events utils', () => {
             fourthHandler.reset();
 
             observable.trigger('2');
+            clock.tick(20);
             firstHandler.should.not.have.been.called;
             secondHandler.should.not.have.been.called;
             thirdHandler.should.have.been.calledOnce;
@@ -47,6 +54,7 @@ describe('Events utils', () => {
 
             observable.off('1', firstHandler);
             observable.trigger('1');
+            clock.tick(20);
 
             firstHandler.should.not.have.been.called;
             secondHandler.should.have.been.calledOnce;
@@ -60,6 +68,7 @@ describe('Events utils', () => {
 
             observable.off('2');
             observable.trigger('2');
+            clock.tick(20);
 
             firstHandler.should.not.have.been.called;
             secondHandler.should.not.have.been.calledOnce;
@@ -73,6 +82,7 @@ describe('Events utils', () => {
 
             observable.off();
             observable.trigger('1');
+            clock.tick(20);
 
             firstHandler.should.not.have.been.called;
             secondHandler.should.not.have.been.calledOnce;

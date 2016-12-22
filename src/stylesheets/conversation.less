@@ -81,7 +81,7 @@
         clear: both;
         padding-bottom: 0px;
         padding-top: 2px;
-        &.sk-row-appmaker-first {
+        &.sk-row-appmaker-first:not(.sk-row-appmaker-last) {
             .sk-msg-wrapper {
                 .sk-msg, .sk-msg-image {
                     border-bottom-left-radius: 2px;
@@ -96,7 +96,7 @@
                 }
             }
         }
-        &.sk-row-appmaker-last {
+        &.sk-row-appmaker-last:not(.sk-row-appmaker-first) {
             .sk-msg-wrapper {
                 .sk-msg, .sk-msg-image {
                     border-top-left-radius: 2px;
@@ -104,7 +104,8 @@
             }
             margin-bottom: 10px;
         }
-        &.sk-row-appuser-first {
+
+        &.sk-row-appuser-first:not(.sk-row-appuser-last) {
             .sk-msg-wrapper {
                 .sk-msg, .sk-msg-image {
                     border-bottom-right-radius: 2px;
@@ -119,7 +120,7 @@
                 }
             }
         }
-        &.sk-row-appuser-last {
+        &.sk-row-appuser-last:not(.sk-row-appuser-first) {
             .sk-msg-wrapper {
                 .sk-msg, .sk-msg-image {
                     border-top-right-radius: 2px;

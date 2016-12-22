@@ -34,7 +34,7 @@ export class Observable {
             // use setTimeout to execute the handler after the current
             // execution stack is cleared. That way, any hooks won't block the
             // widget execution
-            map.get(event).forEach((handler) => setTimeout(handler(options)));
+            map.get(event).forEach((handler) => setTimeout(() => handler(options), 0));
         }
     }
 }
