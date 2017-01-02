@@ -128,6 +128,7 @@ export function uploadImage(file) {
                 mediaUrl: dataUrl,
                 mediaType: 'image/jpeg',
                 role: 'appUser',
+                type: 'image',
                 status: 'sending',
                 _clientId: Math.random(),
                 _clientSent: new Date()
