@@ -352,7 +352,7 @@ git clone https://github.com/smooch/smooch-js
 npm install
 ```
 
-In one console, run `npm run start-dev` to start the web server. In another, run `npm run hot-dev-server` to start the webpack dev server.
+In one console, run `npm run dev` to start the web server. In another, run `npm run webpack` to start the webpack dev server.
 
 Then, go to `http://localhost:8282` to test the normal widget or `http://localhost:8282/embedded` for the embedded one.
 
