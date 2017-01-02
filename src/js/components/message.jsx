@@ -43,10 +43,9 @@ export class MessageComponent extends Component {
     }
 
     render() {
-        const {name, role, avatarUrl, text, accentColor, firstInGroup, lastInGroup, linkColor, type} = this.props;
+        const {name, role, avatarUrl, text, accentColor, firstInGroup, lastInGroup, linkColor, type, mediaUrl} = this.props;
         const actions = this.props.actions.filter((a) => a.type !== 'reply');
-
-        const hasText = text && text.trim();
+        const hasText = text && text.trim() && text.trim() !== mediaUrl;
         const hasImage = type === 'image';
         const isAppUser = role === 'appUser';
         const hasActions = actions.length > 0;
