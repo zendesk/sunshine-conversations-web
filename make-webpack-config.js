@@ -50,7 +50,7 @@ module.exports = function(options) {
     var extensions = ['', '.web.js', '.js', '.jsx'];
     var root = path.join(__dirname, 'src');
     var publicPath = options.devServer ?
-        'http://' + config.SERVER_HOST + '/_assets/' :
+        '/_assets/' :
         'https://cdn.smooch.io/';
 
     var output = {
@@ -156,8 +156,6 @@ module.exports = function(options) {
         },
         plugins: plugins,
         devServer: {
-            host: config.SERVER_HOST.split(':')[0],
-            port: config.SERVER_HOST.split(':')[1],
             stats: {
                 cached: false,
                 exclude: excludeFromStats
