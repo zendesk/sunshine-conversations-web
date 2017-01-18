@@ -5,7 +5,7 @@ import { mockAppStore } from '../../utils/redux';
 import { wrapComponentWithStore } from '../../utils/react';
 import { QuickReplies } from '../../../src/js/components/quick-replies';
 
-const conversationService = require('../../../src/js/services/conversation-service');
+const conversationService = require('../../../src/js/services/conversation');
 
 
 describe('QuickReplies Component', () => {

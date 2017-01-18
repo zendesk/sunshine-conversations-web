@@ -4,8 +4,8 @@ import { createMock } from '../../mocks/core';
 import { mockAppStore } from '../../utils/redux';
 
 import * as coreService from '../../../src/js/services/core';
-import * as integrationsService from '../../../src/js/services/integrations-service';
-import * as utilsFaye from '../../../src/js/utils/faye';
+import * as integrationsService from '../../../src/js/services/integrations';
+import * as utilsFaye from '../../../src/js/services/faye';
 
 const sandbox = sinon.sandbox.create();
 

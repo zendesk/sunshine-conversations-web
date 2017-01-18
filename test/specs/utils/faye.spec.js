@@ -2,13 +2,13 @@ import sinon from 'sinon';
 import { Client } from 'faye';
 
 import { mockAppStore } from '../../utils/redux';
-import * as utilsFaye from '../../../src/js/utils/faye';
+import * as utilsFaye from '../../../src/js/services/faye';
 import * as utilsDevice from '../../../src/js/utils/device';
 import * as userActions from '../../../src/js/actions/user-actions';
 import * as fayeActions from '../../../src/js/actions/faye-actions';
 import * as conversationActions from '../../../src/js/actions/conversation-actions';
-import * as conversationService from '../../../src/js/services/conversation-service';
-import * as appService from '../../../src/js/services/app-service';
+import * as conversationService from '../../../src/js/services/conversation';
+import * as appService from '../../../src/js/services/app';
 
 function getProps(props = {}) {
     const state = {

@@ -11,7 +11,7 @@ import { QuickReplies } from './quick-replies';
 import { TypingIndicator } from './typing-indicator';
 
 import { setShouldScrollToBottom, setFetchingMoreMessages } from '../actions/app-state-actions';
-import { fetchMoreMessages } from '../services/conversation-service';
+import { fetchMoreMessages } from '../services/conversation';
 import { getTop, getBoundingRect } from '../utils/dom';
 import debounce from 'lodash.debounce';
 

@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { immediateUpdate } from '../services/user-service';
+import { immediateUpdate } from '../services/user';
 import { hideSettings } from '../actions/app-state-actions';
 
 export class EmailSettingsComponent extends Component {

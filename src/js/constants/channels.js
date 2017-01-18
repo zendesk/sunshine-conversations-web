@@ -2,7 +2,7 @@ import isMobile from 'ismobilejs';
 
 import { integrations as integrationsAssets } from '../constants/assets';
 
-import { fetchViberQRCode, fetchWeChatQRCode, fetchTwilioAttributes } from '../services/integrations-service';
+import { fetchViberQRCode, fetchWeChatQRCode, fetchTwilioAttributes } from '../services/integrations';
 
 import { MessengerChannelContent } from '../components/channels/messenger-channel-content';
 import { EmailChannelContent } from '../components/channels/email-channel-content';

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-import { showChannelPage } from '../services/app-service';
+import { showChannelPage } from '../services/app';
 
 export class AlternateChannels extends Component {
     static propTypes = {

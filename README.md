@@ -245,11 +245,11 @@ Smooch.updateUser({
 });
 ```
 
-#### getUserId()
+#### getUserId(getState())
 Returns the userId of the current user.
 
 ```javascript
-Smooch.getUserId()
+Smooch.getUserId(getState())
 ```
 
 #### getConversation()

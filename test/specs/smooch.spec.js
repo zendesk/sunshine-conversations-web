@@ -2,10 +2,10 @@ import sinon from 'sinon';
 
 import { mockAppStore } from '../utils/redux';
 
-import * as authService from '../../src/js/services/auth-service';
-import * as conversationService from '../../src/js/services/conversation-service';
+import * as authService from '../../src/js/services/auth';
+import * as conversationService from '../../src/js/services/conversation';
 import * as coreService from '../../src/js/services/core';
-import * as userService from '../../src/js/services/user-service';
+import * as userService from '../../src/js/services/user';
 import * as appUtils from '../../src/js/utils/app';
 
 import { Smooch } from '../../src/js/smooch';
@@ -487,7 +487,7 @@ describe('Smooch', () => {
         });
 
         it('should call the conversation service', () => {
-            return smooch.getUserId().should.eq('1234');
+            return smooch.getUserId(getState()).should.eq('1234');
         });
     });
 

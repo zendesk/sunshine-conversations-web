@@ -1,19 +1,19 @@
 import { batchActions } from 'redux-batched-actions';
 
-import { showConnectNotification } from '../services/app-service';
+import { showConnectNotification } from '../services/app';
 import { addMessage, addMessages, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages, setFetchingMoreMessagesFromServer } from '../actions/conversation-actions';
 import { updateUser } from '../actions/user-actions';
 import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi } from '../actions/app-state-actions';
 import { unsetFayeSubscriptions } from '../actions/faye-actions';
 import { core } from './core';
-import { immediateUpdate } from './user-service';
-import { disconnectClient, subscribeConversation, subscribeUser, subscribeConversationActivity } from '../utils/faye';
+import { immediateUpdate } from './user';
+import { disconnectClient, subscribeConversation, subscribeUser, subscribeConversationActivity } from './faye';
 import { observable } from '../utils/events';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
 import { getDeviceId } from '../utils/device';
 import { hasLinkableChannels, getLinkableChannels, isChannelLinked } from '../utils/user';
 import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
-import { getUserId } from './user-service';
+import { getUserId } from './user';
 
 export function handleConnectNotification(response) {
     return (dispatch, getState) => {
@@ -104,7 +104,7 @@ export function sendMessage(text, extra = {}) {
 
             const {user} = getState();
 
-            return core().appUsers.sendMessage(getUserId(), message).then((response) => {
+            return core(getState()).appUsers.sendMessage(getUserId(getState()), message).then((response) => {
                 const actions = [];
                 if (!user.conversationStarted) {
                     // use setConversation to set the conversation id in the store
@@ -163,7 +163,7 @@ export function uploadImage(file) {
                         const {user} = getState();
                         const blob = getBlobFromDataUrl(dataUrl);
 
-                        return core().appUsers.uploadImage(getUserId(), blob, {
+                        return core(getState()).appUsers.uploadImage(getUserId(getState()), blob, {
                             role: 'appUser',
                             deviceId: getDeviceId()
                         }).then((response) => {
@@ -203,15 +203,15 @@ export function uploadImage(file) {
 }
 
 export function getMessages() {
-    return (dispatch) => {
-        return core().appUsers.getMessages(getUserId()).then((response) => {
-            dispatch(batchActions[
+    return (dispatch, getState) => {
+        return core(getState()).appUsers.getMessages(getUserId(getState())).then((response) => {
+            dispatch(batchActions([
                 setConversation({
                     ...response.conversation,
                     hasMoreMessages: !!response.previous
                 }),
                 setMessages(response.messages)
-            ]);
+            ]));
             return response;
         });
     };
@@ -222,10 +222,10 @@ export function connectFayeConversation() {
         const {faye: {conversationSubscription}} = getState();
 
         if (!conversationSubscription) {
-            return dispatch(batchActions([
-                subscribeConversation(),
-                subscribeConversationActivity()
-            ]));
+            return Promise.all([
+                dispatch(subscribeConversation()),
+                dispatch(subscribeConversationActivity())
+            ]);
         }
 
         return Promise.resolve();
@@ -247,7 +247,6 @@ export function connectFayeUser() {
 
 export function disconnectFaye() {
     return (dispatch, getState) => {
-
         const {faye: {conversationSubscription, userSubscription}} = getState();
 
         if (conversationSubscription) {
@@ -268,7 +267,7 @@ export function resetUnreadCount() {
         const {conversation} = getState();
         if (conversation.unreadCount > 0) {
             dispatch(resetUnreadCountAction());
-            return core().conversations.resetUnreadCount(getUserId()).then((response) => {
+            return core(getState()).conversations.resetUnreadCount(getUserId(getState())).then((response) => {
                 return response;
             });
         }
@@ -297,7 +296,7 @@ export function handleConversationUpdated() {
 
 export function postPostback(actionId) {
     return (dispatch, getState) => {
-        return core().conversations.postPostback(getUserId(), actionId).catch(() => {
+        return core(getState()).conversations.postPostback(getUserId(getState()), actionId).catch(() => {
             dispatch(showErrorNotification(getState().ui.text.actionPostbackError));
         });
     };
@@ -314,7 +313,7 @@ export function fetchMoreMessages() {
 
         const timestamp = messages[0].received;
         dispatch(setFetchingMoreMessagesFromServer(true));
-        return core().appUsers.getMessages(getUserId(), {
+        return core(getState()).appUsers.getMessages(getUserId(getState()), {
             before: timestamp
         }).then((response) => {
             dispatch(batchActions([

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { LoadingComponent } from '../../components/loading';
-import { fetchViberQRCode } from '../../services/integrations-service';
+import { fetchViberQRCode } from '../../services/integrations';
 
 
 class ViberChannelContentComponent extends Component {

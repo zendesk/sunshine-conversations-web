@@ -1,6 +1,6 @@
 import * as AppStateActions from '../actions/app-state-actions';
 import { preventMobilePageScroll, allowMobilePageScroll } from '../utils/dom';
-import { resetUnreadCount, connectFayeUser } from './conversation-service';
+import { resetUnreadCount, connectFayeUser } from './conversation';
 import { observable } from '../utils/events';
 import { hasLinkableChannels, isChannelLinked } from '../utils/user';
 import { getIntegration } from '../utils/app';
@@ -13,7 +13,7 @@ export function openWidget() {
         if (!embedded) {
             dispatch(AppStateActions.openWidget());
             observable.trigger('widget:opened');
-            resetUnreadCount();
+            dispatch(resetUnreadCount());
             preventMobilePageScroll();
         }
     };

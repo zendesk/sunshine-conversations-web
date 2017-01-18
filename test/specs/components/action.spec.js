@@ -10,9 +10,9 @@ import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 import { Action } from '../../../src/js/components/action.jsx';
 import { LoadingComponent } from '../../../src/js/components/loading.jsx';
 
-import * as stripeService from '../../../src/js/services/stripe-service';
-import * as userService from '../../../src/js/services/user-service';
-import * as conversationService from '../../../src/js/services/conversation-service';
+import * as stripeService from '../../../src/js/services/stripe';
+import * as userService from '../../../src/js/services/user';
+import * as conversationService from '../../../src/js/services/conversation';
 import * as appUtils from '../../../src/js/utils/app';
 
 const sandbox = sinon.sandbox.create();

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import { sendMessage } from '../services/conversation-service';
+import { sendMessage } from '../services/conversation';
 import { getRGB, rgbToHsl } from '../utils/colors';
 
 export class QuickRepliesComponent extends Component {

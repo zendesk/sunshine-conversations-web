@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import { showChannelPage } from '../services/app-service';
+import { showChannelPage } from '../services/app';
 
 export class NotificationChannelItemComponent extends Component {
     static propTypes = {

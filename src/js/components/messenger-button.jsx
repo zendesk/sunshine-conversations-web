@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import { openWidget } from '../services/app-service';
+import { openWidget } from '../services/app';
 import { SK_DARK_CONTRAST } from '../constants/styles';
 
 export class DefaultButtonIcon extends Component {
@@ -55,8 +55,9 @@ export class MessengerButtonComponent extends Component {
     };
 
     onClick = (e) => {
+        const {dispatch} = this.props;
         e.preventDefault();
-        openWidget();
+        dispatch(openWidget());
     };
 
     render() {

@@ -4,7 +4,7 @@ import { createMock } from '../../mocks/core';
 import { mockAppStore } from '../../utils/redux';
 
 import * as coreService from '../../../src/js/services/core';
-import { createTransaction, getAccount } from '../../../src/js/services/stripe-service';
+import { createTransaction, getAccount } from '../../../src/js/services/stripe';
 
 describe('Stripe service', () => {
     var sandbox;

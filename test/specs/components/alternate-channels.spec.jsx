@@ -4,7 +4,7 @@ import TestUtils from 'react-addons-test-utils';
 
 import { AlternateChannels } from '../../../src/js/components/alternate-channels';
 import { getAppChannelDetails } from '../../../src/js/utils/app';
-import * as appService from '../../../src/js/services/app-service';
+import * as appService from '../../../src/js/services/app';
 
 const sandbox = sinon.sandbox.create();
 

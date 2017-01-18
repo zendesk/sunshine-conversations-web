@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
 import { ConnectNotification } from '../../../src/js/components/connect-notification';
-import * as appService from '../../../src/js/services/app-service';
+import * as appService from '../../../src/js/services/app';
 import * as appUtils from '../../../src/js/utils/app';
 import { CHANNEL_DETAILS } from '../../../src/js/constants/channels';
 

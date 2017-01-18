@@ -4,7 +4,7 @@ import { findDOMNode } from 'react-dom';
 
 import { getAppChannelDetails, hasChannels } from '../utils/app';
 import { createMarkup } from '../utils/html';
-import { showChannelPage, showSettings } from '../services/app-service';
+import { showChannelPage, showSettings } from '../services/app';
 
 export class ConnectNotificationComponent extends Component {
     static propTypes = {

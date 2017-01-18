@@ -4,7 +4,7 @@ import { findDOMNode } from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
 import { ImageUpload } from '../../../src/js/components/image-upload';
-const conversationService = require('../../../src/js/services/conversation-service');
+const conversationService = require('../../../src/js/services/conversation');
 
 const sandbox = sinon.sandbox.create();
 

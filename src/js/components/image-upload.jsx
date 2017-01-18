@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { uploadImage } from '../services/conversation-service';
+import { uploadImage } from '../services/conversation';
 
 import { preventDefault } from '../utils/events';
 

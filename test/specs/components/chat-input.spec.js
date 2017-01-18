@@ -6,7 +6,7 @@ import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
 import { ChatInput, ChatInputComponent } from '../../../src/js/components/chat-input';
 import { ImageUpload } from '../../../src/js/components/image-upload';
-const conversationService = require('../../../src/js/services/conversation-service');
+const conversationService = require('../../../src/js/services/conversation');
 
 const sandbox = sinon.sandbox.create();
 

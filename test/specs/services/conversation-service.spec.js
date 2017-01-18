@@ -4,13 +4,13 @@ import { createMock } from '../../mocks/core';
 import { mockAppStore } from '../../utils/redux';
 
 import * as utilsDevice from '../../../src/js/utils/device';
-import * as utilsFaye from '../../../src/js/utils/faye';
+import * as utilsFaye from '../../../src/js/services/faye';
 import * as utilsMedia from '../../../src/js/utils/media';
 import * as utilsUser from '../../../src/js/utils/user';
-import * as conversationService from '../../../src/js/services/conversation-service';
+import * as conversationService from '../../../src/js/services/conversation';
 import * as coreService from '../../../src/js/services/core';
-import * as userService from '../../../src/js/services/user-service';
-import * as appService from '../../../src/js/services/app-service';
+import * as userService from '../../../src/js/services/user';
+import * as appService from '../../../src/js/services/app';
 import * as appStateActions from '../../../src/js/actions/app-state-actions';
 import * as conversationActions from '../../../src/js/actions/conversation-actions';
 import * as userActions from '../../../src/js/actions/user-actions';

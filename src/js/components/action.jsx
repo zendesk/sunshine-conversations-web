@@ -2,9 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import StripeCheckout from 'react-stripe-checkout';
 import { connect } from 'react-redux';
 
-import { createTransaction } from '../services/stripe-service';
-import { immediateUpdate } from '../services/user-service';
-import { postPostback } from '../services/conversation-service';
+import { createTransaction } from '../services/stripe';
+import { immediateUpdate } from '../services/user';
+import { postPostback } from '../services/conversation';
 
 import { getIntegration } from '../utils/app';
 
