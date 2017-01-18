@@ -85,7 +85,7 @@ Object.keys(CHANNEL_DETAILS).forEach((key) => {
         renderPageIfLinked: false,
         getURL: () => {
         },
-        onChannelPage: () => Promise.resolve(),
+        onChannelPage: () => () => Promise.resolve(),
         ...CHANNEL_DETAILS[key]
     };
 });

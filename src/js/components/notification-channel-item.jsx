@@ -18,7 +18,8 @@ export class NotificationChannelItemComponent extends Component {
     };
 
     onClick = () => {
-        showChannelPage(this.props.id);
+        const {dispatch} = this.props;
+        dispatch(showChannelPage(this.props.id));
     };
 
     render() {

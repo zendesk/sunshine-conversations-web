@@ -12,9 +12,10 @@ export class QuickRepliesComponent extends Component {
     };
 
     onReplyClick = ({text, payload}) => {
-        sendMessage(text, {
+        const {dispatch} = this.props;
+        dispatch(sendMessage(text, {
             payload
-        });
+        }));
     };
 
     render() {

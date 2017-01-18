@@ -6,11 +6,7 @@ import { sendMessage, resetUnreadCount } from '../services/conversation';
 
 import { ImageUpload } from './image-upload';
 
-function checkAndResetUnreadCount(unreadCount) {
-    if (unreadCount > 0) {
-        resetUnreadCount();
-    }
-}
+
 
 export class ChatInputComponent extends Component {
 
@@ -23,43 +19,44 @@ export class ChatInputComponent extends Component {
         dispatch: PropTypes.func.isRequired
     };
 
-    constructor(...args) {
-        super(...args);
+    state = {
+        text: ''
+    };
 
-        this.state = {
-            text: ''
-        };
-
-        this.onChange = this.onChange.bind(this);
-        this.onSendMessage = this.onSendMessage.bind(this);
-    }
-
-    blur() {
+    blur = () => {
         this.refs.input.blur();
     }
 
-    onChange(e) {
-        checkAndResetUnreadCount(this.props.unreadCount);
+    checkAndResetUnreadCount(unreadCount) {
+        const {dispatch} = this.props;
+        if (unreadCount > 0) {
+            dispatch(resetUnreadCount());
+        }
+    }
+
+    onChange = (e) => {
+        this.checkAndResetUnreadCount(this.props.unreadCount);
         this.setState({
             text: e.target.value
         });
-    }
+    };
 
-    onFocus() {
-        checkAndResetUnreadCount(this.props.unreadCount);
-    }
+    onFocus = () => {
+        this.checkAndResetUnreadCount(this.props.unreadCount);
+    };
 
-    onSendMessage(e) {
+    onSendMessage = (e) => {
         e.preventDefault();
-        const text = this.state.text;
+        const {text} = this.state;
+        const {dispatch} = this.props;
         if (text.trim()) {
             this.setState({
                 text: ''
             });
-            sendMessage(text);
+            dispatch(sendMessage(text));
             this.refs.input.focus();
         }
-    }
+    };
 
     render() {
         const {accentColor, imageUploadEnabled, inputPlaceholderText, sendButtonText} = this.props;

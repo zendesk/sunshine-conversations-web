@@ -17,48 +17,55 @@ export class TwilioChannelContentComponent extends Component {
     };
 
     linkTwilioNumber = () => {
-        const { appUserNumber } = this.props.channelState;
-        linkTwilioChannel(this.props.smoochId, {
+        const { dispatch, channelState:{appUserNumber} } = this.props;
+        dispatch(linkTwilioChannel(this.props.smoochId, {
             type: 'twilio',
             phoneNumber: appUserNumber.replace(/[()\-\s]/g, '')
-        });
+        }));
     }
 
     unlinkChannel = () => {
-        unlinkTwilioChannel(this.props.smoochId);
+        const { dispatch } = this.props;
+        dispatch(unlinkTwilioChannel(this.props.smoochId));
     }
 
     handleInputChange = (telNumber) => {
-        updateTwilioAttributes({
+        const { dispatch } = this.props;
+        dispatch(updateTwilioAttributes({
             appUserNumber: telNumber
-        });
+        }));
     }
 
     onStartTexting = () => {
-        updateTwilioAttributes({
+        const { dispatch } = this.props;
+        dispatch(updateTwilioAttributes({
             linkState: 'linked'
-        });
+        }));
     }
 
     onSendText = () => {
-        pingTwilioChannel(this.props.smoochId);
+        const { dispatch } = this.props;
+        dispatch(pingTwilioChannel(this.props.smoochId));
     }
 
     onNumberValid = () => {
-        updateTwilioAttributes({
+        const { dispatch } = this.props;
+        dispatch(updateTwilioAttributes({
             appUserNumberValid: true,
             hasError: false
-        });
+        }));
     }
 
     onNumberInvalid = () => {
-        updateTwilioAttributes({
+        const { dispatch } = this.props;
+        dispatch(updateTwilioAttributes({
             appUserNumberValid: false
-        });
+        }));
     }
 
     componentWillUnmount() {
-        resetTwilioAttributes();
+        const {dispatch} = this.props;
+        dispatch(resetTwilioAttributes());
     }
 
     render() {

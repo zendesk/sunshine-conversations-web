@@ -180,7 +180,7 @@ export function handleUserSubscription({appUser, event}) {
 
 export function subscribeUser() {
     return (dispatch, getState) => {
-        const client = getClient();
+        const client = dispatch(getClient());
         const {user} = getState();
         const subscription = client.subscribe(`/v1/users/${user._id}`, (message) => {
             dispatch(handleUserSubscription(message));

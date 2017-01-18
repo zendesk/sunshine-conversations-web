@@ -15,7 +15,7 @@ export class HeaderComponent extends Component {
         unreadCount: PropTypes.number.isRequired
     };
 
-    showSettings(e) {
+    showSettings = (e) => {
         const {dispatch} = this.props;
         e.stopPropagation();
         dispatch(showSettings());

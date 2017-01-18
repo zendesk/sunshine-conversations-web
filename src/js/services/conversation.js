@@ -56,7 +56,7 @@ export function handleConnectNotification(response) {
 
 export function sendChain(sendFn) {
     return (dispatch, getState) => {
-        const promise = immediateUpdate(getState().user);
+        const promise = dispatch(immediateUpdate(getState().user));
 
         const enableScrollToBottom = (response) => {
             dispatch(setShouldScrollToBottom(true));
@@ -65,29 +65,25 @@ export function sendChain(sendFn) {
 
         if (getState().user.conversationStarted) {
             return promise
-                .then(connectFayeConversation)
-                .then(() => {
-                    return dispatch(sendFn());
-                })
+                .then(() => dispatch(connectFayeConversation()))
+                .then(() => sendFn())
                 .then(enableScrollToBottom)
-                .then(handleConnectNotification);
+                .then((response) => dispatch(handleConnectNotification(response)));
         }
 
         // if it's not started, send the message first to create the conversation,
         // then get it and connect faye
         return promise
-            .then(() => {
-                return dispatch(sendFn());
-            })
+            .then(() => sendFn())
             .then(enableScrollToBottom)
-            .then(handleConnectNotification)
-            .then(connectFayeConversation);
+            .then((response) => dispatch(handleConnectNotification(response)))
+            .then(() => dispatch(connectFayeConversation()));
     };
 }
 
 export function sendMessage(text, extra = {}) {
-    return (dispatch) => {
-        const fn = (dispatch, getState) => {
+    return (dispatch, getState) => {
+        const fn = () => {
             const message = {
                 role: 'appUser',
                 text,
@@ -146,53 +142,51 @@ export function uploadImage(file) {
 
         return resizeImage(file)
             .then((dataUrl) => {
-                const fn = (dispatch, getState) => {
-                    () => {
-                        const message = {
-                            mediaUrl: dataUrl,
-                            mediaType: 'image/jpeg',
-                            role: 'appUser',
-                            type: 'image',
-                            status: 'sending',
-                            _clientId: Math.random(),
-                            _clientSent: new Date()
-                        };
-
-                        dispatch(addMessage(message));
-
-                        const {user} = getState();
-                        const blob = getBlobFromDataUrl(dataUrl);
-
-                        return core(getState()).appUsers.uploadImage(getUserId(getState()), blob, {
-                            role: 'appUser',
-                            deviceId: getDeviceId()
-                        }).then((response) => {
-                            const actions = [];
-                            if (!user.conversationStarted) {
-                                // use setConversation to set the conversation id in the store
-                                actions.push(setConversation(response.conversation));
-                                actions.push(updateUser({
-                                    conversationStarted: true
-                                }));
-                            }
-
-                            actions.push(replaceMessage({
-                                _clientId: message._clientId
-                            }, response.message));
-
-
-                            dispatch(batchActions(actions));
-                            observable.trigger('message:sent', response.message);
-                            return response;
-                        }).catch(() => {
-                            dispatch(batchActions([
-                                showErrorNotification(getState().ui.text.messageError),
-                                removeMessage({
-                                    _clientId: message._clientId
-                                })
-                            ]));
-                        });
+                const fn = () => {
+                    const message = {
+                        mediaUrl: dataUrl,
+                        mediaType: 'image/jpeg',
+                        role: 'appUser',
+                        type: 'image',
+                        status: 'sending',
+                        _clientId: Math.random(),
+                        _clientSent: new Date()
                     };
+
+                    dispatch(addMessage(message));
+
+                    const {user} = getState();
+                    const blob = getBlobFromDataUrl(dataUrl);
+
+                    return core(getState()).appUsers.uploadImage(getUserId(getState()), blob, {
+                        role: 'appUser',
+                        deviceId: getDeviceId()
+                    }).then((response) => {
+                        const actions = [];
+                        if (!user.conversationStarted) {
+                            // use setConversation to set the conversation id in the store
+                            actions.push(setConversation(response.conversation));
+                            actions.push(updateUser({
+                                conversationStarted: true
+                            }));
+                        }
+
+                        actions.push(replaceMessage({
+                            _clientId: message._clientId
+                        }, response.message));
+
+
+                        dispatch(batchActions(actions));
+                        observable.trigger('message:sent', response.message);
+                        return response;
+                    }).catch(() => {
+                        dispatch(batchActions([
+                            showErrorNotification(getState().ui.text.messageError),
+                            removeMessage({
+                                _clientId: message._clientId
+                            })
+                        ]));
+                    });
                 };
                 return dispatch(sendChain(fn));
             })
