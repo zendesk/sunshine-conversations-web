@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 
 import { createMock } from '../../mocks/core';
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 
 import * as utilsDevice from '../../../src/js/utils/device';
 import * as utilsFaye from '../../../src/js/services/faye';
@@ -68,10 +68,6 @@ describe('Conversation service', () => {
         sandbox = sinon.sandbox.create();
     });
 
-    afterEach(() => {
-        mockedStore.restore();
-    });
-
     beforeEach(() => {
         coreMock = createMock(sandbox);
         coreMock.appUsers.getMessages.resolves({
@@ -123,7 +119,7 @@ describe('Conversation service', () => {
 
     describe('handleConnectNotification', () => {
         it('should show connect notification on first appuser message', () => {
-            mockedStore = mockAppStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, getProps({
                 conversation: {
                     messages: [
                         {
@@ -139,7 +135,7 @@ describe('Conversation service', () => {
         });
 
         it('should show connect notification 24 hours later', () => {
-            mockedStore = mockAppStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, getProps({
                 conversation: {
                     messages: [
                         {
@@ -160,7 +156,7 @@ describe('Conversation service', () => {
         });
 
         it('should not show connect notification if it\'s been less than 24 hours', () => {
-            mockedStore = mockAppStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, getProps({
                 conversation: {
                     messages: [
                         {
@@ -193,7 +189,7 @@ describe('Conversation service', () => {
 
         describe('conversation started', () => {
             beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, getProps({
+                mockedStore = createMockedStore(sandbox, getProps({
                     user: {
                         _id: '1',
                         conversationStarted: true
@@ -220,7 +216,7 @@ describe('Conversation service', () => {
 
         describe('conversation not started', () => {
             beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, getProps({
+                mockedStore = createMockedStore(sandbox, getProps({
                     user: {
                         _id: '1',
                         conversationStated: false
@@ -247,7 +243,7 @@ describe('Conversation service', () => {
 
         describe('errors', () => {
             it('should show an error notification', () => {
-                mockedStore = mockAppStore(sandbox, getProps());
+                mockedStore = createMockedStore(sandbox, getProps());
                 return conversationService.sendMessage('message').catch(() => {
                     appStateActions.showErrorNotification.should.have.been.called;
                     conversationActions.removeMessage.should.have.been.called;
@@ -267,7 +263,7 @@ describe('Conversation service', () => {
 
         describe('conversation started', () => {
             beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, getProps({
+                mockedStore = createMockedStore(sandbox, getProps({
                     user: {
                         _id: '1',
                         conversationStarted: true
@@ -295,7 +291,7 @@ describe('Conversation service', () => {
 
         describe('conversation not started', () => {
             beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, getProps({
+                mockedStore = createMockedStore(sandbox, getProps({
                     user: {
                         _id: '1',
                         conversationStarted: false
@@ -322,7 +318,7 @@ describe('Conversation service', () => {
 
         describe('errors', () => {
             beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, getProps({
+                mockedStore = createMockedStore(sandbox, getProps({
                     user: {
                         _id: '1',
                         conversationStarted: true
@@ -386,7 +382,7 @@ describe('Conversation service', () => {
 
     describe('getMessages', () => {
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, {
+            mockedStore = createMockedStore(sandbox, {
                 user: {
                     _id: '1'
                 }
@@ -412,11 +408,11 @@ describe('Conversation service', () => {
         [true, false].forEach((active) => {
             describe(`with${active ? '' : 'out'} subscription active`, () => {
                 it(`should ${active ? 'not' : ''} subscribe to conversation`, () => {
-                    mockedStore = active ? mockAppStore(sandbox, getProps({
+                    mockedStore = active ? createMockedStore(sandbox, getProps({
                         faye: {
                             conversationSubscription: fayeSubscriptionMock
                         }
-                    })) : mockAppStore(sandbox, getProps());
+                    })) : createMockedStore(sandbox, getProps());
 
                     return conversationService.connectFayeConversation().then(() => {
                         if (active) {
@@ -434,11 +430,11 @@ describe('Conversation service', () => {
         [true, false].forEach((subscribed) => {
             describe(`user ${subscribed ? '' : 'not'} subscribed`, () => {
                 it(`should ${subscribed ? 'not' : ''} subscribe user`, () => {
-                    mockedStore = subscribed ? mockAppStore(sandbox, getProps({
+                    mockedStore = subscribed ? createMockedStore(sandbox, getProps({
                         faye: {
                             userSubscription: userSubscriptionMock
                         }
-                    })) : mockAppStore(sandbox, getProps());
+                    })) : createMockedStore(sandbox, getProps());
 
                     return conversationService.connectFayeUser().then(() => {
                         if (subscribed) {
@@ -456,11 +452,11 @@ describe('Conversation service', () => {
         [true, false].forEach((active) => {
             describe(`with${active ? '' : 'out'} subscription active`, () => {
                 it(`should ${active ? '' : 'not'} cancel subscription`, () => {
-                    mockedStore = active ? mockAppStore(sandbox, getProps({
+                    mockedStore = active ? createMockedStore(sandbox, getProps({
                         faye: {
                             conversationSubscription: fayeSubscriptionMock
                         }
-                    })) : mockAppStore(sandbox, getProps());
+                    })) : createMockedStore(sandbox, getProps());
                     conversationService.disconnectFaye();
 
                     userSubscriptionMock.cancel.should.not.have.been.called;
@@ -478,11 +474,11 @@ describe('Conversation service', () => {
         [true, false].forEach((subscribed) => {
             describe(`user ${subscribed ? '' : 'not'} subscribed`, () => {
                 it(`should ${subscribed ? '' : 'not'} cancel their subscription`, () => {
-                    mockedStore = subscribed ? mockAppStore(sandbox, getProps({
+                    mockedStore = subscribed ? createMockedStore(sandbox, getProps({
                         faye: {
                             userSubscription: userSubscriptionMock
                         }
-                    })) : mockAppStore(sandbox, getProps());
+                    })) : createMockedStore(sandbox, getProps());
                     conversationService.disconnectFaye();
 
                     fayeSubscriptionMock.cancel.should.not.have.been.called;
@@ -501,7 +497,7 @@ describe('Conversation service', () => {
     describe('resetUnreadCount', () => {
         it('should reset unread count to 0', () => {
             coreMock.conversations.resetUnreadCount.resolves();
-            mockedStore = mockAppStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, getProps({
                 user: {
                     _id: '1'
                 },
@@ -518,14 +514,14 @@ describe('Conversation service', () => {
         [true, false].forEach((active) => {
             describe(`with${active ? '' : 'out'} subscription active`, () => {
                 it(`should ${active ? 'not' : ''} get conversation`, () => {
-                    mockedStore = active ? mockAppStore(sandbox, getProps({
+                    mockedStore = active ? createMockedStore(sandbox, getProps({
                         user: {
                             _id: '1'
                         },
                         faye: {
                             conversationSubscription: fayeSubscriptionMock
                         }
-                    })) : mockAppStore(sandbox, getProps());
+                    })) : createMockedStore(sandbox, getProps());
 
                     return conversationService.handleConversationUpdated().then(() => {
                         if (active) {
@@ -545,7 +541,7 @@ describe('Conversation service', () => {
 
         beforeEach(() => {
             coreMock.conversations.postPostback.resolves();
-            mockedStore = mockAppStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, getProps({
                 user: {
                     _id: '1'
                 },
@@ -579,7 +575,7 @@ describe('Conversation service', () => {
         });
 
         it('should use timestamp of first message as before parameter', () => {
-            mockedStore = mockAppStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, getProps({
                 user: {
                     _id: '1'
                 },
@@ -599,7 +595,7 @@ describe('Conversation service', () => {
         });
 
         it('should not fetch if there are no more messages', () => {
-            mockedStore = mockAppStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, getProps({
                 conversation: {
                     hasMoreMessages: false,
                     isFetchingMoreMessagesFromServer: false,
@@ -612,7 +608,7 @@ describe('Conversation service', () => {
         });
 
         it('should not fetch if already fetching from server', () => {
-            mockedStore = mockAppStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, getProps({
                 conversation: {
                     hasMoreMessages: true,
                     isFetchingMoreMessagesFromServer: true,

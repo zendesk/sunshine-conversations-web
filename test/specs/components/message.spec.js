@@ -9,7 +9,7 @@ import { ImageMessage } from '../../../src/js/components/image-message';
 import { TextMessage } from '../../../src/js/components/text-message';
 
 import { wrapComponentWithStore } from '../../utils/react';
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
 
@@ -35,7 +35,7 @@ describe('Message Component', () => {
             className: 'mockedText'
         });
 
-        mockedStore = mockAppStore(sandbox, {
+        mockedStore = createMockedStore(sandbox, {
             ui: {
                 text: {}
             },
@@ -51,7 +51,6 @@ describe('Message Component', () => {
 
     afterEach(() => {
         sandbox.restore();
-        mockedStore.restore();
     });
 
     [true, false].forEach((isImage) => {

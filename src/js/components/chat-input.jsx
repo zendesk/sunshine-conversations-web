@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import isMobile from 'ismobilejs';
+import bindAll from 'lodash.bindall';
 
 import { sendMessage, resetUnreadCount } from '../services/conversation';
 
@@ -23,6 +24,17 @@ export class ChatInputComponent extends Component {
         text: ''
     };
 
+    constructor(...args) {
+        super(...args);
+        bindAll(this, [
+            'blur',
+            'checkAndResetUnreadCount',
+            'onChange',
+            'onFocus',
+            'onSendMessage'
+        ]);
+    }
+
     blur = () => {
         this.refs.input.blur();
     }
@@ -34,18 +46,18 @@ export class ChatInputComponent extends Component {
         }
     }
 
-    onChange = (e) => {
+    onChange(e) {
         this.checkAndResetUnreadCount(this.props.unreadCount);
         this.setState({
             text: e.target.value
         });
-    };
+    }
 
-    onFocus = () => {
+    onFocus() {
         this.checkAndResetUnreadCount(this.props.unreadCount);
-    };
+    }
 
-    onSendMessage = (e) => {
+    onSendMessage(e) {
         e.preventDefault();
         const {text} = this.state;
         const {dispatch} = this.props;
@@ -56,7 +68,7 @@ export class ChatInputComponent extends Component {
             dispatch(sendMessage(text));
             this.refs.input.focus();
         }
-    };
+    }
 
     render() {
         const {accentColor, imageUploadEnabled, inputPlaceholderText, sendButtonText} = this.props;

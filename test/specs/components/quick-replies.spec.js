@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 import { wrapComponentWithStore } from '../../utils/react';
 import { QuickReplies } from '../../../src/js/components/quick-replies';
 
@@ -25,7 +25,7 @@ describe('QuickReplies Component', () => {
     ];
 
     beforeEach(() => {
-        mockedStore = mockAppStore(sandbox, {
+        mockedStore = createMockedStore(sandbox, {
             app: {
                 settings: {
                     web: {
@@ -43,7 +43,6 @@ describe('QuickReplies Component', () => {
     });
 
     afterEach(() => {
-        mockedStore && mockedStore.restore();
         sandbox.restore();
     });
 

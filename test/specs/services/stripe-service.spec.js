@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 
 import { createMock } from '../../mocks/core';
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 
 import * as coreService from '../../../src/js/services/core';
 import { createTransaction, getAccount } from '../../../src/js/services/stripe';
@@ -16,7 +16,7 @@ describe('Stripe service', () => {
     });
 
     beforeEach(() => {
-        mockedStore = mockAppStore(sandbox, {
+        mockedStore = createMockedStore(sandbox, {
             user: {
                 _id: '1'
             }
@@ -32,7 +32,6 @@ describe('Stripe service', () => {
 
     afterEach(() => {
         sandbox.restore();
-        mockedStore.restore();
     });
 
     describe('createTransaction', () => {

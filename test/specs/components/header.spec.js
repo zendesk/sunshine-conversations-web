@@ -8,7 +8,7 @@ import * as appUtils from '../../../src/js/utils/app';
 import { WIDGET_STATE } from '../../../src/js/constants/app';
 import { Header, HeaderComponent } from '../../../src/js/components/header';
 
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId, wrapComponentWithStore } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
@@ -60,14 +60,10 @@ describe('Header Component', () => {
         sandbox.restore();
     });
 
-    after(() => {
-        mockedStore && mockedStore.restore();
-    });
-
     describe('settings view', () => {
 
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState());
+            mockedStore = createMockedStore(sandbox, getStoreState());
             header = wrapComponentWithStore(Header, null, mockedStore);
             headerNode = ReactDOM.findDOMNode(header);
         });
@@ -101,7 +97,7 @@ describe('Header Component', () => {
     describe('settings view in embedded mode', () => {
 
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState({
+            mockedStore = createMockedStore(sandbox, getStoreState({
                 appState: {
                     settingsVisible: false,
                     embedded: true

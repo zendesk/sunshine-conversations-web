@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 
 import { createMock } from '../../mocks/core';
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 
 import * as coreService from '../../../src/js/services/core';
 import * as integrationsService from '../../../src/js/services/integrations';
@@ -48,7 +48,7 @@ describe('Integrations service', () => {
         sandbox.stub(utilsFaye, 'subscribeConversation').resolves();
         sandbox.stub(utilsFaye, 'subscribeConversationActivity').resolves();
 
-        mockedStore = mockAppStore(sandbox, {
+        mockedStore = createMockedStore(sandbox, {
             user: {
                 _id: '1',
                 clients: [],
@@ -65,7 +65,6 @@ describe('Integrations service', () => {
     });
 
     afterEach(() => {
-        mockedStore && mockedStore.restore();
         sandbox.restore();
     });
 

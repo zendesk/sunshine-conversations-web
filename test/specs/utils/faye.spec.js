@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import { Client } from 'faye';
 
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 import * as utilsFaye from '../../../src/js/services/faye';
 import * as utilsDevice from '../../../src/js/utils/device';
 import * as userActions from '../../../src/js/actions/user-actions';
@@ -33,12 +33,8 @@ const sandbox = sinon.sandbox.create();
 describe('Faye utils', () => {
     let mockedStore;
 
-    after(() => {
-        mockedStore && mockedStore.restore();
-    });
-
     before(() => {
-        mockedStore = mockAppStore(sandbox, getProps());
+        mockedStore = createMockedStore(sandbox, getProps());
     });
 
     beforeEach(() => {
@@ -80,7 +76,7 @@ describe('Faye utils', () => {
 
         describe('when conversation is not started', () => {
             beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, getProps({
+                mockedStore = createMockedStore(sandbox, getProps({
                     user: {
                         conversationStarted: false
                     }
@@ -141,7 +137,7 @@ describe('Faye utils', () => {
 
     describe('subscribeConversation', () => {
         it('should call setFayeConversationSubcription', () => {
-            mockedStore = mockAppStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, getProps({
                 conversation: {
                     _id: 123
                 }
@@ -201,7 +197,7 @@ describe('Faye utils', () => {
 
     describe('handleUserSubscription', () => {
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, getProps({
                 user: {
                     _id: 1
                 },
@@ -243,7 +239,7 @@ describe('Faye utils', () => {
 
     describe('subscribeUser', () => {
         it('should call setFayeUserSubscription', () => {
-            mockedStore = mockAppStore(sandbox, getProps());
+            mockedStore = createMockedStore(sandbox, getProps());
             utilsFaye.subscribeUser().then(() => {
                 fayeActions.setFayeUserSubscription.should.have.been.calledOnce;
             });

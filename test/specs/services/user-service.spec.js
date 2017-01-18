@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 
 import { createMock } from '../../mocks/core';
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 
 import * as coreService from '../../../src/js/services/core';
 import * as userService from '../../../src/js/services/user';
@@ -40,7 +40,7 @@ describe('User service', () => {
             return coreMock;
         });
 
-        mockedStore = mockAppStore(sandbox, {
+        mockedStore = createMockedStore(sandbox, {
             user: {
                 _id: '1',
                 email: 'some@email.com'
@@ -49,7 +49,6 @@ describe('User service', () => {
     });
 
     afterEach(() => {
-        mockedStore.restore();
         sandbox.restore();
     });
 
