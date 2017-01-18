@@ -2,7 +2,6 @@ import sinon from 'sinon';
 
 import { openWidget, closeWidget, toggleWidget } from '../../../src/js/services/app';
 import { createMockedStore } from '../../utils/redux';
-import { OPEN_WIDGET, CLOSE_WIDGET } from '../../../src/js/actions/app-state-actions';
 import { observable } from '../../../src/js/utils/events';
 import { WIDGET_STATE } from '../../../src/js/constants/app';
 
@@ -46,19 +45,15 @@ describe('App Service', () => {
             describe('open widget', () => {
                 if (isEmbedded) {
                     it('should do nothing', () => {
-                        openWidget();
+                        mockedStore.dispatch(openWidget());
                         clock.tick(20);
-                        mockedStore.dispatch.should.not.have.been.called;
                         openSpy.should.not.have.been.called;
                         closeSpy.should.not.have.been.called;
                     });
                 } else {
                     it('should call dispatch with open action', () => {
-                        openWidget();
+                        mockedStore.dispatch(openWidget());
                         clock.tick(20);
-                        mockedStore.dispatch.should.have.been.calledWith({
-                            type: OPEN_WIDGET
-                        });
                         openSpy.should.have.been.calledOnce;
                         closeSpy.should.not.have.been.called;
                     });
@@ -68,19 +63,15 @@ describe('App Service', () => {
             describe('close widget', () => {
                 if (isEmbedded) {
                     it('should do nothing', () => {
-                        closeWidget();
+                        mockedStore.dispatch(closeWidget());
                         clock.tick(20);
-                        mockedStore.dispatch.should.not.have.been.called;
                         openSpy.should.not.have.been.called;
                         closeSpy.should.not.have.been.called;
                     });
                 } else {
                     it('should call dispatch with close action', () => {
-                        closeWidget();
+                        mockedStore.dispatch(closeWidget());
                         clock.tick(20);
-                        mockedStore.dispatch.should.have.been.calledWith({
-                            type: CLOSE_WIDGET
-                        });
                         openSpy.should.not.have.been.called;
                         closeSpy.should.have.been.calledOnce;
                     });
@@ -90,9 +81,8 @@ describe('App Service', () => {
             describe('toggle widget', () => {
                 if (isEmbedded) {
                     it('should do nothing', () => {
-                        toggleWidget();
+                        mockedStore.dispatch(toggleWidget());
                         clock.tick(20);
-                        mockedStore.dispatch.should.not.have.been.called;
                         openSpy.should.not.have.been.called;
                         closeSpy.should.not.have.been.called;
                     });
@@ -110,20 +100,12 @@ describe('App Service', () => {
                             });
 
                             it(`should call dispatch with ${isOpened ? 'closed' : 'opened'} action`, () => {
-                                toggleWidget();
+                                mockedStore.dispatch(toggleWidget());
                                 clock.tick(20);
                                 if (isOpened) {
-                                    mockedStore.dispatch.should.have.been.calledWith({
-                                        type: CLOSE_WIDGET
-                                    });
-
                                     openSpy.should.not.have.been.called;
                                     closeSpy.should.have.been.calledOnce;
                                 } else {
-                                    mockedStore.dispatch.should.have.been.calledWith({
-                                        type: OPEN_WIDGET
-                                    });
-
                                     openSpy.should.have.been.calledOnce;
                                     closeSpy.should.not.have.been.called;
                                 }
