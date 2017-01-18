@@ -1,4 +1,3 @@
-import { store } from '../stores/app-store';
 import * as AppStateActions from '../actions/app-state-actions';
 import { preventMobilePageScroll, allowMobilePageScroll } from '../utils/dom';
 import { resetUnreadCount, connectFayeUser } from './conversation-service';
@@ -9,45 +8,52 @@ import { CHANNEL_DETAILS } from '../constants/channels';
 import { WIDGET_STATE } from '../constants/app';
 
 export function openWidget() {
-    const {embedded} = store.getState().appState;
-    if (!embedded) {
-        store.dispatch(AppStateActions.openWidget());
-        observable.trigger('widget:opened');
-        resetUnreadCount();
-        preventMobilePageScroll();
-    }
+    return (dispatch, getState) => {
+        const {embedded} = getState().appState;
+        if (!embedded) {
+            dispatch(AppStateActions.openWidget());
+            observable.trigger('widget:opened');
+            resetUnreadCount();
+            preventMobilePageScroll();
+        }
+    };
 }
 
 export function closeWidget() {
-    const {embedded} = store.getState().appState;
-    if (!embedded) {
-        store.dispatch(AppStateActions.closeWidget());
-        observable.trigger('widget:closed');
-        resetUnreadCount();
-        allowMobilePageScroll();
-    }
+    return (dispatch, getState) => {
+        const {embedded} = getState().appState;
+        if (!embedded) {
+            dispatch(AppStateActions.closeWidget());
+            observable.trigger('widget:closed');
+            resetUnreadCount();
+            allowMobilePageScroll();
+        }
+    };
 }
 
 
 export function toggleWidget() {
-    const {embedded, widgetState} = store.getState().appState;
-    if (!embedded) {
-        if (widgetState === WIDGET_STATE.OPENED) {
-            closeWidget();
-        } else {
-            openWidget();
+    return (dispatch, getState) => {
+        const {embedded, widgetState} = getState().appState;
+        if (!embedded) {
+            if (widgetState === WIDGET_STATE.OPENED) {
+                return dispatch(closeWidget());
+            }
+            return dispatch(openWidget());
         }
-    }
+    };
 }
 
 function connectToFayeUser() {
-    const {app: {integrations: appChannels, settings}, user: {clients}} = store.getState();
+    return (dispatch, getState) => {
+        const {app: {integrations: appChannels, settings}, user: {clients}} = getState();
 
-    if (hasLinkableChannels(appChannels, clients, settings.web)) {
-        return connectFayeUser();
-    }
+        if (hasLinkableChannels(appChannels, clients, settings.web)) {
+            return dispatch(connectFayeUser());
+        }
 
-    return Promise.resolve();
+        return Promise.resolve();
+    };
 }
 
 export function showSettings() {
@@ -117,6 +123,6 @@ export function hideTypingIndicator() {
     if (typingIndicatorTimeoutId) {
         clearTimeout(typingIndicatorTimeoutId);
     }
-    
+
     store.dispatch(AppStateActions.hideTypingIndicator());
 }

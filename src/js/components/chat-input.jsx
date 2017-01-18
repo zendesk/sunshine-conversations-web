@@ -3,12 +3,11 @@ import { connect } from 'react-redux';
 import isMobile from 'ismobilejs';
 
 import { sendMessage, resetUnreadCount } from '../services/conversation-service';
-import { store } from '../stores/app-store';
 
 import { ImageUpload } from './image-upload';
 
-function checkAndResetUnreadCount() {
-    if (store.getState().conversation.unreadCount > 0) {
+function checkAndResetUnreadCount(unreadCount) {
+    if (unreadCount > 0) {
         resetUnreadCount();
     }
 }
@@ -19,7 +18,9 @@ export class ChatInputComponent extends Component {
         accentColor: PropTypes.string,
         imageUploadEnabled: PropTypes.bool.isRequired,
         inputPlaceholderText: PropTypes.string.isRequired,
-        sendButtonText: PropTypes.string.isRequired
+        sendButtonText: PropTypes.string.isRequired,
+        unreadCount: PropTypes.number.isRequired,
+        dispatch: PropTypes.func.isRequired
     };
 
     constructor(...args) {
@@ -38,14 +39,14 @@ export class ChatInputComponent extends Component {
     }
 
     onChange(e) {
-        checkAndResetUnreadCount();
+        checkAndResetUnreadCount(this.props.unreadCount);
         this.setState({
             text: e.target.value
         });
     }
 
     onFocus() {
-        checkAndResetUnreadCount();
+        checkAndResetUnreadCount(this.props.unreadCount);
     }
 
     onSendMessage(e) {
@@ -121,12 +122,13 @@ export class ChatInputComponent extends Component {
     }
 }
 
-export const ChatInput = connect(({appState, app, ui}) => {
+export const ChatInput = connect(({appState, app, ui, conversation: {unreadCount}}) => {
     return {
         imageUploadEnabled: appState.imageUploadEnabled,
         accentColor: app.settings.web.accentColor,
         sendButtonText: ui.text.sendButtonText,
-        inputPlaceholderText: ui.text.inputPlaceholder
+        inputPlaceholderText: ui.text.inputPlaceholder,
+        unreadCount
     };
 }, undefined, undefined, {
     withRef: true

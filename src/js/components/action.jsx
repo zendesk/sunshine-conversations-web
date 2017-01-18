@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import StripeCheckout from 'react-stripe-checkout';
 import { connect } from 'react-redux';
 
-import { store } from '../stores/app-store';
 import { createTransaction } from '../services/stripe-service';
 import { immediateUpdate } from '../services/user-service';
 import { postPostback } from '../services/conversation-service';
@@ -23,7 +22,8 @@ export class ActionComponent extends Component {
         state: PropTypes.string,
         actionPaymentCompletedText: PropTypes.string.isRequired,
         integrations: PropTypes.array.isRequired,
-        stripe: PropTypes.object
+        stripe: PropTypes.object,
+        user: PropTypes.object.isRequired
     };
 
     static defaultProps = {
@@ -60,11 +60,11 @@ export class ActionComponent extends Component {
     };
 
     onStripeToken(token) {
+        const {user} = this.props;
         this.setState({
             hasToken: true
         });
 
-        const user = store.getState().user;
         const promises = [];
         if (!user.email) {
             promises.push(immediateUpdate({
@@ -105,7 +105,7 @@ export class ActionComponent extends Component {
     }
 
     render() {
-        const {buttonColor, amount, currency, text, uri, type, actionPaymentCompletedText, integrations, stripe} = this.props;
+        const {buttonColor, amount, currency, text, uri, type, actionPaymentCompletedText, integrations, stripe, user} = this.props;
         const {state} = this.state;
 
         const stripeIntegration = getIntegration(integrations, 'stripeConnect');
@@ -119,8 +119,6 @@ export class ActionComponent extends Component {
         // the public key is necessary to use with Checkout
         // use the link fallback if this happens
         if (type === 'buy' && stripeIntegration) {
-            const user = store.getState().user;
-
             // let's change this when we support other providers
             const stripeAccount = stripe;
             if (state === 'offered') {
@@ -186,8 +184,9 @@ export class ActionComponent extends Component {
     }
 }
 
-export const Action = connect(({app, ui: {text}}) => {
+export const Action = connect(({app, ui: {text}, user}) => {
     return {
+        user,
         actionPaymentCompletedText: text.actionPaymentCompleted,
         integrations: app.integrations,
         stripe: app.stripe
