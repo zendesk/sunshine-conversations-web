@@ -1,4 +1,5 @@
-import { store } from '../stores/app-store';
+import { batchActions } from 'redux-batched-actions';
+
 import { showConnectNotification } from '../services/app-service';
 import { addMessage, addMessages, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages, setFetchingMoreMessagesFromServer } from '../actions/conversation-actions';
 import { updateUser } from '../actions/user-actions';
@@ -15,263 +16,317 @@ import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notification
 import { getUserId } from './user-service';
 
 export function handleConnectNotification(response) {
-    const {user: {clients, email}, app: {integrations, settings}, conversation: {messages}, appState: {emailCaptureEnabled}} = store.getState();
-    const appUserMessages = messages.filter((message) => message.role === 'appUser');
+    return (dispatch, getState) => {
 
-    const channelsAvailable = hasLinkableChannels(integrations, clients, settings.web);
-    const showEmailCapture = emailCaptureEnabled && !email;
-    const hasSomeChannelLinked = getLinkableChannels(integrations, settings.web).some((channelType) => {
-        return isChannelLinked(clients, channelType);
-    });
+        const {user: {clients, email}, app: {integrations, settings}, conversation: {messages}, appState: {emailCaptureEnabled}} = getState();
+        const appUserMessages = messages.filter((message) => message.role === 'appUser');
 
-    if ((showEmailCapture || channelsAvailable) && !hasSomeChannelLinked) {
-        if (appUserMessages.length === 1) {
-            showConnectNotification();
-        } else {
-            // find the last confirmed message timestamp
-            let lastMessageTimestamp;
+        const channelsAvailable = hasLinkableChannels(integrations, clients, settings.web);
+        const showEmailCapture = emailCaptureEnabled && !email;
+        const hasSomeChannelLinked = getLinkableChannels(integrations, settings.web).some((channelType) => {
+            return isChannelLinked(clients, channelType);
+        });
 
-            // start at -2 to ignore the message that was just sent
-            for (let index = appUserMessages.length - 2; index >= 0 && !lastMessageTimestamp; index--) {
-                const message = appUserMessages[index];
-                lastMessageTimestamp = message.received;
-            }
+        if ((showEmailCapture || channelsAvailable) && !hasSomeChannelLinked) {
+            if (appUserMessages.length === 1) {
+                dispatch(showConnectNotification());
+            } else {
+                // find the last confirmed message timestamp
+                let lastMessageTimestamp;
 
-            if (lastMessageTimestamp) {
-                // divide it by 1000 since server `received` is in seconds and not in ms
-                const currentTimeStamp = Date.now() / 1000;
-                if ((currentTimeStamp - lastMessageTimestamp) >= CONNECT_NOTIFICATION_DELAY_IN_SECONDS) {
-                    showConnectNotification();
+                // start at -2 to ignore the message that was just sent
+                for (let index = appUserMessages.length - 2; index >= 0 && !lastMessageTimestamp; index--) {
+                    const message = appUserMessages[index];
+                    lastMessageTimestamp = message.received;
+                }
+
+                if (lastMessageTimestamp) {
+                    // divide it by 1000 since server `received` is in seconds and not in ms
+                    const currentTimeStamp = Date.now() / 1000;
+                    if ((currentTimeStamp - lastMessageTimestamp) >= CONNECT_NOTIFICATION_DELAY_IN_SECONDS) {
+                        dispatch(showConnectNotification());
+                    }
                 }
             }
         }
-    }
 
-    return response;
+        return response;
+    };
 }
 
 export function sendChain(sendFn) {
-    const promise = immediateUpdate(store.getState().user);
+    return (dispatch, getState) => {
+        const promise = immediateUpdate(getState().user);
 
-    const enableScrollToBottom = (response) => {
-        store.dispatch(setShouldScrollToBottom(true));
-        return response;
-    };
+        const enableScrollToBottom = (response) => {
+            dispatch(setShouldScrollToBottom(true));
+            return response;
+        };
 
-    if (store.getState().user.conversationStarted) {
+        if (getState().user.conversationStarted) {
+            return promise
+                .then(connectFayeConversation)
+                .then(() => {
+                    return dispatch(sendFn());
+                })
+                .then(enableScrollToBottom)
+                .then(handleConnectNotification);
+        }
+
+        // if it's not started, send the message first to create the conversation,
+        // then get it and connect faye
         return promise
-            .then(connectFayeConversation)
-            .then(sendFn)
+            .then(() => {
+                return dispatch(sendFn());
+            })
             .then(enableScrollToBottom)
-            .then(handleConnectNotification);
-    }
-
-    // if it's not started, send the message first to create the conversation,
-    // then get it and connect faye
-    return promise
-        .then(sendFn)
-        .then(enableScrollToBottom)
-        .then(handleConnectNotification)
-        .then(connectFayeConversation);
+            .then(handleConnectNotification)
+            .then(connectFayeConversation);
+    };
 }
 
 export function sendMessage(text, extra = {}) {
-    return sendChain(() => {
-        const message = {
-            role: 'appUser',
-            text,
-            _clientId: Math.random(),
-            _clientSent: new Date(),
-            deviceId: getDeviceId(),
-            ...extra
-        };
-
-        store.dispatch(setShouldScrollToBottom(true));
-        store.dispatch(addMessage(message));
-
-        const {user} = store.getState();
-
-        return core().appUsers.sendMessage(getUserId(), message).then((response) => {
-            if (!user.conversationStarted) {
-                // use setConversation to set the conversation id in the store
-                store.dispatch(setConversation(response.conversation));
-                store.dispatch(updateUser({
-                    conversationStarted: true
-                }));
-            }
-            store.dispatch(replaceMessage({
-                _clientId: message._clientId
-            }, response.message));
-
-            observable.trigger('message:sent', response.message);
-            return response;
-        }).catch(() => {
-            store.dispatch(showErrorNotification(store.getState().ui.text.messageError));
-            store.dispatch(removeMessage({
-                _clientId: message._clientId
-            }));
-
-        });
-    });
-}
-
-
-export function uploadImage(file) {
-    if (!isFileTypeSupported(file.type)) {
-        store.dispatch(showErrorNotification(store.getState().ui.text.invalidFileError));
-        return Promise.reject('Invalid file type');
-    }
-
-    return resizeImage(file).then((dataUrl) => {
-        return sendChain(() => {
+    return (dispatch) => {
+        const fn = (dispatch, getState) => {
             const message = {
-                mediaUrl: dataUrl,
-                mediaType: 'image/jpeg',
                 role: 'appUser',
-                type: 'image',
-                status: 'sending',
+                text,
                 _clientId: Math.random(),
-                _clientSent: new Date()
+                _clientSent: new Date(),
+                deviceId: getDeviceId(),
+                ...extra
             };
 
-            store.dispatch(addMessage(message));
+            dispatch(batchActions([
+                setShouldScrollToBottom(true),
+                addMessage(message)
+            ]));
 
-            const {user} = store.getState();
-            const blob = getBlobFromDataUrl(dataUrl);
+            const {user} = getState();
 
-            return core().appUsers.uploadImage(getUserId(), blob, {
-                role: 'appUser',
-                deviceId: getDeviceId()
-            }).then((response) => {
+            return core().appUsers.sendMessage(getUserId(), message).then((response) => {
+                const actions = [];
                 if (!user.conversationStarted) {
                     // use setConversation to set the conversation id in the store
-                    store.dispatch(setConversation(response.conversation));
-                    store.dispatch(updateUser({
+                    actions.push(setConversation(response.conversation));
+                    actions.push(updateUser({
                         conversationStarted: true
                     }));
                 }
-                store.dispatch(replaceMessage({
+                actions.push(replaceMessage({
                     _clientId: message._clientId
                 }, response.message));
+
+                dispatch(batchActions(actions));
 
                 observable.trigger('message:sent', response.message);
                 return response;
             }).catch(() => {
-                store.dispatch(showErrorNotification(store.getState().ui.text.messageError));
-                store.dispatch(removeMessage({
-                    _clientId: message._clientId
-                }));
-
+                dispatch(batchActions([
+                    showErrorNotification(getState().ui.text.messageError),
+                    removeMessage({
+                        _clientId: message._clientId
+                    })
+                ]));
             });
-        });
-    }).catch(() => {
-        store.dispatch(showErrorNotification(store.getState().ui.text.invalidFileError));
-    });
+        };
+
+        return dispatch(sendChain(fn));
+    };
+}
+
+
+export function uploadImage(file) {
+    return (dispatch, getState) => {
+
+        if (!isFileTypeSupported(file.type)) {
+            dispatch(showErrorNotification(getState().ui.text.invalidFileError));
+            return Promise.reject('Invalid file type');
+        }
+
+        return resizeImage(file)
+            .then((dataUrl) => {
+                const fn = (dispatch, getState) => {
+                    () => {
+                        const message = {
+                            mediaUrl: dataUrl,
+                            mediaType: 'image/jpeg',
+                            role: 'appUser',
+                            type: 'image',
+                            status: 'sending',
+                            _clientId: Math.random(),
+                            _clientSent: new Date()
+                        };
+
+                        dispatch(addMessage(message));
+
+                        const {user} = getState();
+                        const blob = getBlobFromDataUrl(dataUrl);
+
+                        return core().appUsers.uploadImage(getUserId(), blob, {
+                            role: 'appUser',
+                            deviceId: getDeviceId()
+                        }).then((response) => {
+                            const actions = [];
+                            if (!user.conversationStarted) {
+                                // use setConversation to set the conversation id in the store
+                                actions.push(setConversation(response.conversation));
+                                actions.push(updateUser({
+                                    conversationStarted: true
+                                }));
+                            }
+
+                            actions.push(replaceMessage({
+                                _clientId: message._clientId
+                            }, response.message));
+
+
+                            dispatch(batchActions(actions));
+                            observable.trigger('message:sent', response.message);
+                            return response;
+                        }).catch(() => {
+                            dispatch(batchActions([
+                                showErrorNotification(getState().ui.text.messageError),
+                                removeMessage({
+                                    _clientId: message._clientId
+                                })
+                            ]));
+                        });
+                    };
+                };
+                return dispatch(sendChain(fn));
+            })
+            .catch(() => {
+                dispatch(showErrorNotification(getState().ui.text.invalidFileError));
+            });
+    };
 }
 
 export function getMessages() {
-    return core().appUsers.getMessages(getUserId()).then((response) => {
-        store.dispatch(setConversation({
-            ...response.conversation,
-            hasMoreMessages: !!response.previous
-        }));
-        store.dispatch(setMessages(response.messages));
-        return response;
-    });
+    return (dispatch) => {
+        return core().appUsers.getMessages(getUserId()).then((response) => {
+            dispatch(batchActions[
+                setConversation({
+                    ...response.conversation,
+                    hasMoreMessages: !!response.previous
+                }),
+                setMessages(response.messages)
+            ]);
+            return response;
+        });
+    };
 }
 
 export function connectFayeConversation() {
-    const {faye: {conversationSubscription}} = store.getState();
+    return (dispatch, getState) => {
+        const {faye: {conversationSubscription}} = getState();
 
-    if (!conversationSubscription) {
-        return Promise.all([
-            subscribeConversation(),
-            subscribeConversationActivity()
-        ]);
-    }
+        if (!conversationSubscription) {
+            return dispatch(batchActions([
+                subscribeConversation(),
+                subscribeConversationActivity()
+            ]));
+        }
 
-    return Promise.resolve();
+        return Promise.resolve();
+    };
 }
 
 export function connectFayeUser() {
-    const {faye: {userSubscription}} = store.getState();
+    return (dispatch, getState) => {
 
-    if (!userSubscription) {
-        return subscribeUser();
-    }
+        const {faye: {userSubscription}} = getState();
 
-    return Promise.resolve();
+        if (!userSubscription) {
+            return dispatch(subscribeUser());
+        }
+
+        return Promise.resolve();
+    };
 }
 
 export function disconnectFaye() {
-    const {faye: {conversationSubscription, userSubscription}} = store.getState();
+    return (dispatch, getState) => {
 
-    if (conversationSubscription) {
-        conversationSubscription.cancel();
-    }
+        const {faye: {conversationSubscription, userSubscription}} = getState();
 
-    if (userSubscription) {
-        userSubscription.cancel();
-    }
+        if (conversationSubscription) {
+            conversationSubscription.cancel();
+        }
 
-    disconnectClient();
-    store.dispatch(unsetFayeSubscriptions());
+        if (userSubscription) {
+            userSubscription.cancel();
+        }
+
+        disconnectClient();
+        dispatch(unsetFayeSubscriptions());
+    };
 }
 
 export function resetUnreadCount() {
-    const {conversation} = store.getState();
-    if (conversation.unreadCount > 0) {
-        store.dispatch(resetUnreadCountAction());
-        return core().conversations.resetUnreadCount(getUserId()).then((response) => {
-            return response;
-        });
-    }
+    return (dispatch, getState) => {
+        const {conversation} = getState();
+        if (conversation.unreadCount > 0) {
+            dispatch(resetUnreadCountAction());
+            return core().conversations.resetUnreadCount(getUserId()).then((response) => {
+                return response;
+            });
+        }
 
-    return Promise.resolve();
+        return Promise.resolve();
+    };
 }
 
 export function handleConversationUpdated() {
-    const {faye: {conversationSubscription}} = store.getState();
+    return (dispatch, getState) => {
+        const {faye: {conversationSubscription}} = getState();
 
-    if (!conversationSubscription) {
-        return getMessages()
-            .then((response) => {
-                return connectFayeConversation().then(() => {
-                    return response;
+        if (!conversationSubscription) {
+            return dispatch(getMessages())
+                .then((response) => {
+                    return dispatch(connectFayeConversation())
+                        .then(() => {
+                            return response;
+                        });
                 });
-            });
-    }
+        }
 
-    return Promise.resolve();
+        return Promise.resolve();
+    };
 }
 
 export function postPostback(actionId) {
-    return core().conversations.postPostback(getUserId(), actionId).catch(() => {
-        store.dispatch(showErrorNotification(store.getState().ui.text.actionPostbackError));
-    });
+    return (dispatch, getState) => {
+        return core().conversations.postPostback(getUserId(), actionId).catch(() => {
+            dispatch(showErrorNotification(getState().ui.text.actionPostbackError));
+        });
+    };
 }
 
 
 export function fetchMoreMessages() {
-    const {conversation: {hasMoreMessages, messages, isFetchingMoreMessagesFromServer}} = store.getState();
+    return (dispatch, getState) => {
+        const {conversation: {hasMoreMessages, messages, isFetchingMoreMessagesFromServer}} = getState();
 
-    if (!hasMoreMessages || isFetchingMoreMessagesFromServer) {
-        return Promise.resolve();
-    }
+        if (!hasMoreMessages || isFetchingMoreMessagesFromServer) {
+            return Promise.resolve();
+        }
 
-    const timestamp = messages[0].received;
-    store.dispatch(setFetchingMoreMessagesFromServer(true));
-    return core().appUsers.getMessages(getUserId(), {
-        before: timestamp
-    }).then((response) => {
-        store.dispatch(setConversation({
-            ...response.conversation,
-            hasMoreMessages: !!response.previous
-        }));
-
-        store.dispatch(addMessages(response.messages, false));
-        store.dispatch(setFetchingMoreMessagesFromServer(false));
-        store.dispatch(setFetchingMoreMessagesUi(false));
-        return response;
-    });
+        const timestamp = messages[0].received;
+        dispatch(setFetchingMoreMessagesFromServer(true));
+        return core().appUsers.getMessages(getUserId(), {
+            before: timestamp
+        }).then((response) => {
+            dispatch(batchActions([
+                setConversation({
+                    ...response.conversation,
+                    hasMoreMessages: !!response.previous
+                }),
+                addMessages(response.messages, false),
+                setFetchingMoreMessagesFromServer(false),
+                setFetchingMoreMessagesUi(false)
+            ]));
+            return response;
+        });
+    };
 }
