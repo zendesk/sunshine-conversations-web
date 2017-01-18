@@ -25,7 +25,7 @@ export function closeWidget() {
         if (!embedded) {
             dispatch(AppStateActions.closeWidget());
             observable.trigger('widget:closed');
-            resetUnreadCount();
+            dispatch(resetUnreadCount());
             allowMobilePageScroll();
         }
     };
@@ -57,72 +57,89 @@ function connectToFayeUser() {
 }
 
 export function showSettings() {
-    store.dispatch(AppStateActions.showSettings());
-    return connectToFayeUser();
+    return (dispatch) => {
+        dispatch(AppStateActions.showSettings());
+        return dispatch(connectToFayeUser());
+    };
 }
 
 export function hideSettings() {
-    store.dispatch(AppStateActions.hideSettings());
+    return (dispatch) => {
+        dispatch(AppStateActions.hideSettings());
+    };
 }
 
 export function showChannelPage(channelType) {
-    const {user, app: {integrations}} = store.getState();
-    const channelDetails = CHANNEL_DETAILS[channelType];
-    const isLinked = isChannelLinked(user.clients, channelType);
-    const openLink = channelDetails.getURL && (!channelDetails.Component || isLinked);
+    return (dispatch, getState) => {
+        const {user, app: {integrations}} = getState();
+        const channelDetails = CHANNEL_DETAILS[channelType];
+        const isLinked = isChannelLinked(user.clients, channelType);
+        const openLink = channelDetails.getURL && (!channelDetails.Component || isLinked);
 
-    if (openLink) {
-        const appChannel = getIntegration(integrations, channelType);
-        const link = channelDetails.getURL(user, appChannel, isLinked);
+        if (openLink) {
+            const appChannel = getIntegration(integrations, channelType);
+            const link = channelDetails.getURL(user, appChannel, isLinked);
 
-        if (link) {
-            window.open(link);
-            return (isLinked || !channelDetails.isLinkable) ? Promise.resolve() : connectToFayeUser();
+            if (link) {
+                window.open(link);
+                return (isLinked || !channelDetails.isLinkable) ? Promise.resolve() : dispatch(connectToFayeUser());
+            }
         }
-    }
 
-    store.dispatch(AppStateActions.showChannelPage(channelType));
+        dispatch(AppStateActions.showChannelPage(channelType));
 
-    return connectToFayeUser().then(() => {
-        channelDetails.onChannelPage();
-    });
+        return dispatch(connectToFayeUser())
+            .then(() => {
+                return dispatch(channelDetails.onChannelPage());
+            });
+    };
 }
 
 export function hideChannelPage() {
-    store.dispatch(AppStateActions.hideChannelPage());
+    return (dispatch) => {
+        dispatch(AppStateActions.hideChannelPage());
+    };
 }
 
 export function showConnectNotification() {
-    store.dispatch(AppStateActions.showConnectNotification(Date.now() / 1000.0));
+    return (dispatch) => {
+        dispatch(AppStateActions.showConnectNotification(Date.now() / 1000.0));
+    };
 }
 
 export function hideConnectNotification() {
-    store.dispatch(AppStateActions.hideConnectNotification());
+    return (dispatch) => {
+        dispatch(AppStateActions.hideConnectNotification());
+    };
 }
 
 export function showTypingIndicator(data) {
-    const {typingIndicatorTimeoutId} = store.getState().appState;
+    return (dispatch, getState) => {
+        const {typingIndicatorTimeoutId} = getState().appState;
 
-    if (typingIndicatorTimeoutId) {
-        clearTimeout(typingIndicatorTimeoutId);
-    }
+        if (typingIndicatorTimeoutId) {
+            clearTimeout(typingIndicatorTimeoutId);
+        }
 
-    const timeoutId = setTimeout(() => {
-        hideTypingIndicator();
-    }, 10 * 1000);
+        const timeoutId = setTimeout(() => {
+            dispatch(hideTypingIndicator());
+        }, 10 * 1000);
 
-    store.dispatch(AppStateActions.showTypingIndicator({
-        ...data,
-        timeoutId
-    }));
+        dispatch(AppStateActions.showTypingIndicator({
+            ...data,
+            timeoutId
+        }));
+    };
 }
 
 export function hideTypingIndicator() {
-    const {typingIndicatorTimeoutId} = store.getState().appState;
+    return (dispatch, getState) => {
+        const {typingIndicatorTimeoutId} = getState().appState;
 
-    if (typingIndicatorTimeoutId) {
-        clearTimeout(typingIndicatorTimeoutId);
-    }
+        if (typingIndicatorTimeoutId) {
+            clearTimeout(typingIndicatorTimeoutId);
+        }
 
-    store.dispatch(AppStateActions.hideTypingIndicator());
+        dispatch(AppStateActions.hideTypingIndicator());
+    };
 }
