@@ -4,13 +4,13 @@ import { createMock } from '../../mocks/core';
 import { createMockedStore } from '../../utils/redux';
 
 import * as utilsDevice from '../../../src/js/utils/device';
-import * as utilsFaye from '../../../src/js/services/faye';
 import * as utilsMedia from '../../../src/js/utils/media';
 import * as utilsUser from '../../../src/js/utils/user';
 import * as conversationService from '../../../src/js/services/conversation';
 import * as coreService from '../../../src/js/services/core';
 import * as userService from '../../../src/js/services/user';
 import * as appService from '../../../src/js/services/app';
+import * as fayeService from '../../../src/js/services/faye';
 import * as appStateActions from '../../../src/js/actions/app-state-actions';
 import * as conversationActions from '../../../src/js/actions/conversation-actions';
 import * as userActions from '../../../src/js/actions/user-actions';
@@ -58,11 +58,11 @@ function getProps(props = {}) {
 }
 
 describe('Conversation service', () => {
-    var sandbox;
-    var coreMock;
-    var mockedStore;
-    var fayeSubscriptionMock;
-    var userSubscriptionMock;
+    let sandbox;
+    let coreMock;
+    let mockedStore;
+    let fayeSubscriptionMock;
+    let userSubscriptionMock;
 
     before(() => {
         sandbox = sinon.sandbox.create();
@@ -88,10 +88,10 @@ describe('Conversation service', () => {
             cancel: sandbox.stub().resolves()
         };
 
-        sandbox.stub(utilsFaye, 'disconnectClient').returns(null);
-        sandbox.stub(utilsFaye, 'subscribeConversation').resolves();
-        sandbox.stub(utilsFaye, 'subscribeConversationActivity').resolves();
-        sandbox.stub(utilsFaye, 'subscribeUser').resolves();
+        sandbox.stub(fayeService, 'disconnectClient').returns(null);
+        sandbox.stub(fayeService, 'subscribeConversation').resolves();
+        sandbox.stub(fayeService, 'subscribeConversationActivity').resolves();
+        sandbox.stub(fayeService, 'subscribeUser').resolves();
         sandbox.stub(utilsMedia, 'isImageUploadSupported').returns(true);
         sandbox.stub(utilsMedia, 'isFileTypeSupported');
         sandbox.stub(utilsMedia, 'resizeImage');
@@ -130,7 +130,7 @@ describe('Conversation service', () => {
                 }
             }));
 
-            conversationService.handleConnectNotification({});
+            mockedStore.dispatch(conversationService.handleConnectNotification({}));
             appService.showConnectNotification.should.have.been.calledOnce;
         });
 
@@ -150,7 +150,7 @@ describe('Conversation service', () => {
                 }
             }));
 
-            conversationService.handleConnectNotification({});
+            mockedStore.dispatch(conversationService.handleConnectNotification({}));
             appService.showConnectNotification.should.have.been.calledOnce;
 
         });
@@ -171,7 +171,7 @@ describe('Conversation service', () => {
                 }
             }));
 
-            conversationService.handleConnectNotification({});
+            mockedStore.dispatch(conversationService.handleConnectNotification({}));
             appService.showConnectNotification.should.not.have.been.called;
         });
     });
@@ -198,7 +198,7 @@ describe('Conversation service', () => {
             });
 
             it('should replace message', () => {
-                return conversationService.sendMessage('message').then(() => {
+                return mockedStore.dispatch(conversationService.sendMessage('message')).then(() => {
                     userService.immediateUpdate.should.have.been.calledOnce;
 
                     coreMock.appUsers.sendMessage.should.have.been.calledWithMatch('1', {
@@ -225,7 +225,7 @@ describe('Conversation service', () => {
             });
 
             it('should set conversation to started', () => {
-                return conversationService.sendMessage('message').then(() => {
+                return mockedStore.dispatch(conversationService.sendMessage('message')).then(() => {
                     userService.immediateUpdate.should.have.been.calledOnce;
 
                     coreMock.appUsers.sendMessage.should.have.been.calledWithMatch('1', {
@@ -244,7 +244,7 @@ describe('Conversation service', () => {
         describe('errors', () => {
             it('should show an error notification', () => {
                 mockedStore = createMockedStore(sandbox, getProps());
-                return conversationService.sendMessage('message').catch(() => {
+                return mockedStore.dispatch(conversationService.sendMessage('message')).catch(() => {
                     appStateActions.showErrorNotification.should.have.been.called;
                     conversationActions.removeMessage.should.have.been.called;
                 });
@@ -274,7 +274,7 @@ describe('Conversation service', () => {
             });
 
             it('should replace image', () => {
-                return conversationService.uploadImage({}).then(() => {
+                return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
                     userService.immediateUpdate.should.have.been.calledOnce;
 
                     coreMock.appUsers.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
@@ -302,7 +302,7 @@ describe('Conversation service', () => {
             });
 
             it('should set conversation to started', () => {
-                return conversationService.uploadImage({}).then(() => {
+                return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
                     userService.immediateUpdate.should.have.been.calledOnce;
 
                     coreMock.appUsers.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
@@ -341,7 +341,7 @@ describe('Conversation service', () => {
                 });
 
                 it('should show an error notification', () => {
-                    return conversationService.uploadImage({}).catch(() => {
+                    return mockedStore.dispatch(conversationService.uploadImage({})).catch(() => {
                         appStateActions.showErrorNotification.should.have.been.called;
                     });
                 });
@@ -357,7 +357,7 @@ describe('Conversation service', () => {
                 });
 
                 it('should show an error notification', () => {
-                    return conversationService.uploadImage({}).catch(() => {
+                    return mockedStore.dispatch(conversationService.uploadImage({})).catch(() => {
                         appStateActions.showErrorNotification.should.have.been.called;
                     });
                 });
@@ -371,7 +371,7 @@ describe('Conversation service', () => {
                 });
 
                 it('should show an error notification', () => {
-                    return conversationService.uploadImage({}).catch(() => {
+                    return mockedStore.dispatch(conversationService.uploadImage({})).catch(() => {
                         appStateActions.showErrorNotification.should.have.been.called;
                         conversationActions.removeMessage.should.have.been.called;
                     });
@@ -390,7 +390,7 @@ describe('Conversation service', () => {
         });
 
         it('should call smooch-core conversation api and dispatch conversation', () => {
-            return conversationService.getMessages().then((response) => {
+            return mockedStore.dispatch(conversationService.getMessages()).then((response) => {
                 coreMock.appUsers.getMessages.should.have.been.calledWith('1');
 
                 response.should.deep.eq({
@@ -414,11 +414,11 @@ describe('Conversation service', () => {
                         }
                     })) : createMockedStore(sandbox, getProps());
 
-                    return conversationService.connectFayeConversation().then(() => {
+                    return mockedStore.dispatch(conversationService.connectFayeConversation()).then(() => {
                         if (active) {
-                            utilsFaye.subscribeConversation.should.not.have.been.called;
+                            fayeService.subscribeConversation.should.not.have.been.called;
                         } else {
-                            utilsFaye.subscribeConversation.should.have.been.calledOnce;
+                            fayeService.subscribeConversation.should.have.been.calledOnce;
                         }
                     });
                 });
@@ -436,11 +436,11 @@ describe('Conversation service', () => {
                         }
                     })) : createMockedStore(sandbox, getProps());
 
-                    return conversationService.connectFayeUser().then(() => {
+                    return mockedStore.dispatch(conversationService.connectFayeUser()).then(() => {
                         if (subscribed) {
-                            utilsFaye.subscribeUser.should.have.not.been.called;
+                            fayeService.subscribeUser.should.have.not.been.called;
                         } else {
-                            utilsFaye.subscribeUser.should.have.been.calledOnce;
+                            fayeService.subscribeUser.should.have.been.calledOnce;
                         }
                     });
                 });
@@ -457,10 +457,10 @@ describe('Conversation service', () => {
                             conversationSubscription: fayeSubscriptionMock
                         }
                     })) : createMockedStore(sandbox, getProps());
-                    conversationService.disconnectFaye();
+                    mockedStore.dispatch(conversationService.disconnectFaye());
 
                     userSubscriptionMock.cancel.should.not.have.been.called;
-                    utilsFaye.disconnectClient.should.have.been.called;
+                    fayeService.disconnectClient.should.have.been.called;
                     fayeActions.unsetFayeSubscriptions.should.have.been.called;
                     if (active) {
                         fayeSubscriptionMock.cancel.should.have.been.called;
@@ -479,10 +479,10 @@ describe('Conversation service', () => {
                             userSubscription: userSubscriptionMock
                         }
                     })) : createMockedStore(sandbox, getProps());
-                    conversationService.disconnectFaye();
+                    mockedStore.dispatch(conversationService.disconnectFaye());
 
                     fayeSubscriptionMock.cancel.should.not.have.been.called;
-                    utilsFaye.disconnectClient.should.have.been.called;
+                    fayeService.disconnectClient.should.have.been.called;
                     fayeActions.unsetFayeSubscriptions.should.have.been.called;
                     if (subscribed) {
                         userSubscriptionMock.cancel.should.have.been.called;
@@ -505,7 +505,7 @@ describe('Conversation service', () => {
                     unreadCount: 20
                 }
             }));
-            conversationService.resetUnreadCount();
+            mockedStore.dispatch(conversationService.resetUnreadCount());
             coreMock.conversations.resetUnreadCount.should.have.been.calledWithMatch('1');
         });
     });
@@ -523,7 +523,7 @@ describe('Conversation service', () => {
                         }
                     })) : createMockedStore(sandbox, getProps());
 
-                    return conversationService.handleConversationUpdated().then(() => {
+                    return mockedStore.dispatch(conversationService.handleConversationUpdated()).then(() => {
                         if (active) {
                             coreMock.appUsers.getMessages.should.not.have.been.called;
                         } else {
@@ -554,12 +554,12 @@ describe('Conversation service', () => {
         });
 
         it('should post postback', () => {
-            conversationService.postPostback(actionId);
+            mockedStore.dispatch(conversationService.postPostback(actionId));
             coreMock.conversations.postPostback.should.have.been.calledWithMatch('1', actionId);
         });
 
         it('should show error notification on error', () => {
-            return conversationService.postPostback(actionId).catch(() => {
+            return mockedStore.dispatch(conversationService.postPostback(actionId)).catch(() => {
                 coreMock.conversations.postPostback.should.have.been.calledWithMatch('1', actionId);
                 appStateActions.showErrorNotification.should.have.been.calledWithMatch('action postback error');
             });
@@ -587,7 +587,7 @@ describe('Conversation service', () => {
                     }]
                 }
             }));
-            return conversationService.fetchMoreMessages().then(() => {
+            return mockedStore.dispatch(conversationService.fetchMoreMessages()).then(() => {
                 coreMock.appUsers.getMessages.should.have.been.calledWithMatch('1', {
                     before: 123
                 });
@@ -602,7 +602,7 @@ describe('Conversation service', () => {
                     messages: []
                 }
             }));
-            return conversationService.fetchMoreMessages().then(() => {
+            return mockedStore.dispatch(conversationService.fetchMoreMessages()).then(() => {
                 coreMock.appUsers.getMessages.should.not.have.been.called;
             });
         });
@@ -615,7 +615,7 @@ describe('Conversation service', () => {
                     messages: []
                 }
             }));
-            return conversationService.fetchMoreMessages().then(() => {
+            return mockedStore.dispatch(conversationService.fetchMoreMessages()).then(() => {
                 coreMock.appUsers.getMessages.should.not.have.been.called;
             });
         });
