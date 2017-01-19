@@ -282,7 +282,7 @@ export class Smooch {
     }
 
     updateUser(props) {
-        return updateUser(props).then((response) => {
+        return store.dispatch(updateUser(props)).then((response) => {
             if (response.appUser.conversationStarted) {
                 return store.dispatch(handleConversationUpdated())
                     .then(() => {
@@ -325,8 +325,8 @@ export class Smooch {
 
         const {embedded} = store.getState().appState;
 
+        store.dispatch(disconnectFaye());
         const actions = [
-            disconnectFaye(),
             reset()
         ];
 
