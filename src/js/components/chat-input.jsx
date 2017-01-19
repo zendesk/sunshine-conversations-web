@@ -35,7 +35,7 @@ export class ChatInputComponent extends Component {
         ]);
     }
 
-    blur = () => {
+    blur() {
         this.refs.input.blur();
     }
 

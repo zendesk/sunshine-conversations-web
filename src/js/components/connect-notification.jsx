@@ -16,6 +16,7 @@ export class ConnectNotificationComponent extends Component {
     };
 
     bindHandler() {
+        const {dispatch} = this.props;
         const node = findDOMNode(this);
         if (node) {
             const linkNode = node.querySelector('[data-ui-settings-link]');
@@ -23,7 +24,7 @@ export class ConnectNotificationComponent extends Component {
             if (linkNode) {
                 linkNode.onclick = (e) => {
                     e.preventDefault();
-                    showSettings();
+                    dispatch(showSettings());
                 };
 
                 if (linkColor) {
@@ -42,7 +43,7 @@ export class ConnectNotificationComponent extends Component {
     }
 
     render() {
-        const {appChannels, emailCaptureEnabled, connectNotificationText, settingsNotificationText, settings} = this.props;
+        const {appChannels, emailCaptureEnabled, connectNotificationText, settingsNotificationText, settings, dispatch} = this.props;
 
         const isConnectNotification = hasChannels(settings);
 
@@ -57,7 +58,7 @@ export class ConnectNotificationComponent extends Component {
                 .map(({channel, details} , index, array) => {
                     const onClick = (e) => {
                         e.preventDefault();
-                        showChannelPage(channel.type);
+                        dispatch(showChannelPage(channel.type));
                     };
 
                     const separator = index !== array.length - 1 ? ',' : '';

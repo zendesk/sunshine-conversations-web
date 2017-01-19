@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import StripeCheckout from 'react-stripe-checkout';
 import { connect } from 'react-redux';
+import bindAll from 'lodash.bindall';
 
 import { createTransaction } from '../services/stripe';
 import { immediateUpdate } from '../services/user';
@@ -37,9 +38,16 @@ export class ActionComponent extends Component {
             state: this.props.state,
             hasToken: false
         };
+
+        bindAll(this, [
+            'onPostbackClick',
+            'onStripeToken',
+            'onStripeClick',
+            'onStripeClose'
+        ]);
     }
 
-    onPostbackClick = (e) => {
+    onPostbackClick(e) {
         e.preventDefault();
 
         this.setState({
@@ -57,22 +65,22 @@ export class ActionComponent extends Component {
                     state: ''
                 });
             });
-    };
+    }
 
     onStripeToken(token) {
-        const {user} = this.props;
+        const {user, dispatch} = this.props;
         this.setState({
             hasToken: true
         });
 
         const promises = [];
         if (!user.email) {
-            promises.push(immediateUpdate({
+            promises.push(dispatch(immediateUpdate({
                 email: token.email
-            }));
+            })));
         }
 
-        const transactionPromise = createTransaction(this.props._id, token.id)
+        const transactionPromise = dispatch(createTransaction(this.props._id, token.id))
             .then(() => {
                 this.setState({
                     state: 'paid'
@@ -124,16 +132,16 @@ export class ActionComponent extends Component {
             if (state === 'offered') {
                 return <StripeCheckout componentClass='div'
                                        className='sk-action'
-                                       token={ this.onStripeToken.bind(this) }
+                                       token={ this.onStripeToken }
                                        stripeKey={ stripeIntegration.publicKey }
                                        email={ user.email }
                                        amount={ amount }
                                        currency={ currency.toUpperCase() }
                                        name={ stripeAccount.appName }
                                        image={ stripeAccount.iconUrl }
-                                       closed={ this.onStripeClose.bind(this) }>
+                                       closed={ this.onStripeClose }>
                            <a className='btn btn-sk-primary'
-                              onClick={ this.onStripeClick.bind(this) }
+                              onClick={ this.onStripeClick }
                               style={ style }>
                                { text }
                            </a>
