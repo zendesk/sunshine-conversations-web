@@ -124,7 +124,7 @@ export function updateUser(currentAppUser, nextAppUser) {
             // Faye needs to be reconnected on the right user/conversation channels
             disconnectFaye();
 
-            return subscribeUser().then(() => {
+            return dispatch(subscribeUser()).then(() => {
                 if (nextAppUser.conversationStarted) {
                     return dispatch(handleConversationUpdated());
                 }

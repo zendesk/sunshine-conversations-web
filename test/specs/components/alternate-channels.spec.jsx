@@ -1,18 +1,22 @@
 import sinon from 'sinon';
-import React from 'react';
 import TestUtils from 'react-addons-test-utils';
 
 import { AlternateChannels } from '../../../src/js/components/alternate-channels';
 import { getAppChannelDetails } from '../../../src/js/utils/app';
 import * as appService from '../../../src/js/services/app';
 
+import { wrapComponentWithStore } from '../../utils/react';
+import { createMockedStore } from '../../utils/redux';
+
 const sandbox = sinon.sandbox.create();
 
 
 describe('AlternateChannels Component', () => {
+    let mockedStore;
 
     beforeEach(() => {
         sandbox.stub(appService, 'showChannelPage');
+        mockedStore = createMockedStore(sandbox);
     });
 
     afterEach(() => {
@@ -20,7 +24,9 @@ describe('AlternateChannels Component', () => {
     });
 
     it('should render no items if no channels', () => {
-        const component = TestUtils.renderIntoDocument(<AlternateChannels items={ [] } />);
+        const component = wrapComponentWithStore(AlternateChannels, {
+            items: []
+        }, mockedStore);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-icon').length.should.be.eq(0);
     });
 
@@ -32,7 +38,10 @@ describe('AlternateChannels Component', () => {
         }];
 
         const items = getAppChannelDetails(channels);
-        const component = TestUtils.renderIntoDocument(<AlternateChannels items={ items } />);
+        const component = wrapComponentWithStore(AlternateChannels, {
+            items
+        }, mockedStore);
+
         const itemComponents = TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-icon');
         itemComponents.length.should.be.eq(2);
 
