@@ -1,24 +1,26 @@
 import sinon from 'sinon';
-import React from 'react';
 import { findDOMNode } from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
-import { ImageUpload } from '../../../src/js/components/image-upload';
+import { ImageUpload, ImageUploadComponent } from '../../../src/js/components/image-upload';
 const conversationService = require('../../../src/js/services/conversation');
+
+import { wrapComponentWithStore } from '../../utils/react';
+import { createMockedStore } from '../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
 
 describe('Image Upload Component', () => {
-    var component;
-
-    var onImageChangeSpy;
+    let component;
+    let mockedStore;
+    let onImageChangeSpy;
 
     beforeEach(() => {
-        onImageChangeSpy = sandbox.spy(ImageUpload.prototype, 'onImageChange');
+        mockedStore = createMockedStore(sandbox);
+        onImageChangeSpy = sandbox.spy(ImageUploadComponent.prototype, 'onImageChange');
 
         sandbox.stub(conversationService, 'uploadImage').resolves();
-
-        component = TestUtils.renderIntoDocument(<ImageUpload />);
+        component = wrapComponentWithStore(ImageUpload, {}, mockedStore).getWrappedInstance();
     });
 
     afterEach(() => {
@@ -26,13 +28,13 @@ describe('Image Upload Component', () => {
     });
 
     it('should call onImageChange when selecting an image', () => {
-        const fileInput = findDOMNode(component.refs.fileInput);
+        const fileInput = findDOMNode(component._fileInputNode);
         TestUtils.Simulate.change(fileInput);
         onImageChangeSpy.should.have.been.calledOnce;
     });
 
     it('should call form reset after upload', () => {
-        const resetSpy = sandbox.spy(component.refs.imageUploadForm, 'reset');
+        const resetSpy = sandbox.spy(component. _formNode, 'reset');
         return component.onImageChange({
             preventDefault: () => {
             }

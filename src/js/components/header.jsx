@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import bindAll from 'lodash.bindall';
 
 import { toggleWidget, showSettings, hideSettings, hideChannelPage } from '../services/app';
 import { hasChannels } from '../utils/app';
@@ -15,13 +16,22 @@ export class HeaderComponent extends Component {
         unreadCount: PropTypes.number.isRequired
     };
 
-    showSettings = (e) => {
+    constructor(...args) {
+        super(...args);
+        bindAll(this, [
+            'showSettings',
+            'hideSettings',
+            'onClick'
+        ]);
+    }
+
+    showSettings(e) {
         const {dispatch} = this.props;
         e.stopPropagation();
         dispatch(showSettings());
     }
 
-    hideSettings = (e) => {
+    hideSettings(e) {
         e.stopPropagation();
         const {dispatch, appState: {visibleChannelType}} = this.props;
         if (visibleChannelType) {
@@ -31,13 +41,13 @@ export class HeaderComponent extends Component {
         }
     }
 
-    onClick = (e) => {
+    onClick (e) {
         e.preventDefault();
         const {dispatch, appState:{embedded}} = this.props;
         if(!embedded) {
             dispatch(toggleWidget());
         }
-    };
+    }
 
     render() {
         const {appState: {emailCaptureEnabled, settingsVisible, widgetState, embedded, visibleChannelType}, unreadCount, settings, text} = this.props;
