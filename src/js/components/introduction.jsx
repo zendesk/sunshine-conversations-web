@@ -42,10 +42,13 @@ export class IntroductionComponent extends Component {
     calculateIntroHeight() {
         const {appState: {introHeight}, dispatch} = this.props;
         const node = findDOMNode(this.refs.introductionContainer);
-        const nodeHeight = node.offsetHeight;
 
-        if (introHeight !== nodeHeight) {
-            dispatch(setIntroHeight(nodeHeight));
+        if (node) {
+            const nodeHeight = node.offsetHeight;
+
+            if (introHeight !== nodeHeight) {
+                dispatch(setIntroHeight(nodeHeight));
+            }
         }
     }
 

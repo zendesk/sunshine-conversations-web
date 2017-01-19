@@ -190,7 +190,6 @@ export class Smooch {
         actions.push(resetConversation());
         actions.push(resetIntegrations());
 
-        disconnectFaye();
 
         attributes = pick(attributes, EDITABLE_PROPERTIES);
 
@@ -204,11 +203,12 @@ export class Smooch {
             jwt: jwt,
             appToken: this.appToken
         }));
+        store.dispatch(batchActions(actions));
+        store.dispatch(disconnectFaye());
 
         lastTriggeredMessageTimestamp = 0;
         initialStoreChange = true;
 
-        store.dispatch(batchActions(actions));
 
         return store.dispatch(login({
             userId: userId,

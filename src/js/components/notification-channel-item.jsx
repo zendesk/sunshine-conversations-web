@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import bindAll from 'lodash.bindall';
 
 import { showChannelPage } from '../services/app';
 
@@ -17,10 +18,17 @@ export class NotificationChannelItemComponent extends Component {
         notificationSettingsConnectedText: PropTypes.string.isRequired
     };
 
-    onClick = () => {
+    constructor(...args) {
+        super(...args);
+        bindAll(this, [
+            'onClick'
+        ]);
+    }
+
+    onClick() {
         const {dispatch} = this.props;
         dispatch(showChannelPage(this.props.id));
-    };
+    }
 
     render() {
         const {name, icon, icon2x, linked, hasURL, displayName, linkColor, notificationSettingsConnectedText, notificationSettingsConnectedAsText} = this.props;

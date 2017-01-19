@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import bindAll from 'lodash.bindall';
 
 import { openWidget } from '../services/app';
 import { SK_DARK_CONTRAST } from '../constants/styles';
@@ -54,11 +55,18 @@ export class MessengerButtonComponent extends Component {
         unreadCount: 0
     };
 
-    onClick = (e) => {
+    constructor(...args) {
+        super(...args);
+        bindAll(this, [
+            'onClick'
+        ]);
+    }
+
+    onClick(e) {
         const {dispatch} = this.props;
         e.preventDefault();
         dispatch(openWidget());
-    };
+    }
 
     render() {
         const {unreadCount, shown, settings} = this.props;
