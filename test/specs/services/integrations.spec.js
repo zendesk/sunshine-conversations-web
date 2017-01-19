@@ -71,10 +71,10 @@ describe('Integrations service', () => {
 
     describe('linkTwilioChannel', () => {
         it('should set the twilio integration to pending state', () => {
-            return integrationsService.linkTwilioChannel('1', {
+            return mockedStore.dispatch(integrationsService.linkTwilioChannel('1', {
                 type: 'twilio',
                 phoneNumber: '+0123456789'
-            }).then(() => {
+            })).then(() => {
                 coreMock.appUsers.linkChannel.should.have.been.calledWith('1', {
                     type: 'twilio',
                     phoneNumber: '+0123456789'
@@ -85,10 +85,10 @@ describe('Integrations service', () => {
         it('should start faye if user returns with conversationStarted', () => {
             pendingAppUser.conversationStarted = true;
 
-            return integrationsService.linkTwilioChannel('1', {
+            return mockedStore.dispatch(integrationsService.linkTwilioChannel('1', {
                 type: 'twilio',
                 phoneNumber: '+0123456789'
-            }).then(() => {
+            })).then(() => {
                 coreMock.appUsers.getMessages.should.have.been.calledOnce;
                 utilsFaye.subscribeConversation.should.have.been.calledOnce;
             });
@@ -97,7 +97,7 @@ describe('Integrations service', () => {
 
     describe('unlinkTwilioChannel', () => {
         it('should set the twilio integration state to unlinked', () => {
-            return integrationsService.unlinkTwilioChannel('1').then(() => {
+            return mockedStore.dispatch(integrationsService.unlinkTwilioChannel('1')).then(() => {
                 coreMock.appUsers.unlinkChannel.should.have.been.calledWith('1', 'twilio');
             });
         });
@@ -105,7 +105,7 @@ describe('Integrations service', () => {
 
     describe('pingTwilioChannel', () => {
         it('should call the ping channel API', () => {
-            return integrationsService.pingTwilioChannel('1').then(() => {
+            return mockedStore.dispatch(integrationsService.pingTwilioChannel('1')).then(() => {
                 coreMock.appUsers.pingChannel.should.have.been.calledWith('1', 'twilio');
             });
         });
