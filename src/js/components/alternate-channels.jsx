@@ -22,6 +22,7 @@ export class AlternateChannels extends Component {
                                          key={ channel.type }
                                          onClick={ this.onChannelClick }
                                          src={ details.icon }
+                                         alt={ details.name }
                                          srcSet={ `${details.icon} 1x, ${details.icon2x} 2x` } />;
                          }) }
                    </div>

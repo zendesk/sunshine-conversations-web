@@ -59,6 +59,7 @@ export class IntroductionComponent extends Component {
         return <div className='sk-intro-section'
                     ref='introductionContainer'>
                    { app.iconUrl ? <img className='app-icon'
+                                        alt='App icon'
                                         src={ app.iconUrl } />
                          : <DefaultAppIcon /> }
                    <div className='app-name'>
