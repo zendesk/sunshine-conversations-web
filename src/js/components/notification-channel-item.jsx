@@ -40,6 +40,7 @@ export class NotificationChannelItemComponent extends Component {
                     onClick={ this.onClick }>
                    <div className='channel-item-header'>
                        <img className='channel-item-icon'
+                            alt={ name }
                             src={ icon }
                             srcSet={ `${icon} 1x, ${icon2x} 2x` } />
                        <div className={ contentClassNames.join(' ') }>

@@ -40,7 +40,7 @@ export class QuickRepliesComponent extends Component {
             };
 
             const icon = iconUrl ?
-                <img className='sk-quick-reply-icon'
+                <img className='sk-quick-reply-icon' alt='Icon'
                      src={ iconUrl } /> :
                 null;
 
