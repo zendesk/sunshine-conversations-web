@@ -71,7 +71,8 @@ export class MessengerButtonComponent extends Component {
 
         if (buttonIconUrl) {
             content = <div className='messenger-button-icon'>
-                          <img src={ buttonIconUrl } />
+                          <img alt='Smooch Messenger Button'
+                               src={ buttonIconUrl } />
                       </div>;
         } else {
             content = <DefaultButtonIcon isBrandColorDark={ isBrandColorDark }

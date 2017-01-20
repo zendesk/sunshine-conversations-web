@@ -34,7 +34,7 @@ export function getRGB(string) {
 export function isDark(colorCode) {
     const rgb = getRGB(colorCode);
     // YIQ equation from http://24ways.org/2010/calculating-color-contrast
-    var yiq = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
+    var yiq = (rgb[0] * 239 + rgb[1] * 500 + rgb[2] * 40) / 1000;
     return yiq < 128;
 }
 

@@ -2,7 +2,7 @@
   "name": "smooch",
   "description": "Smooch.io powered web messaging",
   "analyze": false,
-  "version": "3.9.3",
+  "version": "3.9.5",
   "keywords": [
     "smooch",
     "javascript",
@@ -29,12 +29,10 @@
     "build:staging": "webpack --config webpack-staging.config.js --progress --profile --colors",
     "build:assets": "webpack --config webpack-assets.config.js --progress --profile --colors",
     "build:npm": "rm -rf lib/ && npm run babelify && npm run build:assets && rm -f lib/constants/*.mp3 && rm -f lib/constants/*.png",
-    "dev-server": "webpack-dev-server --config webpack-dev-server.config.js --colors --port 2992 --inline  --no-info",
     "start": "node dev-server/server-production",
     "lint": "eslint . --ext=js --ext=jsx",
     "babelify": "babel -d lib/ src/js/",
-    "dev": "nodemon --watch dev-server/ --watch src/index.html --watch src/embedded.html --watch config/config.json dev-server/server-development",
-    "webpack": "webpack-dev-server --config webpack-hot-dev-server.config.js --hot --colors --port 2992 --inline --no-info"
+    "dev": "nodemon --watch dev-server/ --watch src/index.html --watch src/embedded.html --watch config/config.json dev-server/server-development"
   },
   "main": "lib/main.js",
   "homepage": "https://smooch.io",
@@ -141,7 +139,9 @@
     "url-loader": "0.5.7",
     "webpack": "1.12.9",
     "webpack-cli": "1.0.0",
-    "webpack-dev-server": "1.14.0"
+    "webpack-dev-middleware": "1.9.0",
+    "webpack-dev-server": "1.14.0",
+    "webpack-hot-middleware": "2.15.0"
   },
   "peerDependencies": {
     "babel-polyfill": ">=6.9.0 <7.0",

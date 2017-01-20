@@ -5,6 +5,5 @@
     "USER_ID": "",
     "GIVEN_NAME": "DEFAULT_NAME",
     "SURNAME": "DEFAULT_SURNAME",
-    "EMAIL": "DEFAULT@EMAIL.COM",
-    "SERVER_HOST": "localhost:2992"
+    "EMAIL": "DEFAULT@EMAIL.COM"
 }
