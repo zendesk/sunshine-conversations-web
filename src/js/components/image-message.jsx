@@ -26,11 +26,13 @@ export class ImageMessage extends Component {
             return <div className='preloader-container'>
                        <ImageLoading color={ this.props.accentColor } />
                        { this.state.oldMediaUrl ?
-                             <img src={ this.state.oldMediaUrl } /> :
+                             <img src={ this.state.oldMediaUrl }
+                                  alt='Uploaded image' /> :
                              null }
                    </div>;
         };
         const image = <ImageLoader src={ this.props.mediaUrl }
+                                   imgProps={ {    alt: 'Uploaded image'} }
                                    wrapper={ React.DOM.div }
                                    preloader={ preloader }
                                    onLoad={ this.props.onLoad }>
