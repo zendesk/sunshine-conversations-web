@@ -66,7 +66,8 @@ export class MessageComponent extends Component {
         });
 
         const avatar = isAppUser ? null :
-            <img className={ avatarClass.join(' ') }
+            <img alt={ `${name}'s avatar` }
+                 className={ avatarClass.join(' ') }
                  src={ avatarUrl } />;
 
         const textClasses = ['sk-message-item', 'sk-message-text'];
