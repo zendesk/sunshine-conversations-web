@@ -167,7 +167,7 @@ export class Smooch {
 
         unsubscribeFromStore = observeStore(store, ({conversation}) => conversation, onStoreChange);
 
-        monitorBrowserState();
+        monitorBrowserState(store.dispatch.bind(store));
         return this.login(props.userId, props.jwt, pick(props, EDITABLE_PROPERTIES));
     }
 
