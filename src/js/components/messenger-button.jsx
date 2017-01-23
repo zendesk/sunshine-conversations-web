@@ -57,9 +57,7 @@ export class MessengerButtonComponent extends Component {
 
     constructor(...args) {
         super(...args);
-        bindAll(this, [
-            'onClick'
-        ]);
+        bindAll(this, 'onClick');
     }
 
     onClick(e) {

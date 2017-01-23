@@ -39,12 +39,12 @@ export class ActionComponent extends Component {
             hasToken: false
         };
 
-        bindAll(this, [
+        bindAll(this,
             'onPostbackClick',
             'onStripeToken',
             'onStripeClick',
             'onStripeClose'
-        ]);
+        );
     }
 
     onPostbackClick(e) {

@@ -18,11 +18,11 @@ export class HeaderComponent extends Component {
 
     constructor(...args) {
         super(...args);
-        bindAll(this, [
+        bindAll(this,
             'showSettings',
             'hideSettings',
             'onClick'
-        ]);
+        );
     }
 
     showSettings(e) {
@@ -41,10 +41,10 @@ export class HeaderComponent extends Component {
         }
     }
 
-    onClick (e) {
+    onClick(e) {
         e.preventDefault();
-        const {dispatch, appState:{embedded}} = this.props;
-        if(!embedded) {
+        const {dispatch, appState: {embedded}} = this.props;
+        if (!embedded) {
             dispatch(toggleWidget());
         }
     }

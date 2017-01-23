@@ -20,9 +20,7 @@ export class NotificationChannelItemComponent extends Component {
 
     constructor(...args) {
         super(...args);
-        bindAll(this, [
-            'onClick'
-        ]);
+        bindAll(this, 'onClick');
     }
 
     onClick() {

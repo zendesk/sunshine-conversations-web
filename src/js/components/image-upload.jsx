@@ -13,11 +13,11 @@ export class ImageUploadComponent extends Component {
 
     constructor(...args) {
         super(...args);
-        bindAll(this, [
+        bindAll(this,
             'onImageChange',
             'onMouseOver',
             'onMouseOut'
-        ]);
+        );
     }
 
     onImageChange(e) {
@@ -66,7 +66,7 @@ export class ImageUploadComponent extends Component {
                        <input type='file'
                               accept='image/*'
                               onChange={ this.onImageChange }
-                              ref={(c) => this._fileInputNode = findDOMNode(c)} />
+                              ref={ (c) => this._fileInputNode = findDOMNode(c) } />
                    </form>
                    <i className='fa fa-camera'></i>
                </label>;

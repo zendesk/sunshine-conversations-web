@@ -1,18 +1,24 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import bindAll from 'lodash.bindall';
 
 import { showChannelPage } from '../services/app';
 
 export class AlternateChannelsComponent extends Component {
     static propTypes = {
         items: PropTypes.array.isRequired
+    };
+
+    constructor(...args) {
+        super(...args);
+        bindAll(this, 'onChannelClick');
     }
 
-    onChannelClick = (e) => {
+    onChannelClick(e) {
         e.preventDefault();
         const {dispatch} = this.props;
         dispatch(showChannelPage(e.target.id));
-    };
+    }
 
     render() {
         const {items} = this.props;

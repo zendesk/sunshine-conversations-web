@@ -26,13 +26,13 @@ export class ChatInputComponent extends Component {
 
     constructor(...args) {
         super(...args);
-        bindAll(this, [
+        bindAll(this,
             'blur',
             'checkAndResetUnreadCount',
             'onChange',
             'onFocus',
             'onSendMessage'
-        ]);
+        );
     }
 
     blur() {

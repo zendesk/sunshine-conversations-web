@@ -12,7 +12,7 @@ import * as appStateActions from '../../src/js/actions/app-state-actions';
 
 import { Smooch } from '../../src/js/smooch';
 
-const AppStore = require('../../src/js/stores/app-store');
+const AppStore = require('../../src/js/store');
 const store = AppStore.store;
 
 function mockAppStore(sinon, state) {
