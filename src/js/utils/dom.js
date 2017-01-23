@@ -76,13 +76,17 @@ let onWindowFocus;
 let onWindowBlur;
 
 export function monitorBrowserState(dispatch) {
-    onWindowFocus = function onWindowFocus() {
-        dispatch(hasFocus(true));
-    };
+    if (!onWindowFocus) {
+        onWindowFocus = function onWindowFocus() {
+            dispatch(hasFocus(true));
+        };
+    }
 
-    onWindowBlur = function onWindowBlur() {
-        dispatch(hasFocus(false));
-    };
+    if (!onWindowBlur) {
+        onWindowBlur = function onWindowBlur() {
+            dispatch(hasFocus(false));
+        };
+    }
 
     dispatch(hasFocus(document.hasFocus ? document.hasFocus() : true));
     window.addEventListener('focus', onWindowFocus);
