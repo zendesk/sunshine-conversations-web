@@ -3,7 +3,7 @@ import { render, unmountComponentAtNode } from 'react-dom';
 import pick from 'lodash.pick';
 import { batchActions } from 'redux-batched-actions';
 
-import { store } from './stores/app-store';
+import { store } from './store';
 
 import { setAuth, resetAuth } from './actions/auth-actions';
 import * as userActions from './actions/user-actions';
