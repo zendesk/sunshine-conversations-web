@@ -49,12 +49,13 @@ export class ActionComponent extends Component {
 
     onPostbackClick(e) {
         e.preventDefault();
+        const {dispatch} = this.props;
 
         this.setState({
             state: 'processing'
         });
 
-        postPostback(this.props._id)
+        dispatch(postPostback(this.props._id))
             .then(() => {
                 this.setState({
                     state: ''
