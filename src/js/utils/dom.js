@@ -124,26 +124,27 @@ export function getTop(node, container = document.body) {
 export function getBoundingRect(element) {
     const style = window.getComputedStyle(element, null);
     const margin = {
-        left: parseInt(style['margin-left']),
-        right: parseInt(style['margin-right']),
-        top: parseInt(style['margin-top']),
-        bottom: parseInt(style['margin-bottom'])
+        left: parseInt(style['margin-left']) || 0,
+        right: parseInt(style['margin-right']) || 0,
+        top: parseInt(style['margin-top']) || 0,
+        bottom: parseInt(style['margin-bottom']) || 0
     };
     const padding = {
-        left: parseInt(style['padding-left']),
-        right: parseInt(style['padding-right']),
-        top: parseInt(style['padding-top']),
-        bottom: parseInt(style['padding-bottom'])
+        left: parseInt(style['padding-left']) || 0,
+        right: parseInt(style['padding-right']) || 0,
+        top: parseInt(style['padding-top']) || 0,
+        bottom: parseInt(style['padding-bottom']) || 0
     };
     const border = {
-        left: parseInt(style['border-left']),
-        right: parseInt(style['border-right']),
-        top: parseInt(style['border-top']),
-        bottom: parseInt(style['border-bottom'])
+        left: parseInt(style['border-left']) || 0,
+        right: parseInt(style['border-right']) || 0,
+        top: parseInt(style['border-top']) || 0,
+        bottom: parseInt(style['border-bottom']) || 0
     };
 
 
     var rect = element.getBoundingClientRect();
+
     rect = {
         left: rect.left - margin.left,
         right: rect.right - margin.right - padding.left - padding.right,
