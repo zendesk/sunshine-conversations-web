@@ -1,20 +1,23 @@
 import sinon from 'sinon';
 
 import { createMock } from '../../mocks/core';
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 
 import * as coreService from '../../../src/js/services/core';
-import * as userService from '../../../src/js/services/user-service';
-import * as conversationService from '../../../src/js/services/conversation-service';
+import * as userService from '../../../src/js/services/user';
+import * as conversationService from '../../../src/js/services/conversation';
+import * as userActions from '../../../src/js/actions/user-actions';
 
 describe('User service', () => {
-    var sandbox;
-    var coreMock;
-    var mockedStore;
+    let sandbox;
+    let coreMock;
+    let mockedStore;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         coreMock = createMock(sandbox);
+
+        sandbox.spy(userActions, 'setUser');
 
         coreMock.appUsers.update.resolves({
             appUser: {
@@ -40,7 +43,7 @@ describe('User service', () => {
             return coreMock;
         });
 
-        mockedStore = mockAppStore(sandbox, {
+        mockedStore = createMockedStore(sandbox, {
             user: {
                 _id: '1',
                 email: 'some@email.com'
@@ -49,13 +52,12 @@ describe('User service', () => {
     });
 
     afterEach(() => {
-        mockedStore.restore();
         sandbox.restore();
     });
 
     describe('updateNowViewing', () => {
         it('should call smooch-core update device api and return the device on server response', () => {
-            return userService.updateNowViewing('blap').then(() => {
+            return mockedStore.dispatch(userService.updateNowViewing('blap')).then(() => {
                 coreMock.appUsers.updateDevice.should.have.been.calledWith('1', 'blap', {
                     info: {
                         currentUrl: document.location.href,
@@ -73,7 +75,7 @@ describe('User service', () => {
                     email: 'some@email.com'
                 };
 
-                return userService.immediateUpdate(props).then(() => {
+                return mockedStore.dispatch(userService.immediateUpdate(props)).then(() => {
                     coreMock.appUsers.update.should.not.have.been.called;
                 });
             });
@@ -85,7 +87,7 @@ describe('User service', () => {
                     email: 'other@email.com'
                 };
 
-                return userService.immediateUpdate(props).then((response) => {
+                return mockedStore.dispatch(userService.immediateUpdate(props)).then((response) => {
                     coreMock.appUsers.update.should.have.been.calledWith('1', {
                         email: 'other@email.com'
                     });
@@ -98,12 +100,9 @@ describe('User service', () => {
                             email: 'mocked@email.com'
                         }
                     });
-                    mockedStore.dispatch.should.have.been.calledWith({
-                        type: 'SET_USER',
-                        user: {
-                            _id: '1',
-                            email: 'mocked@email.com'
-                        }
+                    userActions.setUser.should.have.been.calledWith({
+                        _id: '1',
+                        email: 'mocked@email.com'
                     });
                 });
             });
@@ -118,11 +117,11 @@ describe('User service', () => {
                 });
 
                 sandbox.stub(conversationService, 'handleConversationUpdated');
-                conversationService.handleConversationUpdated.resolves({});
+                conversationService.handleConversationUpdated.returns(() => Promise.resolve());
             });
 
             it('should call getConversation and connectFaye', () => {
-                return userService.trackEvent('event', 'props').then(() => {
+                return mockedStore.dispatch(userService.trackEvent('event', 'props')).then(() => {
                     coreMock.appUsers.trackEvent.should.have.been.calledWith('1', 'event', 'props');
                     conversationService.handleConversationUpdated.should.have.been.calledOnce;
                 });
@@ -136,11 +135,11 @@ describe('User service', () => {
                 });
 
                 sandbox.stub(conversationService, 'handleConversationUpdated');
-                conversationService.handleConversationUpdated.resolves({});
+                conversationService.handleConversationUpdated.returns(() => Promise.resolve());
             });
 
             it('should call getConversation and connectFaye', () => {
-                return userService.trackEvent('event', 'props').then(() => {
+                return mockedStore.dispatch(userService.trackEvent('event', 'props')).then(() => {
                     coreMock.appUsers.trackEvent.should.have.been.calledWith('1', 'event', 'props');
                     conversationService.handleConversationUpdated.should.not.have.been.called;
                 });
@@ -159,7 +158,7 @@ describe('User service', () => {
                 email: 'email'
             };
 
-            const promise = userService.update(props);
+            const promise = mockedStore.dispatch(userService.update(props));
             sandbox.clock.tick(1);
             return promise.then(() => {
                 coreMock.appUsers.update.should.have.been.calledWith('1', props);
@@ -171,19 +170,19 @@ describe('User service', () => {
                 email: 'email'
             };
 
-            const promise = userService.update(props);
+            const promise = mockedStore.dispatch(userService.update(props));
             sandbox.clock.tick(1);
             return promise.then(() => {
                 coreMock.appUsers.update.should.have.been.calledWith('1', props);
                 coreMock.appUsers.update.reset();
             }).then(() => {
-                const throttledPromise = userService.update(props);
+                const throttledPromise = mockedStore.dispatch(userService.update(props));
                 sandbox.clock.tick(4998);
                 return throttledPromise.then(() => {
                     coreMock.appUsers.update.should.not.have.been.called;
                 });
             }).then(() => {
-                const unthrottledPromise = userService.update(props);
+                const unthrottledPromise = mockedStore.dispatch(userService.update(props));
                 sandbox.clock.tick(1);
                 return unthrottledPromise.then(() => {
                     coreMock.appUsers.update.should.have.been.calledWith('1', props);
@@ -194,9 +193,9 @@ describe('User service', () => {
 
 
         it('should merge props when throttling and reset for the next call', () => {
-            const promise = userService.update({
+            const promise = mockedStore.dispatch(userService.update({
                 email: 'this@email.com'
-            });
+            }));
 
             // needs to tick one for the internal promise mechanism to work
             sandbox.clock.tick(1);
@@ -205,9 +204,9 @@ describe('User service', () => {
                     email: 'this@email.com'
                 });
             }).then(() => {
-                const throttledPromise = userService.update({
+                const throttledPromise = mockedStore.dispatch(userService.update({
                     givenName: 'Example'
-                });
+                }));
 
                 // move just under 5000 ms
                 sandbox.clock.tick(4998);
@@ -216,9 +215,9 @@ describe('User service', () => {
                     coreMock.appUsers.update.should.not.have.been.called;
                 });
             }).then(() => {
-                const unthrottledPromise = userService.update({
+                const unthrottledPromise = mockedStore.dispatch(userService.update({
                     email: 'another@email.com'
-                });
+                }));
 
                 // move up to 5000
                 sandbox.clock.tick(1);
@@ -233,9 +232,9 @@ describe('User service', () => {
                 // move to an unthrottled timeframe
                 sandbox.clock.tick(20000);
 
-                const unthrottledPromise = userService.update({
+                const unthrottledPromise = mockedStore.dispatch(userService.update({
                     email: 'yetanother@email.com'
-                });
+                }));
                 sandbox.clock.tick(1);
                 return unthrottledPromise.then(() => {
                     coreMock.appUsers.update.should.have.been.calledWith('1', {

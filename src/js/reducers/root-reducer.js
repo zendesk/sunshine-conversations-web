@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import { enableBatching } from 'redux-batched-actions';
 
 import { ConversationReducer } from './conversation-reducer';
 import { UIReducer } from './ui-reducer';
@@ -10,7 +11,7 @@ import { AppReducer } from './app-reducer';
 import { BrowserReducer } from './browser-reducer';
 import { IntegrationsReducer } from './integrations-reducer';
 
-export const RootReducer = combineReducers({
+export const RootReducer = enableBatching(combineReducers({
     conversation: ConversationReducer,
     ui: UIReducer,
     appState: AppStateReducer,
@@ -20,4 +21,4 @@ export const RootReducer = combineReducers({
     faye: FayeReducer,
     browser: BrowserReducer,
     integrations: IntegrationsReducer
-});
+}));

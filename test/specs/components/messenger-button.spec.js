@@ -5,7 +5,7 @@ import deepAssign from 'deep-assign';
 import { MessengerButton, DefaultButtonIcon } from '../../../src/js/components/messenger-button';
 
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
 
@@ -43,7 +43,7 @@ describe('Messenger Button Component', () => {
             shown: true
         };
 
-        mockedStore = mockAppStore(sandbox, getStoreState());
+        mockedStore = createMockedStore(sandbox, getStoreState());
 
         const component = wrapComponentWithStore(MessengerButton, props, mockedStore);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedDefaultButtonIcon').length.should.eq(1);
@@ -55,7 +55,7 @@ describe('Messenger Button Component', () => {
             shown: true
         };
 
-        mockedStore = mockAppStore(sandbox, getStoreState({
+        mockedStore = createMockedStore(sandbox, getStoreState({
             app: {
                 settings: {
                     web: {
@@ -71,7 +71,7 @@ describe('Messenger Button Component', () => {
     });
 
     it('should not render unread count if none', () => {
-        mockedStore = mockAppStore(sandbox, getStoreState({
+        mockedStore = createMockedStore(sandbox, getStoreState({
             conversation: {
                 unreadCount: 0
             }
@@ -82,7 +82,7 @@ describe('Messenger Button Component', () => {
     });
 
     it('should render the correct unread count', () => {
-        mockedStore = mockAppStore(sandbox, getStoreState({
+        mockedStore = createMockedStore(sandbox, getStoreState({
             conversation: {
                 unreadCount: 3
             }

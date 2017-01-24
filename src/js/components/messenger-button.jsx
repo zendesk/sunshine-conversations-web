@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import bindAll from 'lodash.bindall';
 
-import { openWidget } from '../services/app-service';
+import { openWidget } from '../services/app';
 import { SK_DARK_CONTRAST } from '../constants/styles';
 
 export class DefaultButtonIcon extends Component {
@@ -54,10 +55,16 @@ export class MessengerButtonComponent extends Component {
         unreadCount: 0
     };
 
-    onClick = (e) => {
+    constructor(...args) {
+        super(...args);
+        bindAll(this, 'onClick');
+    }
+
+    onClick(e) {
+        const {dispatch} = this.props;
         e.preventDefault();
-        openWidget();
-    };
+        dispatch(openWidget());
+    }
 
     render() {
         const {unreadCount, shown, settings} = this.props;
@@ -71,7 +78,8 @@ export class MessengerButtonComponent extends Component {
 
         if (buttonIconUrl) {
             content = <div className='messenger-button-icon'>
-                          <img src={ buttonIconUrl } />
+                          <img alt='Smooch Messenger Button'
+                               src={ buttonIconUrl } />
                       </div>;
         } else {
             content = <DefaultButtonIcon isBrandColorDark={ isBrandColorDark }

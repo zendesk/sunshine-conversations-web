@@ -42,10 +42,13 @@ export class IntroductionComponent extends Component {
     calculateIntroHeight() {
         const {appState: {introHeight}, dispatch} = this.props;
         const node = findDOMNode(this.refs.introductionContainer);
-        const nodeHeight = node.offsetHeight;
 
-        if (introHeight !== nodeHeight) {
-            dispatch(setIntroHeight(nodeHeight));
+        if (node) {
+            const nodeHeight = node.offsetHeight;
+
+            if (introHeight !== nodeHeight) {
+                dispatch(setIntroHeight(nodeHeight));
+            }
         }
     }
 
@@ -59,6 +62,7 @@ export class IntroductionComponent extends Component {
         return <div className='sk-intro-section'
                     ref='introductionContainer'>
                    { app.iconUrl ? <img className='app-icon'
+                                        alt='App icon'
                                         src={ app.iconUrl } />
                          : <DefaultAppIcon /> }
                    <div className='app-name'>
