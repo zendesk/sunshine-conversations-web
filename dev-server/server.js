@@ -33,8 +33,7 @@ module.exports = function(options) {
         app.use('/_assets', express.static(path.join(__dirname, '..', 'dist'), {
             maxAge: '200d' // We can cache them as they include hashes
         }));
-        app.use('/', express.static(path.join(__dirname, '..', 'public'), {
-        }));
+        app.use('/', express.static(path.join(__dirname, '..', 'public'), {}));
     }
 
     app.get('/embedded', function(req, res) {
