@@ -7,7 +7,7 @@ import { AlternateChannels } from '../../../src/js/components/alternate-channels
 import { DefaultAppIcon } from '../../../src/js/components/default-app-icon';
 
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
 
@@ -58,11 +58,10 @@ describe('Introduction Component', () => {
 
     afterEach(() => {
         sandbox.restore();
-        mockedStore.restore();
     });
 
     it('should render the app name', () => {
-        mockedStore = mockAppStore(sandbox, getStoreState());
+        mockedStore = createMockedStore(sandbox, getStoreState());
         const component = wrapComponentWithStore(Introduction, props, mockedStore);
 
         const node = TestUtils.findRenderedDOMComponentWithClass(component, 'app-name');
@@ -70,7 +69,7 @@ describe('Introduction Component', () => {
     });
 
     it('should use app icon if provided', () => {
-        mockedStore = mockAppStore(sandbox, getStoreState({
+        mockedStore = createMockedStore(sandbox, getStoreState({
             app: {
                 iconUrl: 'http://some-site/some-path'
             }
@@ -84,7 +83,7 @@ describe('Introduction Component', () => {
     });
 
     it('should use default app icon if no icon url is provided', () => {
-        mockedStore = mockAppStore(sandbox, getStoreState());
+        mockedStore = createMockedStore(sandbox, getStoreState());
 
         const component = wrapComponentWithStore(Introduction, props, mockedStore);
 
@@ -100,7 +99,7 @@ describe('Introduction Component', () => {
     });
 
     it('should use intro text and intro app text if app has integrations', () => {
-        mockedStore = mockAppStore(sandbox, getStoreState({
+        mockedStore = createMockedStore(sandbox, getStoreState({
             app: {
                 integrations: [
                     {
@@ -116,7 +115,7 @@ describe('Introduction Component', () => {
     });
 
     it('should render the AlternateChannels component if app has integrations', () => {
-        mockedStore = mockAppStore(sandbox, getStoreState({
+        mockedStore = createMockedStore(sandbox, getStoreState({
             app: {
                 integrations: [
                     {
@@ -131,7 +130,7 @@ describe('Introduction Component', () => {
     });
 
     it('should not render the AlternateChannels component if app has no integrations', () => {
-        mockedStore = mockAppStore(sandbox, getStoreState());
+        mockedStore = createMockedStore(sandbox, getStoreState());
         const component = wrapComponentWithStore(Introduction, props, mockedStore);
 
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedAlternateChannels').length.should.eq(0);

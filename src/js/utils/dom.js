@@ -1,6 +1,5 @@
 import isMobile from 'ismobilejs';
 
-import { store } from '../stores/app-store';
 import { hasFocus } from '../actions/browser-actions';
 
 const pushState = window.history && window.history.pushState;
@@ -73,16 +72,23 @@ export function stopMonitoringUrlChanges() {
 }
 
 
-function onWindowFocus() {
-    store.dispatch(hasFocus(true));
-}
+let onWindowFocus;
+let onWindowBlur;
 
-function onWindowBlur() {
-    store.dispatch(hasFocus(false));
-}
+export function monitorBrowserState(dispatch) {
+    if (!onWindowFocus) {
+        onWindowFocus = function onWindowFocus() {
+            dispatch(hasFocus(true));
+        };
+    }
 
-export function monitorBrowserState() {
-    store.dispatch(hasFocus(document.hasFocus ? document.hasFocus() : true));
+    if (!onWindowBlur) {
+        onWindowBlur = function onWindowBlur() {
+            dispatch(hasFocus(false));
+        };
+    }
+
+    dispatch(hasFocus(document.hasFocus ? document.hasFocus() : true));
     window.addEventListener('focus', onWindowFocus);
     window.addEventListener('blur', onWindowBlur);
 }

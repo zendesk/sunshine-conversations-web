@@ -2,12 +2,12 @@ import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
 import { ConnectNotification } from '../../../src/js/components/connect-notification';
-import * as appService from '../../../src/js/services/app-service';
+import * as appService from '../../../src/js/services/app';
 import * as appUtils from '../../../src/js/utils/app';
 import { CHANNEL_DETAILS } from '../../../src/js/constants/channels';
 
 import { wrapComponentWithStore } from '../../utils/react';
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
 
@@ -43,12 +43,11 @@ describe('ConnectNotification Component', () => {
         sandbox.stub(appService, 'showSettings');
         sandbox.stub(appUtils, 'hasChannels');
         sandbox.stub(appUtils, 'getAppChannelDetails');
-        mockedStore = mockAppStore(sandbox, getStoreState());
+        mockedStore = createMockedStore(sandbox, getStoreState());
     });
 
     afterEach(() => {
         sandbox.restore();
-        mockedStore.restore();
     });
 
     it('should render nothing if has no channels and email capture is disabled', () => {
@@ -59,7 +58,7 @@ describe('ConnectNotification Component', () => {
     describe('emailCaptureEnabled', () => {
         beforeEach(() => {
             appUtils.getAppChannelDetails.returns([]);
-            mockedStore = mockAppStore(sandbox, getStoreState({
+            mockedStore = createMockedStore(sandbox, getStoreState({
                 appState: {
                     emailCaptureEnabled: true
                 }

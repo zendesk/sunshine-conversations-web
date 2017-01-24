@@ -1,12 +1,14 @@
 import sinon from 'sinon';
 
 import { createMock } from '../../mocks/core';
+import { createMockedStore } from '../../utils/redux';
 import * as coreService from '../../../src/js/services/core';
-import { login } from '../../../src/js/services/auth-service';
+import { login } from '../../../src/js/services/auth';
 
 describe('Auth service', () => {
-    var sandbox;
-    var coreMock;
+    let mockedStore;
+    let sandbox;
+    let coreMock;
 
     before(() => {
         sandbox = sinon.sandbox.create();
@@ -18,6 +20,7 @@ describe('Auth service', () => {
             return coreMock;
         });
         coreMock.appUsers.init.resolves();
+        mockedStore = createMockedStore(sandbox);
     });
 
     afterEach(() => {
@@ -30,7 +33,7 @@ describe('Auth service', () => {
                 id: 'some-id'
             };
 
-            return login(props).then(() => {
+            return mockedStore.dispatch(login(props)).then(() => {
                 coreMock.appUsers.init.should.have.been.calledWith(props);
             });
         });
