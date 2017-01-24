@@ -11,7 +11,7 @@ import { QuickReplies } from './quick-replies';
 import { TypingIndicator } from './typing-indicator';
 
 import { setShouldScrollToBottom, setFetchingMoreMessages } from '../actions/app-state-actions';
-import { fetchMoreMessages } from '../services/conversation-service';
+import { fetchMoreMessages } from '../services/conversation';
 import { getTop, getBoundingRect } from '../utils/dom';
 import debounce from 'lodash.debounce';
 
@@ -142,8 +142,8 @@ export class ConversationComponent extends Component {
     };
 
     componentWillUpdate(nextProps) {
-        const {messages: currentMessages, isFetchingMoreMessages, typingIndicatorShown: currentTypingIndicatorShown} = this.props;
-        const {messages: newMessages, typingIndicatorShown: newTypingIndicatorShown} = nextProps;
+        const {messages: currentMessages, isFetchingMoreMessages, typingIndicatorShown: currentTypingIndicatorShown, quickReplies: currentQuickReplies} = this.props;
+        const {messages: newMessages, typingIndicatorShown: newTypingIndicatorShown, quickReplies: newQuickReplies} = nextProps;
 
         if (!this._lastNode) {
             this._forceScrollToBottom = true;
@@ -152,6 +152,7 @@ export class ConversationComponent extends Component {
 
         // Check for new appMaker (and whisper) messages
         const isAppMakerMessage = newMessages.length - currentMessages.length === 1 ? newMessages.slice(-1)[0].role !== 'appUser' : false;
+
         if ((isAppMakerMessage || (currentTypingIndicatorShown !== newTypingIndicatorShown)) && !isFetchingMoreMessages) {
             const container = findDOMNode(this);
             const lastNodeBottom = getBoundingRect(this._lastNode).bottom;
@@ -164,6 +165,10 @@ export class ConversationComponent extends Component {
             } else {
                 this._forceScrollToBottom = false;
             }
+        }
+
+        if (currentMessages.length === newMessages.length && newQuickReplies.length > 0 && currentQuickReplies !== newQuickReplies) {
+            this._forceScrollToBottom = true;
         }
     }
 

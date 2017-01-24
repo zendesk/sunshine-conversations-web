@@ -10,7 +10,7 @@ import { QuickReplies } from '../../../src/js/components/quick-replies';
 import { TypingIndicator } from '../../../src/js/components/typing-indicator';
 
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
 
@@ -91,12 +91,11 @@ describe('Conversation Component', () => {
             className: 'mockedTypingIndicator'
         });
 
-        mockedStore = mockAppStore(sandbox, getStoreState());
+        mockedStore = createMockedStore(sandbox, getStoreState());
     });
 
     afterEach(() => {
         sandbox.restore();
-        mockedStore && mockedStore.restore();
     });
 
     describe('render', () => {
@@ -119,7 +118,7 @@ describe('Conversation Component', () => {
 
     describe('ConnectNotification component', () => {
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState({
+            mockedStore = createMockedStore(sandbox, getStoreState({
                 appState: {
                     connectNotificationTimestamp: 5
                 }
@@ -137,7 +136,7 @@ describe('Conversation Component', () => {
         [true, false].forEach((hasMoreMessages) => {
             describe(`${hasMoreMessages ? '' : 'no'} more messages to fetch`, () => {
                 it(`should ${hasMoreMessages ? 'not' : ''} render`, () => {
-                    mockedStore = mockAppStore(sandbox, getStoreState({
+                    mockedStore = createMockedStore(sandbox, getStoreState({
                         conversation: {
                             hasMoreMessages
                         }
@@ -152,7 +151,7 @@ describe('Conversation Component', () => {
 
     describe('Quick Replies', () => {
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState({
+            mockedStore = createMockedStore(sandbox, getStoreState({
                 conversation: {
                     messages: [
                         {
@@ -207,7 +206,7 @@ describe('Conversation Component', () => {
         [true, false].forEach((typingIndicatorShown) => {
             describe(`typingIndicatorShown is ${typingIndicatorShown ? 'on' : 'off'}`, () => {
                 it(`should ${typingIndicatorShown ? '' : 'not'} render`, () => {
-                    mockedStore = mockAppStore(sandbox, getStoreState({
+                    mockedStore = createMockedStore(sandbox, getStoreState({
                         appState: {
                             typingIndicatorShown
                         }
