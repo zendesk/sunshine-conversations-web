@@ -17,8 +17,7 @@ export const CHANNEL_DETAILS = {
         descriptionKey: 'messengerChannelDescription',
         isLinkable: true,
         ...integrationsAssets.messenger,
-        Component: MessengerChannelContent,
-        getURL: (appUser, channel) => `https://m.me/${channel.pageId}`
+        getURL: (appUser, channel) => `https://m.me/${channel.pageId}?ref=${appUser._id}`
     },
     frontendEmail: {
         name: 'Email',
