@@ -16,7 +16,8 @@ const sandbox = sinon.sandbox.create();
 const defaultProps = {
     role: 'appUser',
     text: 'This is a text!',
-    actions: []
+    actions: [],
+    entity: {}
 };
 
 let mockedStore;
@@ -59,7 +60,8 @@ describe('Message Component', () => {
                 role: 'appUser',
                 text: 'This is a text!',
                 type: isImage ? 'image' : 'text',
-                mediaUrl: isImage ? 'media-url' : undefined
+                mediaUrl: isImage ? 'media-url' : undefined,
+                entity: {}
             };
 
             beforeEach(() => {
@@ -109,6 +111,29 @@ describe('Message Component', () => {
 
         it('should render the text message', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedText').length.should.be.eq(1);
+        });
+
+        describe('with text sending in progress', () => {
+            it('should render the text message with sk-msg-unsent', () => {
+                const unsentProps = Object.assign(props, {
+                    sendStatus: 'sending'
+                });
+
+                component = wrapComponentWithStore(MessageComponent, unsentProps, mockedStore);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-msg-unsent').length.should.be.eq(1);
+            });
+        });
+
+        describe('with text sending failed', () => {
+            it('should render the text message with sk-msg-unsent and a retry prompt', () => {
+                const unsentProps = Object.assign(props, {
+                    sendStatus: 'failed'
+                });
+
+                component = wrapComponentWithStore(MessageComponent, unsentProps, mockedStore);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-msg-unsent').length.should.be.eq(1);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-retry').length.should.be.eq(1);
+            });
         });
     });
 
