@@ -1,7 +1,7 @@
 import { batchActions } from 'redux-batched-actions';
 
 import { showConnectNotification } from '../services/app';
-import { addMessage, addMessages, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages, setFetchingMoreMessagesFromServer } from '../actions/conversation-actions';
+import { addMessage, addMessages, replaceMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages, setFetchingMoreMessagesFromServer } from '../actions/conversation-actions';
 import { updateUser } from '../actions/user-actions';
 import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi } from '../actions/app-state-actions';
 import { unsetFayeSubscriptions } from '../actions/faye-actions';
@@ -14,6 +14,56 @@ import { getDeviceId } from '../utils/device';
 import { hasLinkableChannels, getLinkableChannels, isChannelLinked } from '../utils/user';
 import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
 import { getUserId } from './user';
+
+const postSendMessage = (dispatch, getState, message) => {
+    return core(getState()).appUsers.sendMessage(getUserId(getState()), message).then((response) => {
+        return onMessageSendSuccess(dispatch, getState, message, response);
+    }).catch(() => {
+        onMesageSendFailure(dispatch, getState, message);
+    });
+};
+
+const postUploadImage = (dispatch, getState, message) => {
+    const blob = getBlobFromDataUrl(message.mediaUrl);
+
+    return core(getState()).appUsers.uploadImage(getUserId(getState()), blob, {
+        role: 'appUser',
+        deviceId: getDeviceId()
+    }).then((response) => {
+        return onMessageSendSuccess(dispatch, getState, message, response);
+    }).catch(() => {
+        onMesageSendFailure(dispatch, getState, message);
+    });
+};
+
+const onMessageSendSuccess = (dispatch, getState, message, response) => {
+    const actions = [];
+    const {user} = getState();
+
+    if (!user.conversationStarted) {
+        // use setConversation to set the conversation id in the store
+        actions.push(setConversation(response.conversation));
+        actions.push(updateUser({
+            conversationStarted: true
+        }));
+    }
+
+    actions.push(replaceMessage({
+        _clientId: message._clientId
+    }, response.message));
+
+    dispatch(batchActions(actions));
+    observable.trigger('message:sent', response.message);
+    return response;
+};
+
+const onMesageSendFailure = (dispatch, getState, message) => {
+    message.sendStatus = 'failed';
+
+    dispatch(replaceMessage({
+        _clientId: message._clientId
+    }, message));
+};
 
 export function handleConnectNotification(response) {
     return (dispatch, getState) => {
@@ -85,11 +135,13 @@ export function sendMessage(text, extra = {}) {
     return (dispatch, getState) => {
         const fn = () => {
             const message = {
-                role: 'appUser',
                 text,
+                type: 'text',
+                role: 'appUser',
                 _clientId: Math.random(),
-                _clientSent: new Date(),
+                _clientSent: Date.now() / 1000,
                 deviceId: getDeviceId(),
+                sendStatus: 'sending',
                 ...extra
             };
 
@@ -98,39 +150,32 @@ export function sendMessage(text, extra = {}) {
                 addMessage(message)
             ]));
 
-            const {user} = getState();
-
-            return core(getState()).appUsers.sendMessage(getUserId(getState()), message).then((response) => {
-                const actions = [];
-                if (!user.conversationStarted) {
-                    // use setConversation to set the conversation id in the store
-                    actions.push(setConversation(response.conversation));
-                    actions.push(updateUser({
-                        conversationStarted: true
-                    }));
-                }
-                actions.push(replaceMessage({
-                    _clientId: message._clientId
-                }, response.message));
-
-                dispatch(batchActions(actions));
-
-                observable.trigger('message:sent', response.message);
-                return response;
-            }).catch(() => {
-                dispatch(batchActions([
-                    showErrorNotification(getState().ui.text.messageError),
-                    removeMessage({
-                        _clientId: message._clientId
-                    })
-                ]));
-            });
+            postSendMessage(dispatch, getState, message);
         };
 
         return dispatch(sendChain(fn));
     };
 }
 
+export function resendMessage(message) {
+    return (dispatch, getState) => {
+        const fn = () => {
+            dispatch(replaceMessage({
+                _clientId: message._clientId
+            }, Object.assign({}, message, {
+                sendStatus: 'sending'
+            })));
+
+            if (message.type === 'text') {
+                postSendMessage(dispatch, getState, message);
+            } else {
+                postUploadImage(dispatch, getState, message);
+            }
+        };
+
+        return dispatch(sendChain(fn));
+    };
+}
 
 export function uploadImage(file) {
     return (dispatch, getState) => {
@@ -148,46 +193,15 @@ export function uploadImage(file) {
                         mediaType: 'image/jpeg',
                         role: 'appUser',
                         type: 'image',
-                        status: 'sending',
+                        sendStatus: 'sending',
                         _clientId: Math.random(),
-                        _clientSent: new Date()
+                        _clientSent: Date.now() / 1000
                     };
 
                     dispatch(addMessage(message));
-
-                    const {user} = getState();
-                    const blob = getBlobFromDataUrl(dataUrl);
-
-                    return core(getState()).appUsers.uploadImage(getUserId(getState()), blob, {
-                        role: 'appUser',
-                        deviceId: getDeviceId()
-                    }).then((response) => {
-                        const actions = [];
-                        if (!user.conversationStarted) {
-                            // use setConversation to set the conversation id in the store
-                            actions.push(setConversation(response.conversation));
-                            actions.push(updateUser({
-                                conversationStarted: true
-                            }));
-                        }
-
-                        actions.push(replaceMessage({
-                            _clientId: message._clientId
-                        }, response.message));
-
-
-                        dispatch(batchActions(actions));
-                        observable.trigger('message:sent', response.message);
-                        return response;
-                    }).catch(() => {
-                        dispatch(batchActions([
-                            showErrorNotification(getState().ui.text.messageError),
-                            removeMessage({
-                                _clientId: message._clientId
-                            })
-                        ]));
-                    });
+                    postUploadImage(dispatch, getState, message);
                 };
+
                 return dispatch(sendChain(fn));
             })
             .catch(() => {
@@ -295,7 +309,6 @@ export function postPostback(actionId) {
         });
     };
 }
-
 
 export function fetchMoreMessages() {
     return (dispatch, getState) => {

@@ -1,3 +1,5 @@
+import isMobile from 'ismobilejs';
+import { connect } from 'react-redux';
 import React, { Component, PropTypes } from 'react';
 
 import { TextMessage } from './text-message';
@@ -5,8 +7,9 @@ import { ImageMessage } from './image-message';
 import { Action } from './action';
 import { findDOMNode } from 'react-dom';
 import { getElementProperties } from '../utils/dom';
+import { resendMessage } from '../services/conversation';
 
-export class MessageComponent extends Component {
+class Message extends Component {
     static propTypes = {
         name: PropTypes.string,
         actions: PropTypes.array,
@@ -16,11 +19,14 @@ export class MessageComponent extends Component {
         accentColor: PropTypes.string,
         linkColor: PropTypes.string,
         firstInGroup: PropTypes.bool,
-        lastInGroup: PropTypes.bool
+        lastInGroup: PropTypes.bool,
+        sendStatus: PropTypes.string,
+        entity: PropTypes.object.isRequired
     };
 
     static defaultProps = {
-        actions: []
+        actions: [],
+        sendStatus: 'sent'
     };
 
     componentDidMount() {
@@ -42,8 +48,17 @@ export class MessageComponent extends Component {
         }
     }
 
+    onMessageClick() {
+        const {sendStatus} = this.props;
+
+        if (sendStatus === 'failed') {
+            this.props.dispatch(resendMessage(this.props.entity));
+        }
+    }
+
     render() {
-        const {name, role, avatarUrl, text, accentColor, firstInGroup, lastInGroup, linkColor, type, mediaUrl} = this.props;
+        const {name, role, avatarUrl, text, accentColor, firstInGroup, lastInGroup, linkColor, type, mediaUrl, sendStatus, clickToRetryText, tapToRetryText} = this.props;
+
         const actions = this.props.actions.filter((a) => a.type !== 'reply');
         const hasText = text && text.trim() && text.trim() !== mediaUrl;
         const hasImage = type === 'image';
@@ -53,10 +68,10 @@ export class MessageComponent extends Component {
 
         const avatarClass = hasImage ? ['sk-msg-avatar', 'sk-msg-avatar-img'] : ['sk-msg-avatar'];
         const avatarPlaceHolder = isAppUser ? null : (<div className='sk-msg-avatar-placeholder' />);
-        const containerClass = ['sk-msg'];
+        const containerClasses = ['sk-msg'];
 
         if (hasImage || actions.length > 0) {
-            containerClass.push('sk-msg-image');
+            containerClasses.push('sk-msg-image');
         }
 
         const actionList = actions.map((action) => {
@@ -130,21 +145,38 @@ export class MessageComponent extends Component {
             actionListClasses.push('sk-last-item');
         }
 
+        if (['sending', 'failed'].includes(sendStatus)) {
+            containerClasses.push('sk-msg-unsent');
+        }
+
+        const clickToRetry = <div className='sk-retry'>
+                                 { isMobile.any ? tapToRetryText : clickToRetryText }
+                             </div>;
+
         return <div className={ rowClass.join(' ') }>
                    { !isAppUser && firstInGroup ? fromName : null }
                    { lastInGroup ? avatar : avatarPlaceHolder }
                    <div className='sk-msg-wrapper'>
-                       <div className={ containerClass.join(' ') }
+                       <div className={ containerClasses.join(' ') }
                             style={ style }
-                            ref='messageContent'>
+                            ref='messageContent'
+                            onClick={ this.onMessageClick.bind(this) }>
                            { imagePart ? imagePart : null }
                            { textPart ? textPart : null }
                            { hasActions ? <div className={ actionListClasses.join(' ') }>
                                               { actionList }
                                           </div> : null }
                        </div>
+                       { sendStatus === 'failed' ? clickToRetry : null }
                    </div>
                    <div className='sk-clear'></div>
                </div>;
     }
 }
+
+export const MessageComponent = connect(({ui: {text}}) => {
+    return {
+        clickToRetryText: text.clickToRetry,
+        tapToRetryText: text.tapToRetry
+    };
+})(Message);

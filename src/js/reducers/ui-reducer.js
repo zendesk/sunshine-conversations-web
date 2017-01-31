@@ -51,7 +51,9 @@ const INITIAL_STATE = {
         smsContinue: 'Continue',
         smsCancel: 'Cancel',
         fetchingHistory: 'Retrieving history...',
-        fetchHistory: 'Load more'
+        fetchHistory: 'Load more',
+        clickToRetry: 'Message not delivered. Click to retry.',
+        tapToRetry: 'Message not delivered. Tap to retry.'
     }
 };
 

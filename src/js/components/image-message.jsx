@@ -38,7 +38,7 @@ export class ImageMessage extends Component {
                                    onLoad={ this.props.onLoad }>
                       </ImageLoader>;
 
-        if (this.props.status === 'sending') {
+        if (this.props.sendStatus === 'sending') {
             return <div className='image-container'>
                        <ImageLoading color={ this.props.accentColor } />
                        { image }
