@@ -10,6 +10,7 @@ import { TextMessage } from '../../../src/js/components/text-message';
 
 import { wrapComponentWithStore } from '../../utils/react';
 import { createMockedStore } from '../../utils/redux';
+import { SEND_STATUS } from '../../../src/js/constants/message';
 
 const sandbox = sinon.sandbox.create();
 
@@ -116,7 +117,7 @@ describe('Message Component', () => {
         describe('with text sending in progress', () => {
             it('should render the text message with sk-msg-unsent', () => {
                 const unsentProps = Object.assign(props, {
-                    sendStatus: 'sending'
+                    sendStatus: SEND_STATUS.SENDING
                 });
 
                 component = wrapComponentWithStore(MessageComponent, unsentProps, mockedStore);
@@ -127,7 +128,7 @@ describe('Message Component', () => {
         describe('with text sending failed', () => {
             it('should render the text message with sk-msg-unsent and a retry prompt', () => {
                 const unsentProps = Object.assign(props, {
-                    sendStatus: 'failed'
+                    sendStatus: SEND_STATUS.FAILED
                 });
 
                 component = wrapComponentWithStore(MessageComponent, unsentProps, mockedStore);

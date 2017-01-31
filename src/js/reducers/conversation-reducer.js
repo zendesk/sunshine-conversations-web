@@ -1,5 +1,6 @@
 import * as ConversationActions from '../actions/conversation-actions';
 import { RESET } from '../actions/common-actions';
+import { SEND_STATUS } from '../constants/message';
 
 const INITIAL_STATE = {
     messages: [],
@@ -85,7 +86,7 @@ const replaceMessage = (messages, query, newMessage) => {
 };
 
 const preserveFailedMessages = (messages) => {
-    return messages.filter((message) => message.status = 'failed');
+    return messages.filter((message) => message.status = SEND_STATUS.FAILED);
 };
 
 const cleanUpMessages = (messages) => {

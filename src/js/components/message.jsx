@@ -8,6 +8,7 @@ import { Action } from './action';
 import { findDOMNode } from 'react-dom';
 import { getElementProperties } from '../utils/dom';
 import { resendMessage } from '../services/conversation';
+import { SEND_STATUS } from '../constants/message';
 
 class Message extends Component {
     static propTypes = {
@@ -20,13 +21,12 @@ class Message extends Component {
         linkColor: PropTypes.string,
         firstInGroup: PropTypes.bool,
         lastInGroup: PropTypes.bool,
-        sendStatus: PropTypes.string,
-        entity: PropTypes.object.isRequired
+        sendStatus: PropTypes.string
     };
 
     static defaultProps = {
         actions: [],
-        sendStatus: 'sent'
+        sendStatus: SEND_STATUS.SENT
     };
 
     componentDidMount() {
@@ -51,8 +51,8 @@ class Message extends Component {
     onMessageClick() {
         const {sendStatus} = this.props;
 
-        if (sendStatus === 'failed') {
-            this.props.dispatch(resendMessage(this.props.entity));
+        if (sendStatus === SEND_STATUS.FAILED) {
+            this.props.dispatch(resendMessage(this.props._clientId));
         }
     }
 
@@ -145,7 +145,7 @@ class Message extends Component {
             actionListClasses.push('sk-last-item');
         }
 
-        if (['sending', 'failed'].includes(sendStatus)) {
+        if ([SEND_STATUS.SENDING, SEND_STATUS.FAILED].includes(sendStatus)) {
             containerClasses.push('sk-msg-unsent');
         }
 
@@ -167,7 +167,7 @@ class Message extends Component {
                                               { actionList }
                                           </div> : null }
                        </div>
-                       { sendStatus === 'failed' ? clickToRetry : null }
+                       { sendStatus === SEND_STATUS.FAILED ? clickToRetry : null }
                    </div>
                    <div className='sk-clear'></div>
                </div>;

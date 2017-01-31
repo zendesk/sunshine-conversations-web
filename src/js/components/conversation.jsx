@@ -218,7 +218,6 @@ export class ConversationComponent extends Component {
                                      accentColor={ accentColor }
                                      linkColor={ linkColor }
                                      onLoad={ this.scrollToBottom }
-                                     entity={ message }
                                      {...message}
                                      lastInGroup={ lastInGroup } />;
         });

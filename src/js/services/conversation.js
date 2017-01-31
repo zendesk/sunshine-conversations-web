@@ -13,56 +13,65 @@ import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/m
 import { getDeviceId } from '../utils/device';
 import { hasLinkableChannels, getLinkableChannels, isChannelLinked } from '../utils/user';
 import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
+import { SEND_STATUS } from '../constants/message';
 import { getUserId } from './user';
 
-const postSendMessage = (dispatch, getState, message) => {
-    return core(getState()).appUsers.sendMessage(getUserId(getState()), message).then((response) => {
-        return onMessageSendSuccess(dispatch, getState, message, response);
-    }).catch(() => {
-        onMesageSendFailure(dispatch, getState, message);
-    });
+const postSendMessage = (message) => {
+    return (dispatch, getState) => {
+        return core(getState()).appUsers.sendMessage(getUserId(getState()), message).then((response) => {
+            dispatch(onMessageSendSuccess(message, response));
+        }).catch(() => {
+            dispatch(onMessageSendFailure(message));
+        });
+    };
 };
 
-const postUploadImage = (dispatch, getState, message) => {
-    const blob = getBlobFromDataUrl(message.mediaUrl);
+const postUploadImage = (message) => {
+    return (dispatch, getState) => {
+        const blob = getBlobFromDataUrl(message.mediaUrl);
 
-    return core(getState()).appUsers.uploadImage(getUserId(getState()), blob, {
-        role: 'appUser',
-        deviceId: getDeviceId()
-    }).then((response) => {
-        return onMessageSendSuccess(dispatch, getState, message, response);
-    }).catch(() => {
-        onMesageSendFailure(dispatch, getState, message);
-    });
+        return core(getState()).appUsers.uploadImage(getUserId(getState()), blob, {
+            role: 'appUser',
+            deviceId: getDeviceId()
+        }).then((response) => {
+            dispatch(onMessageSendSuccess(message, response));
+        }).catch(() => {
+            dispatch(onMessageSendFailure(message));
+        });
+    };
 };
 
-const onMessageSendSuccess = (dispatch, getState, message, response) => {
-    const actions = [];
-    const {user} = getState();
+const onMessageSendSuccess = (message, response) => {
+    return (dispatch, getState) => {
+        const actions = [];
+        const {user} = getState();
 
-    if (!user.conversationStarted) {
-        // use setConversation to set the conversation id in the store
-        actions.push(setConversation(response.conversation));
-        actions.push(updateUser({
-            conversationStarted: true
-        }));
-    }
+        if (!user.conversationStarted) {
+            // use setConversation to set the conversation id in the store
+            actions.push(setConversation(response.conversation));
+            actions.push(updateUser({
+                conversationStarted: true
+            }));
+        }
 
-    actions.push(replaceMessage({
-        _clientId: message._clientId
-    }, response.message));
+        actions.push(replaceMessage({
+            _clientId: message._clientId
+        }, response.message));
 
-    dispatch(batchActions(actions));
-    observable.trigger('message:sent', response.message);
-    return response;
+        dispatch(batchActions(actions));
+        observable.trigger('message:sent', response.message);
+        return response;
+    };
 };
 
-const onMesageSendFailure = (dispatch, getState, message) => {
-    message.sendStatus = 'failed';
+const onMessageSendFailure = (message) => {
+    return (dispatch) => {
+        message.sendStatus = SEND_STATUS.FAILED;
 
-    dispatch(replaceMessage({
-        _clientId: message._clientId
-    }, message));
+        dispatch(replaceMessage({
+            _clientId: message._clientId
+        }, message));
+    };
 };
 
 export function handleConnectNotification(response) {
@@ -132,7 +141,7 @@ export function sendChain(sendFn) {
 }
 
 export function sendMessage(text, extra = {}) {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         const fn = () => {
             const message = {
                 text,
@@ -141,7 +150,7 @@ export function sendMessage(text, extra = {}) {
                 _clientId: Math.random(),
                 _clientSent: Date.now() / 1000,
                 deviceId: getDeviceId(),
-                sendStatus: 'sending',
+                sendStatus: SEND_STATUS.SENDING,
                 ...extra
             };
 
@@ -150,26 +159,34 @@ export function sendMessage(text, extra = {}) {
                 addMessage(message)
             ]));
 
-            postSendMessage(dispatch, getState, message);
+            dispatch(postSendMessage(message));
         };
 
         return dispatch(sendChain(fn));
     };
 }
 
-export function resendMessage(message) {
+export function resendMessage(messageClientId) {
     return (dispatch, getState) => {
         const fn = () => {
-            dispatch(replaceMessage({
-                _clientId: message._clientId
-            }, Object.assign({}, message, {
-                sendStatus: 'sending'
-            })));
+            const oldMessage = getState().conversation.messages.find((message) => message._clientId === messageClientId);
 
-            if (message.type === 'text') {
-                postSendMessage(dispatch, getState, message);
+            if (!oldMessage) {
+                return;
+            }
+
+            const newMessage = Object.assign({}, oldMessage, {
+                sendStatus: SEND_STATUS.SENDING
+            });
+
+            dispatch(replaceMessage({
+                _clientId: messageClientId
+            }, newMessage));
+
+            if (newMessage.type === 'text') {
+                dispatch(postSendMessage(newMessage));
             } else {
-                postUploadImage(dispatch, getState, message);
+                dispatch(postUploadImage(newMessage));
             }
         };
 
@@ -193,13 +210,13 @@ export function uploadImage(file) {
                         mediaType: 'image/jpeg',
                         role: 'appUser',
                         type: 'image',
-                        sendStatus: 'sending',
+                        sendStatus: SEND_STATUS.SENDING,
                         _clientId: Math.random(),
                         _clientSent: Date.now() / 1000
                     };
 
                     dispatch(addMessage(message));
-                    postUploadImage(dispatch, getState, message);
+                    dispatch(postUploadImage(message));
                 };
 
                 return dispatch(sendChain(fn));

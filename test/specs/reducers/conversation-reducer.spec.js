@@ -1,5 +1,6 @@
 import { ConversationReducer } from '../../../src/js/reducers/conversation-reducer';
 import { ADD_MESSAGE, REPLACE_MESSAGE, RESET_CONVERSATION, REMOVE_MESSAGE, SET_CONVERSATION, RESET_UNREAD_COUNT, INCREMENT_UNREAD_COUNT, ADD_MESSAGES, SET_MESSAGES } from '../../../src/js/actions/conversation-actions';
+import { SEND_STATUS } from '../../../src/js/constants/message';
 
 const INITIAL_STATE = ConversationReducer(undefined, {});
 const MESSAGE_1 = {
@@ -65,7 +66,7 @@ const UPLOADING_IMAGE_1 = {
     mediaUrl: 'data:image/jpeg',
     mediaType: 'image/jpeg',
     role: 'appUser',
-    sendStatus: 'sending',
+    sendStatus: SEND_STATUS.SENDING,
     _clientId: 0.8288994217337065,
     _clientSent: Date.now() / 1000
 };
@@ -74,7 +75,7 @@ const UPLOADING_IMAGE_2 = {
     mediaUrl: 'data:image/jpeg',
     mediaType: 'image/jpeg',
     role: 'appUser',
-    sendStatus: 'sending',
+    sendStatus: SEND_STATUS.SENDING,
     _clientId: 0.901823905092145,
     _clientSent: Date.now() / 1000
 };
@@ -134,7 +135,7 @@ const FAILED_MESSAGE = {
     role: 'appUser',
     authorId: '8a9445dadad4862c2322db52',
     name: 'Angry Pants',
-    sendStatus: 'failed',
+    sendStatus: SEND_STATUS.FAILED,
     _clientId: '123498001'
 };
 

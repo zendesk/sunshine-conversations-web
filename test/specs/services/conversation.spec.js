@@ -16,6 +16,8 @@ import * as conversationActions from '../../../src/js/actions/conversation-actio
 import * as userActions from '../../../src/js/actions/user-actions';
 import * as fayeActions from '../../../src/js/actions/faye-actions';
 
+import { SEND_STATUS } from '../../../src/js/constants/message';
+
 function getProps(props = {}) {
     const defaultProps = {
         user: {
@@ -117,15 +119,15 @@ describe('Conversation service', () => {
         sandbox.restore();
     });
 
-    const conversationStartedSuite = (action) => {
+    const conversationStartedSuite = (action, extraProps = {}) => {
         describe('conversation started', () => {
             beforeEach(() => {
-                mockedStore = createMockedStore(sandbox, getProps({
+                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
                     user: {
                         _id: '1',
                         conversationStarted: true
                     }
-                }));
+                }, extraProps)));
             });
 
             it('should replace message', () => {
@@ -141,12 +143,12 @@ describe('Conversation service', () => {
 
         describe('conversation not started', () => {
             beforeEach(() => {
-                mockedStore = createMockedStore(sandbox, getProps({
+                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
                     user: {
                         _id: '1',
                         conversationStarted: false
                     }
-                }));
+                }, extraProps)));
             });
 
             it('should set conversation to started', () => {
@@ -255,15 +257,29 @@ describe('Conversation service', () => {
             beforeEach(() => {
                 coreMock.appUsers.uploadImage.resolves(message);
                 Object.assign(message, {
-                    sendStatus: 'failed',
+                    sendStatus: SEND_STATUS.FAILED,
                     type: 'image'
                 });
+
+                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
+                    user: {
+                        _id: '1',
+                        conversationStarted: true
+                    },
+                    conversation: {
+                        messages: [message]
+                    }
+                })));
             });
 
-            conversationStartedSuite(conversationService.resendMessage(message));
+            conversationStartedSuite(conversationService.resendMessage(message._clientId), {
+                conversation: {
+                    messages: [message]
+                }
+            });
 
             it('should update send status and post upload image', () => {
-                return mockedStore.dispatch(conversationService.resendMessage(message)).then(() => {
+                return mockedStore.dispatch(conversationService.resendMessage(message._clientId)).then(() => {
                     coreMock.appUsers.uploadImage.should.have.been.calledOnce;
                     conversationActions.replaceMessage.should.have.been.calledTwice;
                 });
@@ -274,15 +290,29 @@ describe('Conversation service', () => {
             beforeEach(() => {
                 coreMock.appUsers.sendMessage.resolves(message);
                 Object.assign(message, {
-                    sendStatus: 'failed',
+                    sendStatus: SEND_STATUS.FAILED,
                     type: 'text'
                 });
+
+                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
+                    user: {
+                        _id: '1',
+                        conversationStarted: true
+                    },
+                    conversation: {
+                        messages: [message]
+                    }
+                })));
             });
 
-            conversationStartedSuite(conversationService.resendMessage(message));
+            conversationStartedSuite(conversationService.resendMessage(message._clientId), {
+                conversation: {
+                    messages: [message]
+                }
+            });
 
             it('should update send status and post upload image', () => {
-                return mockedStore.dispatch(conversationService.resendMessage(message)).then(() => {
+                return mockedStore.dispatch(conversationService.resendMessage(message._clientId)).then(() => {
                     coreMock.appUsers.sendMessage.should.have.been.calledOnce;
                     conversationActions.replaceMessage.should.have.been.calledTwice;
                 });
