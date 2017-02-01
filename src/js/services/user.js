@@ -4,29 +4,10 @@ import { setUser } from '../actions/user-actions';
 import { core } from './core';
 import { handleConversationUpdated } from './conversation';
 
-function Deferred(Promise) {
-    if (Promise == null) {
-        Promise = global.Promise;
-    }
-    if (this instanceof Deferred) {
-        return defer(Promise, this);
-    } else {
-        return defer(Promise, Object.create(Deferred.prototype));
-    }
-}
-
-function defer(Promise, deferred) {
-    deferred.promise = new Promise(function(resolve, reject) {
-        deferred.resolve = resolve;
-        deferred.reject = reject;
-    });
-
-    return deferred;
-}
-
 const waitDelay = 10000; // ms
 let pendingUserProps = {};
-let pendingUpdate;
+let pendingUpdatePromise;
+let pendingResolve;
 let deviceUpdateThrottle;
 let deviceUpdatePending = false;
 let pendingTimeout;
@@ -44,17 +25,16 @@ export function immediateUpdate(props) {
     return (dispatch, getState) => {
         const {user} = getState();
 
-        const updateToResolve = pendingUpdate;
+        const updateToResolve = pendingResolve;
         if (pendingTimeout) {
             clearTimeout(pendingTimeout);
             pendingTimeout = null;
-            pendingUpdate = null;
+            pendingResolve = null;
         }
 
         lastUpdateAttempt = Date.now();
 
         props = Object.assign({}, pendingUserProps, props);
-        console.log(props);
         pendingUserProps = {};
 
         const isDirty = EDITABLE_PROPERTIES.reduce((isDirty, prop) => {
@@ -65,13 +45,13 @@ export function immediateUpdate(props) {
             return core(getState()).appUsers.update(getUserId(getState()), props).then((response) => {
                 dispatch(setUser(response.appUser));
                 if (updateToResolve) {
-                    updateToResolve.resolve(response);
+                    updateToResolve(response);
                 }
                 return response;
             });
         } else if (updateToResolve) {
-            updateToResolve.resolve(user);
-            return updateToResolve.promise;
+            updateToResolve(user);
+            return pendingUpdatePromise;
         } else {
             return Promise.resolve({
                 user
@@ -88,18 +68,21 @@ export function update(props) {
         const lastUpdateTime = lastUpdateAttempt || 0;
 
         if (pendingTimeout) {
-            return pendingUpdate.promise;
+            return pendingUpdatePromise;
         } else if ((timeNow - lastUpdateTime) > waitDelay) {
             return dispatch(immediateUpdate(pendingUserProps));
         } else {
             const timeToWait = waitDelay - (timeNow - lastUpdateTime);
 
-            pendingUpdate = new Deferred();
-            pendingTimeout = setTimeout(() => {
-                dispatch(immediateUpdate(pendingUserProps));
-            }, timeToWait);
+            pendingUpdatePromise = new Promise(function(resolve) {
+                pendingResolve = resolve;
 
-            return pendingUpdate.promise;
+                setTimeout(() => {
+                    resolve(dispatch(immediateUpdate(pendingUserProps)));
+                }, timeToWait);
+            });
+
+            return pendingUpdatePromise;
         }
     };
 }
