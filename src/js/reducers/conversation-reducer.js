@@ -1,5 +1,6 @@
 import * as ConversationActions from '../actions/conversation-actions';
 import { RESET } from '../actions/common-actions';
+import { SEND_STATUS } from '../constants/message';
 
 const INITIAL_STATE = {
     messages: [],
@@ -10,21 +11,10 @@ const INITIAL_STATE = {
 };
 
 const sortMessages = (messages) => messages.sort((messageA, messageB) => {
-    // received is undefined when it's the temp message from the user
-    if (!messageA.received && !messageB.received) {
-        // `_clientSent` is a local only prop
-        return messageA._clientSent - messageB._clientSent;
-    }
+    const messageADate = messageA.received || messageA._clientSent;
+    const messageBDate = messageB.received || messageB._clientSent;
 
-    if (!messageA.received) {
-        return 1;
-    }
-
-    if (!messageB.received) {
-        return -1;
-    }
-
-    return messageA.received - messageB.received;
+    return messageADate - messageBDate;
 });
 
 const manageGroupsBetweenMessages = (messages, previousMessageIndex, message) => {
@@ -77,6 +67,7 @@ const matchMessage = (message, queryProps) => Object.keys(queryProps).every((key
 
 const replaceMessage = (messages, query, newMessage) => {
     const existingMessage = messages.find((message) => matchMessage(message, query));
+
     if (!existingMessage) {
         return messages;
     }
@@ -94,15 +85,27 @@ const replaceMessage = (messages, query, newMessage) => {
     return [...messages.slice(0, index), newMessage, ...messages.slice(index + 1)];
 };
 
+const preserveFailedMessages = (messages) => {
+    return messages.filter((message) => message.status = SEND_STATUS.FAILED);
+};
+
 const cleanUpMessages = (messages) => {
     const cleanedMessages = [];
     const messagesHash = {};
 
     // removes duplicate messages and empty messages
     messages.forEach((message) => {
-        const key = message._id + message.role + message.mediaType;
-        const hasText = (message.text && !!message.text.trim()) || (message.mediaUrl && !!message.mediaUrl.trim());
-        if (!(key in messagesHash) && hasText) {
+        const messageText = (message.text && !!message.text.trim()) || (message.mediaUrl && !!message.mediaUrl.trim());
+
+        let key = message._id ? message._id + message.role + message.mediaType
+            : message._clientSent + message.role + message.mediaType;
+
+        // if there is no messageId, message is not yet sent
+        if (!message._id) {
+            key = message._clientSent;
+        }
+
+        if (!(key in messagesHash) && messageText) {
             messagesHash[key] = message;
             cleanedMessages.push(message);
         }
@@ -134,7 +137,7 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
         case ConversationActions.SET_MESSAGES:
             return {
                 ...state,
-                messages: assignGroups(sortMessages(cleanUpMessages(action.messages))),
+                messages: assignGroups(sortMessages(cleanUpMessages([...action.messages, ...preserveFailedMessages(state.messages)]))),
                 quickReplies: extractQuickReplies(action.messages[action.messages.length - 1])
             };
         case ConversationActions.ADD_MESSAGES:
@@ -153,7 +156,7 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             });
         case ConversationActions.REPLACE_MESSAGE:
             return Object.assign({}, state, {
-                messages: sortMessages(replaceMessage(state.messages, action.queryProps, action.message))
+                messages: assignGroups(sortMessages(replaceMessage(state.messages, action.queryProps, action.message)))
             });
         case ConversationActions.REMOVE_MESSAGE:
             return Object.assign({}, state, {
