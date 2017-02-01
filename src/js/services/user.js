@@ -4,12 +4,33 @@ import { setUser } from '../actions/user-actions';
 import { core } from './core';
 import { handleConversationUpdated } from './conversation';
 
-let waitForSave = false;
-const waitDelay = 5000; // ms
+function Deferred(Promise) {
+    if (Promise == null) {
+        Promise = global.Promise;
+    }
+    if (this instanceof Deferred) {
+        return defer(Promise, this);
+    } else {
+        return defer(Promise, Object.create(Deferred.prototype));
+    }
+}
+
+function defer(Promise, deferred) {
+    deferred.promise = new Promise(function(resolve, reject) {
+        deferred.resolve = resolve;
+        deferred.reject = reject;
+    });
+
+    return deferred;
+}
+
+const waitDelay = 10000; // ms
 let pendingUserProps = {};
-let previousValue = Promise.resolve();
+let pendingUpdate;
 let deviceUpdateThrottle;
 let deviceUpdatePending = false;
+let pendingTimeout;
+let lastUpdateAttempt;
 
 export const EDITABLE_PROPERTIES = [
     'givenName',
@@ -23,19 +44,39 @@ export function immediateUpdate(props) {
     return (dispatch, getState) => {
         const {user} = getState();
 
+        const updateToResolve = pendingUpdate;
+        if (pendingTimeout) {
+            clearTimeout(pendingTimeout);
+            pendingTimeout = null;
+            pendingUpdate = null;
+        }
+
+        lastUpdateAttempt = Date.now();
+
         props = Object.assign({}, pendingUserProps, props);
+        console.log(props);
         pendingUserProps = {};
 
         const isDirty = EDITABLE_PROPERTIES.reduce((isDirty, prop) => {
             return isDirty || !deepEqual(user[prop], props[prop]);
         }, false);
 
-        return isDirty ? core(getState()).appUsers.update(getUserId(getState()), props).then((response) => {
-            dispatch(setUser(response.appUser));
-            return response;
-        }) : Promise.resolve({
-            user
-        });
+        if (isDirty) {
+            return core(getState()).appUsers.update(getUserId(getState()), props).then((response) => {
+                dispatch(setUser(response.appUser));
+                if (updateToResolve) {
+                    updateToResolve.resolve(response);
+                }
+                return response;
+            });
+        } else if (updateToResolve) {
+            updateToResolve.resolve(user);
+            return updateToResolve.promise;
+        } else {
+            return Promise.resolve({
+                user
+            });
+        }
     };
 }
 
@@ -43,19 +84,23 @@ export function update(props) {
     return (dispatch) => {
         Object.assign(pendingUserProps, props);
 
-        if (waitForSave) {
-            return previousValue;
+        const timeNow = Date.now();
+        const lastUpdateTime = lastUpdateAttempt || 0;
+
+        if (pendingTimeout) {
+            return pendingUpdate.promise;
+        } else if ((timeNow - lastUpdateTime) > waitDelay) {
+            return dispatch(immediateUpdate(pendingUserProps));
         } else {
-            previousValue = dispatch(immediateUpdate(pendingUserProps));
-            waitForSave = true;
+            const timeToWait = waitDelay - (timeNow - lastUpdateTime);
 
-            setTimeout(() => {
-                previousValue = dispatch(immediateUpdate(pendingUserProps));
-                waitForSave = false;
-            }, waitDelay);
+            pendingUpdate = new Deferred();
+            pendingTimeout = setTimeout(() => {
+                dispatch(immediateUpdate(pendingUserProps));
+            }, timeToWait);
+
+            return pendingUpdate.promise;
         }
-
-        return previousValue;
     };
 }
 
