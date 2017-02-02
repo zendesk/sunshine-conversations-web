@@ -4,7 +4,7 @@ import { setUser } from '../actions/user-actions';
 import { core } from './core';
 import { handleConversationUpdated } from './conversation';
 
-const waitDelay = 10000; // ms
+const waitDelay = 5000; // ms
 let pendingUserProps = {};
 let pendingUpdatePromise;
 let pendingResolve;
