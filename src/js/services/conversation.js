@@ -1,7 +1,7 @@
 import { batchActions } from 'redux-batched-actions';
 
 import { showConnectNotification } from '../services/app';
-import { addMessage, addMessages, replaceMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages, setFetchingMoreMessagesFromServer } from '../actions/conversation-actions';
+import { addMessage as addMessageAction, addMessages, removeMessage as removeMessageAction, replaceMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages, setFetchingMoreMessagesFromServer } from '../actions/conversation-actions';
 import { updateUser } from '../actions/user-actions';
 import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi } from '../actions/app-state-actions';
 import { unsetFayeSubscriptions } from '../actions/faye-actions';
@@ -13,7 +13,7 @@ import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/m
 import { getDeviceId } from '../utils/device';
 import { hasLinkableChannels, getLinkableChannels, isChannelLinked } from '../utils/user';
 import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
-import { SEND_STATUS } from '../constants/message';
+import { SEND_STATUS, LOCATION_ERRORS } from '../constants/message';
 import { getUserId } from './user';
 
 const postSendMessage = (message) => {
@@ -46,6 +46,7 @@ const onMessageSendSuccess = (message, response) => {
             }));
         }
 
+        actions.push(setShouldScrollToBottom(true));
         actions.push(replaceMessage({
             _clientId: message._clientId
         }, response.message));
@@ -59,77 +60,32 @@ const onMessageSendSuccess = (message, response) => {
 
 const onMessageSendFailure = (message) => {
     return (dispatch) => {
+        const actions = [];
         message.sendStatus = SEND_STATUS.FAILED;
-        dispatch(replaceMessage({
+
+        actions.push(setShouldScrollToBottom(true));
+        actions.push(replaceMessage({
             _clientId: message._clientId
         }, message));
+
+        dispatch(batchActions(actions));
     };
 };
 
-export function handleConnectNotification(response) {
+const addMessage = (text, extra = {}) => {
     return (dispatch, getState) => {
+        if (extra._clientId) {
+            const oldMessage = getState().conversation.messages.find((message) => message._clientId === extra._clientId);
+            const newMessage = Object.assign({}, oldMessage, extra);
 
-        const {user: {clients, email}, app: {integrations, settings}, conversation: {messages}, appState: {emailCaptureEnabled}} = getState();
-        const appUserMessages = messages.filter((message) => message.role === 'appUser');
+            dispatch(replaceMessage({
+                _clientId: extra._clientId
+            }, newMessage));
 
-        const channelsAvailable = hasLinkableChannels(integrations, clients, settings.web);
-        const showEmailCapture = emailCaptureEnabled && !email;
-        const hasSomeChannelLinked = getLinkableChannels(integrations, settings.web).some((channelType) => {
-            return isChannelLinked(clients, channelType);
-        });
-
-        if ((showEmailCapture || channelsAvailable) && !hasSomeChannelLinked) {
-            if (appUserMessages.length === 1) {
-                dispatch(showConnectNotification());
-            } else {
-                // find the last confirmed message timestamp
-                let lastMessageTimestamp;
-
-                // start at -2 to ignore the message that was just sent
-                for (let index = appUserMessages.length - 2; index >= 0 && !lastMessageTimestamp; index--) {
-                    const message = appUserMessages[index];
-                    lastMessageTimestamp = message.received;
-                }
-
-                if (lastMessageTimestamp) {
-                    // divide it by 1000 since server `received` is in seconds and not in ms
-                    const currentTimeStamp = Date.now() / 1000;
-                    if ((currentTimeStamp - lastMessageTimestamp) >= CONNECT_NOTIFICATION_DELAY_IN_SECONDS) {
-                        dispatch(showConnectNotification());
-                    }
-                }
-            }
+            return newMessage;
         }
 
-        return response;
-    };
-}
-
-export function sendChain(sendFn, message) {
-    return (dispatch, getState) => {
-        const promise = dispatch(immediateUpdate(getState().user));
-
-        const postSendHandler = (response) => {
-            return Promise.resolve(dispatch(onMessageSendSuccess(message, response)))
-                .then(() => dispatch(setShouldScrollToBottom(true)))
-                .then(() => dispatch(handleConnectNotification(response)))
-                .then(() => dispatch(connectFayeConversation()))
-                .catch(); // swallow errors to avoid uncaught promises bubbling up
-        };
-
-        return promise
-            .then(() => {
-                return dispatch(sendFn(message))
-                    .then(postSendHandler)
-                    .catch(() => dispatch(onMessageSendFailure(message)));
-            });
-    };
-}
-
-export function sendMessage(text, extra = {}) {
-    return (dispatch) => {
         const message = {
-            text,
             type: 'text',
             role: 'appUser',
             _clientId: Math.random(),
@@ -139,8 +95,33 @@ export function sendMessage(text, extra = {}) {
             ...extra
         };
 
-        dispatch(addMessage(message));
-        dispatch(setShouldScrollToBottom(true));
+        if (text) {
+            message.text = text;
+        }
+
+        dispatch(batchActions([
+            setShouldScrollToBottom(true),
+            addMessageAction(message)
+        ]));
+
+        return message;
+    };
+};
+
+const removeMessage = (messageClientId) => {
+    return (dispatch) => {
+        dispatch(batchActions([
+            setShouldScrollToBottom(true),
+            removeMessageAction({
+                _clientId: messageClientId
+            })
+        ]));
+    };
+};
+
+export function sendMessage(text, extra = {}) {
+    return (dispatch) => {
+        const message = dispatch(addMessage(text, extra));
         return dispatch(sendChain(postSendMessage, message));
     };
 }
@@ -163,9 +144,55 @@ export function resendMessage(messageClientId) {
 
         if (newMessage.type === 'text') {
             return dispatch(sendChain(postSendMessage, newMessage));
+        } else if (newMessage.type === 'location') {
+            if (newMessage.coordinates) {
+                return dispatch(sendChain(postSendMessage, newMessage));
+            } else {
+                return dispatch(sendLocation(newMessage));
+            }
         }
 
         return dispatch(sendChain(postUploadImage, newMessage));
+    };
+}
+
+export function sendLocation(message) {
+    return (dispatch, getState) => {
+        const locationMessage = message || dispatch(addMessage(null, {
+            type: 'location'
+        }));
+
+        if (locationMessage.coordinates) {
+            return dispatch(sendChain(postSendMessage, locationMessage));
+        }
+
+        const locationServicesDeniedText = getState().ui.text.locationServicesDenied;
+
+        return new Promise((resolve) => {
+            navigator.geolocation.getCurrentPosition((position) => {
+                Object.assign(locationMessage, {
+                    coordinates: {
+                        lat: position.coords.latitude,
+                        long: position.coords.longitude
+                    }
+                });
+
+                dispatch(replaceMessage({
+                    _clientId: locationMessage._clientId
+                }, locationMessage));
+
+                dispatch(sendChain(postSendMessage, locationMessage))
+                    .then(resolve);
+            }, (err) => {
+                if (err.code === LOCATION_ERRORS.PERMISSION_DENIED) {
+                    setTimeout(() => alert(locationServicesDeniedText), 100);
+                    dispatch(removeMessage(locationMessage._clientId));
+                } else {
+                    dispatch(onMessageSendFailure(locationMessage));
+                }
+                resolve();
+            });
+        });
     };
 }
 
@@ -177,18 +204,11 @@ export function uploadImage(file) {
 
         return resizeImage(file)
             .then((dataUrl) => {
-                const message = {
+                const message = dispatch(addMessage(null, {
                     mediaUrl: dataUrl,
                     mediaType: 'image/jpeg',
-                    role: 'appUser',
-                    type: 'image',
-                    sendStatus: SEND_STATUS.SENDING,
-                    _clientId: Math.random(),
-                    _clientSent: Date.now() / 1000
-                };
-
-                dispatch(addMessage(message));
-                dispatch(setShouldScrollToBottom(true));
+                    type: 'image'
+                }));
                 return dispatch(sendChain(postUploadImage, message));
             })
             .catch(() => {
@@ -322,5 +342,64 @@ export function fetchMoreMessages() {
             ]));
             return response;
         });
+    };
+}
+
+export function handleConnectNotification(response) {
+    return (dispatch, getState) => {
+
+        const {user: {clients, email}, app: {integrations, settings}, conversation: {messages}, appState: {emailCaptureEnabled}} = getState();
+        const appUserMessages = messages.filter((message) => message.role === 'appUser');
+
+        const channelsAvailable = hasLinkableChannels(integrations, clients, settings.web);
+        const showEmailCapture = emailCaptureEnabled && !email;
+        const hasSomeChannelLinked = getLinkableChannels(integrations, settings.web).some((channelType) => {
+            return isChannelLinked(clients, channelType);
+        });
+
+        if ((showEmailCapture || channelsAvailable) && !hasSomeChannelLinked) {
+            if (appUserMessages.length === 1) {
+                dispatch(showConnectNotification());
+            } else {
+                // find the last confirmed message timestamp
+                let lastMessageTimestamp;
+
+                // start at -2 to ignore the message that was just sent
+                for (let index = appUserMessages.length - 2; index >= 0 && !lastMessageTimestamp; index--) {
+                    const message = appUserMessages[index];
+                    lastMessageTimestamp = message.received;
+                }
+
+                if (lastMessageTimestamp) {
+                    // divide it by 1000 since server `received` is in seconds and not in ms
+                    const currentTimeStamp = Date.now() / 1000;
+                    if ((currentTimeStamp - lastMessageTimestamp) >= CONNECT_NOTIFICATION_DELAY_IN_SECONDS) {
+                        dispatch(showConnectNotification());
+                    }
+                }
+            }
+        }
+
+        return response;
+    };
+}
+
+export function sendChain(sendFn, message) {
+    return (dispatch, getState) => {
+        const promise = dispatch(immediateUpdate(getState().user));
+
+        const postSendHandler = (response) => {
+            return Promise.resolve(dispatch(onMessageSendSuccess(message, response)))
+                .then(() => dispatch(handleConnectNotification(response)))
+                .then(() => dispatch(connectFayeConversation()))
+                .catch(); // swallow errors to avoid uncaught promises bubbling up
+        };
+
+        return promise
+            .then(() => {
+                return dispatch(sendFn(message))
+                    .then(postSendHandler)
+                    .catch(() => dispatch(onMessageSendFailure(message)));
+            });
     };
 }

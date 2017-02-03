@@ -9,11 +9,13 @@ import { findDOMNode } from 'react-dom';
 import { getElementProperties } from '../utils/dom';
 import { resendMessage } from '../services/conversation';
 import { SEND_STATUS } from '../constants/message';
+import { LoadingComponent } from './loading';
 
 class Message extends Component {
     static propTypes = {
         name: PropTypes.string,
         actions: PropTypes.array,
+        type: PropTypes.string.isRequired,
         role: PropTypes.string.isRequired,
         mediaUrl: PropTypes.string,
         text: PropTypes.string,
@@ -21,7 +23,10 @@ class Message extends Component {
         linkColor: PropTypes.string,
         firstInGroup: PropTypes.bool,
         lastInGroup: PropTypes.bool,
-        sendStatus: PropTypes.string
+        sendStatus: PropTypes.string,
+        tapToRetryText: PropTypes.string.isRequired,
+        clickToRetryText: PropTypes.string.isRequired,
+        locationSendingFailedText: PropTypes.string.isRequired
     };
 
     static defaultProps = {
@@ -57,14 +62,14 @@ class Message extends Component {
     }
 
     render() {
-        const {name, role, avatarUrl, text, accentColor, firstInGroup, lastInGroup, linkColor, type, mediaUrl, sendStatus, clickToRetryText, tapToRetryText} = this.props;
-
-        const actions = this.props.actions.filter((a) => a.type !== 'reply');
+        const {name, role, avatarUrl, text, accentColor, firstInGroup, lastInGroup, linkColor, type, mediaUrl, sendStatus, clickToRetryText, tapToRetryText, locationSendingFailedText} = this.props;
+        const actions = this.props.actions.filter(({type}) => type !== 'reply' && type !== 'locationRequest');
         const hasText = text && text.trim() && text.trim() !== mediaUrl;
         const hasImage = type === 'image';
+        const hasLocation = type === 'location';
         const isAppUser = role === 'appUser';
         const hasActions = actions.length > 0;
-        const lastItem = hasActions ? 'actions' : hasText ? 'text' : null;
+        const lastItem = hasActions ? 'actions' : hasText ? 'text' : hasLocation ? 'location' : null;
 
         const avatarClass = hasImage ? ['sk-msg-avatar', 'sk-msg-avatar-img'] : ['sk-msg-avatar'];
         const avatarPlaceHolder = isAppUser ? null : (<div className='sk-msg-avatar-placeholder' />);
@@ -153,6 +158,31 @@ class Message extends Component {
                                  { isMobile.any ? tapToRetryText : clickToRetryText }
                              </div>;
 
+
+        const locationClasses = ['sk-message-item'];
+
+        if (lastItem === 'location') {
+            locationClasses.push('sk-last-item');
+        }
+
+        if (sendStatus === SEND_STATUS.SENDING) {
+            locationClasses.push('sk-message-location-loading');
+        } else {
+            locationClasses.push('sk-message-text');
+        }
+
+        let locationPart;
+
+        if (type === 'location' && !textPart) {
+            locationPart = sendStatus !== SEND_STATUS.FAILED ?
+                <div className={ locationClasses.join(' ') }>
+                    <LoadingComponent color={ !isAppUser ? accentColor : null } />
+                </div> :
+                <TextMessage className={ locationClasses.join(' ') }
+                             text={ locationSendingFailedText }
+                             role={ role } />;
+        }
+
         return <div className={ rowClass.join(' ') }>
                    { !isAppUser && firstInGroup ? fromName : null }
                    { lastInGroup ? avatar : avatarPlaceHolder }
@@ -163,6 +193,7 @@ class Message extends Component {
                             onClick={ this.onMessageClick.bind(this) }>
                            { imagePart ? imagePart : null }
                            { textPart ? textPart : null }
+                           { locationPart ? locationPart : null }
                            { hasActions ? <div className={ actionListClasses.join(' ') }>
                                               { actionList }
                                           </div> : null }
@@ -177,6 +208,7 @@ class Message extends Component {
 export const MessageComponent = connect(({ui: {text}}) => {
     return {
         clickToRetryText: text.clickToRetry,
-        tapToRetryText: text.tapToRetry
+        tapToRetryText: text.tapToRetry,
+        locationSendingFailedText: text.locationSendingFailed
     };
 })(Message);

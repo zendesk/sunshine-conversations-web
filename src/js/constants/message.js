@@ -3,3 +3,9 @@ export const SEND_STATUS = {
     FAILED: 'failed',
     SENT: 'sent'
 };
+
+export const LOCATION_ERRORS = {
+    PERMISSION_DENIED: 1,
+    POSITION_UNAVAILABLE: 2,
+    TIMEOUT: 3
+};

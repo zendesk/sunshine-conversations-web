@@ -3,12 +3,12 @@ import TestUtils from 'react-addons-test-utils';
 
 import { createMockedStore } from '../../utils/redux';
 import { wrapComponentWithStore } from '../../utils/react';
-import { QuickReplies } from '../../../src/js/components/quick-replies';
+import { ReplyActions } from '../../../src/js/components/reply-actions';
 
 const conversationService = require('../../../src/js/services/conversation');
 
 
-describe('QuickReplies Component', () => {
+describe('ReplyActions Component', () => {
     let mockedStore;
     let component;
     const sandbox = sinon.sandbox.create();
@@ -37,7 +37,7 @@ describe('QuickReplies Component', () => {
         });
         sandbox.stub(conversationService, 'sendMessage');
 
-        component = wrapComponentWithStore(QuickReplies, {
+        component = wrapComponentWithStore(ReplyActions, {
             choices: CHOICES
         }, mockedStore).getWrappedInstance();
     });
@@ -47,7 +47,7 @@ describe('QuickReplies Component', () => {
     });
 
     it('should render choices', () => {
-        TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-quick-reply').forEach((node, index) => {
+        TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-reply-action').forEach((node, index) => {
             const choice = CHOICES[index];
             node.textContent.trim().should.eq(choice.text);
 
@@ -61,7 +61,7 @@ describe('QuickReplies Component', () => {
     });
 
     it('should call sendMessage with payload when clicked', () => {
-        TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-quick-reply').forEach((node, index) => {
+        TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-reply-action').forEach((node, index) => {
             const choice = CHOICES[index];
             TestUtils.Simulate.click(node);
             conversationService.sendMessage.should.have.been.calledWith(choice.text, {

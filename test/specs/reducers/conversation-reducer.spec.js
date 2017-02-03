@@ -106,7 +106,7 @@ const WHISPER_MESSAGE = {
     actions: []
 };
 
-const QUICK_REPLY = {
+const REPLY_ACTION = {
     text: 'This is a reply!',
     role: 'appMaker',
     received: 1463682857.454,
@@ -118,7 +118,7 @@ const QUICK_REPLY = {
     }]
 };
 
-const EMPTY_QUICK_REPLY = {
+const EMPTY_REPLY_ACTION = {
     text: '',
     role: 'appMaker',
     received: 1463682857.454,
@@ -164,7 +164,7 @@ describe('Conversation reducer', () => {
             const beforeState = INITIAL_STATE;
             const afterState = {
                 messages: [MESSAGE_FROM_APP_USER],
-                quickReplies: [],
+                replyActions: [],
                 unreadCount: 0,
                 hasMoreMessages: false,
                 isFetchingMoreMessagesFromServer: false
@@ -179,55 +179,55 @@ describe('Conversation reducer', () => {
             const beforeState = INITIAL_STATE;
             const afterState = ConversationReducer(beforeState, {
                 type: ADD_MESSAGE,
-                message: EMPTY_QUICK_REPLY
+                message: EMPTY_REPLY_ACTION
             });
 
             afterState.messages.should.eql(beforeState.messages);
         });
 
-        it('should add quick replies if present', () => {
+        it('should add reply actions if present', () => {
             const beforeState = INITIAL_STATE;
             const afterState = ConversationReducer(beforeState, {
                 type: ADD_MESSAGE,
-                message: QUICK_REPLY
+                message: REPLY_ACTION
             });
 
-            afterState.quickReplies.should.eql(QUICK_REPLY.actions);
+            afterState.replyActions.should.eql(REPLY_ACTION.actions);
         });
 
-        it('should replace quick replies', () => {
+        it('should replace reply actions', () => {
             const beforeState = {
                 ...INITIAL_STATE,
-                quickReplies: [{
+                replyActions: [{
                     type: 'reply',
                     label: 'Reply 1'
                 }]
             };
 
             const afterState = {
-                messages: [QUICK_REPLY],
-                quickReplies: QUICK_REPLY.actions,
+                messages: [REPLY_ACTION],
+                replyActions: REPLY_ACTION.actions,
                 unreadCount: 0,
                 hasMoreMessages: false,
                 isFetchingMoreMessagesFromServer: false
             };
             ConversationReducer(beforeState, {
                 type: ADD_MESSAGE,
-                message: QUICK_REPLY
+                message: REPLY_ACTION
             }).should.eql(afterState);
         });
 
-        it('should dismiss quick replies', () => {
+        it('should dismiss reply actions', () => {
             const beforeState = {
                 ...INITIAL_STATE,
-                quickReplies: [{
+                replyActions: [{
                     type: 'reply'
                 }]
             };
 
             const afterState = {
                 messages: [MESSAGE_FROM_APP_USER],
-                quickReplies: [],
+                replyActions: [],
                 unreadCount: 0,
                 hasMoreMessages: false,
                 isFetchingMoreMessagesFromServer: false
@@ -410,54 +410,54 @@ describe('Conversation reducer', () => {
             const beforeState = INITIAL_STATE;
             const afterState = ConversationReducer(beforeState, {
                 type: SET_MESSAGES,
-                messages: [...MESSAGES, EMPTY_QUICK_REPLY]
+                messages: [...MESSAGES, EMPTY_REPLY_ACTION]
             });
             afterState.messages.should.eql(MESSAGES);
         });
 
-        it('should add quick replies if present', () => {
+        it('should add reply actions if present', () => {
             const beforeState = INITIAL_STATE;
             const afterState = ConversationReducer(beforeState, {
                 type: SET_MESSAGES,
-                messages: [...MESSAGES, QUICK_REPLY]
+                messages: [...MESSAGES, REPLY_ACTION]
             });
 
-            afterState.quickReplies.should.eql(QUICK_REPLY.actions);
+            afterState.replyActions.should.eql(REPLY_ACTION.actions);
         });
 
-        it('should replace quick replies', () => {
+        it('should replace reply actions', () => {
             const beforeState = {
                 ...INITIAL_STATE,
-                quickReplies: [{
+                replyActions: [{
                     type: 'reply',
                     label: 'Reply 1'
                 }]
             };
 
             const afterState = {
-                messages: [QUICK_REPLY],
-                quickReplies: QUICK_REPLY.actions,
+                messages: [REPLY_ACTION],
+                replyActions: REPLY_ACTION.actions,
                 unreadCount: 0,
                 hasMoreMessages: false,
                 isFetchingMoreMessagesFromServer: false
             };
             ConversationReducer(beforeState, {
                 type: SET_MESSAGES,
-                messages: [QUICK_REPLY]
+                messages: [REPLY_ACTION]
             }).should.eql(afterState);
         });
 
-        it('should dismiss quick replies', () => {
+        it('should dismiss reply actions', () => {
             const beforeState = {
                 ...INITIAL_STATE,
-                quickReplies: [{
+                replyActions: [{
                     type: 'reply'
                 }]
             };
 
             const afterState = {
                 messages: [MESSAGE_FROM_APP_USER],
-                quickReplies: [],
+                replyActions: [],
                 unreadCount: 0,
                 hasMoreMessages: false,
                 isFetchingMoreMessagesFromServer: false
@@ -502,56 +502,56 @@ describe('Conversation reducer', () => {
                     const afterState = ConversationReducer(beforeState, {
                         type: ADD_MESSAGES,
                         append: shouldAppend,
-                        messages: [EMPTY_QUICK_REPLY]
+                        messages: [EMPTY_REPLY_ACTION]
                     });
                     afterState.messages.should.eql(beforeState.messages);
                 });
 
-                it('should add quick replies if present', () => {
+                it('should add reply actions if present', () => {
                     const beforeState = INITIAL_STATE;
                     const afterState = ConversationReducer(beforeState, {
                         type: ADD_MESSAGES,
-                        messages: [QUICK_REPLY],
+                        messages: [REPLY_ACTION],
                         append: shouldAppend
                     });
 
-                    afterState.quickReplies.should.eql(QUICK_REPLY.actions);
+                    afterState.replyActions.should.eql(REPLY_ACTION.actions);
                 });
 
-                it('should replace quick replies', () => {
+                it('should replace reply actions', () => {
                     const beforeState = {
                         ...INITIAL_STATE,
-                        quickReplies: [{
+                        replyActions: [{
                             type: 'reply',
                             label: 'Reply 1'
                         }]
                     };
 
                     const afterState = {
-                        messages: [QUICK_REPLY],
-                        quickReplies: QUICK_REPLY.actions,
+                        messages: [REPLY_ACTION],
+                        replyActions: REPLY_ACTION.actions,
                         unreadCount: 0,
                         hasMoreMessages: false,
                         isFetchingMoreMessagesFromServer: false
                     };
                     ConversationReducer(beforeState, {
                         type: ADD_MESSAGES,
-                        messages: [QUICK_REPLY],
+                        messages: [REPLY_ACTION],
                         shouldAppend
                     }).should.eql(afterState);
                 });
 
-                it('should dismiss quick replies', () => {
+                it('should dismiss reply actions', () => {
                     const beforeState = {
                         ...INITIAL_STATE,
-                        quickReplies: [{
+                        replyActions: [{
                             type: 'reply'
                         }]
                     };
 
                     const afterState = {
                         messages: [MESSAGE_FROM_APP_USER],
-                        quickReplies: [],
+                        replyActions: [],
                         unreadCount: 0,
                         hasMoreMessages: false,
                         isFetchingMoreMessagesFromServer: false
@@ -593,7 +593,7 @@ describe('Conversation reducer', () => {
         const beforeState = INITIAL_STATE;
         const afterState = {
             messages: [],
-            quickReplies: [],
+            replyActions: [],
             unreadCount: 1,
             hasMoreMessages: false,
             isFetchingMoreMessagesFromServer: false
@@ -606,7 +606,7 @@ describe('Conversation reducer', () => {
     it('should reset unread count on RESET_UNREAD_COUNT', () => {
         const beforeState = {
             messages: [],
-            quickReplies: [],
+            replyActions: [],
             unreadCount: 100,
             hasMoreMessages: false,
             isFetchingMoreMessagesFromServer: false

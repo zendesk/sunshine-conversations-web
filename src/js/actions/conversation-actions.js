@@ -32,9 +32,7 @@ export function setMessages(messages) {
 export function addMessage(props) {
     return {
         type: ADD_MESSAGE,
-        message: Object.assign({
-            actions: []
-        }, props)
+        message: Object.assign({}, props)
     };
 }
 

@@ -53,7 +53,10 @@ const INITIAL_STATE = {
         fetchingHistory: 'Retrieving history...',
         fetchHistory: 'Load more',
         clickToRetry: 'Message not delivered. Click to retry.',
-        tapToRetry: 'Message not delivered. Tap to retry.'
+        tapToRetry: 'Message not delivered. Tap to retry.',
+        locationServicesDenied: 'Access to location services was denied. To enable, go to your browser\'s privacy settings and grant access.',
+        locationSendingFailed: 'Could not send location',
+        locationNotSupported: 'Your browser does not support location services. Please send your location via text.'
     }
 };
 
