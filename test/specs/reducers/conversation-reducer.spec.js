@@ -385,6 +385,22 @@ describe('Conversation reducer', () => {
             });
             afterState.messages.length.should.eq(0);
         });
+
+        it('should remove a message and restore reply actions from previous', () => {
+            const beforeState = {
+                messages: [REPLY_ACTION, MESSAGE_FROM_APP_USER],
+                unreadCount: 0
+            };
+            const afterState = ConversationReducer(beforeState, {
+                type: REMOVE_MESSAGE,
+                queryProps: {
+                    _clientId: MESSAGE_FROM_APP_USER._clientId
+                }
+            });
+
+            afterState.messages.length.should.eq(1);
+            afterState.replyActions.should.eql(REPLY_ACTION.actions);
+        });
     });
 
     describe('SET_MESSAGES action', () => {

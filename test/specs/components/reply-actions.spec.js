@@ -9,9 +9,24 @@ const conversationService = require('../../../src/js/services/conversation');
 
 
 describe('ReplyActions Component', () => {
-    let mockedStore;
     let component;
     const sandbox = sinon.sandbox.create();
+    const mockedStore = createMockedStore(sandbox, {
+        app: {
+            settings: {
+                web: {
+                    accentColor: '',
+                    isAccentColorDark: true
+                }
+            }
+        },
+        ui: {
+            text: {
+                locationNotSupported: 'Location not supported'
+            }
+        }
+    });
+
     const CHOICES = [
         {
             text: 'choice 1',
@@ -21,21 +36,17 @@ describe('ReplyActions Component', () => {
             text: 'choice 2',
             payload: 'payload 2',
             iconUrl: 'http://some-url/'
+        },
+        {
+            text: 'Send Location',
+            type: 'locationRequest'
         }
     ];
 
     beforeEach(() => {
-        mockedStore = createMockedStore(sandbox, {
-            app: {
-                settings: {
-                    web: {
-                        accentColor: '',
-                        isAccentColorDark: true
-                    }
-                }
-            }
-        });
         sandbox.stub(conversationService, 'sendMessage');
+        sandbox.stub(conversationService, 'sendLocation');
+        navigator.geolocation = true;
 
         component = wrapComponentWithStore(ReplyActions, {
             choices: CHOICES
@@ -51,7 +62,10 @@ describe('ReplyActions Component', () => {
             const choice = CHOICES[index];
             node.textContent.trim().should.eq(choice.text);
 
-            if (choice.iconUrl) {
+            if (choice.type === 'locationRequest') {
+                node.querySelectorAll('img').length.should.eq(0);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-location-icon').length.should.be.eq(1);
+            } else if (choice.iconUrl) {
                 const icon = node.querySelector('img');
                 icon.src.should.eq(choice.iconUrl);
             } else {
@@ -60,13 +74,16 @@ describe('ReplyActions Component', () => {
         });
     });
 
-    it('should call sendMessage with payload when clicked', () => {
+    it('should call sendMessage/sendLocation when clicked', () => {
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-reply-action').forEach((node, index) => {
             const choice = CHOICES[index];
             TestUtils.Simulate.click(node);
-            conversationService.sendMessage.should.have.been.calledWith(choice.text, {
-                payload: choice.payload
-            });
+
+            if (choice.type === 'locationRequest') {
+                conversationService.sendLocation.should.have.been.calledOnce;
+            } else {
+                conversationService.sendMessage.should.have.been.calledWith(choice.text);
+            }
         });
     });
 });
