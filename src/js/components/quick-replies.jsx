@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import bindAll from 'lodash.bindall';
 
-import { sendMessage } from '../services/conversation-service';
+import { sendMessage } from '../services/conversation';
 import { getRGB, rgbToHsl } from '../utils/colors';
 
 export class QuickRepliesComponent extends Component {
@@ -11,11 +12,17 @@ export class QuickRepliesComponent extends Component {
         choices: PropTypes.array.isRequired
     };
 
-    onReplyClick = ({text, payload}) => {
-        sendMessage(text, {
+    constructor(...args) {
+        super(...args);
+        bindAll(this, 'onReplyClick');
+    }
+
+    onReplyClick({text, payload}) {
+        const {dispatch} = this.props;
+        dispatch(sendMessage(text, {
             payload
-        });
-    };
+        }));
+    }
 
     render() {
         const {choices, accentColor, isAccentColorDark} = this.props;
@@ -41,6 +48,7 @@ export class QuickRepliesComponent extends Component {
 
             const icon = iconUrl ?
                 <img className='sk-quick-reply-icon'
+                     alt='Icon'
                      src={ iconUrl } /> :
                 null;
 

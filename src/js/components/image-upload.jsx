@@ -1,33 +1,43 @@
 import React, { Component } from 'react';
-import { uploadImage } from '../services/conversation-service';
+import { findDOMNode } from 'react-dom';
+import { connect } from 'react-redux';
+import bindAll from 'lodash.bindall';
 
+import { uploadImage } from '../services/conversation';
 import { preventDefault } from '../utils/events';
 
-export class ImageUpload extends Component {
-    constructor(...args) {
-        super(...args);
-        this.onImageChange = this.onImageChange.bind(this);
-    }
-
+export class ImageUploadComponent extends Component {
     state = {
       imageButtonHovered: false
     };
 
+    constructor(...args) {
+        super(...args);
+        bindAll(this,
+            'onImageChange',
+            'onMouseOver',
+            'onMouseOut'
+        );
+    }
+
     onImageChange(e) {
         e.preventDefault();
-        const files = this.refs.fileInput.files;
+        const {dispatch} = this.props;
+        const files = this._fileInputNode.files;
         // we only allow one file in the input, but let's handle it
         // as if we supported multiple ones
         return Promise.all(Array.from(files).map((file) => {
             // catch it to prevent an unhandled promise exception
-            return uploadImage(file).catch(() => {
-            });
+            return dispatch(uploadImage(file))
+                .catch(() => {
+                });
         })).then(() => {
             // if the file input is not reset, a user can't pick the same
             // file twice in a row.
-            this.refs.imageUploadForm.reset();
+            this._formNode.reset();
         });
     }
+
 
     onMouseOver() {
         this.setState({
@@ -42,23 +52,39 @@ export class ImageUpload extends Component {
     }
 
     render() {
-        const style = {};
+        const styles = {
+            form: {
+                flex: 0
+            },
+            icon: {}
+        };
 
         if (this.props.color && this.state.imageButtonHovered) {
-            style.color = `#${this.props.color}`;
+            styles.icon.color = `#${this.props.color}`;
         }
-        return <label className='btn btn-sk-link image-upload'
-                      onMouseOver={ () => this.onMouseOver() }
-                      onMouseOut={ () => this.onMouseOut() }
-                      style={ style }>
-                   <form ref='imageUploadForm'
-                         onSubmit={ preventDefault }>
-                       <input type='file'
-                              accept='image/*'
-                              onChange={ this.onImageChange }
-                              ref='fileInput' />
-                   </form>
-                   <i className='fa fa-camera'></i>
-               </label>;
+        return <form ref={ (c) => this._formNode = findDOMNode(c) }
+                     onSubmit={ preventDefault }
+                     style={ styles.form }>
+                   <label className='btn btn-sk-link image-upload'
+                          for='sk-img-upload'
+                          onMouseOver={ this.onMouseOver }
+                          onMouseOut={ this.onMouseOut }
+                          style={ styles.icon }
+                          onClick={ (e) => {
+                                        e.preventDefault();
+                                        this._fileInputNode.click();
+                                    } }>
+                       <i className='fa fa-camera'></i>
+                   </label>
+                   <input type='file'
+                          id='sk-img-upload'
+                          accept='image/*'
+                          onChange={ this.onImageChange }
+                          ref={ (c) => this._fileInputNode = findDOMNode(c) } />
+               </form>;
     }
 }
+
+export const ImageUpload = connect(null, null, null, {
+    withRef: true
+})(ImageUploadComponent);

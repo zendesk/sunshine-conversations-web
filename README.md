@@ -154,7 +154,9 @@ var skPromise = Smooch.init({
         smsTooManyRequestsError: 'A connection for that number was requested recently. Please try again in {seconds} seconds.',
         smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
         smsUnhandledError: 'Something went wrong. Please try again.',
-        smsPingChannelError: 'There was an error sending a message to your number.'
+        smsPingChannelError: 'There was an error sending a message to your number.',
+        clickToRetry: 'Message not delivered. Click to retry.',
+        tapToRetry: 'Message not delivered. Tap to retry.'
     }
 });
 
@@ -352,7 +354,7 @@ git clone https://github.com/smooch/smooch-js
 npm install
 ```
 
-In one console, run `npm run dev` to start the web server. In another, run `npm run webpack` to start the webpack dev server.
+In one console, run `npm run dev` to start the web server.
 
 Then, go to `http://localhost:8282` to test the normal widget or `http://localhost:8282/embedded` for the embedded one.
 

@@ -6,10 +6,8 @@ import { Widget } from './components/widget';
 export class Root extends Component {
     render() {
         const {store} = this.props;
-        return (
-            <Provider store={ store }>
-                <Widget />
-            </Provider>
-            );
+        return <Provider store={ store }>
+                   <Widget />
+               </Provider>;
     }
 }

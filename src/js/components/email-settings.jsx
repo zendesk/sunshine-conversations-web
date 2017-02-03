@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { immediateUpdate } from '../services/user-service';
+import { immediateUpdate } from '../services/user';
 import { hideSettings } from '../actions/app-state-actions';
 
 export class EmailSettingsComponent extends Component {
@@ -27,6 +27,7 @@ export class EmailSettingsComponent extends Component {
 
     save = (e) => {
         e.preventDefault();
+        const {immediateUpdate, hideSettings} = this.props.actions;
 
         // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
         const regex = /^(([^<>()[\]\\.,;:\s@\']+(\.[^<>()[\]\\.,;:\s@\']+)*)|(\'.+\'))@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -39,7 +40,7 @@ export class EmailSettingsComponent extends Component {
             return immediateUpdate({
                 email: email
             }).then(() => {
-                this.props.actions.hideSettings();
+                hideSettings();
             });
         } else {
             return Promise.resolve().then(() => {
@@ -111,7 +112,8 @@ export const EmailSettings = connect(({appState: {readOnlyEmail}, user, ui: {tex
 }, (dispatch) => {
     return {
         actions: bindActionCreators({
-            hideSettings
+            hideSettings,
+            immediateUpdate
         }, dispatch)
     };
 }, null, {
