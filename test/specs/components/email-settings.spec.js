@@ -3,9 +3,9 @@ import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
 
 import { EmailSettings, EmailSettingsComponent } from '../../../src/js/components/email-settings';
-import * as userService from '../../../src/js/services/user-service';
+import * as userService from '../../../src/js/services/user';
 
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 import { wrapComponentWithStore } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
@@ -56,7 +56,7 @@ describe('Email Settings Component', () => {
 
     describe('Email read-only', () => {
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState({
+            mockedStore = createMockedStore(sandbox, getStoreState({
                 appState: {
                     readOnlyEmail: true
                 }
@@ -85,7 +85,7 @@ describe('Email Settings Component', () => {
     describe('Email editable', () => {
 
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState());
+            mockedStore = createMockedStore(sandbox, getStoreState());
             component = wrapComponentWithStore(EmailSettings, null, mockedStore).getWrappedInstance();
         });
 
@@ -111,7 +111,7 @@ describe('Email Settings Component', () => {
     xdescribe('Input', () => {
         beforeEach(() => {
             sandbox.stub(EmailSettingsComponent.prototype, 'onChange');
-            mockedStore = mockAppStore(sandbox, getStoreState());
+            mockedStore = createMockedStore(sandbox, getStoreState());
             component = wrapComponentWithStore(EmailSettings, null, mockedStore);
         });
 
@@ -128,7 +128,7 @@ describe('Email Settings Component', () => {
 
         beforeEach(() => {
             sandbox.stub(EmailSettingsComponent, 'save');
-            mockedStore = mockAppStore(sandbox, getStoreState({
+            mockedStore = createMockedStore(sandbox, getStoreState({
                 user: {
                     email: 'some@email.com'
                 }
@@ -152,7 +152,7 @@ describe('Email Settings Component', () => {
                 }
             };
 
-            mockedStore = mockAppStore(sandbox, getStoreState({
+            mockedStore = createMockedStore(sandbox, getStoreState({
                 user: {
                     email: 'some@email.com'
                 }

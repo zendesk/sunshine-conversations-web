@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 import { LoadingComponent } from '../../components/loading';
-import { fetchWeChatQRCode } from '../../services/integrations-service';
+import { fetchWeChatQRCode } from '../../services/integrations';
 
 export class WeChatChannelContentComponent extends Component {
 
@@ -22,7 +22,8 @@ export class WeChatChannelContentComponent extends Component {
         }
 
         if (channelState.qrCode) {
-            return <img style={ {    width: '40%'} }
+            return <img alt='WeChat QR Code'
+                        style={ {    width: '40%'} }
                         src={ channelState.qrCode } />;
         }
 
