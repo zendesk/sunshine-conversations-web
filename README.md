@@ -154,9 +154,7 @@ var skPromise = Smooch.init({
         smsTooManyRequestsError: 'A connection for that number was requested recently. Please try again in {seconds} seconds.',
         smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
         smsUnhandledError: 'Something went wrong. Please try again.',
-        smsPingChannelError: 'There was an error sending a message to your number.',
-        clickToRetry: 'Message not delivered. Click to retry.',
-        tapToRetry: 'Message not delivered. Tap to retry.'
+        smsPingChannelError: 'There was an error sending a message to your number.'
     }
 });
 

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import ImageLoader from 'react-imageloader';
 
 import { ImageLoading } from './image-loading';
-import { SEND_STATUS } from '../constants/message';
 
 export class ImageMessage extends Component {
     static propTypes = {
@@ -39,7 +38,7 @@ export class ImageMessage extends Component {
                                    onLoad={ this.props.onLoad }>
                       </ImageLoader>;
 
-        if (this.props.sendStatus === SEND_STATUS.SENDING) {
+        if (this.props.status === 'sending') {
             return <div className='image-container'>
                        <ImageLoading color={ this.props.accentColor } />
                        { image }

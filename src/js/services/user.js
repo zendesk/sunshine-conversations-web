@@ -4,14 +4,12 @@ import { setUser } from '../actions/user-actions';
 import { core } from './core';
 import { handleConversationUpdated } from './conversation';
 
+let waitForSave = false;
 const waitDelay = 5000; // ms
 let pendingUserProps = {};
-let pendingUpdatePromise;
-let pendingResolve;
+let previousValue = Promise.resolve();
 let deviceUpdateThrottle;
 let deviceUpdatePending = false;
-let pendingTimeout;
-let lastUpdateAttempt;
 
 export const EDITABLE_PROPERTIES = [
     'givenName',
@@ -25,15 +23,6 @@ export function immediateUpdate(props) {
     return (dispatch, getState) => {
         const {user} = getState();
 
-        const updateToResolve = pendingResolve;
-        if (pendingTimeout) {
-            clearTimeout(pendingTimeout);
-            pendingTimeout = null;
-            pendingResolve = null;
-        }
-
-        lastUpdateAttempt = Date.now();
-
         props = Object.assign({}, pendingUserProps, props);
         pendingUserProps = {};
 
@@ -41,22 +30,12 @@ export function immediateUpdate(props) {
             return isDirty || !deepEqual(user[prop], props[prop]);
         }, false);
 
-        if (isDirty) {
-            return core(getState()).appUsers.update(getUserId(getState()), props).then((response) => {
-                dispatch(setUser(response.appUser));
-                if (updateToResolve) {
-                    updateToResolve(response);
-                }
-                return response;
-            });
-        } else if (updateToResolve) {
-            updateToResolve(user);
-            return pendingUpdatePromise;
-        } else {
-            return Promise.resolve({
-                user
-            });
-        }
+        return isDirty ? core(getState()).appUsers.update(getUserId(getState()), props).then((response) => {
+            dispatch(setUser(response.appUser));
+            return response;
+        }) : Promise.resolve({
+            user
+        });
     };
 }
 
@@ -64,26 +43,19 @@ export function update(props) {
     return (dispatch) => {
         Object.assign(pendingUserProps, props);
 
-        const timeNow = Date.now();
-        const lastUpdateTime = lastUpdateAttempt || 0;
-
-        if (pendingTimeout) {
-            return pendingUpdatePromise;
-        } else if ((timeNow - lastUpdateTime) > waitDelay) {
-            return dispatch(immediateUpdate(pendingUserProps));
+        if (waitForSave) {
+            return previousValue;
         } else {
-            const timeToWait = waitDelay - (timeNow - lastUpdateTime);
+            previousValue = dispatch(immediateUpdate(pendingUserProps));
+            waitForSave = true;
 
-            pendingUpdatePromise = new Promise(function(resolve) {
-                pendingResolve = resolve;
-
-                setTimeout(() => {
-                    resolve(dispatch(immediateUpdate(pendingUserProps)));
-                }, timeToWait);
-            });
-
-            return pendingUpdatePromise;
+            setTimeout(() => {
+                previousValue = dispatch(immediateUpdate(pendingUserProps));
+                waitForSave = false;
+            }, waitDelay);
         }
+
+        return previousValue;
     };
 }
 

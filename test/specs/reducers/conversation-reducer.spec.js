@@ -1,6 +1,5 @@
 import { ConversationReducer } from '../../../src/js/reducers/conversation-reducer';
 import { ADD_MESSAGE, REPLACE_MESSAGE, RESET_CONVERSATION, REMOVE_MESSAGE, SET_CONVERSATION, RESET_UNREAD_COUNT, INCREMENT_UNREAD_COUNT, ADD_MESSAGES, SET_MESSAGES } from '../../../src/js/actions/conversation-actions';
-import { SEND_STATUS } from '../../../src/js/constants/message';
 
 const INITIAL_STATE = ConversationReducer(undefined, {});
 const MESSAGE_1 = {
@@ -61,25 +60,22 @@ const MESSAGE_FROM_DIFFERENT_APP_MAKER = {
     name: 'Not Chloe',
     _id: '23452346'
 };
-
 const UPLOADING_IMAGE_1 = {
     mediaUrl: 'data:image/jpeg',
     mediaType: 'image/jpeg',
     role: 'appUser',
-    sendStatus: SEND_STATUS.SENDING,
+    status: 'sending',
     _clientId: 0.8288994217337065,
-    _clientSent: Date.now() / 1000
+    _clientSent: '2016-05-19T18:33:10.788Z'
 };
-
 const UPLOADING_IMAGE_2 = {
     mediaUrl: 'data:image/jpeg',
     mediaType: 'image/jpeg',
     role: 'appUser',
-    sendStatus: SEND_STATUS.SENDING,
+    status: 'sending',
     _clientId: 0.901823905092145,
-    _clientSent: Date.now() / 1000
+    _clientSent: '2016-05-19T19:34:10.788Z'
 };
-
 const RECEIVED_IMAGE = {
     text: 'some_media_url',
     mediaType: 'image/jpeg',
@@ -90,7 +86,6 @@ const RECEIVED_IMAGE = {
     name: 'Calm Chimpanzee',
     _id: '573e06c550a52d2900f907c6'
 };
-
 const WHISPER_MESSAGE = {
     role: 'whisper',
     authorId: '123124214124.1242',
@@ -128,15 +123,6 @@ const EMPTY_QUICK_REPLY = {
         type: 'reply',
         label: 'Reply'
     }]
-};
-
-const FAILED_MESSAGE = {
-    text: 'FAILURE',
-    role: 'appUser',
-    authorId: '8a9445dadad4862c2322db52',
-    name: 'Angry Pants',
-    sendStatus: SEND_STATUS.FAILED,
-    _clientId: '123498001'
 };
 
 describe('Conversation reducer', () => {
@@ -328,7 +314,7 @@ describe('Conversation reducer', () => {
                 ...RECEIVED_IMAGE,
                 _clientId: UPLOADING_IMAGE_1._clientId,
                 firstInGroup: undefined,
-                lastInGroup: true
+                lastInGroup: false
             });
         });
 
@@ -364,7 +350,7 @@ describe('Conversation reducer', () => {
             afterState.messages[0].should.eql({
                 ...RECEIVED_IMAGE,
                 _clientId: UPLOADING_IMAGE_1._clientId,
-                firstInGroup: true,
+                firstInGroup: undefined,
                 lastInGroup: false
             });
             afterState.messages[1].should.eql(UPLOADING_IMAGE_2);
@@ -466,18 +452,6 @@ describe('Conversation reducer', () => {
                 type: SET_MESSAGES,
                 messages: [MESSAGE_FROM_APP_USER]
             }).should.eql(afterState);
-        });
-
-        it('should preserve failed messages that were in the state', () => {
-            const beforeState = {
-                ...INITIAL_STATE,
-                messages: [FAILED_MESSAGE]
-            };
-            const afterState = ConversationReducer(beforeState, {
-                type: SET_MESSAGES,
-                messages: MESSAGES
-            });
-            afterState.messages.should.eql([...MESSAGES, FAILED_MESSAGE]);
         });
     });
 
