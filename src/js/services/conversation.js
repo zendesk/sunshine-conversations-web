@@ -140,6 +140,7 @@ export function sendMessage(text, extra = {}) {
         };
 
         dispatch(addMessage(message));
+        dispatch(setShouldScrollToBottom(true));
         return dispatch(sendChain(postSendMessage, message));
     };
 }
@@ -188,6 +189,7 @@ export function uploadImage(file) {
                 };
 
                 dispatch(addMessage(message));
+                dispatch(setShouldScrollToBottom(true));
                 return dispatch(sendChain(postUploadImage, message));
             })
             .catch(() => {
