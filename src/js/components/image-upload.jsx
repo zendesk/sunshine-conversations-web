@@ -52,24 +52,36 @@ export class ImageUploadComponent extends Component {
     }
 
     render() {
-        const style = {};
+        const styles = {
+            form: {
+                flex: 0
+            },
+            icon: {}
+        };
 
         if (this.props.color && this.state.imageButtonHovered) {
-            style.color = `#${this.props.color}`;
+            styles.icon.color = `#${this.props.color}`;
         }
-        return <label className='btn btn-sk-link image-upload'
-                      onMouseOver={ this.onMouseOver }
-                      onMouseOut={ this.onMouseOut }
-                      style={ style }>
-                   <form ref={ (c) => this._formNode = findDOMNode(c) }
-                         onSubmit={ preventDefault }>
-                       <input type='file'
-                              accept='image/*'
-                              onChange={ this.onImageChange }
-                              ref={ (c) => this._fileInputNode = findDOMNode(c) } />
-                   </form>
-                   <i className='fa fa-camera'></i>
-               </label>;
+        return <form ref={ (c) => this._formNode = findDOMNode(c) }
+                     onSubmit={ preventDefault }
+                     style={ styles.form }>
+                   <label className='btn btn-sk-link image-upload'
+                          for='sk-img-upload'
+                          onMouseOver={ this.onMouseOver }
+                          onMouseOut={ this.onMouseOut }
+                          style={ styles.icon }
+                          onClick={ (e) => {
+                                        e.preventDefault();
+                                        this._fileInputNode.click();
+                                    } }>
+                       <i className='fa fa-camera'></i>
+                   </label>
+                   <input type='file'
+                          id='sk-img-upload'
+                          accept='image/*'
+                          onChange={ this.onImageChange }
+                          ref={ (c) => this._fileInputNode = findDOMNode(c) } />
+               </form>;
     }
 }
 
