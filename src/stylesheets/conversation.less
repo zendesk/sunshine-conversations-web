@@ -147,6 +147,8 @@
                 border-radius: 14px;
                 border-left-color: @sk-blue;
 
+                .transition(opacity 150ms);
+
                 .word-break();
 
                 .imageloader {
@@ -221,6 +223,16 @@
             }
             .sk-last-item {
                 padding-bottom: 9px;
+            }
+            .sk-msg-unsent {
+                opacity: 0.3;
+            }
+            .sk-retry {
+                float: right;
+                clear: right;
+                font-size: 13px;
+                color: #bbb;
+                line-height: 16px;
             }
         }
         &.sk-left-row {
