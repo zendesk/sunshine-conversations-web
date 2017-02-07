@@ -114,7 +114,7 @@ export function sendChain(sendFn, message) {
                 .then(() => dispatch(setShouldScrollToBottom(true)))
                 .then(() => dispatch(handleConnectNotification(response)))
                 .then(() => dispatch(connectFayeConversation()))
-                .catch();
+                .catch(); // swallow errors to avoid uncaught promises bubbling up
         };
 
         return promise
