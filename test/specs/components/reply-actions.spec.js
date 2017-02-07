@@ -10,6 +10,7 @@ const conversationService = require('../../../src/js/services/conversation');
 
 describe('ReplyActions Component', () => {
     let component;
+    let geolocation;
     const sandbox = sinon.sandbox.create();
     const mockedStore = createMockedStore(sandbox, {
         app: {
@@ -46,6 +47,7 @@ describe('ReplyActions Component', () => {
     beforeEach(() => {
         sandbox.stub(conversationService, 'sendMessage');
         sandbox.stub(conversationService, 'sendLocation');
+        geolocation = navigator.geolocation;
         navigator.geolocation = true;
 
         component = wrapComponentWithStore(ReplyActions, {
@@ -54,6 +56,7 @@ describe('ReplyActions Component', () => {
     });
 
     afterEach(() => {
+        navigator.geolocation = geolocation;
         sandbox.restore();
     });
 

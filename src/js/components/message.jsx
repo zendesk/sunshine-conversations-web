@@ -174,13 +174,13 @@ class Message extends Component {
         let locationPart;
 
         if (type === 'location' && !textPart) {
-            locationPart = sendStatus !== SEND_STATUS.FAILED ?
-                <div className={ locationClasses.join(' ') }>
-                    <LoadingComponent color={ !isAppUser ? accentColor : null } />
-                </div> :
+            locationPart = sendStatus === SEND_STATUS.FAILED ?
                 <TextMessage className={ locationClasses.join(' ') }
                              text={ locationSendingFailedText }
-                             role={ role } />;
+                             role={ role } />
+                : <div className={ locationClasses.join(' ') }>
+                      <LoadingComponent color={ !isAppUser ? accentColor : null } />
+                  </div> ;
         }
 
         return <div className={ rowClass.join(' ') }>
