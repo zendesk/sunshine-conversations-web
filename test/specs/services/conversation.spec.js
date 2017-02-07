@@ -358,15 +358,13 @@ describe('Conversation service', () => {
 
             describe('unsupported file type', () => {
                 beforeEach(() => {
-                    coreMock.appUsers.uploadImage.resolves({
-                        conversation: 'conversation'
-                    });
                     utilsMedia.isFileTypeSupported.returns(false);
-                    utilsMedia.resizeImage.resolves({});
                 });
 
                 it('should show an error notification', () => {
                     return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
+                        utilsMedia.isFileTypeSupported.should.have.been.called;
+                        utilsMedia.resizeImage.should.not.have.been.called;
                         appStateActions.showErrorNotification.should.have.been.called;
                     });
                 });
@@ -374,15 +372,14 @@ describe('Conversation service', () => {
 
             describe('resize error', () => {
                 beforeEach(() => {
-                    coreMock.appUsers.uploadImage.resolves({
-                        conversation: 'conversation'
-                    });
                     utilsMedia.isFileTypeSupported.returns(true);
                     utilsMedia.resizeImage.rejects();
                 });
 
                 it('should show an error notification', () => {
                     return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
+                        utilsMedia.isFileTypeSupported.should.have.been.called;
+                        utilsMedia.resizeImage.should.have.been.called;
                         appStateActions.showErrorNotification.should.have.been.called;
                     });
                 });
@@ -397,6 +394,10 @@ describe('Conversation service', () => {
 
                 it('should update message send status', () => {
                     return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
+                        utilsMedia.isFileTypeSupported.should.have.been.called;
+                        utilsMedia.resizeImage.should.have.been.called;
+                        coreMock.appUsers.uploadImage.should.have.been.called;
+
                         conversationActions.replaceMessage.should.have.been.calledOnce;
                         conversationActions.replaceMessage.args[0][1].sendStatus.should.eql(SEND_STATUS.FAILED);
                     });

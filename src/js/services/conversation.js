@@ -171,9 +171,8 @@ export function resendMessage(messageClientId) {
 
 export function uploadImage(file) {
     return (dispatch, getState) => {
-
         if (!isFileTypeSupported(file.type)) {
-            dispatch(showErrorNotification(getState().ui.text.invalidFileError));
+            return Promise.resolve(dispatch(showErrorNotification(getState().ui.text.invalidFileError)));
         }
 
         return resizeImage(file)
