@@ -18,11 +18,7 @@ import { getUserId } from './user';
 
 const postSendMessage = (message) => {
     return (dispatch, getState) => {
-        return core(getState()).appUsers.sendMessage(getUserId(getState()), message).then((response) => {
-            dispatch(onMessageSendSuccess(message, response));
-        }).catch(() => {
-            dispatch(onMessageSendFailure(message));
-        });
+        return core(getState()).appUsers.sendMessage(getUserId(getState()), message);
     };
 };
 
@@ -33,10 +29,6 @@ const postUploadImage = (message) => {
         return core(getState()).appUsers.uploadImage(getUserId(getState()), blob, {
             role: 'appUser',
             deviceId: getDeviceId()
-        }).then((response) => {
-            dispatch(onMessageSendSuccess(message, response));
-        }).catch(() => {
-            dispatch(onMessageSendFailure(message));
         });
     };
 };
@@ -60,6 +52,7 @@ const onMessageSendSuccess = (message, response) => {
 
         dispatch(batchActions(actions));
         observable.trigger('message:sent', response.message);
+
         return response;
     };
 };
@@ -67,7 +60,6 @@ const onMessageSendSuccess = (message, response) => {
 const onMessageSendFailure = (message) => {
     return (dispatch) => {
         message.sendStatus = SEND_STATUS.FAILED;
-
         dispatch(replaceMessage({
             _clientId: message._clientId
         }, message));
@@ -113,113 +105,91 @@ export function handleConnectNotification(response) {
     };
 }
 
-export function sendChain(sendFn) {
+export function sendChain(sendFn, message) {
     return (dispatch, getState) => {
         const promise = dispatch(immediateUpdate(getState().user));
 
-        const enableScrollToBottom = (response) => {
-            dispatch(setShouldScrollToBottom(true));
-            return response;
+        const postSendHandler = (response) => {
+            return Promise.resolve(dispatch(onMessageSendSuccess(message, response)))
+                .then(() => dispatch(setShouldScrollToBottom(true)))
+                .then(() => dispatch(handleConnectNotification(response)))
+                .then(() => dispatch(connectFayeConversation()))
+                .catch(); // swallow errors to avoid uncaught promises bubbling up
         };
 
-        if (getState().user.conversationStarted) {
-            return promise
-                .then(() => dispatch(connectFayeConversation()))
-                .then(() => sendFn())
-                .then(enableScrollToBottom)
-                .then((response) => dispatch(handleConnectNotification(response)));
-        }
-
-        // if it's not started, send the message first to create the conversation,
-        // then get it and connect faye
         return promise
-            .then(() => sendFn())
-            .then(enableScrollToBottom)
-            .then((response) => dispatch(handleConnectNotification(response)))
-            .then(() => dispatch(connectFayeConversation()));
+            .then(() => {
+                return dispatch(sendFn(message))
+                    .then(postSendHandler)
+                    .catch(() => dispatch(onMessageSendFailure(message)));
+            });
     };
 }
 
 export function sendMessage(text, extra = {}) {
     return (dispatch) => {
-        const fn = () => {
-            const message = {
-                text,
-                type: 'text',
-                role: 'appUser',
-                _clientId: Math.random(),
-                _clientSent: Date.now() / 1000,
-                deviceId: getDeviceId(),
-                sendStatus: SEND_STATUS.SENDING,
-                ...extra
-            };
-
-            dispatch(batchActions([
-                setShouldScrollToBottom(true),
-                addMessage(message)
-            ]));
-
-            dispatch(postSendMessage(message));
+        const message = {
+            text,
+            type: 'text',
+            role: 'appUser',
+            _clientId: Math.random(),
+            _clientSent: Date.now() / 1000,
+            deviceId: getDeviceId(),
+            sendStatus: SEND_STATUS.SENDING,
+            ...extra
         };
 
-        return dispatch(sendChain(fn));
+        dispatch(addMessage(message));
+        dispatch(setShouldScrollToBottom(true));
+        return dispatch(sendChain(postSendMessage, message));
     };
 }
 
 export function resendMessage(messageClientId) {
     return (dispatch, getState) => {
-        const fn = () => {
-            const oldMessage = getState().conversation.messages.find((message) => message._clientId === messageClientId);
+        const oldMessage = getState().conversation.messages.find((message) => message._clientId === messageClientId);
 
-            if (!oldMessage) {
-                return;
-            }
+        if (!oldMessage) {
+            return;
+        }
 
-            const newMessage = Object.assign({}, oldMessage, {
-                sendStatus: SEND_STATUS.SENDING
-            });
+        const newMessage = Object.assign({}, oldMessage, {
+            sendStatus: SEND_STATUS.SENDING
+        });
 
-            dispatch(replaceMessage({
-                _clientId: messageClientId
-            }, newMessage));
+        dispatch(replaceMessage({
+            _clientId: messageClientId
+        }, newMessage));
 
-            if (newMessage.type === 'text') {
-                dispatch(postSendMessage(newMessage));
-            } else {
-                dispatch(postUploadImage(newMessage));
-            }
-        };
+        if (newMessage.type === 'text') {
+            return dispatch(sendChain(postSendMessage, newMessage));
+        }
 
-        return dispatch(sendChain(fn));
+        return dispatch(sendChain(postUploadImage, newMessage));
     };
 }
 
 export function uploadImage(file) {
     return (dispatch, getState) => {
-
         if (!isFileTypeSupported(file.type)) {
-            dispatch(showErrorNotification(getState().ui.text.invalidFileError));
-            return Promise.reject('Invalid file type');
+            return Promise.resolve(dispatch(showErrorNotification(getState().ui.text.invalidFileError)));
         }
 
         return resizeImage(file)
             .then((dataUrl) => {
-                const fn = () => {
-                    const message = {
-                        mediaUrl: dataUrl,
-                        mediaType: 'image/jpeg',
-                        role: 'appUser',
-                        type: 'image',
-                        sendStatus: SEND_STATUS.SENDING,
-                        _clientId: Math.random(),
-                        _clientSent: Date.now() / 1000
-                    };
-
-                    dispatch(addMessage(message));
-                    dispatch(postUploadImage(message));
+                const message = {
+                    mediaUrl: dataUrl,
+                    mediaType: 'image/jpeg',
+                    role: 'appUser',
+                    type: 'image',
+                    sendStatus: SEND_STATUS.SENDING,
+                    _clientId: Math.random(),
+                    _clientSent: Date.now() / 1000
                 };
 
-                return dispatch(sendChain(fn));
+                dispatch(addMessage(message));
+                dispatch(setShouldScrollToBottom(true));
+                return dispatch(sendChain(postUploadImage, message));
             })
             .catch(() => {
                 dispatch(showErrorNotification(getState().ui.text.invalidFileError));
@@ -321,9 +291,10 @@ export function handleConversationUpdated() {
 
 export function postPostback(actionId) {
     return (dispatch, getState) => {
-        return core(getState()).conversations.postPostback(getUserId(getState()), actionId).catch(() => {
-            dispatch(showErrorNotification(getState().ui.text.actionPostbackError));
-        });
+        return core(getState()).conversations.postPostback(getUserId(getState()), actionId)
+            .catch(() => {
+                dispatch(showErrorNotification(getState().ui.text.actionPostbackError));
+            });
     };
 }
 

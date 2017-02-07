@@ -236,12 +236,20 @@ describe('Conversation service', () => {
         conversationStartedSuite(conversationService.sendMessage('message'));
 
         describe('errors', () => {
-            it('should show an error notification', () => {
+            beforeEach(() => {
+                coreMock.appUsers.sendMessage.rejects();
+            });
+
+            it('should update message send status', () => {
                 mockedStore = createMockedStore(sandbox, getProps());
-                return mockedStore.dispatch(conversationService.sendMessage('message')).catch(() => {
-                    appStateActions.showErrorNotification.should.have.been.called;
-                    conversationActions.removeMessage.should.have.been.called;
-                });
+                return mockedStore.dispatch(conversationService.sendMessage(null, message))
+                    .then(() => {
+                        conversationActions.replaceMessage.should.have.been.calledWith({
+                            _clientId: message._clientId
+                        });
+
+                        conversationActions.replaceMessage.args[0][1].sendStatus.should.eql(SEND_STATUS.FAILED);
+                    });
             });
         });
     });
@@ -350,15 +358,13 @@ describe('Conversation service', () => {
 
             describe('unsupported file type', () => {
                 beforeEach(() => {
-                    coreMock.appUsers.uploadImage.resolves({
-                        conversation: 'conversation'
-                    });
                     utilsMedia.isFileTypeSupported.returns(false);
-                    utilsMedia.resizeImage.resolves({});
                 });
 
                 it('should show an error notification', () => {
-                    return mockedStore.dispatch(conversationService.uploadImage({})).catch(() => {
+                    return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
+                        utilsMedia.isFileTypeSupported.should.have.been.called;
+                        utilsMedia.resizeImage.should.not.have.been.called;
                         appStateActions.showErrorNotification.should.have.been.called;
                     });
                 });
@@ -366,15 +372,14 @@ describe('Conversation service', () => {
 
             describe('resize error', () => {
                 beforeEach(() => {
-                    coreMock.appUsers.uploadImage.resolves({
-                        conversation: 'conversation'
-                    });
                     utilsMedia.isFileTypeSupported.returns(true);
                     utilsMedia.resizeImage.rejects();
                 });
 
                 it('should show an error notification', () => {
-                    return mockedStore.dispatch(conversationService.uploadImage({})).catch(() => {
+                    return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
+                        utilsMedia.isFileTypeSupported.should.have.been.called;
+                        utilsMedia.resizeImage.should.have.been.called;
                         appStateActions.showErrorNotification.should.have.been.called;
                     });
                 });
@@ -387,10 +392,14 @@ describe('Conversation service', () => {
                     coreMock.appUsers.uploadImage.rejects();
                 });
 
-                it('should show an error notification', () => {
-                    return mockedStore.dispatch(conversationService.uploadImage({})).catch(() => {
-                        appStateActions.showErrorNotification.should.have.been.called;
-                        conversationActions.removeMessage.should.have.been.called;
+                it('should update message send status', () => {
+                    return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
+                        utilsMedia.isFileTypeSupported.should.have.been.called;
+                        utilsMedia.resizeImage.should.have.been.called;
+                        coreMock.appUsers.uploadImage.should.have.been.called;
+
+                        conversationActions.replaceMessage.should.have.been.calledOnce;
+                        conversationActions.replaceMessage.args[0][1].sendStatus.should.eql(SEND_STATUS.FAILED);
                     });
                 });
             });
@@ -575,10 +584,16 @@ describe('Conversation service', () => {
             coreMock.conversations.postPostback.should.have.been.calledWithMatch('1', actionId);
         });
 
-        it('should show error notification on error', () => {
-            return mockedStore.dispatch(conversationService.postPostback(actionId)).catch(() => {
-                coreMock.conversations.postPostback.should.have.been.calledWithMatch('1', actionId);
-                appStateActions.showErrorNotification.should.have.been.calledWithMatch('action postback error');
+        describe('errors', () => {
+            beforeEach(() => {
+                coreMock.conversations.postPostback.rejects();
+            });
+
+            it('should show an error notification', () => {
+                return mockedStore.dispatch(conversationService.postPostback(actionId)).then(() => {
+                    coreMock.conversations.postPostback.should.have.been.calledWithMatch('1', actionId);
+                    appStateActions.showErrorNotification.should.have.been.calledWithMatch('action postback error');
+                });
             });
         });
     });
