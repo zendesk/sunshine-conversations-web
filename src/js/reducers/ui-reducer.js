@@ -56,7 +56,7 @@ const INITIAL_STATE = {
         tapToRetry: 'Message not delivered. Tap to retry.',
         locationServicesDenied: 'Access to location services was denied. To enable, go to your browser\'s privacy settings and grant access.',
         locationSendingFailed: 'Could not send location',
-        locationNotSupported: 'Your browser does not support location services. Please send your location via text.'
+        locationNotSupported: 'Your browser either does not support location services or they\'ve been disabled. Please type your location instead.'
     }
 };
 
