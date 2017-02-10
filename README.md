@@ -155,8 +155,20 @@ var skPromise = Smooch.init({
         smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
         smsUnhandledError: 'Something went wrong. Please try again.',
         smsPingChannelError: 'There was an error sending a message to your number.',
+        smsLinkCancelled: 'Link to {appUserNumber} was cancelled.',
+        smsLinkPending: 'Pending',
+        smsStartTexting: 'Start Texting',
+        smsChangeNumber: 'Change my number',
+        smsSendText: 'Send me a text',
+        smsContinue: 'Continue',
+        smsCancel: 'Cancel',
+        fetchingHistory: 'Retrieving history...',
+        fetchHistory: 'Load more',
         clickToRetry: 'Message not delivered. Click to retry.',
-        tapToRetry: 'Message not delivered. Tap to retry.'
+        tapToRetry: 'Message not delivered. Tap to retry.',
+        locationServicesDenied: 'Access to location services was denied. To enable, go to your browser\'s privacy settings and grant access.',
+        locationSendingFailed: 'Could not send location',
+        locationNotSupported: 'Your browser does not support location services. Please send your location via text.'
     }
 });
 

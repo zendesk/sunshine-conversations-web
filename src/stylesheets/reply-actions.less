@@ -1,10 +1,10 @@
-.sk-quick-replies-container {
+.sk-reply-actions-container {
     text-align: right;
     position: relative;
     display: block;
     padding-bottom: 10px;
 
-    .btn-sk-quick-reply {
+    .btn-sk-reply-action {
         padding: 3px 7px 4px;
         border-radius: 7px;
         border: 1px solid @sk-blue;
@@ -14,6 +14,13 @@
         color: @sk-darker-grey;
         margin-bottom: 5px;
 
+        .sk-fading-circle {
+            float: left;
+            vertical-align: bottom;
+            margin-right: 5px;
+            top: 2.5px;
+        }
+
         span {
             max-width: 280px;
             text-overflow: ellipsis;
@@ -21,7 +28,7 @@
             display: block;
             white-space: nowrap;
 
-            .sk-quick-reply-icon {
+            .sk-reply-action-icon, .sk-location-icon {
                 height: 20px;
                 vertical-align: bottom;
                 margin-right: 5px;

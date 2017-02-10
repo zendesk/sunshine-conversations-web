@@ -4,7 +4,7 @@ import { SEND_STATUS } from '../constants/message';
 
 const INITIAL_STATE = {
     messages: [],
-    quickReplies: [],
+    replyActions: [],
     unreadCount: 0,
     hasMoreMessages: false,
     isFetchingMoreMessagesFromServer: false
@@ -44,15 +44,16 @@ const manageGroupsBetweenMessages = (messages, previousMessageIndex, message) =>
     }
 };
 
-const extractQuickReplies = ({actions=[]} = {}) => {
-    return actions.filter(({type}) => type === 'reply');
+const extractReplyActions = ({actions=[]} = {}) => {
+    return actions.filter(({type}) => type === 'reply' || type === 'locationRequest');
 };
 
 const addMessage = (messages, message) => {
-    const quickReplies = extractQuickReplies(message);
+    const replyActions = extractReplyActions(message);
+
     const hasText = (message.text && message.text.trim()) || (message.mediaUrl && message.mediaUrl.trim());
-    if (quickReplies.length > 0 && !hasText) {
-        // if the message contains quick replies and has no text,
+    if (replyActions.length > 0 && !hasText) {
+        // if the message contains reply actions and has no text,
         // don't add it to the messages
         return messages;
     }
@@ -132,13 +133,13 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             return {
                 ...action.conversation,
                 messages: state.messages,
-                quickReplies: state.quickReplies
+                replyActions: state.replyActions
             };
         case ConversationActions.SET_MESSAGES:
             return {
                 ...state,
                 messages: assignGroups(sortMessages(cleanUpMessages([...action.messages, ...preserveFailedMessages(state.messages)]))),
-                quickReplies: extractQuickReplies(action.messages[action.messages.length - 1])
+                replyActions: extractReplyActions(action.messages[action.messages.length - 1])
             };
         case ConversationActions.ADD_MESSAGES:
             return {
@@ -147,12 +148,12 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
                     [...state.messages, ...action.messages] :
                     [...action.messages, ...state.messages]
                 ))),
-                quickReplies: extractQuickReplies(action.messages[action.messages.length - 1])
+                replyActions: extractReplyActions(action.messages[action.messages.length - 1])
             };
         case ConversationActions.ADD_MESSAGE:
             return Object.assign({}, state, {
                 messages: addMessage(state.messages, action.message),
-                quickReplies: extractQuickReplies(action.message)
+                replyActions: extractReplyActions(action.message)
             });
         case ConversationActions.REPLACE_MESSAGE:
             return Object.assign({}, state, {
@@ -160,7 +161,8 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             });
         case ConversationActions.REMOVE_MESSAGE:
             return Object.assign({}, state, {
-                messages: [...state.messages.filter((message) => !matchMessage(message, action.queryProps))]
+                messages: [...state.messages.filter((message) => !matchMessage(message, action.queryProps))],
+                replyActions: state.messages[state.messages.length - 2] && extractReplyActions(state.messages[state.messages.length - 2])
             });
         case ConversationActions.INCREMENT_UNREAD_COUNT:
             return Object.assign({}, state, {
