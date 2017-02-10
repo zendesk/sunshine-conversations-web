@@ -284,8 +284,8 @@ export class Smooch {
         return store.dispatch(trackEvent(eventName, userProps));
     }
 
-    sendMessage(text) {
-        return store.dispatch(sendMessage(text));
+    sendMessage(props) {
+        return store.dispatch(sendMessage(props));
     }
 
     updateUser(props) {

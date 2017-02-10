@@ -240,7 +240,20 @@ describe('Conversation service', () => {
 
         conversationStartedSuite(conversationService.sendMessage('message'));
 
-        it('should add message and send message', () => {
+        it('should add message and send message', function*() {
+            mockedStore = createMockedStore(sandbox, getProps());
+
+            yield mockedStore.dispatch(conversationService.sendMessage('message'));
+            yield mockedStore.dispatch(conversationService.sendMessage({
+                type: 'text',
+                'text': 'message'
+            }));
+
+            conversationActions.addMessage.should.have.been.calledTwice;
+            coreMock.appUsers.sendMessage.should.have.been.calledTwice;
+        });
+
+        it('should accept string or message properties', () => {
             mockedStore = createMockedStore(sandbox, getProps());
 
             return mockedStore.dispatch(conversationService.sendMessage('message')).then(() => {
@@ -256,7 +269,7 @@ describe('Conversation service', () => {
 
             it('should update message send status', () => {
                 mockedStore = createMockedStore(sandbox, getProps());
-                return mockedStore.dispatch(conversationService.sendMessage(null, message))
+                return mockedStore.dispatch(conversationService.sendMessage(message))
                     .then(() => {
                         conversationActions.replaceMessage.should.have.been.calledWith({
                             _clientId: message._clientId
