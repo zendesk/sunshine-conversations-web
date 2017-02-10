@@ -240,26 +240,32 @@ describe('Conversation service', () => {
 
         conversationStartedSuite(conversationService.sendMessage('message'));
 
-        it('should add message and send message', function*() {
-            mockedStore = createMockedStore(sandbox, getProps());
-
-            yield mockedStore.dispatch(conversationService.sendMessage('message'));
-            yield mockedStore.dispatch(conversationService.sendMessage({
-                type: 'text',
-                'text': 'message'
-            }));
-
-            conversationActions.addMessage.should.have.been.calledTwice;
-            coreMock.appUsers.sendMessage.should.have.been.calledTwice;
-        });
-
-        it('should accept string or message properties', () => {
+        it('should add message and send message', () => {
             mockedStore = createMockedStore(sandbox, getProps());
 
             return mockedStore.dispatch(conversationService.sendMessage('message')).then(() => {
                 conversationActions.addMessage.should.have.been.calledOnce;
                 coreMock.appUsers.sendMessage.should.have.been.calledOnce;
             });
+        });
+
+        it('should accept string or message properties', () => {
+            mockedStore = createMockedStore(sandbox, getProps());
+
+            return mockedStore.dispatch(conversationService.sendMessage('message'))
+                .then(() => mockedStore.dispatch(conversationService.sendMessage({
+                    type: 'text',
+                    text: 'message'
+                })))
+                .then(() => {
+                    conversationActions.addMessage.should.have.been.calledTwice;
+                    coreMock.appUsers.sendMessage.should.have.been.calledTwice;
+
+                    coreMock.appUsers.sendMessage.firstCall.args[1].type.should.eql('text');
+                    coreMock.appUsers.sendMessage.firstCall.args[1].text.should.eql('message');
+                    coreMock.appUsers.sendMessage.secondCall.args[1].type.should.eql('text');
+                    coreMock.appUsers.sendMessage.secondCall.args[1].text.should.eql('message');
+                });
         });
 
         describe('errors', () => {
