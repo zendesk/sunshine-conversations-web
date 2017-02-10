@@ -1,6 +1,6 @@
 import * as ConversationActions from '../actions/conversation-actions';
 import { RESET } from '../actions/common-actions';
-import { SEND_STATUS } from '../constants/message';
+import { SEND_STATUS, GLOBAL_ACTION_TYPES } from '../constants/message';
 
 const INITIAL_STATE = {
     messages: [],
@@ -106,7 +106,9 @@ const cleanUpMessages = (messages) => {
             key = message._clientSent;
         }
 
-        if (!(key in messagesHash) && messageText) {
+        const hasContent = messageText || (message.actions && message.actions.filter(({type}) => !GLOBAL_ACTION_TYPES.includes(type)).length > 0);
+
+        if (!(key in messagesHash) && hasContent) {
             messagesHash[key] = message;
             cleanedMessages.push(message);
         }

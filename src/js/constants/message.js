@@ -9,3 +9,5 @@ export const LOCATION_ERRORS = {
     POSITION_UNAVAILABLE: 2,
     TIMEOUT: 3
 };
+
+export const GLOBAL_ACTION_TYPES = ['reply', 'locationRequest'];

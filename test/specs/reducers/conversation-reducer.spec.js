@@ -139,6 +139,27 @@ const FAILED_MESSAGE = {
     _clientId: '123498001'
 };
 
+const ACTIONS_ONLY_MESSAGE = {
+    text: '',
+    role: 'appMaker',
+    received: 1463682857.454,
+    authorId: '8a9445dadad4862c2322db52',
+    name: 'Calm Chimpanzee',
+    actions: [{
+        type: 'link',
+        label: 'Reply',
+        uri: 'http://url.com'
+    }, {
+        type: 'link',
+        label: 'Reply',
+        uri: 'http://url.com'
+    }, {
+        type: 'link',
+        label: 'Reply',
+        uri: 'http://url.com'
+    }]
+};
+
 describe('Conversation reducer', () => {
 
     describe('SET_CONVERSATION action', () => {
@@ -306,6 +327,21 @@ describe('Conversation reducer', () => {
             });
             afterState.messages.length.should.eq(1);
             afterState.messages[0].should.eql(WHISPER_MESSAGE);
+        });
+
+        it('should add action only messages', () => {
+            const beforeState = {
+                messages: MESSAGES,
+                unreadCount: 0
+            };
+            const afterState = ConversationReducer(beforeState, {
+                type: ADD_MESSAGE,
+                message: ACTIONS_ONLY_MESSAGE
+            });
+            afterState.messages.length.should.eq(3);
+            afterState.messages[0].should.eql(MESSAGE_1);
+            afterState.messages[1].should.eql(MESSAGE_2);
+            afterState.messages[2].should.eql(ACTIONS_ONLY_MESSAGE);
         });
     });
 
@@ -494,6 +530,18 @@ describe('Conversation reducer', () => {
                 messages: MESSAGES
             });
             afterState.messages.should.eql([...MESSAGES, FAILED_MESSAGE]);
+        });
+
+        it('should add action only messages', () => {
+            const beforeState = INITIAL_STATE;
+            const afterState = ConversationReducer(beforeState, {
+                type: SET_MESSAGES,
+                messages: [...MESSAGES, ACTIONS_ONLY_MESSAGE]
+            });
+            afterState.messages.length.should.eq(3);
+            afterState.messages[0].should.eql(MESSAGE_1);
+            afterState.messages[1].should.eql(MESSAGE_2);
+            afterState.messages[2].should.eql(ACTIONS_ONLY_MESSAGE);
         });
     });
 
