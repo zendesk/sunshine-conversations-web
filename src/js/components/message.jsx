@@ -102,7 +102,7 @@ class Message extends Component {
 
         const style = {};
 
-        if (!hasImage) {
+        if (!hasImage || hasActions || hasText) {
             if (isAppUser && accentColor) {
                 style.backgroundColor = style.borderLeftColor = `#${accentColor}`;
             }
