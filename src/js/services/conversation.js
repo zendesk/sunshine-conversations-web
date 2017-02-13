@@ -97,7 +97,7 @@ const addMessage = (props) => {
         if (typeof props === 'string') {
             message.text = props;
         } else {
-            Object.assign(message, ...props);
+            Object.assign(message, props);
         }
 
         dispatch(batchActions([
