@@ -157,21 +157,28 @@ export function resendMessage(messageClientId) {
     };
 }
 
-export function sendLocation(message) {
+export function sendLocation(props = {}) {
     return (dispatch, getState) => {
-        const locationMessage = message || dispatch(addMessage({
-            type: 'location'
-        }));
+        let message;
 
-        if (locationMessage.coordinates) {
-            return dispatch(sendChain(postSendMessage, locationMessage));
+        if (props._clientSent) {
+            message = props;
+        } else {
+            message = dispatch(addMessage({
+                type: 'location',
+                ...props
+            }));
+        }
+
+        if (message.coordinates) {
+            return dispatch(sendChain(postSendMessage, message));
         }
 
         const locationServicesDeniedText = getState().ui.text.locationServicesDenied;
 
         return new Promise((resolve) => {
             navigator.geolocation.getCurrentPosition((position) => {
-                Object.assign(locationMessage, {
+                Object.assign(message, {
                     coordinates: {
                         lat: position.coords.latitude,
                         long: position.coords.longitude
@@ -179,17 +186,17 @@ export function sendLocation(message) {
                 });
 
                 dispatch(replaceMessage({
-                    _clientId: locationMessage._clientId
-                }, locationMessage));
+                    _clientId: message._clientId
+                }, message));
 
-                dispatch(sendChain(postSendMessage, locationMessage))
+                dispatch(sendChain(postSendMessage, message))
                     .then(resolve);
             }, (err) => {
                 if (err.code === LOCATION_ERRORS.PERMISSION_DENIED) {
                     setTimeout(() => alert(locationServicesDeniedText), 100);
-                    dispatch(removeMessage(locationMessage._clientId));
+                    dispatch(removeMessage(message._clientId));
                 } else {
-                    dispatch(onMessageSendFailure(locationMessage));
+                    dispatch(onMessageSendFailure(message));
                 }
                 resolve();
             });
