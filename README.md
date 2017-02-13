@@ -238,10 +238,17 @@ Destroys the widget and makes it disappear. The widget has to be reinitialized w
 Smooch.destroy();
 ```
 
-#### sendMessage(text)
+#### sendMessage(message)
 Sends a message on the user's behalf
 
 ```javascript
+Smooch.sendMessage({
+    type: 'text',
+    text: 'hello'
+});
+
+// OR
+
 Smooch.sendMessage('hello');
 ```
 

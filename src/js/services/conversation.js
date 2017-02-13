@@ -72,14 +72,14 @@ const onMessageSendFailure = (message) => {
     };
 };
 
-const addMessage = (text, extra = {}) => {
+const addMessage = (props) => {
     return (dispatch, getState) => {
-        if (extra._clientId) {
-            const oldMessage = getState().conversation.messages.find((message) => message._clientId === extra._clientId);
-            const newMessage = Object.assign({}, oldMessage, extra);
+        if (props._clientId) {
+            const oldMessage = getState().conversation.messages.find((message) => message._clientId === props._clientId);
+            const newMessage = Object.assign({}, oldMessage, props);
 
             dispatch(replaceMessage({
-                _clientId: extra._clientId
+                _clientId: props._clientId
             }, newMessage));
 
             return newMessage;
@@ -91,12 +91,13 @@ const addMessage = (text, extra = {}) => {
             _clientId: Math.random(),
             _clientSent: Date.now() / 1000,
             deviceId: getDeviceId(),
-            sendStatus: SEND_STATUS.SENDING,
-            ...extra
+            sendStatus: SEND_STATUS.SENDING
         };
 
-        if (text) {
-            message.text = text;
+        if (typeof props === 'string') {
+            message.text = props;
+        } else {
+            Object.assign(message, props);
         }
 
         dispatch(batchActions([
@@ -119,9 +120,9 @@ const removeMessage = (messageClientId) => {
     };
 };
 
-export function sendMessage(text, extra = {}) {
+export function sendMessage(props) {
     return (dispatch) => {
-        const message = dispatch(addMessage(text, extra));
+        const message = dispatch(addMessage(props));
         return dispatch(sendChain(postSendMessage, message));
     };
 }
@@ -158,7 +159,7 @@ export function resendMessage(messageClientId) {
 
 export function sendLocation(message) {
     return (dispatch, getState) => {
-        const locationMessage = message || dispatch(addMessage(null, {
+        const locationMessage = message || dispatch(addMessage({
             type: 'location'
         }));
 
@@ -204,7 +205,7 @@ export function uploadImage(file) {
 
         return resizeImage(file)
             .then((dataUrl) => {
-                const message = dispatch(addMessage(null, {
+                const message = dispatch(addMessage({
                     mediaUrl: dataUrl,
                     mediaType: 'image/jpeg',
                     type: 'image'
