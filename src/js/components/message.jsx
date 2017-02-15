@@ -8,7 +8,7 @@ import { Action } from './action';
 import { findDOMNode } from 'react-dom';
 import { getElementProperties } from '../utils/dom';
 import { resendMessage } from '../services/conversation';
-import { SEND_STATUS } from '../constants/message';
+import { SEND_STATUS, GLOBAL_ACTION_TYPES } from '../constants/message';
 import { LoadingComponent } from './loading';
 
 class Message extends Component {
@@ -63,7 +63,7 @@ class Message extends Component {
 
     render() {
         const {name, role, avatarUrl, text, accentColor, firstInGroup, lastInGroup, linkColor, type, mediaUrl, sendStatus, clickToRetryText, tapToRetryText, locationSendingFailedText} = this.props;
-        const actions = this.props.actions.filter(({type}) => type !== 'reply' && type !== 'locationRequest');
+        const actions = this.props.actions.filter(({type}) => !GLOBAL_ACTION_TYPES.includes(type));
         const hasText = text && text.trim() && text.trim() !== mediaUrl;
         const hasImage = type === 'image';
         const hasLocation = type === 'location';
