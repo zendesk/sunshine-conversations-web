@@ -242,10 +242,12 @@ export class ConversationComponent extends Component {
         }
 
         if (replyActions.length > 0) {
-            const choices = replyActions.map(({text, iconUrl, type}) => {
+            const choices = replyActions.map(({text, iconUrl, type, metadata, payload}) => {
                 return {
                     text,
                     iconUrl,
+                    metadata,
+                    payload,
                     type
                 };
             });

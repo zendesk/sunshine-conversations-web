@@ -299,7 +299,8 @@ describe('Conversation service', () => {
         beforeEach(() => {
             coreMock.appUsers.sendMessage.resolves(message);
             locationMessage = {
-                type: 'location'
+                type: 'location',
+                _clientSent: Date.now() / 1000
             };
             navigator = {
                 geolocation: {

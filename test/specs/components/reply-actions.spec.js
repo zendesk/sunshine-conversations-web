@@ -84,8 +84,15 @@ describe('ReplyActions Component', () => {
 
             if (choice.type === 'locationRequest') {
                 conversationService.sendLocation.should.have.been.calledOnce;
+                conversationService.sendLocation.should.have.been.calledWith({
+                    metadata: choice.metadata
+                });
             } else {
-                conversationService.sendMessage.should.have.been.calledWith(choice.text);
+                conversationService.sendMessage.should.have.been.calledWith({
+                    text: choice.text,
+                    payload: choice.payload,
+                    metadata: choice.metadata
+                });
             }
         });
     });

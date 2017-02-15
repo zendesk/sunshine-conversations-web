@@ -21,16 +21,20 @@ export class ReplyActionsComponent extends Component {
         this.state = {};
     }
 
-    onReplyClick({text}) {
+    onReplyClick({text, payload, metadata}) {
         const {dispatch} = this.props;
-        dispatch(sendMessage(text));
+        dispatch(sendMessage({
+            text,
+            payload,
+            metadata
+        }));
     }
 
-    onSendLocation() {
+    onSendLocation(data) {
         const {dispatch, locationNotSupportedText} = this.props;
 
         if ('geolocation' in navigator) {
-            dispatch(sendLocation());
+            dispatch(sendLocation(data));
         } else {
             alert(locationNotSupportedText);
         }
@@ -48,17 +52,21 @@ export class ReplyActionsComponent extends Component {
             buttonStyle.color = `#${accentColor}`;
         }
 
-        const items = choices.map(({text, iconUrl, type} , index) => {
+        const items = choices.map(({text, iconUrl, type, payload, metadata} , index) => {
             const isLocationRequest = type === 'locationRequest';
 
             const onClick = (e) => {
                 e.preventDefault();
 
                 if (isLocationRequest) {
-                    this.onSendLocation(index);
+                    this.onSendLocation({
+                        metadata
+                    });
                 } else {
                     this.onReplyClick({
-                        text
+                        text,
+                        payload,
+                        metadata
                     });
                 }
             };
