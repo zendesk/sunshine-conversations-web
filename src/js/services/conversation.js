@@ -177,7 +177,20 @@ export function sendLocation(props = {}) {
         const locationServicesDeniedText = getState().ui.text.locationServicesDenied;
 
         return new Promise((resolve) => {
+            let timedOut = false;
+
+            const timeout = setTimeout(() => {
+                timedOut = true;
+                dispatch(onMessageSendFailure(message));
+                resolve();
+            }, 10000);
+
             navigator.geolocation.getCurrentPosition((position) => {
+                clearTimeout(timeout);
+                if (timedOut) {
+                    return;
+                }
+
                 Object.assign(message, {
                     coordinates: {
                         lat: position.coords.latitude,
@@ -192,6 +205,11 @@ export function sendLocation(props = {}) {
                 dispatch(sendChain(postSendMessage, message))
                     .then(resolve);
             }, (err) => {
+                clearTimeout(timeout);
+                if (timedOut) {
+                    return;
+                }
+
                 if (err.code === LOCATION_ERRORS.PERMISSION_DENIED) {
                     setTimeout(() => alert(locationServicesDeniedText), 100);
                     dispatch(removeMessage(message._clientId));
