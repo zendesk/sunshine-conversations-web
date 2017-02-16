@@ -210,11 +210,11 @@ export function sendLocation(props = {}) {
                 if (timedOut) {
                     return;
                 }
-                if (err.code === LOCATION_ERRORS.PERMISSION_DENIED) {
-                    setTimeout(() => alert(locationServicesDeniedText), 100);
-                    dispatch(removeMessage(message._clientId));
-                } else if (err.code === LOCATION_ERRORS.POSITION_UNAVAILABLE && location.protocol !== 'https') {
+                if (location.protocol !== 'https:') {
                     setTimeout(() => alert(locationSecurityRestrictionText), 100);
+                    dispatch(removeMessage(message._clientId));
+                } else if (err.code === LOCATION_ERRORS.PERMISSION_DENIED) {
+                    setTimeout(() => alert(locationServicesDeniedText), 100);
                     dispatch(removeMessage(message._clientId));
                 } else {
                     dispatch(onMessageSendFailure(message));
