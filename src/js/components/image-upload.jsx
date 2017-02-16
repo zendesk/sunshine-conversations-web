@@ -54,7 +54,7 @@ export class ImageUploadComponent extends Component {
     render() {
         const styles = {
             form: {
-                flex: 0
+                flex: '0 1 34px'
             },
             icon: {}
         };
