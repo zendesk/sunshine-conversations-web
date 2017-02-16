@@ -54,9 +54,10 @@ const INITIAL_STATE = {
         fetchHistory: 'Load more',
         clickToRetry: 'Message not delivered. Click to retry.',
         tapToRetry: 'Message not delivered. Tap to retry.',
-        locationServicesDenied: 'Access to location services was denied. To enable, go to your browser\'s privacy settings and grant access.',
         locationSendingFailed: 'Could not send location',
-        locationNotSupported: 'Your browser either does not support location services or they\'ve been disabled. Please type your location instead.'
+        locationServicesDenied: 'This website cannot access your location. Allow access in your settings or type your location instead.',
+        locationNotSupported: 'Your browser does not support location services or it’s been disabled. Please type your location instead.',
+        locationSecurityRestriction: 'This website cannot access your location. Please type your location instead.'
     }
 };
 
