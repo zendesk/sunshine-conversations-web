@@ -12,6 +12,7 @@ import { observable } from '../utils/events';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
 import { getDeviceId } from '../utils/device';
 import { hasLinkableChannels, getLinkableChannels, isChannelLinked } from '../utils/user';
+import { getWindowLocation } from '../utils/dom';
 import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
 import { SEND_STATUS, LOCATION_ERRORS } from '../constants/message';
 import { getUserId } from './user';
@@ -210,7 +211,7 @@ export function sendLocation(props = {}) {
                 if (timedOut) {
                     return;
                 }
-                if (location.protocol !== 'https:') {
+                if (getWindowLocation().protocol !== 'https:') {
                     setTimeout(() => alert(locationSecurityRestrictionText), 100);
                     dispatch(removeMessage(message._clientId));
                 } else if (err.code === LOCATION_ERRORS.PERMISSION_DENIED) {

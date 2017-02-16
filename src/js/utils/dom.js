@@ -71,6 +71,10 @@ export function stopMonitoringUrlChanges() {
     }
 }
 
+export function getWindowLocation() {
+    return window.location;
+}
+
 
 let onWindowFocus;
 let onWindowBlur;
