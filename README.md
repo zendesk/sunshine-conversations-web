@@ -166,9 +166,10 @@ var skPromise = Smooch.init({
         fetchHistory: 'Load more',
         clickToRetry: 'Message not delivered. Click to retry.',
         tapToRetry: 'Message not delivered. Tap to retry.',
-        locationServicesDenied: 'Access to location services was denied. To enable, go to your browser\'s privacy settings and grant access.',
         locationSendingFailed: 'Could not send location',
-        locationNotSupported: 'Your browser does not support location services. Please send your location via text.'
+        locationServicesDenied: 'This website cannot access your location. Please type your location instead.',
+        locationNotSupported: 'This website cannot access your location. Allow access in your settings or type your location instead.',
+        locationSecurityRestriction: 'Your browser does not support location services or it’s been disabled. Please type your location instead.'
     }
 });
 

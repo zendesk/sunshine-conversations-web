@@ -6,6 +6,7 @@ import { createMockedStore } from '../../utils/redux';
 import * as utilsDevice from '../../../src/js/utils/device';
 import * as utilsMedia from '../../../src/js/utils/media';
 import * as utilsUser from '../../../src/js/utils/user';
+import * as utilsDom from '../../../src/js/utils/dom';
 import * as conversationService from '../../../src/js/services/conversation';
 import * as coreService from '../../../src/js/services/core';
 import * as userService from '../../../src/js/services/user';
@@ -106,7 +107,6 @@ describe('Conversation service', () => {
         sandbox.stub(utilsDevice, 'getDeviceId').returns('1234');
         sandbox.stub(utilsUser, 'hasLinkableChannels').returns(true);
         sandbox.stub(utilsUser, 'isChannelLinked').returns(false);
-
         sandbox.stub(appService, 'showConnectNotification');
         sandbox.stub(userService, 'immediateUpdate').resolves();
 
@@ -317,24 +317,41 @@ describe('Conversation service', () => {
         conversationStartedSuite(conversationService.sendLocation(locationMessage));
 
         const getCurrentLocationFailsSuite = (action) => {
-            describe('navigator.geolocation.getCurrentPosition', () => {
+            let clock;
+
+            describe('getting the current position', () => {
                 beforeEach(() => {
                     mockedStore = createMockedStore(sandbox, getProps());
-                    window.setTimeout = (cb) => {
-                        cb();
-                    };
                     sandbox.stub(window, 'alert');
+                    clock = sinon.useFakeTimers();
+                    sandbox.stub(utilsDom, 'getWindowLocation').returns({
+                        protocol: 'https:'
+                    });
                 });
+
+                afterEach(() => {
+                    clock.restore();
+                });
+
+                const stubGeolocationFailure = (args, tick = 100) => {
+                    navigator = {
+                        geolocation: {
+                            getCurrentPosition: () => {
+                            }
+                        }
+                    };
+
+                    sandbox.stub(navigator.geolocation, 'getCurrentPosition', (success, failure) => {
+                        failure(args);
+                        clock.tick(tick);
+                    });
+                };
 
                 describe('fails with LOCATION_ERRORS.PERMISSION_DENIED', () => {
                     beforeEach(() => {
-                        navigator = {
-                            geolocation: {
-                                getCurrentPosition: sandbox.stub().callsArgWith(1, {
-                                    code: LOCATION_ERRORS.PERMISSION_DENIED
-                                })
-                            }
-                        };
+                        stubGeolocationFailure({
+                            code: LOCATION_ERRORS.PERMISSION_DENIED
+                        });
                     });
 
                     it('should remove the message and display an alert', () => {
@@ -345,21 +362,51 @@ describe('Conversation service', () => {
                     });
                 });
 
-                describe('fails', () => {
+                describe('fails due to a timeout', () => {
                     beforeEach(() => {
-                        navigator = {
-                            geolocation: {
-                                getCurrentPosition: sandbox.stub().callsArgWith(1, {
-                                    code: LOCATION_ERRORS.TIMEOUT
-                                })
-                            }
-                        };
+                        stubGeolocationFailure({
+                            code: LOCATION_ERRORS.TIMEOUT
+                        }, 100000);
                     });
 
                     it('should replace the message with a failed one', () => {
                         return mockedStore.dispatch(action).then(() => {
                             conversationActions.replaceMessage.should.have.been.calledOnce;
                             window.alert.should.not.have.been.called;
+                        });
+                    });
+                });
+
+                describe('fails unexpectedly', () => {
+                    beforeEach(() => {
+                        stubGeolocationFailure({
+                            code: 10000
+                        });
+                    });
+
+                    it('should replace the message with a failed one', () => {
+                        return mockedStore.dispatch(action).then(() => {
+                            conversationActions.replaceMessage.should.have.been.calledOnce;
+                            window.alert.should.not.have.been.called;
+                        });
+                    });
+                });
+
+                describe('fails due to http protocol', () => {
+                    beforeEach(() => {
+                        utilsDom.getWindowLocation.returns({
+                            protocol: 'http:'
+                        });
+
+                        stubGeolocationFailure({
+                            code: LOCATION_ERRORS.PERMISSION_DENIED
+                        });
+                    });
+
+                    it('should remove the message and display an alert', () => {
+                        return mockedStore.dispatch(action).then(() => {
+                            conversationActions.removeMessage.should.have.been.called;
+                            window.alert.should.have.been.calledOnce;
                         });
                     });
                 });

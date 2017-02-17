@@ -12,6 +12,7 @@ import { observable } from '../utils/events';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
 import { getDeviceId } from '../utils/device';
 import { hasLinkableChannels, getLinkableChannels, isChannelLinked } from '../utils/user';
+import { getWindowLocation } from '../utils/dom';
 import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
 import { SEND_STATUS, LOCATION_ERRORS } from '../constants/message';
 import { getUserId } from './user';
@@ -175,9 +176,23 @@ export function sendLocation(props = {}) {
         }
 
         const locationServicesDeniedText = getState().ui.text.locationServicesDenied;
+        const locationSecurityRestrictionText = getState().ui.text.locationSecurityRestriction;
 
         return new Promise((resolve) => {
+            let timedOut = false;
+
+            const timeout = setTimeout(() => {
+                timedOut = true;
+                dispatch(onMessageSendFailure(message));
+                resolve();
+            }, 10000);
+
             navigator.geolocation.getCurrentPosition((position) => {
+                clearTimeout(timeout);
+                if (timedOut) {
+                    return;
+                }
+
                 Object.assign(message, {
                     coordinates: {
                         lat: position.coords.latitude,
@@ -192,7 +207,14 @@ export function sendLocation(props = {}) {
                 dispatch(sendChain(postSendMessage, message))
                     .then(resolve);
             }, (err) => {
-                if (err.code === LOCATION_ERRORS.PERMISSION_DENIED) {
+                clearTimeout(timeout);
+                if (timedOut) {
+                    return;
+                }
+                if (getWindowLocation().protocol !== 'https:') {
+                    setTimeout(() => alert(locationSecurityRestrictionText), 100);
+                    dispatch(removeMessage(message._clientId));
+                } else if (err.code === LOCATION_ERRORS.PERMISSION_DENIED) {
                     setTimeout(() => alert(locationServicesDeniedText), 100);
                     dispatch(removeMessage(message._clientId));
                 } else {
