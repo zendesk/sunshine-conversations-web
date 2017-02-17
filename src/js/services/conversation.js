@@ -1,7 +1,7 @@
 import { batchActions } from 'redux-batched-actions';
 
 import { showConnectNotification } from '../services/app';
-import { addMessage, addMessages, replaceMessage, removeMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages, setFetchingMoreMessagesFromServer } from '../actions/conversation-actions';
+import { addMessage as addMessageAction, addMessages, removeMessage as removeMessageAction, replaceMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages, setFetchingMoreMessagesFromServer } from '../actions/conversation-actions';
 import { updateUser } from '../actions/user-actions';
 import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi } from '../actions/app-state-actions';
 import { unsetFayeSubscriptions } from '../actions/faye-actions';
@@ -12,183 +12,234 @@ import { observable } from '../utils/events';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
 import { getDeviceId } from '../utils/device';
 import { hasLinkableChannels, getLinkableChannels, isChannelLinked } from '../utils/user';
+import { getWindowLocation } from '../utils/dom';
 import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
+import { SEND_STATUS, LOCATION_ERRORS } from '../constants/message';
 import { getUserId } from './user';
 
-export function handleConnectNotification(response) {
+const postSendMessage = (message) => {
     return (dispatch, getState) => {
+        return core(getState()).appUsers.sendMessage(getUserId(getState()), message);
+    };
+};
 
-        const {user: {clients, email}, app: {integrations, settings}, conversation: {messages}, appState: {emailCaptureEnabled}} = getState();
-        const appUserMessages = messages.filter((message) => message.role === 'appUser');
+const postUploadImage = (message) => {
+    return (dispatch, getState) => {
+        const blob = getBlobFromDataUrl(message.mediaUrl);
 
-        const channelsAvailable = hasLinkableChannels(integrations, clients, settings.web);
-        const showEmailCapture = emailCaptureEnabled && !email;
-        const hasSomeChannelLinked = getLinkableChannels(integrations, settings.web).some((channelType) => {
-            return isChannelLinked(clients, channelType);
+        return core(getState()).appUsers.uploadImage(getUserId(getState()), blob, {
+            role: 'appUser',
+            deviceId: getDeviceId()
         });
+    };
+};
 
-        if ((showEmailCapture || channelsAvailable) && !hasSomeChannelLinked) {
-            if (appUserMessages.length === 1) {
-                dispatch(showConnectNotification());
-            } else {
-                // find the last confirmed message timestamp
-                let lastMessageTimestamp;
+const onMessageSendSuccess = (message, response) => {
+    return (dispatch, getState) => {
+        const actions = [];
+        const {user} = getState();
 
-                // start at -2 to ignore the message that was just sent
-                for (let index = appUserMessages.length - 2; index >= 0 && !lastMessageTimestamp; index--) {
-                    const message = appUserMessages[index];
-                    lastMessageTimestamp = message.received;
-                }
-
-                if (lastMessageTimestamp) {
-                    // divide it by 1000 since server `received` is in seconds and not in ms
-                    const currentTimeStamp = Date.now() / 1000;
-                    if ((currentTimeStamp - lastMessageTimestamp) >= CONNECT_NOTIFICATION_DELAY_IN_SECONDS) {
-                        dispatch(showConnectNotification());
-                    }
-                }
-            }
+        if (!user.conversationStarted) {
+            // use setConversation to set the conversation id in the store
+            actions.push(setConversation(response.conversation));
+            actions.push(updateUser({
+                conversationStarted: true
+            }));
         }
+
+        actions.push(setShouldScrollToBottom(true));
+        actions.push(replaceMessage({
+            _clientId: message._clientId
+        }, response.message));
+
+        dispatch(batchActions(actions));
+        observable.trigger('message:sent', response.message);
 
         return response;
     };
-}
+};
 
-export function sendChain(sendFn) {
+const onMessageSendFailure = (message) => {
+    return (dispatch) => {
+        const actions = [];
+        message.sendStatus = SEND_STATUS.FAILED;
+
+        actions.push(setShouldScrollToBottom(true));
+        actions.push(replaceMessage({
+            _clientId: message._clientId
+        }, message));
+
+        dispatch(batchActions(actions));
+    };
+};
+
+const addMessage = (props) => {
     return (dispatch, getState) => {
-        const promise = dispatch(immediateUpdate(getState().user));
+        if (props._clientId) {
+            const oldMessage = getState().conversation.messages.find((message) => message._clientId === props._clientId);
+            const newMessage = Object.assign({}, oldMessage, props);
 
-        const enableScrollToBottom = (response) => {
-            dispatch(setShouldScrollToBottom(true));
-            return response;
-        };
+            dispatch(replaceMessage({
+                _clientId: props._clientId
+            }, newMessage));
 
-        if (getState().user.conversationStarted) {
-            return promise
-                .then(() => dispatch(connectFayeConversation()))
-                .then(() => sendFn())
-                .then(enableScrollToBottom)
-                .then((response) => dispatch(handleConnectNotification(response)));
+            return newMessage;
         }
 
-        // if it's not started, send the message first to create the conversation,
-        // then get it and connect faye
-        return promise
-            .then(() => sendFn())
-            .then(enableScrollToBottom)
-            .then((response) => dispatch(handleConnectNotification(response)))
-            .then(() => dispatch(connectFayeConversation()));
-    };
-}
-
-export function sendMessage(text, extra = {}) {
-    return (dispatch, getState) => {
-        const fn = () => {
-            const message = {
-                role: 'appUser',
-                text,
-                _clientId: Math.random(),
-                _clientSent: new Date(),
-                deviceId: getDeviceId(),
-                ...extra
-            };
-
-            dispatch(batchActions([
-                setShouldScrollToBottom(true),
-                addMessage(message)
-            ]));
-
-            const {user} = getState();
-
-            return core(getState()).appUsers.sendMessage(getUserId(getState()), message).then((response) => {
-                const actions = [];
-                if (!user.conversationStarted) {
-                    // use setConversation to set the conversation id in the store
-                    actions.push(setConversation(response.conversation));
-                    actions.push(updateUser({
-                        conversationStarted: true
-                    }));
-                }
-                actions.push(replaceMessage({
-                    _clientId: message._clientId
-                }, response.message));
-
-                dispatch(batchActions(actions));
-
-                observable.trigger('message:sent', response.message);
-                return response;
-            }).catch(() => {
-                dispatch(batchActions([
-                    showErrorNotification(getState().ui.text.messageError),
-                    removeMessage({
-                        _clientId: message._clientId
-                    })
-                ]));
-            });
+        const message = {
+            type: 'text',
+            role: 'appUser',
+            _clientId: Math.random(),
+            _clientSent: Date.now() / 1000,
+            deviceId: getDeviceId(),
+            sendStatus: SEND_STATUS.SENDING
         };
 
-        return dispatch(sendChain(fn));
+        if (typeof props === 'string') {
+            message.text = props;
+        } else {
+            Object.assign(message, props);
+        }
+
+        dispatch(batchActions([
+            setShouldScrollToBottom(true),
+            addMessageAction(message)
+        ]));
+
+        return message;
+    };
+};
+
+const removeMessage = (messageClientId) => {
+    return (dispatch) => {
+        dispatch(batchActions([
+            setShouldScrollToBottom(true),
+            removeMessageAction({
+                _clientId: messageClientId
+            })
+        ]));
+    };
+};
+
+export function sendMessage(props) {
+    return (dispatch) => {
+        const message = dispatch(addMessage(props));
+        return dispatch(sendChain(postSendMessage, message));
     };
 }
 
+export function resendMessage(messageClientId) {
+    return (dispatch, getState) => {
+        const oldMessage = getState().conversation.messages.find((message) => message._clientId === messageClientId);
+
+        if (!oldMessage) {
+            return;
+        }
+
+        const newMessage = Object.assign({}, oldMessage, {
+            sendStatus: SEND_STATUS.SENDING
+        });
+
+        dispatch(replaceMessage({
+            _clientId: messageClientId
+        }, newMessage));
+
+        if (newMessage.type === 'text') {
+            return dispatch(sendChain(postSendMessage, newMessage));
+        } else if (newMessage.type === 'location') {
+            if (newMessage.coordinates) {
+                return dispatch(sendChain(postSendMessage, newMessage));
+            } else {
+                return dispatch(sendLocation(newMessage));
+            }
+        }
+
+        return dispatch(sendChain(postUploadImage, newMessage));
+    };
+}
+
+export function sendLocation(props = {}) {
+    return (dispatch, getState) => {
+        let message;
+
+        if (props._clientSent) {
+            message = props;
+        } else {
+            message = dispatch(addMessage({
+                type: 'location',
+                ...props
+            }));
+        }
+
+        if (message.coordinates) {
+            return dispatch(sendChain(postSendMessage, message));
+        }
+
+        const locationServicesDeniedText = getState().ui.text.locationServicesDenied;
+        const locationSecurityRestrictionText = getState().ui.text.locationSecurityRestriction;
+
+        return new Promise((resolve) => {
+            let timedOut = false;
+
+            const timeout = setTimeout(() => {
+                timedOut = true;
+                dispatch(onMessageSendFailure(message));
+                resolve();
+            }, 10000);
+
+            navigator.geolocation.getCurrentPosition((position) => {
+                clearTimeout(timeout);
+                if (timedOut) {
+                    return;
+                }
+
+                Object.assign(message, {
+                    coordinates: {
+                        lat: position.coords.latitude,
+                        long: position.coords.longitude
+                    }
+                });
+
+                dispatch(replaceMessage({
+                    _clientId: message._clientId
+                }, message));
+
+                dispatch(sendChain(postSendMessage, message))
+                    .then(resolve);
+            }, (err) => {
+                clearTimeout(timeout);
+                if (timedOut) {
+                    return;
+                }
+                if (getWindowLocation().protocol !== 'https:') {
+                    setTimeout(() => alert(locationSecurityRestrictionText), 100);
+                    dispatch(removeMessage(message._clientId));
+                } else if (err.code === LOCATION_ERRORS.PERMISSION_DENIED) {
+                    setTimeout(() => alert(locationServicesDeniedText), 100);
+                    dispatch(removeMessage(message._clientId));
+                } else {
+                    dispatch(onMessageSendFailure(message));
+                }
+                resolve();
+            });
+        });
+    };
+}
 
 export function uploadImage(file) {
     return (dispatch, getState) => {
-
         if (!isFileTypeSupported(file.type)) {
-            dispatch(showErrorNotification(getState().ui.text.invalidFileError));
-            return Promise.reject('Invalid file type');
+            return Promise.resolve(dispatch(showErrorNotification(getState().ui.text.invalidFileError)));
         }
 
         return resizeImage(file)
             .then((dataUrl) => {
-                const fn = () => {
-                    const message = {
-                        mediaUrl: dataUrl,
-                        mediaType: 'image/jpeg',
-                        role: 'appUser',
-                        type: 'image',
-                        status: 'sending',
-                        _clientId: Math.random(),
-                        _clientSent: new Date()
-                    };
-
-                    dispatch(addMessage(message));
-
-                    const {user} = getState();
-                    const blob = getBlobFromDataUrl(dataUrl);
-
-                    return core(getState()).appUsers.uploadImage(getUserId(getState()), blob, {
-                        role: 'appUser',
-                        deviceId: getDeviceId()
-                    }).then((response) => {
-                        const actions = [];
-                        if (!user.conversationStarted) {
-                            // use setConversation to set the conversation id in the store
-                            actions.push(setConversation(response.conversation));
-                            actions.push(updateUser({
-                                conversationStarted: true
-                            }));
-                        }
-
-                        actions.push(replaceMessage({
-                            _clientId: message._clientId
-                        }, response.message));
-
-
-                        dispatch(batchActions(actions));
-                        observable.trigger('message:sent', response.message);
-                        return response;
-                    }).catch(() => {
-                        dispatch(batchActions([
-                            showErrorNotification(getState().ui.text.messageError),
-                            removeMessage({
-                                _clientId: message._clientId
-                            })
-                        ]));
-                    });
-                };
-                return dispatch(sendChain(fn));
+                const message = dispatch(addMessage({
+                    mediaUrl: dataUrl,
+                    mediaType: 'image/jpeg',
+                    type: 'image'
+                }));
+                return dispatch(sendChain(postUploadImage, message));
             })
             .catch(() => {
                 dispatch(showErrorNotification(getState().ui.text.invalidFileError));
@@ -290,12 +341,12 @@ export function handleConversationUpdated() {
 
 export function postPostback(actionId) {
     return (dispatch, getState) => {
-        return core(getState()).conversations.postPostback(getUserId(getState()), actionId).catch(() => {
-            dispatch(showErrorNotification(getState().ui.text.actionPostbackError));
-        });
+        return core(getState()).conversations.postPostback(getUserId(getState()), actionId)
+            .catch(() => {
+                dispatch(showErrorNotification(getState().ui.text.actionPostbackError));
+            });
     };
 }
-
 
 export function fetchMoreMessages() {
     return (dispatch, getState) => {
@@ -321,5 +372,64 @@ export function fetchMoreMessages() {
             ]));
             return response;
         });
+    };
+}
+
+export function handleConnectNotification(response) {
+    return (dispatch, getState) => {
+
+        const {user: {clients, email}, app: {integrations, settings}, conversation: {messages}, appState: {emailCaptureEnabled}} = getState();
+        const appUserMessages = messages.filter((message) => message.role === 'appUser');
+
+        const channelsAvailable = hasLinkableChannels(integrations, clients, settings.web);
+        const showEmailCapture = emailCaptureEnabled && !email;
+        const hasSomeChannelLinked = getLinkableChannels(integrations, settings.web).some((channelType) => {
+            return isChannelLinked(clients, channelType);
+        });
+
+        if ((showEmailCapture || channelsAvailable) && !hasSomeChannelLinked) {
+            if (appUserMessages.length === 1) {
+                dispatch(showConnectNotification());
+            } else {
+                // find the last confirmed message timestamp
+                let lastMessageTimestamp;
+
+                // start at -2 to ignore the message that was just sent
+                for (let index = appUserMessages.length - 2; index >= 0 && !lastMessageTimestamp; index--) {
+                    const message = appUserMessages[index];
+                    lastMessageTimestamp = message.received;
+                }
+
+                if (lastMessageTimestamp) {
+                    // divide it by 1000 since server `received` is in seconds and not in ms
+                    const currentTimeStamp = Date.now() / 1000;
+                    if ((currentTimeStamp - lastMessageTimestamp) >= CONNECT_NOTIFICATION_DELAY_IN_SECONDS) {
+                        dispatch(showConnectNotification());
+                    }
+                }
+            }
+        }
+
+        return response;
+    };
+}
+
+export function sendChain(sendFn, message) {
+    return (dispatch, getState) => {
+        const promise = dispatch(immediateUpdate(getState().user));
+
+        const postSendHandler = (response) => {
+            return Promise.resolve(dispatch(onMessageSendSuccess(message, response)))
+                .then(() => dispatch(handleConnectNotification(response)))
+                .then(() => dispatch(connectFayeConversation()))
+                .catch(); // swallow errors to avoid uncaught promises bubbling up
+        };
+
+        return promise
+            .then(() => {
+                return dispatch(sendFn(message))
+                    .then(postSendHandler)
+                    .catch(() => dispatch(onMessageSendFailure(message)));
+            });
     };
 }

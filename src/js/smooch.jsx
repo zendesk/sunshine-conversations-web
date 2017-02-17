@@ -9,6 +9,7 @@ import { setAuth, resetAuth } from './actions/auth-actions';
 import * as userActions from './actions/user-actions';
 import { setStripeInfo, setApp } from './actions/app-actions';
 import { updateText } from './actions/ui-actions';
+import { setCurrentLocation } from './actions/browser-actions';
 import { resetConversation } from './actions/conversation-actions';
 import { resetIntegrations } from './actions/integrations-actions';
 import * as AppStateActions from './actions/app-state-actions';
@@ -230,8 +231,14 @@ export class Smooch {
             actions.push(userActions.setUser(loginResponse.appUser));
             actions.push(setApp(loginResponse.app));
 
+            actions.push(setCurrentLocation(document.location));
             monitorUrlChanges(() => {
-                store.dispatch(updateNowViewing(getDeviceId()));
+                const actions = [
+                    setCurrentLocation(document.location),
+                    updateNowViewing(getDeviceId())
+                ];
+
+                store.dispatch(batchActions(actions));
             });
 
             if (hasChannels(loginResponse.app.settings.web)) {
@@ -277,8 +284,8 @@ export class Smooch {
         return store.dispatch(trackEvent(eventName, userProps));
     }
 
-    sendMessage(text) {
-        return store.dispatch(sendMessage(text));
+    sendMessage(props) {
+        return store.dispatch(sendMessage(props));
     }
 
     updateUser(props) {

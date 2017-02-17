@@ -154,7 +154,22 @@ var skPromise = Smooch.init({
         smsTooManyRequestsError: 'A connection for that number was requested recently. Please try again in {seconds} seconds.',
         smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
         smsUnhandledError: 'Something went wrong. Please try again.',
-        smsPingChannelError: 'There was an error sending a message to your number.'
+        smsPingChannelError: 'There was an error sending a message to your number.',
+        smsLinkCancelled: 'Link to {appUserNumber} was cancelled.',
+        smsLinkPending: 'Pending',
+        smsStartTexting: 'Start Texting',
+        smsChangeNumber: 'Change my number',
+        smsSendText: 'Send me a text',
+        smsContinue: 'Continue',
+        smsCancel: 'Cancel',
+        fetchingHistory: 'Retrieving history...',
+        fetchHistory: 'Load more',
+        clickToRetry: 'Message not delivered. Click to retry.',
+        tapToRetry: 'Message not delivered. Tap to retry.',
+        locationSendingFailed: 'Could not send location',
+        locationServicesDenied: 'This website cannot access your location. Please type your location instead.',
+        locationNotSupported: 'This website cannot access your location. Allow access in your settings or type your location instead.',
+        locationSecurityRestriction: 'Your browser does not support location services or it’s been disabled. Please type your location instead.'
     }
 });
 
@@ -224,10 +239,17 @@ Destroys the widget and makes it disappear. The widget has to be reinitialized w
 Smooch.destroy();
 ```
 
-#### sendMessage(text)
+#### sendMessage(message)
 Sends a message on the user's behalf
 
 ```javascript
+Smooch.sendMessage({
+    type: 'text',
+    text: 'hello'
+});
+
+// OR
+
 Smooch.sendMessage('hello');
 ```
 

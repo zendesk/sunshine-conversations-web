@@ -2,7 +2,8 @@ import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
 
-import { MessengerButton, DefaultButtonIcon } from '../../../src/js/components/messenger-button';
+import { MessengerButton } from '../../../src/js/components/messenger-button';
+import { DefaultButtonIconComponent } from '../../../src/js/components/default-button-icon';
 
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 import { createMockedStore } from '../../utils/redux';
@@ -14,12 +15,16 @@ function getStoreState(state = {}) {
         app: {
             settings: {
                 web: {
-                    channels: {}
+                    channels: {},
+                    isBrandColorDark: true
                 }
             }
         },
         conversation: {
             unreadCount: 0
+        },
+        browser: {
+            currentLocation: {}
         }
     };
 
@@ -29,7 +34,7 @@ function getStoreState(state = {}) {
 describe('Messenger Button Component', () => {
     let mockedStore;
     beforeEach(() => {
-        mockComponent(sandbox, DefaultButtonIcon, 'div', {
+        mockComponent(sandbox, DefaultButtonIconComponent, 'div', {
             className: 'mockedDefaultButtonIcon'
         });
     });

@@ -6,6 +6,7 @@ import { createMockedStore } from '../../utils/redux';
 import * as utilsDevice from '../../../src/js/utils/device';
 import * as utilsMedia from '../../../src/js/utils/media';
 import * as utilsUser from '../../../src/js/utils/user';
+import * as utilsDom from '../../../src/js/utils/dom';
 import * as conversationService from '../../../src/js/services/conversation';
 import * as coreService from '../../../src/js/services/core';
 import * as userService from '../../../src/js/services/user';
@@ -15,6 +16,8 @@ import * as appStateActions from '../../../src/js/actions/app-state-actions';
 import * as conversationActions from '../../../src/js/actions/conversation-actions';
 import * as userActions from '../../../src/js/actions/user-actions';
 import * as fayeActions from '../../../src/js/actions/faye-actions';
+
+import { SEND_STATUS, LOCATION_ERRORS } from '../../../src/js/constants/message';
 
 function getProps(props = {}) {
     const defaultProps = {
@@ -51,6 +54,11 @@ function getProps(props = {}) {
         faye: {
             userSubscription: null,
             conversationSubscription: null
+        },
+        ui: {
+            text: {
+                locationServicesDenied: 'location services denied'
+            }
         }
     };
 
@@ -99,7 +107,6 @@ describe('Conversation service', () => {
         sandbox.stub(utilsDevice, 'getDeviceId').returns('1234');
         sandbox.stub(utilsUser, 'hasLinkableChannels').returns(true);
         sandbox.stub(utilsUser, 'isChannelLinked').returns(false);
-
         sandbox.stub(appService, 'showConnectNotification');
         sandbox.stub(userService, 'immediateUpdate').resolves();
 
@@ -116,6 +123,50 @@ describe('Conversation service', () => {
     afterEach(() => {
         sandbox.restore();
     });
+
+    const conversationStartedSuite = (action, extraProps = {}) => {
+        describe('conversation started', () => {
+            beforeEach(() => {
+                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
+                    user: {
+                        _id: '1',
+                        conversationStarted: true
+                    }
+                }, extraProps)));
+            });
+
+            it('should replace message', () => {
+                return mockedStore.dispatch(action).then(() => {
+                    userService.immediateUpdate.should.have.been.calledOnce;
+
+                    conversationActions.setConversation.should.not.have.been.called;
+                    conversationActions.replaceMessage.should.have.been.called;
+                    userActions.updateUser.should.not.have.been.called;
+                });
+            });
+        });
+
+        describe('conversation not started', () => {
+            beforeEach(() => {
+                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
+                    user: {
+                        _id: '1',
+                        conversationStarted: false
+                    }
+                }, extraProps)));
+            });
+
+            it('should set conversation to started', () => {
+                return mockedStore.dispatch(action).then(() => {
+                    userService.immediateUpdate.should.have.been.calledOnce;
+
+                    conversationActions.setConversation.should.have.been.called;
+                    conversationActions.replaceMessage.should.have.been.called;
+                    userActions.updateUser.should.have.been.called;
+                });
+            });
+        });
+    };
 
     describe('handleConnectNotification', () => {
         it('should show connect notification on first appuser message', () => {
@@ -187,66 +238,301 @@ describe('Conversation service', () => {
             coreMock.appUsers.sendMessage.resolves(message);
         });
 
-        describe('conversation started', () => {
-            beforeEach(() => {
-                mockedStore = createMockedStore(sandbox, getProps({
-                    user: {
-                        _id: '1',
-                        conversationStarted: true
-                    }
-                }));
-            });
+        conversationStartedSuite(conversationService.sendMessage('message'));
 
-            it('should replace message', () => {
-                return mockedStore.dispatch(conversationService.sendMessage('message')).then(() => {
-                    userService.immediateUpdate.should.have.been.calledOnce;
+        it('should add message and send message', () => {
+            mockedStore = createMockedStore(sandbox, getProps());
 
-                    coreMock.appUsers.sendMessage.should.have.been.calledWithMatch('1', {
-                        text: 'message',
-                        role: 'appUser'
-                    });
-
-                    conversationActions.addMessage.should.have.been.called;
-                    conversationActions.setConversation.should.not.have.been.called;
-                    conversationActions.replaceMessage.should.have.been.called;
-                    userActions.updateUser.should.not.have.been.called;
-                });
+            return mockedStore.dispatch(conversationService.sendMessage('message')).then(() => {
+                conversationActions.addMessage.should.have.been.calledOnce;
+                coreMock.appUsers.sendMessage.should.have.been.calledOnce;
             });
         });
 
-        describe('conversation not started', () => {
-            beforeEach(() => {
-                mockedStore = createMockedStore(sandbox, getProps({
-                    user: {
-                        _id: '1',
-                        conversationStated: false
-                    }
-                }));
-            });
+        it('should accept string or message properties', () => {
+            mockedStore = createMockedStore(sandbox, getProps());
 
-            it('should set conversation to started', () => {
-                return mockedStore.dispatch(conversationService.sendMessage('message')).then(() => {
-                    userService.immediateUpdate.should.have.been.calledOnce;
+            return mockedStore.dispatch(conversationService.sendMessage('message'))
+                .then(() => mockedStore.dispatch(conversationService.sendMessage({
+                    type: 'text',
+                    text: 'message'
+                })))
+                .then(() => {
+                    conversationActions.addMessage.should.have.been.calledTwice;
+                    coreMock.appUsers.sendMessage.should.have.been.calledTwice;
 
-                    coreMock.appUsers.sendMessage.should.have.been.calledWithMatch('1', {
-                        text: 'message',
-                        role: 'appUser'
-                    });
-
-                    conversationActions.addMessage.should.have.been.called;
-                    conversationActions.setConversation.should.have.been.called;
-                    conversationActions.replaceMessage.should.have.been.called;
-                    userActions.updateUser.should.have.been.called;
+                    coreMock.appUsers.sendMessage.firstCall.args[1].type.should.eql('text');
+                    coreMock.appUsers.sendMessage.firstCall.args[1].text.should.eql('message');
+                    coreMock.appUsers.sendMessage.secondCall.args[1].type.should.eql('text');
+                    coreMock.appUsers.sendMessage.secondCall.args[1].text.should.eql('message');
                 });
-            });
         });
 
         describe('errors', () => {
-            it('should show an error notification', () => {
+            beforeEach(() => {
+                coreMock.appUsers.sendMessage.rejects();
+            });
+
+            it('should update message send status', () => {
                 mockedStore = createMockedStore(sandbox, getProps());
-                return mockedStore.dispatch(conversationService.sendMessage('message')).catch(() => {
-                    appStateActions.showErrorNotification.should.have.been.called;
-                    conversationActions.removeMessage.should.have.been.called;
+                return mockedStore.dispatch(conversationService.sendMessage(message))
+                    .then(() => {
+                        conversationActions.replaceMessage.should.have.been.calledWith({
+                            _clientId: message._clientId
+                        });
+
+                        conversationActions.replaceMessage.args[0][1].sendStatus.should.eql(SEND_STATUS.FAILED);
+                    });
+            });
+        });
+    });
+
+    describe('sendLocation', () => {
+        const message = {
+            conversation: 'conversation',
+            _clientId: 2,
+            message: 'message'
+        };
+
+        let locationMessage;
+
+        beforeEach(() => {
+            coreMock.appUsers.sendMessage.resolves(message);
+            locationMessage = {
+                type: 'location',
+                _clientSent: Date.now() / 1000
+            };
+            navigator = {
+                geolocation: {
+                    getCurrentPosition: sandbox.stub().yields({
+                        coords: {
+                            latitude: 10,
+                            longitude: 10
+                        }
+                    })
+                }
+            };
+        });
+
+        conversationStartedSuite(conversationService.sendLocation(locationMessage));
+
+        const getCurrentLocationFailsSuite = (action) => {
+            let clock;
+
+            describe('getting the current position', () => {
+                beforeEach(() => {
+                    mockedStore = createMockedStore(sandbox, getProps());
+                    sandbox.stub(window, 'alert');
+                    clock = sinon.useFakeTimers();
+                    sandbox.stub(utilsDom, 'getWindowLocation').returns({
+                        protocol: 'https:'
+                    });
+                });
+
+                afterEach(() => {
+                    clock.restore();
+                });
+
+                const stubGeolocationFailure = (args, tick = 100) => {
+                    navigator = {
+                        geolocation: {
+                            getCurrentPosition: () => {
+                            }
+                        }
+                    };
+
+                    sandbox.stub(navigator.geolocation, 'getCurrentPosition', (success, failure) => {
+                        failure(args);
+                        clock.tick(tick);
+                    });
+                };
+
+                describe('fails with LOCATION_ERRORS.PERMISSION_DENIED', () => {
+                    beforeEach(() => {
+                        stubGeolocationFailure({
+                            code: LOCATION_ERRORS.PERMISSION_DENIED
+                        });
+                    });
+
+                    it('should remove the message and display an alert', () => {
+                        return mockedStore.dispatch(action).then(() => {
+                            conversationActions.removeMessage.should.have.been.called;
+                            window.alert.should.have.been.calledOnce;
+                        });
+                    });
+                });
+
+                describe('fails due to a timeout', () => {
+                    beforeEach(() => {
+                        stubGeolocationFailure({
+                            code: LOCATION_ERRORS.TIMEOUT
+                        }, 100000);
+                    });
+
+                    it('should replace the message with a failed one', () => {
+                        return mockedStore.dispatch(action).then(() => {
+                            conversationActions.replaceMessage.should.have.been.calledOnce;
+                            window.alert.should.not.have.been.called;
+                        });
+                    });
+                });
+
+                describe('fails unexpectedly', () => {
+                    beforeEach(() => {
+                        stubGeolocationFailure({
+                            code: 10000
+                        });
+                    });
+
+                    it('should replace the message with a failed one', () => {
+                        return mockedStore.dispatch(action).then(() => {
+                            conversationActions.replaceMessage.should.have.been.calledOnce;
+                            window.alert.should.not.have.been.called;
+                        });
+                    });
+                });
+
+                describe('fails due to http protocol', () => {
+                    beforeEach(() => {
+                        utilsDom.getWindowLocation.returns({
+                            protocol: 'http:'
+                        });
+
+                        stubGeolocationFailure({
+                            code: LOCATION_ERRORS.PERMISSION_DENIED
+                        });
+                    });
+
+                    it('should remove the message and display an alert', () => {
+                        return mockedStore.dispatch(action).then(() => {
+                            conversationActions.removeMessage.should.have.been.called;
+                            window.alert.should.have.been.calledOnce;
+                        });
+                    });
+                });
+            });
+        };
+
+        describe('message exists with coordinates', () => {
+            beforeEach(() => {
+                Object.assign(locationMessage, {
+                    coordinates: {
+                        lat: 10.0,
+                        long: 10.0
+                    }
+                });
+            });
+
+            it('should postSendMessage', () => {
+                mockedStore = createMockedStore(sandbox, getProps());
+
+                return mockedStore.dispatch(conversationService.sendLocation(locationMessage)).then(() => {
+                    conversationActions.addMessage.should.not.have.been.called;
+                    coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                });
+            });
+        });
+
+        describe('message exists without coordinates', () => {
+            it('should addMessage', () => {
+                mockedStore = createMockedStore(sandbox, getProps());
+
+                return mockedStore.dispatch(conversationService.sendLocation(locationMessage)).then(() => {
+                    conversationActions.addMessage.should.not.have.been.called;
+                    navigator.geolocation.getCurrentPosition.should.have.been.calledOnce;
+                    conversationActions.replaceMessage.should.have.been.called;
+                    coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                });
+            });
+
+            getCurrentLocationFailsSuite(conversationService.sendLocation(locationMessage));
+        });
+
+        describe('message does not yet exist', () => {
+            it('should addMessage', () => {
+                mockedStore = createMockedStore(sandbox, getProps());
+
+                return mockedStore.dispatch(conversationService.sendLocation()).then(() => {
+                    conversationActions.addMessage.should.have.been.calledOnce;
+                    navigator.geolocation.getCurrentPosition.should.have.been.calledOnce;
+                    conversationActions.replaceMessage.should.have.been.called;
+                    coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                });
+            });
+
+            getCurrentLocationFailsSuite(conversationService.sendLocation());
+        });
+    });
+
+    describe('resendMessage', () => {
+        const message = {
+            conversation: 'conversation',
+            _clientId: 2,
+            text: 'message'
+        };
+
+        describe('message is an image', () => {
+            beforeEach(() => {
+                coreMock.appUsers.uploadImage.resolves(message);
+                Object.assign(message, {
+                    sendStatus: SEND_STATUS.FAILED,
+                    type: 'image'
+                });
+
+                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
+                    user: {
+                        _id: '1',
+                        conversationStarted: true
+                    },
+                    conversation: {
+                        messages: [message]
+                    }
+                })));
+            });
+
+            conversationStartedSuite(conversationService.resendMessage(message._clientId), {
+                conversation: {
+                    messages: [message]
+                }
+            });
+
+            it('should update send status and post upload image', () => {
+                return mockedStore.dispatch(conversationService.resendMessage(message._clientId)).then(() => {
+                    coreMock.appUsers.uploadImage.should.have.been.calledOnce;
+                    conversationActions.replaceMessage.should.have.been.calledTwice;
+                });
+            });
+        });
+
+        describe('message is text', () => {
+            beforeEach(() => {
+                coreMock.appUsers.sendMessage.resolves(message);
+                Object.assign(message, {
+                    sendStatus: SEND_STATUS.FAILED,
+                    type: 'text'
+                });
+
+                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
+                    user: {
+                        _id: '1',
+                        conversationStarted: true
+                    },
+                    conversation: {
+                        messages: [message]
+                    }
+                })));
+            });
+
+            conversationStartedSuite(conversationService.resendMessage(message._clientId), {
+                conversation: {
+                    messages: [message]
+                }
+            });
+
+            it('should update send status and send message', () => {
+                return mockedStore.dispatch(conversationService.resendMessage(message._clientId)).then(() => {
+                    coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                    conversationActions.replaceMessage.should.have.been.calledTwice;
                 });
             });
         });
@@ -259,62 +545,11 @@ describe('Conversation service', () => {
 
         beforeEach(() => {
             coreMock.appUsers.uploadImage.resolves(image);
+            utilsMedia.isFileTypeSupported.returns(true);
+            utilsMedia.resizeImage.resolves({});
         });
 
-        describe('conversation started', () => {
-            beforeEach(() => {
-                mockedStore = createMockedStore(sandbox, getProps({
-                    user: {
-                        _id: '1',
-                        conversationStarted: true
-                    }
-                }));
-                utilsMedia.isFileTypeSupported.returns(true);
-                utilsMedia.resizeImage.resolves({});
-            });
-
-            it('should replace image', () => {
-                return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
-                    userService.immediateUpdate.should.have.been.calledOnce;
-
-                    coreMock.appUsers.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
-                        role: 'appUser',
-                        deviceId: '1234'
-                    });
-
-                    conversationActions.setConversation.should.not.have.been.called;
-                    conversationActions.replaceMessage.should.have.been.called;
-                    userActions.updateUser.should.not.have.been.called;
-                });
-            });
-        });
-
-        describe('conversation not started', () => {
-            beforeEach(() => {
-                mockedStore = createMockedStore(sandbox, getProps({
-                    user: {
-                        _id: '1',
-                        conversationStarted: false
-                    }
-                }));
-                utilsMedia.isFileTypeSupported.returns(true);
-                utilsMedia.resizeImage.resolves({});
-            });
-
-            it('should set conversation to started', () => {
-                return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
-                    userService.immediateUpdate.should.have.been.calledOnce;
-
-                    coreMock.appUsers.uploadImage.should.have.been.calledWithMatch('1', 'this-is-a-blob', {
-                        role: 'appUser'
-                    });
-
-                    conversationActions.setConversation.should.have.been.called;
-                    conversationActions.replaceMessage.should.have.been.called;
-                    userActions.updateUser.should.have.been.called;
-                });
-            });
-        });
+        conversationStartedSuite(conversationService.uploadImage({}));
 
         describe('errors', () => {
             beforeEach(() => {
@@ -333,15 +568,13 @@ describe('Conversation service', () => {
 
             describe('unsupported file type', () => {
                 beforeEach(() => {
-                    coreMock.appUsers.uploadImage.resolves({
-                        conversation: 'conversation'
-                    });
                     utilsMedia.isFileTypeSupported.returns(false);
-                    utilsMedia.resizeImage.resolves({});
                 });
 
                 it('should show an error notification', () => {
-                    return mockedStore.dispatch(conversationService.uploadImage({})).catch(() => {
+                    return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
+                        utilsMedia.isFileTypeSupported.should.have.been.called;
+                        utilsMedia.resizeImage.should.not.have.been.called;
                         appStateActions.showErrorNotification.should.have.been.called;
                     });
                 });
@@ -349,15 +582,14 @@ describe('Conversation service', () => {
 
             describe('resize error', () => {
                 beforeEach(() => {
-                    coreMock.appUsers.uploadImage.resolves({
-                        conversation: 'conversation'
-                    });
                     utilsMedia.isFileTypeSupported.returns(true);
                     utilsMedia.resizeImage.rejects();
                 });
 
                 it('should show an error notification', () => {
-                    return mockedStore.dispatch(conversationService.uploadImage({})).catch(() => {
+                    return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
+                        utilsMedia.isFileTypeSupported.should.have.been.called;
+                        utilsMedia.resizeImage.should.have.been.called;
                         appStateActions.showErrorNotification.should.have.been.called;
                     });
                 });
@@ -370,10 +602,14 @@ describe('Conversation service', () => {
                     coreMock.appUsers.uploadImage.rejects();
                 });
 
-                it('should show an error notification', () => {
-                    return mockedStore.dispatch(conversationService.uploadImage({})).catch(() => {
-                        appStateActions.showErrorNotification.should.have.been.called;
-                        conversationActions.removeMessage.should.have.been.called;
+                it('should update message send status', () => {
+                    return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
+                        utilsMedia.isFileTypeSupported.should.have.been.called;
+                        utilsMedia.resizeImage.should.have.been.called;
+                        coreMock.appUsers.uploadImage.should.have.been.called;
+
+                        conversationActions.replaceMessage.should.have.been.calledOnce;
+                        conversationActions.replaceMessage.args[0][1].sendStatus.should.eql(SEND_STATUS.FAILED);
                     });
                 });
             });
@@ -558,10 +794,16 @@ describe('Conversation service', () => {
             coreMock.conversations.postPostback.should.have.been.calledWithMatch('1', actionId);
         });
 
-        it('should show error notification on error', () => {
-            return mockedStore.dispatch(conversationService.postPostback(actionId)).catch(() => {
-                coreMock.conversations.postPostback.should.have.been.calledWithMatch('1', actionId);
-                appStateActions.showErrorNotification.should.have.been.calledWithMatch('action postback error');
+        describe('errors', () => {
+            beforeEach(() => {
+                coreMock.conversations.postPostback.rejects();
+            });
+
+            it('should show an error notification', () => {
+                return mockedStore.dispatch(conversationService.postPostback(actionId)).then(() => {
+                    coreMock.conversations.postPostback.should.have.been.calledWithMatch('1', actionId);
+                    appStateActions.showErrorNotification.should.have.been.calledWithMatch('action postback error');
+                });
             });
         });
     });

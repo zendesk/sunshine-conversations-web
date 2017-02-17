@@ -147,6 +147,8 @@
                 border-radius: 14px;
                 border-left-color: @sk-blue;
 
+                .transition(opacity 150ms);
+
                 .word-break();
 
                 .imageloader {
@@ -214,6 +216,7 @@
             }
             .sk-message-text {
                 display: inline-block;
+                max-width: 204px;
             }
             .sk-message-item {
                 padding: 8px 13px 0;
@@ -221,6 +224,25 @@
             }
             .sk-last-item {
                 padding-bottom: 9px;
+            }
+            .sk-message-location-loading {
+                padding: 0;
+                margin: 6px 30px;
+
+                .sk-fading-circle {
+                    width: 23px;
+                    height: 23px;
+                }
+            }
+            .sk-msg-unsent {
+                opacity: 0.3;
+            }
+            .sk-retry {
+                float: right;
+                clear: right;
+                font-size: 13px;
+                color: #bbb;
+                line-height: 16px;
             }
         }
         &.sk-left-row {
