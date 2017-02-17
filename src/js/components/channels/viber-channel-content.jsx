@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { LoadingComponent } from '../../components/loading';
-import { fetchViberQRCode } from '../../services/integrations-service';
+import { fetchViberQRCode } from '../../services/integrations';
 
 
 class ViberChannelContentComponent extends Component {
@@ -21,7 +21,8 @@ class ViberChannelContentComponent extends Component {
         }
 
         if (channelState.qrCode) {
-            return <img style={ { width: '40%' } }
+            return <img alt='Viber QR Code'
+                        style={ {    width: '40%'} }
                         src={ channelState.qrCode } />;
         }
 

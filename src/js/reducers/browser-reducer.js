@@ -1,8 +1,9 @@
-import { SET_HAS_FOCUS } from '../actions/browser-actions';
+import { SET_HAS_FOCUS, SET_CURRENT_LOCATION } from '../actions/browser-actions';
 import { RESET } from '../actions/common-actions';
 
 const INITIAL_STATE = {
-    hasFocus: false
+    hasFocus: false,
+    currentLocation: document.location
 };
 
 export function BrowserReducer(state = INITIAL_STATE, action) {
@@ -10,9 +11,17 @@ export function BrowserReducer(state = INITIAL_STATE, action) {
         case RESET:
             return Object.assign({}, INITIAL_STATE);
         case SET_HAS_FOCUS:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 hasFocus: action.hasFocus
-            });
+            };
+        case SET_CURRENT_LOCATION:
+            return {
+                ...state,
+                currentLocation: {
+                    ...action.location
+                }
+            };
         default:
             return state;
     }
