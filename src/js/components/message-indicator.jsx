@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { observable } from '../utils/events';
 import DocumentTitle from 'react-document-title';
 
 const BLINKING_INTERVAL = 1500;
@@ -70,6 +71,7 @@ export class MessageIndicatorComponent extends Component {
     }
 
     componentWillReceiveProps({unreadCount}) {
+        observable.trigger('unreadCount', unreadCount);
         if (unreadCount > 0) {
             this.blinkTitle();
         } else {
