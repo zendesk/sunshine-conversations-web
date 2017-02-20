@@ -100,6 +100,7 @@ function onStoreChange({messages, unreadCount}) {
                     initialStoreChange = false;
                 } else {
                     handleNotificationSound();
+                    observable.trigger('unreadCount', unreadCount);
                 }
             });
         }
