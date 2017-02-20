@@ -71,14 +71,14 @@ describe('Channel Component', () => {
             app: {
                 integrations: [
                     {
-                        type: 'messenger',
-                        appId: '1234',
-                        pageId: '1234'
+                        type: 'frontendEmail',
+                        linkColor: '#ddd',
+                        fromAddress: 'some@email.com'
                     }
                 ]
             },
             appState: {
-                visibleChannelType: 'messenger'
+                visibleChannelType: 'frontendEmail'
             },
             user: {
                 _id: '12345',
@@ -95,18 +95,18 @@ describe('Channel Component', () => {
         appUtils.getAppChannelDetails.returns([
             {
                 channel: {
-                    type: 'messenger',
-                    appId: '1234',
-                    pageId: '1234'
+                    type: 'frontendEmail',
+                    linkColor: '#ddd',
+                    fromAddress: 'some@email.com'
                 },
-                details: CHANNEL_DETAILS.messenger
+                details: CHANNEL_DETAILS.frontendEmail
             }
         ]);
 
         const component = wrapComponentWithStore(Channel, null, store);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-pages-container').length.should.be.eq(1);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-page').length.should.be.eq(1);
-        TestUtils.scryRenderedDOMComponentsWithClass(component, 'messenger').length.should.be.eq(1);
+        TestUtils.scryRenderedDOMComponentsWithClass(component, 'frontendEmail').length.should.be.eq(1);
     });
 
     it('should not render page if channel is linked and has component', () => {
@@ -115,14 +115,14 @@ describe('Channel Component', () => {
             app: {
                 integrations: [
                     {
-                        type: 'messenger',
-                        appId: '1234',
-                        pageId: '1234'
+                        type: 'frontendEmail',
+                        linkColor: '#ddd',
+                        fromAddress: 'some@email.com'
                     }
                 ]
             },
             appState: {
-                visibleChannelType: 'messenger'
+                visibleChannelType: 'frontendEmail'
             },
             user: {
                 _id: '12345',
@@ -131,7 +131,7 @@ describe('Channel Component', () => {
                         platform: 'web'
                     },
                     {
-                        platform: 'messenger'
+                        platform: 'frontendEmail'
                     }
                 ],
                 pendingClients: []
@@ -143,11 +143,11 @@ describe('Channel Component', () => {
         appUtils.getAppChannelDetails.returns([
             {
                 channel: {
-                    type: 'messenger',
-                    appId: '1234',
-                    pageId: '1234'
+                    type: 'frontendEmail',
+                    linkColor: '#ddd',
+                    fromAddress: 'some@email.com'
                 },
-                details: CHANNEL_DETAILS.messenger
+                details: CHANNEL_DETAILS.frontendEmail
             }
         ]);
 
