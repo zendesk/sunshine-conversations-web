@@ -1,11 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import StripeCheckout from 'react-stripe-checkout';
 import { connect } from 'react-redux';
+import bindAll from 'lodash.bindall';
 
-import { store } from '../stores/app-store';
-import { createTransaction } from '../services/stripe-service';
-import { immediateUpdate } from '../services/user-service';
-import { postPostback } from '../services/conversation-service';
+import { createTransaction } from '../services/stripe';
+import { immediateUpdate } from '../services/user';
+import { postPostback } from '../services/conversation';
 
 import { getIntegration } from '../utils/app';
 
@@ -23,7 +23,8 @@ export class ActionComponent extends Component {
         state: PropTypes.string,
         actionPaymentCompletedText: PropTypes.string.isRequired,
         integrations: PropTypes.array.isRequired,
-        stripe: PropTypes.object
+        stripe: PropTypes.object,
+        user: PropTypes.object.isRequired
     };
 
     static defaultProps = {
@@ -37,16 +38,24 @@ export class ActionComponent extends Component {
             state: this.props.state,
             hasToken: false
         };
+
+        bindAll(this,
+            'onPostbackClick',
+            'onStripeToken',
+            'onStripeClick',
+            'onStripeClose'
+        );
     }
 
-    onPostbackClick = (e) => {
+    onPostbackClick(e) {
         e.preventDefault();
+        const {dispatch} = this.props;
 
         this.setState({
             state: 'processing'
         });
 
-        postPostback(this.props._id)
+        dispatch(postPostback(this.props._id))
             .then(() => {
                 this.setState({
                     state: ''
@@ -57,22 +66,22 @@ export class ActionComponent extends Component {
                     state: ''
                 });
             });
-    };
+    }
 
     onStripeToken(token) {
+        const {user, dispatch} = this.props;
         this.setState({
             hasToken: true
         });
 
-        const user = store.getState().user;
         const promises = [];
         if (!user.email) {
-            promises.push(immediateUpdate({
+            promises.push(dispatch(immediateUpdate({
                 email: token.email
-            }));
+            })));
         }
 
-        const transactionPromise = createTransaction(this.props._id, token.id)
+        const transactionPromise = dispatch(createTransaction(this.props._id, token.id))
             .then(() => {
                 this.setState({
                     state: 'paid'
@@ -105,7 +114,7 @@ export class ActionComponent extends Component {
     }
 
     render() {
-        const {buttonColor, amount, currency, text, uri, type, actionPaymentCompletedText, integrations, stripe} = this.props;
+        const {buttonColor, amount, currency, text, uri, type, actionPaymentCompletedText, integrations, stripe, user} = this.props;
         const {state} = this.state;
 
         const stripeIntegration = getIntegration(integrations, 'stripeConnect');
@@ -119,23 +128,21 @@ export class ActionComponent extends Component {
         // the public key is necessary to use with Checkout
         // use the link fallback if this happens
         if (type === 'buy' && stripeIntegration) {
-            const user = store.getState().user;
-
             // let's change this when we support other providers
             const stripeAccount = stripe;
             if (state === 'offered') {
                 return <StripeCheckout componentClass='div'
                                        className='sk-action'
-                                       token={ this.onStripeToken.bind(this) }
+                                       token={ this.onStripeToken }
                                        stripeKey={ stripeIntegration.publicKey }
                                        email={ user.email }
                                        amount={ amount }
                                        currency={ currency.toUpperCase() }
                                        name={ stripeAccount.appName }
                                        image={ stripeAccount.iconUrl }
-                                       closed={ this.onStripeClose.bind(this) }>
+                                       closed={ this.onStripeClose }>
                            <a className='btn btn-sk-primary'
-                              onClick={ this.onStripeClick.bind(this) }
+                              onClick={ this.onStripeClick }
                               style={ style }>
                                { text }
                            </a>
@@ -186,8 +193,9 @@ export class ActionComponent extends Component {
     }
 }
 
-export const Action = connect(({app, ui: {text}}) => {
+export const Action = connect(({app, ui: {text}, user}) => {
     return {
+        user,
         actionPaymentCompletedText: text.actionPaymentCompleted,
         integrations: app.integrations,
         stripe: app.stripe

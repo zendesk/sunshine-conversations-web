@@ -6,7 +6,7 @@ import { NotificationsSettings } from '../../../src/js/components/notifications-
 import { EmailSettings } from '../../../src/js/components/email-settings';
 import * as appUtils from '../../../src/js/utils/app';
 
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
@@ -28,7 +28,7 @@ describe('Settings Component', () => {
                     className: 'mockedEmailSettings'
                 });
 
-                const store = mockAppStore(sandbox, {
+                const store = createMockedStore(sandbox, {
                     app: {
                         settings: {
                             web: {}

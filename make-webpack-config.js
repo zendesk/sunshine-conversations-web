@@ -18,15 +18,20 @@ module.exports = function(options) {
         // do nothing
     }
 
-    var entry = options.assetsOnly ? {
+    const entry = options.assetsOnly ? {
         assets: './src/js/constants/assets'
     } : {
         smooch: ['./src/js/utils/polyfills', './src/js/umd']
     };
 
+    if (options.hotComponents && !options.assetsOnly) {
+        entry.smooch.unshift('webpack-hot-middleware/client');
+    }
+
     const fileLimit = options.bundleAll ? 100000 : 1;
 
-    var loaders = {
+
+    const loaders = {
         'jsx': options.hotComponents ? ['react-hot-loader', 'babel-loader'] : 'babel-loader',
         'js': {
             loader: 'babel-loader',
@@ -36,24 +41,24 @@ module.exports = function(options) {
         'png|jpg|jpeg|gif|svg': `url-loader?limit=${fileLimit}`,
         'mp3': `url-loader?limit=${fileLimit}`
     };
-    var cssLoader = options.minimize ? 'css-loader?insertAt=top' : 'css-loader?insertAt=top&localIdentName=[path][name]---[local]---[hash:base64:5]';
-    var stylesheetLoaders = {
+    const cssLoader = options.minimize ? 'css-loader?insertAt=top' : 'css-loader?insertAt=top&localIdentName=[path][name]---[local]---[hash:base64:5]';
+    const stylesheetLoaders = {
         'css': cssLoader,
         'less': [cssLoader, 'less-loader']
     };
-    var additionalLoaders = [];
+    const additionalLoaders = [];
 
-    var alias = {};
+    const alias = {};
 
-    var externals = [];
-    var modulesDirectories = ['node_modules'];
-    var extensions = ['', '.web.js', '.js', '.jsx'];
-    var root = path.join(__dirname, 'src');
-    var publicPath = options.devServer ?
-        'http://' + config.SERVER_HOST + '/_assets/' :
+    const externals = [];
+    const modulesDirectories = ['node_modules'];
+    const extensions = ['', '.web.js', '.js', '.jsx'];
+    const root = path.join(__dirname, 'src');
+    const publicPath = options.devServer ?
+        '/_assets/' :
         'https://cdn.smooch.io/';
 
-    var output = {
+    const output = {
         path: options.outputPath || path.join(__dirname, 'dist'),
         publicPath: publicPath,
         filename: '[name].js' + (options.longTermCaching ? '?[chunkhash]' : ''),
@@ -64,11 +69,11 @@ module.exports = function(options) {
         pathinfo: options.debug
     };
 
-    var excludeFromStats = [
+    const excludeFromStats = [
         /node_modules[\\\/]/
     ];
 
-    var plugins = [
+    const plugins = [
         new webpack.PrefetchPlugin('react'),
         new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment')
     ];
@@ -82,7 +87,7 @@ module.exports = function(options) {
     }
 
     Object.keys(stylesheetLoaders).forEach(function(ext) {
-        var stylesheetLoader = stylesheetLoaders[ext];
+        let stylesheetLoader = stylesheetLoaders[ext];
         if (Array.isArray(stylesheetLoader)) {
             stylesheetLoader = stylesheetLoader.join('!');
         }
@@ -135,6 +140,14 @@ module.exports = function(options) {
         );
     }
 
+    if (options.hotComponents) {
+        plugins.push(
+            new webpack.optimize.OccurrenceOrderPlugin(),
+            new webpack.HotModuleReplacementPlugin(),
+            new webpack.NoErrorsPlugin()
+        );
+    }
+
     return {
         entry: entry,
         output: output,
@@ -156,8 +169,6 @@ module.exports = function(options) {
         },
         plugins: plugins,
         devServer: {
-            host: config.SERVER_HOST.split(':')[0],
-            port: config.SERVER_HOST.split(':')[1],
             stats: {
                 cached: false,
                 exclude: excludeFromStats
