@@ -340,6 +340,14 @@ Smooch.on('message', function(message) {
 });
 ```
 
+#### unreadCount
+```
+// This event triggers when the number of unread messages changes
+Smooch.on('unreadCount', function(unreadCount) {
+    console.log('the number of unread messages was updated', unreadCount);
+});
+```
+
 #### widget:opened
 ```
 // This event triggers when the widget is opened
