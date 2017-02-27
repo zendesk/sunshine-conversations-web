@@ -6,11 +6,11 @@ import { Conversation } from '../../../src/js/components/conversation';
 import { MessageComponent } from '../../../src/js/components/message';
 import { Introduction } from '../../../src/js/components/introduction';
 import { ConnectNotification } from '../../../src/js/components/connect-notification';
-import { QuickReplies } from '../../../src/js/components/quick-replies';
+import { ReplyActions } from '../../../src/js/components/reply-actions';
 import { TypingIndicator } from '../../../src/js/components/typing-indicator';
 
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
 
@@ -60,7 +60,7 @@ function getStoreState(state = {}) {
                     role: 'appMaker'
                 }
             ],
-            quickReplies: [],
+            replyActions: [],
             hasMoreMessages: false
         }
     };
@@ -84,19 +84,18 @@ describe('Conversation Component', () => {
         mockComponent(sandbox, ConnectNotification, 'div', {
             className: 'mockedConnectNotification'
         });
-        mockComponent(sandbox, QuickReplies, 'div', {
-            className: 'mockedQuickReplies'
+        mockComponent(sandbox, ReplyActions, 'div', {
+            className: 'mockedReplyActions'
         });
         mockComponent(sandbox, TypingIndicator, 'div', {
             className: 'mockedTypingIndicator'
         });
 
-        mockedStore = mockAppStore(sandbox, getStoreState());
+        mockedStore = createMockedStore(sandbox, getStoreState());
     });
 
     afterEach(() => {
         sandbox.restore();
-        mockedStore && mockedStore.restore();
     });
 
     describe('render', () => {
@@ -112,14 +111,14 @@ describe('Conversation Component', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedIntroduction').length.should.eq(1);
         });
 
-        it('should not render quick replies', () => {
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedQuickReplies').length.should.eq(0);
+        it('should not render reply actions', () => {
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedReplyActions').length.should.eq(0);
         });
     });
 
     describe('ConnectNotification component', () => {
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState({
+            mockedStore = createMockedStore(sandbox, getStoreState({
                 appState: {
                     connectNotificationTimestamp: 5
                 }
@@ -137,7 +136,7 @@ describe('Conversation Component', () => {
         [true, false].forEach((hasMoreMessages) => {
             describe(`${hasMoreMessages ? '' : 'no'} more messages to fetch`, () => {
                 it(`should ${hasMoreMessages ? 'not' : ''} render`, () => {
-                    mockedStore = mockAppStore(sandbox, getStoreState({
+                    mockedStore = createMockedStore(sandbox, getStoreState({
                         conversation: {
                             hasMoreMessages
                         }
@@ -150,9 +149,9 @@ describe('Conversation Component', () => {
         });
     });
 
-    describe('Quick Replies', () => {
+    describe('Reply Actions', () => {
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState({
+            mockedStore = createMockedStore(sandbox, getStoreState({
                 conversation: {
                     messages: [
                         {
@@ -187,7 +186,7 @@ describe('Conversation Component', () => {
                             ]
                         }
                     ],
-                    quickReplies: [
+                    replyActions: [
                         {
                             type: 'reply',
                             text: 'reply'
@@ -198,8 +197,8 @@ describe('Conversation Component', () => {
             component = wrapComponentWithStore(Conversation, null, mockedStore);
         });
 
-        it('should render quick replies', () => {
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedQuickReplies').length.should.eq(1);
+        it('should render reply actions', () => {
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedReplyActions').length.should.eq(1);
 
         });
     });
@@ -207,7 +206,7 @@ describe('Conversation Component', () => {
         [true, false].forEach((typingIndicatorShown) => {
             describe(`typingIndicatorShown is ${typingIndicatorShown ? 'on' : 'off'}`, () => {
                 it(`should ${typingIndicatorShown ? '' : 'not'} render`, () => {
-                    mockedStore = mockAppStore(sandbox, getStoreState({
+                    mockedStore = createMockedStore(sandbox, getStoreState({
                         appState: {
                             typingIndicatorShown
                         }

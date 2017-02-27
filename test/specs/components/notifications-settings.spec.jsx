@@ -6,7 +6,7 @@ import { NotificationChannelItem } from '../../../src/js/components/notification
 import { NotificationsSettings } from '../../../src/js/components/notifications-settings';
 import { CHANNEL_DETAILS } from '../../../src/js/constants/channels';
 
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
 import * as appUtils from '../../../src/js/utils/app';
@@ -72,13 +72,12 @@ describe('Notifications Settings', () => {
             }
         };
 
-        mockedStore = mockAppStore(sandbox, storeProps);
+        mockedStore = createMockedStore(sandbox, storeProps);
 
         component = wrapComponentWithStore(NotificationsSettings, null, mockedStore);
     });
 
     afterEach(() => {
-        mockedStore.restore();
         sandbox.restore();
     });
 
@@ -98,7 +97,7 @@ describe('Notifications Settings', () => {
 
     describe('No user id', () => {
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, defaultStoreProps);
+            mockedStore = createMockedStore(sandbox, defaultStoreProps);
 
             component = wrapComponentWithStore(NotificationsSettings, null, mockedStore);
         });
