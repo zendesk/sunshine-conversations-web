@@ -52,7 +52,7 @@ export class WidgetComponent extends Component {
         this.props.dispatch(disableAnimation());
     };
 
-    onWheel = debounce(() => {
+    onScroll = debounce(() => {
         resetUnreadCount();
     }, 250, {
         leading: true
@@ -123,7 +123,7 @@ export class WidgetComponent extends Component {
                         className={ classNames.join(' ') }
                         onTouchStart={ this.onTouchStart }
                         onClick={ this.onClick }
-                        onWheel={ this.onWheel }>
+                        onScroll={ this.onScroll }>
                        <MessageIndicator />
                        <div id='sk-wrapper'
                             className={ wrapperClassNames.join(' ') }>
