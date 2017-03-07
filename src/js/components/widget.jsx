@@ -45,18 +45,11 @@ export class WidgetComponent extends Component {
 
     onClick = () => {
         resetUnreadCount();
-
     };
 
     handleResize = () => {
         this.props.dispatch(disableAnimation());
     };
-
-    onWheel = debounce(() => {
-        resetUnreadCount();
-    }, 250, {
-        leading: true
-    });
 
     componentDidMount = () => {
         window.addEventListener('resize', this.handleResize);
@@ -122,8 +115,7 @@ export class WidgetComponent extends Component {
                    <div id='sk-container'
                         className={ classNames.join(' ') }
                         onTouchStart={ this.onTouchStart }
-                        onClick={ this.onClick }
-                        onWheel={ this.onWheel }>
+                        onClick={ this.onClick }>
                        <MessageIndicator />
                        <div id='sk-wrapper'
                             className={ wrapperClassNames.join(' ') }>

@@ -66,7 +66,7 @@ export class ImageUploadComponent extends Component {
                      onSubmit={ preventDefault }
                      style={ styles.form }>
                    <label className='btn btn-sk-link image-upload'
-                          for='sk-img-upload'
+                          htmlFor='sk-img-upload'
                           onMouseOver={ this.onMouseOver }
                           onMouseOut={ this.onMouseOut }
                           style={ styles.icon }
