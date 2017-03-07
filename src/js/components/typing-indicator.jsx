@@ -28,6 +28,7 @@ export class TypingIndicatorComponent extends Component {
 
         const avatar = avatarUrl ?
             <img src={ avatarUrl }
+                 alt={ `${name}'s avatar` }
                  className='sk-typing-indicator-avatar' /> :
             <div className='sk-typing-indicator-avatar-placeholder' />;
 

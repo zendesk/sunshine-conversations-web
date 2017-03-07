@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
 import { mockComponent, wrapComponentWithStore } from '../../../utils/react';
-import { mockAppStore } from '../../../utils/redux';
+import { createMockedStore } from '../../../utils/redux';
 import { ReactTelephoneInput } from '../../../../src/js/lib/react-telephone-input';
 
 import { TwilioChannelContent } from '../../../../src/js/components/channels/twilio-channel-content';
@@ -33,7 +33,7 @@ describe('Twilio Channel Content Component', () => {
     };
 
     beforeEach(() => {
-        mockedStore = mockAppStore(sandbox, storeState);
+        mockedStore = createMockedStore(sandbox, storeState);
         mockComponent(sandbox, ReactTelephoneInput, 'div', {
             className: 'mockedTelephoneInput'
         });
