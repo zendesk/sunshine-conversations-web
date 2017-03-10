@@ -15,8 +15,9 @@ export const CHANNEL_DETAILS = {
         name: 'Facebook Messenger',
         descriptionKey: 'messengerChannelDescription',
         isLinkable: true,
+        usesCode: true,
         ...integrationsAssets.messenger,
-        getURL: (appUser, channel) => `https://m.me/${channel.pageId}?ref=${appUser._id}`
+        getURL: ({channel, code}) => `https://m.me/${channel.pageId}?ref=${code}`
     },
     frontendEmail: {
         name: 'Email',
@@ -44,17 +45,24 @@ export const CHANNEL_DETAILS = {
         name: 'Telegram',
         descriptionKey: 'telegramChannelDescription',
         isLinkable: true,
+        usesCode: true,
         ...integrationsAssets.telegram,
-        getURL: (appUser, channel, linked) => `https://telegram.me/${channel.username}${!linked ? '?start=' + appUser._id : ''}`
+        getURL: ({channel, code, linked}) => {
+            const query = linked ? '' : `?start=${code}`;
+            return `https://telegram.me/${channel.username}${query}`
+        }
     },
     viber: {
         name: 'Viber',
         descriptionHtmlKey: 'viberChannelDescription',
         isLinkable: true,
+        usesCode: true,
         ...integrationsAssets.viber,
         Component: !isMobile.any ? ViberChannelContent : undefined,
         onChannelPage: fetchViberQRCode,
-        getURL: (appUser, channel) => isMobile.any ? `viber://pa?chatURI=${channel.uri}&context=${appUser._id}` : undefined,
+        getURL: ({channel, code}) => {
+            return isMobile.any ? `viber://pa?chatURI=${channel.uri}&context=${code}` : undefined;
+        },
         renderPageIfLinked: !isMobile.any
     },
     wechat: {
@@ -72,9 +80,7 @@ export const CHANNEL_DETAILS = {
         isLinkable: false,
         ...integrationsAssets.line,
         Component: !isMobile.any ? LineChannelContent : undefined,
-        getURL: (appUser, {lineId}) => {
-            return `https://line.me/R/ti/p/@${lineId}`;
-        }
+        getURL: ({channel}) => Promise.resolve(`https://line.me/R/ti/p/@${channel.lineId}`)
     }
 };
 
