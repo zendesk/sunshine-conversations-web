@@ -373,4 +373,19 @@ export class Smooch {
         this._container = container;
         return renderWidget(container);
     }
+
+    getConversation() {
+        const conversation = store.getState().conversation;
+        const convoNotFoundError = () => {
+            throw new Error('conversation not found');
+        };
+
+        if (conversation) {
+            return Promise.resolve(conversation);
+        }
+
+        return connectFaye()
+            .then(res => res || getConversation())
+            .then(res => res && res.conversation || convoNotFoundError());
+    }
 }
