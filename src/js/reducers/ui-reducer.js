@@ -51,7 +51,13 @@ const INITIAL_STATE = {
         smsContinue: 'Continue',
         smsCancel: 'Cancel',
         fetchingHistory: 'Retrieving history...',
-        fetchHistory: 'Load more'
+        fetchHistory: 'Load more',
+        clickToRetry: 'Message not delivered. Click to retry.',
+        tapToRetry: 'Message not delivered. Tap to retry.',
+        locationSendingFailed: 'Could not send location',
+        locationServicesDenied: 'This website cannot access your location. Allow access in your settings or type your location instead.',
+        locationNotSupported: 'Your browser does not support location services or it’s been disabled. Please type your location instead.',
+        locationSecurityRestriction: 'This website cannot access your location. Please type your location instead.'
     }
 };
 

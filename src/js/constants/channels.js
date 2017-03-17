@@ -2,9 +2,8 @@ import isMobile from 'ismobilejs';
 
 import { integrations as integrationsAssets } from '../constants/assets';
 
-import { fetchViberQRCode, fetchWeChatQRCode, fetchTwilioAttributes } from '../services/integrations-service';
+import { fetchViberQRCode, fetchWeChatQRCode, fetchTwilioAttributes } from '../services/integrations';
 
-import { MessengerChannelContent } from '../components/channels/messenger-channel-content';
 import { EmailChannelContent } from '../components/channels/email-channel-content';
 import { TwilioChannelContent } from '../components/channels/twilio-channel-content';
 import { WeChatChannelContent } from '../components/channels/wechat-channel-content';
@@ -17,8 +16,7 @@ export const CHANNEL_DETAILS = {
         descriptionKey: 'messengerChannelDescription',
         isLinkable: true,
         ...integrationsAssets.messenger,
-        Component: MessengerChannelContent,
-        getURL: (appUser, channel) => `https://m.me/${channel.pageId}`
+        getURL: (appUser, channel) => `https://m.me/${channel.pageId}?ref=${appUser._id}`
     },
     frontendEmail: {
         name: 'Email',
@@ -85,7 +83,7 @@ Object.keys(CHANNEL_DETAILS).forEach((key) => {
         renderPageIfLinked: false,
         getURL: () => {
         },
-        onChannelPage: () => Promise.resolve(),
+        onChannelPage: () => () => Promise.resolve(),
         ...CHANNEL_DETAILS[key]
     };
 });

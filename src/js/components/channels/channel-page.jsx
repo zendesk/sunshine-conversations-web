@@ -39,6 +39,7 @@ export class ChannelPageComponent extends Component {
                    <div className='content-wrapper'>
                        <div className='channel-header'>
                            <img className='channel-icon'
+                                alt={ name }
                                 src={ icon }
                                 srcSet={ `${icon} 1x, ${icon2x} 2x` } />
                            <div className='channel-name'>

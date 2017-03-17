@@ -5,7 +5,7 @@ import deepAssign from 'deep-assign';
 import { TypingIndicator } from '../../../src/js/components/typing-indicator';
 
 import { wrapComponentWithStore } from '../../utils/react';
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 
 
 function getStoreState(state = {}) {
@@ -27,7 +27,7 @@ describe('TypingIndicator Component', () => {
     });
 
     it('should render only indicator if no avatar', () => {
-        const mockedStore = mockAppStore(sandbox, getStoreState());
+        const mockedStore = createMockedStore(sandbox, getStoreState());
         const component = wrapComponentWithStore(TypingIndicator, null, mockedStore);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-typing-indicator').length.should.eq(1);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-typing-indicator-avatar-placeholder').length.should.eq(1);
@@ -35,7 +35,7 @@ describe('TypingIndicator Component', () => {
     });
 
     it('should render avatar if present', () => {
-        const mockedStore = mockAppStore(sandbox, getStoreState({
+        const mockedStore = createMockedStore(sandbox, getStoreState({
             appState: {
                 typingIndicatorAvatarUrl: 'http://some-url/'
             }
@@ -50,7 +50,7 @@ describe('TypingIndicator Component', () => {
 
     [true, false].forEach((firstInGroup) => {
         ['', 'http://some-url/'].forEach((avatarUrl) => {
-            const mockedStore = mockAppStore(sandbox, getStoreState({
+            const mockedStore = createMockedStore(sandbox, getStoreState({
                 appState: {
                     typingIndicatorAvatarUrl: avatarUrl,
                     typingIndicatorName: 'Some name'
