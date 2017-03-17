@@ -98,7 +98,7 @@ export class ConversationComponent extends Component {
 
         // Timeout is needed because we need to compute sizes of HTML elements and thus need to make sure everything has rendered
         setTimeout(() => {
-            fetchMoreMessages();
+            dispatch(fetchMoreMessages());
         }, 400);
     };
 
