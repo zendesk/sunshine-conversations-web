@@ -40,6 +40,11 @@ describe('Integrations service', () => {
             },
             messages: []
         });
+        coreMock.appUsers.transferRequest.resolves({
+            transferRequests: [{
+                code: '1234'
+            }]
+        });
 
         sandbox.stub(coreService, 'core', () => {
             return coreMock;
@@ -107,6 +112,17 @@ describe('Integrations service', () => {
         it('should call the ping channel API', () => {
             return mockedStore.dispatch(integrationsService.pingTwilioChannel('1')).then(() => {
                 coreMock.appUsers.pingChannel.should.have.been.calledWith('1', 'twilio');
+            });
+        });
+    });
+
+    describe('fetchTransferRequestCode', () => {
+        it('should call the transferrequest API', () => {
+            const channel = {
+                type: 'messenger'
+            };
+            return mockedStore.dispatch(integrationsService.fetchTransferRequestCode(channel)).then(() => {
+                coreMock.appUsers.transferRequest.should.have.been.calledWith('1', channel);
             });
         });
     });
