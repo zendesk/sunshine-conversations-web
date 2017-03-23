@@ -9,6 +9,7 @@ import { core } from './core';
 import { immediateUpdate } from './user';
 import { disconnectClient, subscribeConversation, subscribeUser, subscribeConversationActivity } from './faye';
 import { observable } from '../utils/events';
+import { Throttle } from '../utils/throttle';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
 import { getDeviceId } from '../utils/device';
 import { hasLinkableChannels, getLinkableChannels, isChannelLinked } from '../utils/user';
@@ -16,6 +17,8 @@ import { getWindowLocation } from '../utils/dom';
 import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
 import { SEND_STATUS, LOCATION_ERRORS } from '../constants/message';
 import { getUserId } from './user';
+
+const getMessagesThrottle = new Throttle();
 
 const postSendMessage = (message) => {
     return (dispatch, getState) => {
@@ -248,7 +251,7 @@ export function uploadImage(file) {
 }
 
 export function getMessages() {
-    return (dispatch, getState) => {
+    return (dispatch, getState) => getMessagesThrottle.exec(() => {
         return core(getState()).appUsers.getMessages(getUserId(getState())).then((response) => {
             dispatch(batchActions([
                 setConversation({
@@ -259,7 +262,7 @@ export function getMessages() {
             ]));
             return response;
         });
-    };
+    });
 }
 
 export function connectFayeConversation() {
