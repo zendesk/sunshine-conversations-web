@@ -18,7 +18,16 @@ import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notification
 import { SEND_STATUS, LOCATION_ERRORS } from '../constants/message';
 import { getUserId } from './user';
 
-const getMessagesThrottle = new Throttle();
+
+// Throttle requests per appUser
+const throttleMap = {}
+const throttlePerUser = (userId) => {
+    if (!throttleMap[userId]) {
+        throttleMap[userId] = new Throttle();
+    }
+
+    return throttleMap[userId];
+}
 
 const postSendMessage = (message) => {
     return (dispatch, getState) => {
@@ -250,19 +259,25 @@ export function uploadImage(file) {
     };
 }
 
-export function getMessages() {
-    return (dispatch, getState) => getMessagesThrottle.exec(() => {
-        return core(getState()).appUsers.getMessages(getUserId(getState())).then((response) => {
-            dispatch(batchActions([
-                setConversation({
-                    ...response.conversation,
-                    hasMoreMessages: !!response.previous
-                }),
-                setMessages(response.messages)
-            ]));
-            return response;
-        });
+function _getMessages(dispatch, getState) {
+    const userId = getUserId(getState());
+    return core(getState()).appUsers.getMessages(userId).then((response) => {
+        dispatch(batchActions([
+            setConversation({
+                ...response.conversation,
+                hasMoreMessages: !!response.previous
+            }),
+            setMessages(response.messages)
+        ]));
+        return response;
     });
+}
+
+export function getMessages() {
+    return (dispatch, getState) => {
+        const userId = getUserId(getState());
+        return throttlePerUser(userId).exec(() => _getMessages(dispatch, getState));
+    };
 }
 
 export function connectFayeConversation() {
