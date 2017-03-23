@@ -1,9 +1,12 @@
 import isMobile from 'ismobilejs';
 
+import { fetchTransferRequestCode } from '../services/integrations';
+
 import { integrations as integrationsAssets } from '../constants/assets';
 
 import { fetchViberQRCode, fetchWeChatQRCode, fetchTwilioAttributes } from '../services/integrations';
 
+import { MessengerChannelContent } from '../components/channels/messenger-channel-content';
 import { EmailChannelContent } from '../components/channels/email-channel-content';
 import { TwilioChannelContent } from '../components/channels/twilio-channel-content';
 import { WeChatChannelContent } from '../components/channels/wechat-channel-content';
@@ -15,9 +18,12 @@ export const CHANNEL_DETAILS = {
         name: 'Facebook Messenger',
         descriptionKey: 'messengerChannelDescription',
         isLinkable: true,
-        usesCode: true,
         ...integrationsAssets.messenger,
-        getURL: ({channel, code}) => `https://m.me/${channel.pageId}?ref=${code}`
+        Component: MessengerChannelContent ,
+        onChannelPage: () => fetchTransferRequestCode('messenger'),
+        getURL: ({channel}) => {
+            return `https://m.me/${channel.pageId}`;
+        }
     },
     frontendEmail: {
         name: 'Email',
