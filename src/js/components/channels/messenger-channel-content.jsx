@@ -1,7 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
+import { hideChannelPage } from '../../services/app';
 import { LoadingComponent } from '../../components/loading';
+import { resetTransferRequestCode } from '../../actions/integrations-actions';
 
 export class MessengerChannelContentComponent extends Component {
 
@@ -10,6 +12,12 @@ export class MessengerChannelContentComponent extends Component {
         pageId: PropTypes.string.isRequired
     };
 
+    onLink = () => {
+        const {dispatch, type} = this.props;
+        dispatch(resetTransferRequestCode(type));
+        dispatch(hideChannelPage());
+    }
+
     render() {
         const {channelState, pageId} = this.props;
         const code = channelState.transferRequestCode;
@@ -17,7 +25,7 @@ export class MessengerChannelContentComponent extends Component {
             const url = `https://m.me/${pageId}?ref=${code}`;
             return <a alt='Connect'
                       target='_blank'
-                      onClick={ () => console.log('lol') }
+                      onClick={ this.onLink }
                       href={ url }>Connect</a>;
         }
 
@@ -32,6 +40,4 @@ export class MessengerChannelContentComponent extends Component {
     }
 }
 
-export const MessengerChannelContent = connect(({ui: {text}}) => {
-    return {};
-})(MessengerChannelContentComponent);
+export const MessengerChannelContent = connect()(MessengerChannelContentComponent);

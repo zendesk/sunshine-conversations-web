@@ -1,7 +1,7 @@
 import { RESET_APP } from '../actions/app-actions';
 import { RESET } from '../actions/common-actions';
 
-import { SET_WECHAT_QR_CODE, SET_WECHAT_ERROR, UNSET_WECHAT_ERROR, SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE, RESET_INTEGRATIONS, SET_VIBER_QR_CODE, SET_VIBER_ERROR, UNSET_VIBER_ERROR, SET_TRANSFER_REQUEST_CODE} from '../actions/integrations-actions';
+import { SET_WECHAT_QR_CODE, SET_WECHAT_ERROR, UNSET_WECHAT_ERROR, SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE, RESET_INTEGRATIONS, SET_VIBER_QR_CODE, SET_VIBER_ERROR, UNSET_VIBER_ERROR, SET_TRANSFER_REQUEST_CODE, RESET_TRANSFER_REQUEST_CODE} from '../actions/integrations-actions';
 
 const INITIAL_STATE = {
     viber: {
@@ -95,6 +95,14 @@ export function IntegrationsReducer(state = INITIAL_STATE, action) {
                 [action.channel]: {
                     ...state[action.channel],
                     transferRequestCode: action.transferRequestCode
+                }
+            };
+        case RESET_TRANSFER_REQUEST_CODE:
+            return {
+                ...state,
+                [action.channel]: {
+                    ...state[action.channel],
+                    transferRequestCode: ''
                 }
             };
 

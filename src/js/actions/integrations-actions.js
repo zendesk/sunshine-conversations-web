@@ -8,6 +8,7 @@ export const SET_VIBER_QR_CODE = 'SET_VIBER_QR_CODE';
 export const SET_VIBER_ERROR = 'SET_VIBER_ERROR';
 export const UNSET_VIBER_ERROR = 'UNSET_VIBER_ERROR';
 export const SET_TRANSFER_REQUEST_CODE = 'SET_TRANSFER_REQUEST_CODE';
+export const RESET_TRANSFER_REQUEST_CODE = 'RESET_TRANSFER_REQUEST_CODE';
 
 export function setWeChatQRCode(code) {
     return {
@@ -70,5 +71,12 @@ export function setTransferRequestCode(channel, transferRequestCode) {
         type: SET_TRANSFER_REQUEST_CODE,
         channel,
         transferRequestCode
+    }
+}
+
+export function resetTransferRequestCode(channel) {
+    return {
+        type: RESET_TRANSFER_REQUEST_CODE,
+        channel
     }
 }
