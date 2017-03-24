@@ -1,6 +1,7 @@
 import * as AppStateActions from '../actions/app-state-actions';
 import { preventMobilePageScroll, allowMobilePageScroll } from '../utils/dom';
 import { resetUnreadCount, connectFayeUser } from './conversation';
+import { fetchTransferRequestCode } from './integrations';
 import { observable } from '../utils/events';
 import { hasLinkableChannels, isChannelLinked } from '../utils/user';
 import { getIntegration } from '../utils/app';
@@ -74,24 +75,41 @@ export function showChannelPage(channelType) {
         const {user, app: {integrations}} = getState();
         const channelDetails = CHANNEL_DETAILS[channelType];
         const isLinked = isChannelLinked(user.clients, channelType);
-        const openLink = channelDetails.getURL && (!channelDetails.Component || isLinked);
 
-        if (openLink) {
-            const appChannel = getIntegration(integrations, channelType);
-            const link = channelDetails.getURL(user, appChannel, isLinked);
+        function _showChannelPage() {
+            dispatch(AppStateActions.showChannelPage(channelType));
 
-            if (link) {
-                window.open(link);
-                return (isLinked || !channelDetails.isLinkable) ? Promise.resolve() : dispatch(connectToFayeUser());
-            }
+            return dispatch(connectToFayeUser())
+                .then(() => dispatch(channelDetails.onChannelPage()));
         }
 
-        dispatch(AppStateActions.showChannelPage(channelType));
+        function openLink() {
+            const appChannel = getIntegration(integrations, channelType);
+            const getCode = channelDetails.usesCode ?
+                dispatch(fetchTransferRequestCode(appChannel)) : Promise.resolve();
+            return getCode.then((code) => channelDetails.getURL({
+                channel: appChannel,
+                code,
+                isLinked
+            })).then((link) => {
+                if (!link) {
+                    return _showChannelPage();
+                }
 
-        return dispatch(connectToFayeUser())
-            .then(() => {
-                return dispatch(channelDetails.onChannelPage());
+                window.open(link);
+                if (!isLinked && channelDetails.isLinkable) {
+                    return dispatch(connectToFayeUser());
+                }
             });
+        }
+
+        const isLink = channelDetails.getURL && (!channelDetails.Component || isLinked);
+        if (isLink) {
+            return openLink();
+        } else {
+            return _showChannelPage();
+        }
+
     };
 }
 

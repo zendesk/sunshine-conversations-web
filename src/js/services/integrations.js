@@ -1,7 +1,8 @@
 import { batchActions } from 'redux-batched-actions';
 
 import { core } from './core';
-import { setWeChatQRCode, setWeChatError, unsetWeChatError, setTwilioIntegrationState, resetTwilioIntegrationState, setViberQRCode, setViberError, unsetViberError } from '../actions/integrations-actions';
+
+import { setWeChatQRCode, setWeChatError, unsetWeChatError, setTwilioIntegrationState, resetTwilioIntegrationState, setViberQRCode, setViberError, unsetViberError, setLinkCode, setTransferRequestCode} from '../actions/integrations-actions';
 import { handleConversationUpdated } from './conversation';
 import { getUserId } from './user';
 import { updateUser } from '../actions/user-actions';
@@ -198,4 +199,16 @@ export function fetchViberQRCode() {
                 fetchingViber = false;
             });
     };
+}
+
+export function fetchTransferRequestCode(channel) {
+    return (dispatch, getState) => {
+        const userId = getUserId(getState());
+        return core(getState()).appUsers.transferRequest(userId, {
+            type: channel
+        }).then((res) => {
+            const transferRequestCode = res.transferRequests[0].code
+            dispatch(setTransferRequestCode(channel, transferRequestCode));
+        });
+    }
 }

@@ -20,7 +20,7 @@ describe('Notification Channel Item Component', () => {
                 name: 'name',
                 icon: '/icon/',
                 icon2x: '/icon2x/',
-                hasURL: 'true',
+                hasURL: true,
                 displayName: 'displayname'
             };
 
