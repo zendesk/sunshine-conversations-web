@@ -16,6 +16,7 @@ import * as appStateActions from '../../../src/js/actions/app-state-actions';
 import * as conversationActions from '../../../src/js/actions/conversation-actions';
 import * as userActions from '../../../src/js/actions/user-actions';
 import * as fayeActions from '../../../src/js/actions/faye-actions';
+import { Throttle } from '../../../src/js/utils/throttle';
 
 import { SEND_STATUS, LOCATION_ERRORS } from '../../../src/js/constants/message';
 
@@ -77,6 +78,9 @@ describe('Conversation service', () => {
     });
 
     beforeEach(() => {
+        // Disable throttling for unit tests
+        sandbox.stub(Throttle.prototype, 'exec', (func) => func());
+
         coreMock = createMock(sandbox);
         coreMock.appUsers.getMessages.resolves({
             conversation: {

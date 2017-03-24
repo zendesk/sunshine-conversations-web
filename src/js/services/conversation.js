@@ -9,6 +9,7 @@ import { core } from './core';
 import { immediateUpdate } from './user';
 import { disconnectClient, subscribeConversation, subscribeUser, subscribeConversationActivity } from './faye';
 import { observable } from '../utils/events';
+import { Throttle } from '../utils/throttle';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
 import { getDeviceId } from '../utils/device';
 import { hasLinkableChannels, getLinkableChannels, isChannelLinked } from '../utils/user';
@@ -16,6 +17,17 @@ import { getWindowLocation } from '../utils/dom';
 import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
 import { SEND_STATUS, LOCATION_ERRORS } from '../constants/message';
 import { getUserId } from './user';
+
+
+// Throttle requests per appUser
+const throttleMap = {}
+const throttlePerUser = (userId) => {
+    if (!throttleMap[userId]) {
+        throttleMap[userId] = new Throttle();
+    }
+
+    return throttleMap[userId];
+}
 
 const postSendMessage = (message) => {
     return (dispatch, getState) => {
@@ -247,18 +259,24 @@ export function uploadImage(file) {
     };
 }
 
+function _getMessages(dispatch, getState) {
+    const userId = getUserId(getState());
+    return core(getState()).appUsers.getMessages(userId).then((response) => {
+        dispatch(batchActions([
+            setConversation({
+                ...response.conversation,
+                hasMoreMessages: !!response.previous
+            }),
+            setMessages(response.messages)
+        ]));
+        return response;
+    });
+}
+
 export function getMessages() {
     return (dispatch, getState) => {
-        return core(getState()).appUsers.getMessages(getUserId(getState())).then((response) => {
-            dispatch(batchActions([
-                setConversation({
-                    ...response.conversation,
-                    hasMoreMessages: !!response.previous
-                }),
-                setMessages(response.messages)
-            ]));
-            return response;
-        });
+        const userId = getUserId(getState());
+        return throttlePerUser(userId).exec(() => _getMessages(dispatch, getState));
     };
 }
 

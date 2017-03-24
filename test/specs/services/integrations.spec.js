@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import { createMock } from '../../mocks/core';
 import { createMockedStore } from '../../utils/redux';
 
+import { Throttle } from '../../../src/js/utils/throttle';
 import * as coreService from '../../../src/js/services/core';
 import * as integrationsService from '../../../src/js/services/integrations';
 import * as utilsFaye from '../../../src/js/services/faye';
@@ -15,6 +16,9 @@ describe('Integrations service', () => {
     let pendingAppUser;
 
     beforeEach(() => {
+        // Disable throttling for unit tests
+        sandbox.stub(Throttle.prototype, 'exec', (func) => func());
+
         pendingAppUser = {
             appuser: {
                 _id: '1',
