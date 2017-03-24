@@ -118,11 +118,11 @@ describe('Integrations service', () => {
 
     describe('fetchTransferRequestCode', () => {
         it('should call the transferrequest API', () => {
-            const channel = {
-                type: 'messenger'
-            };
+            const channel = 'messenger';
             return mockedStore.dispatch(integrationsService.fetchTransferRequestCode(channel)).then(() => {
-                coreMock.appUsers.transferRequest.should.have.been.calledWith('1', channel);
+                coreMock.appUsers.transferRequest.should.have.been.calledWith('1', {
+                    type: channel
+                });
             });
         });
     });

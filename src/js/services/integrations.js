@@ -2,7 +2,7 @@ import { batchActions } from 'redux-batched-actions';
 
 import { core } from './core';
 
-import { setWeChatQRCode, setWeChatError, unsetWeChatError, setTwilioIntegrationState, resetTwilioIntegrationState, setViberQRCode, setViberError, unsetViberError, setLinkCode, setTransferRequestCode} from '../actions/integrations-actions';
+import { setError, unsetError, setWeChatQRCode, setWeChatError, unsetWeChatError, setTwilioIntegrationState, resetTwilioIntegrationState, setViberQRCode, setViberError, unsetViberError, setLinkCode, setTransferRequestCode } from '../actions/integrations-actions';
 import { handleConversationUpdated } from './conversation';
 import { getUserId } from './user';
 import { updateUser } from '../actions/user-actions';
@@ -18,14 +18,14 @@ export function fetchWeChatQRCode() {
             return Promise.resolve();
         }
 
-        dispatch(unsetWeChatError());
+        dispatch(unsetError('wechat'));
         fetchingWeChat = true;
         return core(getState()).appUsers.wechat.getQRCode(getUserId(getState()))
             .then(({url}) => {
                 dispatch(setWeChatQRCode(url));
             })
             .catch(() => {
-                dispatch(setWeChatError());
+                dispatch(setError('wechat'));
             })
             .then(() => {
                 fetchingWeChat = false;
@@ -186,14 +186,14 @@ export function fetchViberQRCode() {
             return Promise.resolve();
         }
 
-        dispatch(unsetViberError());
+        dispatch(unsetError('viber'));
         fetchingViber = true;
         return core(getState()).appUsers.viber.getQRCode(getUserId(getState()))
             .then(({url}) => {
                 dispatch(setViberQRCode(url));
             })
             .catch(() => {
-                dispatch(setViberError());
+                dispatch(setError('viber'));
             })
             .then(() => {
                 fetchingViber = false;
@@ -204,8 +204,11 @@ export function fetchViberQRCode() {
 export function fetchTransferRequestCode(channel) {
     return (dispatch, getState) => {
         const userId = getUserId(getState());
+        dispatch(unsetError(channel));
         return core(getState()).appUsers.transferRequest(userId, {
             type: channel
+        }).catch(() => {
+            dispatch(setError(channel));
         }).then((res) => {
             const transferRequestCode = res.transferRequests[0].code
             dispatch(setTransferRequestCode(channel, transferRequestCode));
