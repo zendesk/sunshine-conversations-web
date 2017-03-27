@@ -7,13 +7,12 @@ export class TelegramChannelContentComponent extends Component {
 
     static propTypes = {
         channelState: PropTypes.object.isRequired,
-        username: PropTypes.string.isRequired,
-		transferRequestCodeError: PropTypes.string
+        username: PropTypes.string.isRequired
     };
 
     render() {
         const {username, channelState} = this.props;
-        const url =  `https://telegram.me/${username}?start=${channelState.transferRequestCode}`;
+        const url = `https://telegram.me/${username}?start=${channelState.transferRequestCode}`;
         return <TransferRequestChannelContent type='telegram'
                                               channelState={ channelState }
                                               url={ url } />;

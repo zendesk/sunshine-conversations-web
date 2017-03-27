@@ -75,41 +75,20 @@ export function showChannelPage(channelType) {
         const {user, app: {integrations}} = getState();
         const channelDetails = CHANNEL_DETAILS[channelType];
         const isLinked = isChannelLinked(user.clients, channelType);
+        const appChannel = getIntegration(integrations, channelType);
+        const url = channelDetails.getURL(appChannel);
+        const openLink = url && (!channelDetails.Component || isLinked);
 
-        function _showChannelPage() {
+        if (openLink) {
+            window.open(url);
+            if (!isLinked && channelDetails.isLinkable) {
+                return dispatch(connectToFayeUser());
+            }
+        } else {
             dispatch(AppStateActions.showChannelPage(channelType));
-
             return dispatch(connectToFayeUser())
                 .then(() => dispatch(channelDetails.onChannelPage()));
         }
-
-        function openLink() {
-            const appChannel = getIntegration(integrations, channelType);
-            const getCode = channelDetails.usesCode ?
-                dispatch(fetchTransferRequestCode(appChannel)) : Promise.resolve();
-            return getCode.then((code) => channelDetails.getURL({
-                channel: appChannel,
-                code,
-                isLinked
-            })).then((link) => {
-                if (!link) {
-                    return _showChannelPage();
-                }
-
-                window.open(link);
-                if (!isLinked && channelDetails.isLinkable) {
-                    return dispatch(connectToFayeUser());
-                }
-            });
-        }
-
-        const isLink = channelDetails.getURL && (!channelDetails.Component || isLinked);
-        if (isLink) {
-            return openLink();
-        } else {
-            return _showChannelPage();
-        }
-
     };
 }
 

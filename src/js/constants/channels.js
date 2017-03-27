@@ -22,7 +22,7 @@ export const CHANNEL_DETAILS = {
         ...integrationsAssets.messenger,
         Component: MessengerChannelContent,
         onChannelPage: () => fetchTransferRequestCode('messenger'),
-        getURL: ({channel}) => `https://m.me/${channel.pageId}`
+        getURL: (channel) => `https://m.me/${channel.pageId}`
     },
     frontendEmail: {
         name: 'Email',
@@ -53,15 +53,14 @@ export const CHANNEL_DETAILS = {
         ...integrationsAssets.telegram,
         Component: TelegramChannelContent,
         onChannelPage: () => fetchTransferRequestCode('telegram'),
-        getURL: ({channel}) => {
-            return `https://telegram.me/${channel.username}`
-        }
+        getURL: (channel) => `https://telegram.me/${channel.username}` 
     },
     viber: {
         name: 'Viber',
         descriptionHtmlKey: isMobile.any ? 'viberChannelDescriptionMobile' : 'viberChannelDescription',
         isLinkable: true,
         ...integrationsAssets.viber,
+        renderPageIfLinked: !isMobile.any,
         Component: ViberChannelContent,
         onChannelPage: () => {
             if (isMobile.any) {
@@ -70,7 +69,7 @@ export const CHANNEL_DETAILS = {
                 return fetchViberQRCode();
             }
         },
-        getURL: ({channel}) => isMobile.any ? `viber://pa?chatURI=${channel.uri}` : undefined
+        getURL: (channel) => isMobile.any ? `viber://pa?chatURI=${channel.uri}` : undefined
     },
     wechat: {
         name: 'WeChat',
@@ -87,7 +86,7 @@ export const CHANNEL_DETAILS = {
         isLinkable: false,
         ...integrationsAssets.line,
         Component: !isMobile.any ? LineChannelContent : undefined,
-        getURL: ({channel}) => Promise.resolve(`https://line.me/R/ti/p/@${channel.lineId}`)
+        getURL: (channel) => `https://line.me/R/ti/p/@${channel.lineId}`
     }
 };
 
