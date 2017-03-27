@@ -30,13 +30,14 @@ const INITIAL_STATE = {
         wechatQRCodeError: 'An error occurred while fetching your WeChat QR code. Please try again.',
         messengerChannelDescription: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.',
         frontendEmailChannelDescription: 'To talk to us using email just send a message to our email address and we\'ll reply shortly:',
-        smsChannelDescription: 'Connect your SMS number to text with us and receive notifications over SMS.',
+        smsChannelDescription: 'Connect your SMS number to be notified when you get a reply and carry the conversation over SMS.',
         smsChannelPendingDescription: 'Check your messages at {number} to confirm your phone number.',
-        telegramChannelDescription: 'To talk to us using Telegram, add our bot:',
-        wechatChannelDescriptionMobile: 'To send us a message from WeChat, save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.',
-        wechatChannelDescription: 'To send us a message from WeChat, scan this QR code using the WeChat app.',
+        telegramChannelDescription: 'Connect your Telegram account to be notified when you get a reply and carry the conversation on Telegram',
+        wechatChannelDescriptionMobile: 'Connect your WeChat account to be notified when you get a reply and carry the conversation on WeChat. To get started, save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.',
+        wechatChannelDescription: 'Connect your WeChat account to be notified when you get a reply and carry the conversation on WeChat. To get started, scan this QR code using the WeChat app.',
         lineChannelDescription: 'To talk to us using LINE, scan this QR code using the LINE app and send us a message.',
-        viberChannelDescription: 'To send us a message from Viber, scan this QR code using the Viber app.',
+        viberChannelDescriptionMobile: 'Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, install the Viber app and tap Connect.',
+        viberChannelDescription: 'Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, scan the QR code using the Viber app.',
         smsInvalidNumberError: 'Your phone number isn\'t valid. Please try again.',
         smsTooManyRequestsError: 'A connection for that number was requested recently. Please try again in {minutes} minutes.',
         smsTooManyRequestsOneMinuteError: 'A connection for that number was requested recently. Please try again in 1 minute.',
@@ -50,6 +51,7 @@ const INITIAL_STATE = {
         smsSendText: 'Send me a text',
         smsContinue: 'Continue',
         smsCancel: 'Cancel',
+        transferError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
         fetchingHistory: 'Retrieving history...',
         fetchHistory: 'Load more',
         clickToRetry: 'Message not delivered. Click to retry.',
@@ -60,7 +62,6 @@ const INITIAL_STATE = {
         locationSecurityRestriction: 'This website cannot access your location. Please type your location instead.'
     }
 };
-
 
 export function UIReducer(state = INITIAL_STATE, action) {
     switch (action.type) {

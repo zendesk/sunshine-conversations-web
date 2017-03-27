@@ -156,46 +156,6 @@ describe('Channel Component', () => {
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-page').length.should.be.eq(0);
     });
 
-    it('should not render page if channel is not linked and has no component', () => {
-        const storeProps = {
-            ...baseStoreProps,
-            app: {
-                integrations: [
-                    {
-                        type: 'telegram'
-                    }
-                ]
-            },
-            appState: {
-                visibleChannelType: 'telegram'
-            },
-            user: {
-                _id: '12345',
-                clients: [
-                    {
-                        platform: 'web'
-                    }
-                ],
-                pendingClients: []
-            }
-        };
-
-        const store = createMockedStore(sandbox, storeProps);
-
-        appUtils.getAppChannelDetails.returns([
-            {
-                channel: {
-                    type: 'telegram'
-                },
-                details: CHANNEL_DETAILS.telegram
-            }
-        ]);
-
-        const component = wrapComponentWithStore(Channel, null, store);
-        TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-pages-container').length.should.be.eq(1);
-        TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-page').length.should.be.eq(0);
-    });
-
     it('should render page if channel is linked, has component, and is marked as render when linked', () => {
         const storeProps = {
             ...baseStoreProps,
