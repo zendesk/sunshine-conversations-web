@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { batchActions } from 'redux-batched-actions';
 
 import { hideChannelPage } from '../../services/app';
 import { LoadingComponent } from '../../components/loading';
@@ -21,8 +22,10 @@ export class TransferRequestChannelContentComponent extends Component {
 
     onTryAgain = () => {
         const {dispatch, type} = this.props;
-        dispatch(unsetError(type));
-        dispatch(resetTransferRequestCode(type));
+        dispatch(batchActions([
+            unsetError(type),
+            resetTransferRequestCode(type)
+        ]));
         dispatch(fetchTransferRequestCode(type));
     }
 
@@ -45,8 +48,8 @@ export class TransferRequestChannelContentComponent extends Component {
         }
 
         const loadingStyle = {
-            height: 40,
-            width: 40,
+            height: '40px',
+            width: '40px',
             margin: 'auto'
         };
 
