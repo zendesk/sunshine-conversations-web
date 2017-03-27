@@ -207,11 +207,11 @@ export function fetchTransferRequestCode(channel) {
         dispatch(unsetError(channel));
         return core(getState()).appUsers.transferRequest(userId, {
             type: channel
-        }).catch(() => {
-            dispatch(setError(channel));
         }).then((res) => {
             const transferRequestCode = res.transferRequests[0].code
             dispatch(setTransferRequestCode(channel, transferRequestCode));
+        }).catch(() => {
+            dispatch(setError(channel));
         });
     }
 }

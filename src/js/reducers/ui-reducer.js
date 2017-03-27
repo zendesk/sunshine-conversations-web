@@ -50,6 +50,7 @@ const INITIAL_STATE = {
         smsSendText: 'Send me a text',
         smsContinue: 'Continue',
         smsCancel: 'Cancel',
+        transferError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
         fetchingHistory: 'Retrieving history...',
         fetchHistory: 'Load more',
         clickToRetry: 'Message not delivered. Click to retry.',
@@ -60,7 +61,6 @@ const INITIAL_STATE = {
         locationSecurityRestriction: 'This website cannot access your location. Please type your location instead.'
     }
 };
-
 
 export function UIReducer(state = INITIAL_STATE, action) {
     switch (action.type) {

@@ -3,13 +3,15 @@ import { connect } from 'react-redux';
 
 import { hideChannelPage } from '../../services/app';
 import { LoadingComponent } from '../../components/loading';
-import { resetTransferRequestCode } from '../../actions/integrations-actions';
+import { resetTransferRequestCode, unsetError } from '../../actions/integrations-actions';
+import { fetchTransferRequestCode } from '../../services/integrations';
 
 export class MessengerChannelContentComponent extends Component {
 
     static propTypes = {
         channelState: PropTypes.object.isRequired,
-        pageId: PropTypes.string.isRequired
+        pageId: PropTypes.string.isRequired,
+		transferRequestCodeError: PropTypes.string
     };
 
     onLink = () => {
@@ -18,11 +20,25 @@ export class MessengerChannelContentComponent extends Component {
         dispatch(hideChannelPage());
     }
 
+    onTryAgain = () => {
+        const {dispatch, type} = this.props;
+        dispatch(unsetError(type));
+        dispatch(resetTransferRequestCode(type));
+        dispatch(fetchTransferRequestCode('messenger'));
+    }
+
     render() {
-        const {channelState, pageId} = this.props;
-        const code = channelState.transferRequestCode;
-        if (code) {
-            const url = `https://m.me/${pageId}?ref=${code}`;
+        const {channelState: {transferRequestCode, hasError}, transferError, pageId} = this.props;
+
+        if (hasError) {
+            return <a className={ 'sk-error-link' }
+                      onClick={ this.onTryAgain }>
+                      { transferError }
+                   </a>;
+        }
+
+        if (transferRequestCode) {
+            const url = `https://m.me/${pageId}?ref=${transferRequestCode}`;
             return <a alt='Connect'
                       target='_blank'
                       onClick={ this.onLink }
@@ -40,4 +56,8 @@ export class MessengerChannelContentComponent extends Component {
     }
 }
 
-export const MessengerChannelContent = connect()(MessengerChannelContentComponent);
+export const MessengerChannelContent = connect(({ui: {text}}) => {
+    return {
+        transferError: text.transferError
+    };
+})(MessengerChannelContentComponent );

@@ -162,6 +162,7 @@ var skPromise = Smooch.init({
         smsSendText: 'Send me a text',
         smsContinue: 'Continue',
         smsCancel: 'Cancel',
+        transferError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
         fetchingHistory: 'Retrieving history...',
         fetchHistory: 'Load more',
         clickToRetry: 'Message not delivered. Click to retry.',
