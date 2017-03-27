@@ -7,25 +7,10 @@ import { CHANNEL_DETAILS } from '../../../../src/js/constants/channels';
 import * as appUtils from '../../../../src/js/utils/app';
 
 import { mockComponent, wrapComponentWithStore } from '../../../utils/react';
-import { createMockedStore } from '../../../utils/redux';
+import { generateBaseStoreProps, createMockedStore } from '../../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
-
-const baseStoreProps = {
-    ui: {
-        text: {}
-    },
-    app: {
-        integrations: []
-    },
-    integrations: {},
-    user: {
-        _id: '1234'
-    },
-    appState: {
-        visibleChannelType: null
-    }
-};
+const baseStoreProps = generateBaseStoreProps();
 
 describe('Channel Component', () => {
     beforeEach(() => {
