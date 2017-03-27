@@ -22,9 +22,7 @@ export const CHANNEL_DETAILS = {
         ...integrationsAssets.messenger,
         Component: MessengerChannelContent,
         onChannelPage: () => fetchTransferRequestCode('messenger'),
-        getURL: ({channel}) => {
-            return `https://m.me/${channel.pageId}`;
-        }
+        getURL: ({channel}) => `https://m.me/${channel.pageId}`
     },
     frontendEmail: {
         name: 'Email',
@@ -61,16 +59,18 @@ export const CHANNEL_DETAILS = {
     },
     viber: {
         name: 'Viber',
-        descriptionHtmlKey: 'viberChannelDescription',
+        descriptionHtmlKey: isMobile.any ? 'viberChannelDescriptionMobile' : 'viberChannelDescription',
         isLinkable: true,
-        usesCode: true,
         ...integrationsAssets.viber,
-        Component: !isMobile.any ? ViberChannelContent : undefined,
-        onChannelPage: fetchViberQRCode,
-        getURL: ({channel, code}) => {
-            return isMobile.any ? `viber://pa?chatURI=${channel.uri}&context=${code}` : undefined;
+        Component: ViberChannelContent,
+        onChannelPage: () => {
+            if (isMobile.any) {
+                return fetchTransferRequestCode('viber');
+            } else {
+                return fetchViberQRCode();
+            }
         },
-        renderPageIfLinked: !isMobile.any
+        getURL: ({channel}) => isMobile.any ? `viber://pa?chatURI=${channel.uri}` : undefined
     },
     wechat: {
         name: 'WeChat',

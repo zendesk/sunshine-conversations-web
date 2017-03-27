@@ -151,6 +151,8 @@ var skPromise = Smooch.init({
         wechatChannelDescriptionMobile: 'To send us a message from WeChat, save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.',
         wechatChannelDescription: 'To send us a message from WeChat, scan this QR code using the WeChat app.',
         lineChannelDescription: 'To talk to us using LINE, scan this QR code using the LINE app and send us a message.',
+        viberChannelDescription: 'To send us a message from Viber, scan the QR code using the Viber app.',
+        viberChannelDescriptionMobile: 'To send us a message from Viber, install the Viber app and tap the link below.',
         smsTooManyRequestsError: 'A connection for that number was requested recently. Please try again in {seconds} seconds.',
         smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
         smsUnhandledError: 'Something went wrong. Please try again.',

@@ -19,6 +19,7 @@ const INITIAL_STATE = {
     },
     viber: {
         hasError: false,
+        transferRequestCode: '',
         qrCode: ''
     },
     wechat: {
