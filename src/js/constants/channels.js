@@ -9,6 +9,7 @@ import { fetchViberQRCode, fetchWeChatQRCode, fetchTwilioAttributes } from '../s
 import { MessengerChannelContent } from '../components/channels/messenger-channel-content';
 import { EmailChannelContent } from '../components/channels/email-channel-content';
 import { TwilioChannelContent } from '../components/channels/twilio-channel-content';
+import { TelegramChannelContent } from '../components/channels/telegram-channel-content';
 import { WeChatChannelContent } from '../components/channels/wechat-channel-content';
 import { ViberChannelContent } from '../components/channels/viber-channel-content';
 import { LineChannelContent } from '../components/channels/line-channel-content';
@@ -19,7 +20,7 @@ export const CHANNEL_DETAILS = {
         descriptionKey: 'messengerChannelDescription',
         isLinkable: true,
         ...integrationsAssets.messenger,
-        Component: MessengerChannelContent ,
+        Component: MessengerChannelContent,
         onChannelPage: () => fetchTransferRequestCode('messenger'),
         getURL: ({channel}) => {
             return `https://m.me/${channel.pageId}`;
@@ -51,11 +52,11 @@ export const CHANNEL_DETAILS = {
         name: 'Telegram',
         descriptionKey: 'telegramChannelDescription',
         isLinkable: true,
-        usesCode: true,
         ...integrationsAssets.telegram,
-        getURL: ({channel, code, linked}) => {
-            const query = linked ? '' : `?start=${code}`;
-            return `https://telegram.me/${channel.username}${query}`
+        Component: TelegramChannelContent,
+        onChannelPage: () => fetchTransferRequestCode('telegram'),
+        getURL: ({channel}) => {
+            return `https://telegram.me/${channel.username}`
         }
     },
     viber: {

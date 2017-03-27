@@ -4,6 +4,19 @@ import { RESET } from '../actions/common-actions';
 import { SET_ERROR, UNSET_ERROR, SET_WECHAT_QR_CODE, SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE, RESET_INTEGRATIONS, SET_VIBER_QR_CODE, SET_TRANSFER_REQUEST_CODE, RESET_TRANSFER_REQUEST_CODE } from '../actions/integrations-actions';
 
 const INITIAL_STATE = {
+    messenger: {
+        hasError: false,
+        transferRequestCode: ''
+    },
+    telegram: {
+        hasError: false,
+        transferRequestCode: ''
+    },
+    twilio: {
+        linkState: 'unlinked',
+        appUserNumber: '',
+        hasError: false
+    },
     viber: {
         hasError: false,
         qrCode: ''
@@ -11,15 +24,6 @@ const INITIAL_STATE = {
     wechat: {
         hasError: false,
         qrCode: ''
-    },
-    twilio: {
-        linkState: 'unlinked',
-        appUserNumber: '',
-        hasError: false
-    },
-    messenger: {
-        hasError: false,
-        transferRequestCode: ''
     }
 };
 
