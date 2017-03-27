@@ -10,6 +10,7 @@ import { fetchTransferRequestCode } from '../../services/integrations';
 export class TransferRequestChannelContentComponent extends Component {
 
     static propTypes = {
+        url: PropTypes.string.isRequired,
         channelState: PropTypes.object.isRequired,
         transferError: PropTypes.string
     };
@@ -36,7 +37,7 @@ export class TransferRequestChannelContentComponent extends Component {
         if (hasError) {
             return <a className={ 'sk-error-link' }
                       onClick={ this.onTryAgain }>
-                      { transferError }
+                       { transferError }
                    </a>;
         }
 
@@ -62,4 +63,4 @@ export const TransferRequestChannelContent = connect(({ui: {text}}) => {
     return {
         transferError: text.transferError
     };
-})(TransferRequestChannelContentComponent );
+})(TransferRequestChannelContentComponent);
