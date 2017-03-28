@@ -2,7 +2,7 @@
   "name": "smooch",
   "description": "Smooch.io powered web messaging",
   "analyze": false,
-  "version": "3.9.3",
+  "version": "3.14.0",
   "keywords": [
     "smooch",
     "javascript",
@@ -21,20 +21,18 @@
     "Danny Tran <danny@smooch.io>"
   ],
   "scripts": {
-    "test": "karma start karma.conf.js --no-single-run --reporters progress --browsers PhantomJS,Chrome",
-    "test:phantom": "karma start karma.conf.js --no-single-run --reporters progress --browsers PhantomJS",
+    "test": "karma start karma.conf.js --no-single-run --reporters spec --browsers PhantomJS,Chrome",
+    "test:phantom": "karma start karma.conf.js --no-single-run --reporters spec --browsers PhantomJS",
     "karma": "karma start karma.conf.js --reporters spec --browsers PhantomJS",
     "test:ci": "karma start karma.conf.js --single-run --reporters junit --browsers PhantomJS",
     "build": "webpack --config webpack-production.config.js --progress --profile --colors",
     "build:staging": "webpack --config webpack-staging.config.js --progress --profile --colors",
     "build:assets": "webpack --config webpack-assets.config.js --progress --profile --colors",
     "build:npm": "rm -rf lib/ && npm run babelify && npm run build:assets && rm -f lib/constants/*.mp3 && rm -f lib/constants/*.png",
-    "dev-server": "webpack-dev-server --config webpack-dev-server.config.js --colors --port 2992 --inline  --no-info",
     "start": "node dev-server/server-production",
     "lint": "eslint . --ext=js --ext=jsx",
     "babelify": "babel -d lib/ src/js/",
-    "dev": "nodemon --watch dev-server/ --watch src/index.html --watch src/embedded.html --watch config/config.json dev-server/server-development",
-    "webpack": "webpack-dev-server --config webpack-hot-dev-server.config.js --hot --colors --port 2992 --inline --no-info"
+    "dev": "nodemon --watch dev-server/ --watch src/index.html --watch src/embedded.html --watch config/config.json dev-server/server-development"
   },
   "main": "lib/main.js",
   "homepage": "https://smooch.io",
@@ -43,20 +41,21 @@
     "deep-equal": "1.0.1",
     "faye": "1.1.2",
     "ismobilejs": "0.3.9",
+    "lodash.bindall": "4.4.0",
     "lodash.debounce": "4.0.3",
     "lodash.memoize": "4.1.0",
     "lodash.pick": "4.1.0",
     "react-addons-css-transition-group": "15.1.0",
     "react-document-title": "2.0.1",
     "react-imageloader": "2.1.0",
-    "react-messenger-plugin": "1.0.1",
     "react-onclickoutside": "5.3.1",
     "react-redux": "4.4.5",
     "react-spinkit": "1.1.4",
     "react-stripe-checkout": "1.7.2",
     "redux": "3.3.1",
+    "redux-batched-actions": "0.1.5",
     "redux-thunk": "2.1.0",
-    "smooch-core": "2.1.0",
+    "smooch-core": "3.4.0",
     "urljoin": "0.1.5",
     "uuid": "2.0.1"
   },
@@ -141,7 +140,9 @@
     "url-loader": "0.5.7",
     "webpack": "1.12.9",
     "webpack-cli": "1.0.0",
-    "webpack-dev-server": "1.14.0"
+    "webpack-dev-middleware": "1.9.0",
+    "webpack-dev-server": "1.14.0",
+    "webpack-hot-middleware": "2.15.0"
   },
   "peerDependencies": {
     "babel-polyfill": ">=6.9.0 <7.0",

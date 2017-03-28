@@ -35,7 +35,7 @@ export class NotificationsSettingsComponent extends Component {
                                             {...details}
                                             displayName={ getDisplayName(user.clients, channel.type) }
                                             linked={ isChannelLinked(user.clients, channel.type) }
-                                            hasURL={ details.getURL && details.getURL(user, channel) } />;
+                                            hasURL={ !!details.getURL(channel) } />;
         });
 
         return <div className='content-wrapper'>

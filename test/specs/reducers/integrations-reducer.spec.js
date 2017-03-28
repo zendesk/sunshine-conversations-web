@@ -1,6 +1,6 @@
 import { IntegrationsReducer } from '../../../src/js/reducers/integrations-reducer';
 
-import { SET_WECHAT_QR_CODE, SET_WECHAT_ERROR, UNSET_WECHAT_ERROR, RESET_INTEGRATIONS, SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE } from '../../../src/js/actions/integrations-actions';
+import { SET_WECHAT_QR_CODE, SET_ERROR, UNSET_ERROR, RESET_INTEGRATIONS, SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE } from '../../../src/js/actions/integrations-actions';
 
 describe('Integrations reducer', () => {
 
@@ -18,22 +18,21 @@ describe('Integrations reducer', () => {
         }).wechat.qrCode.should.eq('qrCode');
     });
 
-    it('should set the WeChat error with the actions prop on SET_WECHAT_ERROR', () => {
+    it('should set the hasError flag on SET_ERROR', () => {
         IntegrationsReducer(undefined, {
-            type: SET_WECHAT_ERROR,
-            wechat: {
-                hasError: true
-            }
+            type: SET_ERROR,
+            channel: 'wechat'
         }).wechat.hasError.should.true;
     });
 
-    it('should unset the WeChat error with the actions prop on UNSET_WECHAT_ERROR', () => {
+    it('should unset the hasError flag on UNSET_ERROR', () => {
         IntegrationsReducer({
             wechat: {
-                hasError: true
+                hasError: true 
             }
         }, {
-            type: UNSET_WECHAT_ERROR
+            type: UNSET_ERROR,
+            channel: 'wechat'
         }).wechat.hasError.should.be.false;
     });
 

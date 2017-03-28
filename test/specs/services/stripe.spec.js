@@ -1,10 +1,10 @@
 import sinon from 'sinon';
 
 import { createMock } from '../../mocks/core';
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 
 import * as coreService from '../../../src/js/services/core';
-import { createTransaction, getAccount } from '../../../src/js/services/stripe-service';
+import { createTransaction, getAccount } from '../../../src/js/services/stripe';
 
 describe('Stripe service', () => {
     var sandbox;
@@ -16,7 +16,7 @@ describe('Stripe service', () => {
     });
 
     beforeEach(() => {
-        mockedStore = mockAppStore(sandbox, {
+        mockedStore = createMockedStore(sandbox, {
             user: {
                 _id: '1'
             }
@@ -32,12 +32,11 @@ describe('Stripe service', () => {
 
     afterEach(() => {
         sandbox.restore();
-        mockedStore.restore();
     });
 
     describe('createTransaction', () => {
         it('should call smooch-core appUser stripe api', () => {
-            return createTransaction('actionId', 'token').then(() => {
+            return mockedStore.dispatch(createTransaction('actionId', 'token')).then(() => {
                 coreMock.appUsers.stripe.createTransaction.should.have.been.calledWith('1', 'actionId', 'token');
             });
         });
@@ -45,7 +44,7 @@ describe('Stripe service', () => {
 
     describe('getAccount', () => {
         it('should call smooch-core stripe api', () => {
-            return getAccount().then(() => {
+            return mockedStore.dispatch(getAccount()).then(() => {
                 coreMock.stripe.getAccount.should.have.been.calledOnce;
             });
         });
