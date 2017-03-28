@@ -9,7 +9,7 @@ export class NotificationChannelItemComponent extends Component {
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         linked: PropTypes.bool.isRequired,
-        hasURL: PropTypes.string,
+        hasURL: PropTypes.bool,
         icon: PropTypes.string.isRequired,
         icon2x: PropTypes.string.isRequired,
         displayName: PropTypes.string,
