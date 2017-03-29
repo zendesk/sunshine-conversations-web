@@ -52,10 +52,16 @@ const addMessage = (messages, message) => {
     const replyActions = extractReplyActions(message);
 
     const hasText = (message.text && message.text.trim()) || (message.mediaUrl && message.mediaUrl.trim());
+    const isHidden = (message.text && message.text.indexOf('@@@') === 0);
+
     if (replyActions.length > 0 && !hasText) {
         // if the message contains reply actions and has no text,
         // don't add it to the messages
         return messages;
+    }
+
+    if (isHidden) {
+      return messages;
     }
 
     const messagesLength = messages.length;
