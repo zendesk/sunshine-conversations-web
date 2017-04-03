@@ -76,6 +76,7 @@ observable.on('message:received', (message) => {
 
 let lastTriggeredMessageTimestamp = 0;
 let initialStoreChange = true;
+let isInitialized = false;
 let unsubscribeFromStore;
 
 function handleNotificationSound() {
@@ -119,6 +120,8 @@ export class Smooch {
     }
 
     init(props) {
+        isInitialized = true;
+
         props = {
             imageUploadEnabled: true,
             soundNotificationEnabled: true,
@@ -321,6 +324,11 @@ export class Smooch {
     }
 
     destroy() {
+        if (!isInitialized) {
+            return;
+        }
+        isInitialized = false;
+
         if (!this.appToken) {
             console.warn('Smooch.destroy was called before Smooch.init was called properly.');
         }
