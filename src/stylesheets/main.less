@@ -40,24 +40,24 @@
     @import (css) "~react-spinkit/css/three-bounce.css";
 }
 
-.widget-size() {
+.widget-size(@offsetHeight:0) {
     width: @widget-width-md;
-    height: @widget-height-md;
+    height: @widget-height-md + @offsetHeight;
     @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-min) {
         width: @widget-width-lg;
-        height: @widget-height-lg;
+        height: @widget-height-lg + @offsetHeight;
     }
     @media (min-width: @screen-sm-min) and (min-height: @screen-sm-ht-min) and (max-height: @screen-sm-ht-max) {
         width: @widget-width-md;
-        height: @widget-height-md;
+        height: @widget-height-md + @offsetHeight;
     }
     @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
         width: @widget-width-sm;
-        height: @widget-height-sm;
+        height: @widget-height-sm + @offsetHeight;
     }
     @media (max-width: @screen-sm-min) {
         width: @widget-width-xs;
-        height: @widget-height-xs;
+        height: @widget-height-xs + @offsetHeight;
     }
 }
 
@@ -110,7 +110,7 @@
 
         .content-wrapper {
             .scrollbar-mixin();
-            .widget-size();
+            .widget-size(-@header-extra-height);
             overflow-y: auto;
         }
     }
