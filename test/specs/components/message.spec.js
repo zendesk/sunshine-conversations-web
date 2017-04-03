@@ -9,14 +9,17 @@ import { ImageMessage } from '../../../src/js/components/image-message';
 import { TextMessage } from '../../../src/js/components/text-message';
 
 import { wrapComponentWithStore } from '../../utils/react';
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
+import { SEND_STATUS } from '../../../src/js/constants/message';
 
 const sandbox = sinon.sandbox.create();
 
 const defaultProps = {
     role: 'appUser',
     text: 'This is a text!',
-    actions: []
+    type: 'text',
+    actions: [],
+    entity: {}
 };
 
 let mockedStore;
@@ -35,9 +38,13 @@ describe('Message Component', () => {
             className: 'mockedText'
         });
 
-        mockedStore = mockAppStore(sandbox, {
+        mockedStore = createMockedStore(sandbox, {
             ui: {
-                text: {}
+                text: {
+                    clickToRetry: 'click to retry',
+                    tapToRetry: 'tap to retry',
+                    locationSendingFailed: 'location sending failed'
+                }
             },
             app: {
                 settings: {
@@ -51,7 +58,6 @@ describe('Message Component', () => {
 
     afterEach(() => {
         sandbox.restore();
-        mockedStore.restore();
     });
 
     [true, false].forEach((isImage) => {
@@ -60,7 +66,8 @@ describe('Message Component', () => {
                 role: 'appUser',
                 text: 'This is a text!',
                 type: isImage ? 'image' : 'text',
-                mediaUrl: isImage ? 'media-url' : undefined
+                mediaUrl: isImage ? 'media-url' : undefined,
+                entity: {}
             };
 
             beforeEach(() => {
@@ -110,6 +117,73 @@ describe('Message Component', () => {
 
         it('should render the text message', () => {
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedText').length.should.be.eq(1);
+        });
+
+        describe('with text sending in progress', () => {
+            it('should render the text message with sk-msg-unsent', () => {
+                const unsentProps = Object.assign(props, {
+                    sendStatus: SEND_STATUS.SENDING
+                });
+
+                component = wrapComponentWithStore(MessageComponent, unsentProps, mockedStore);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-msg-unsent').length.should.be.eq(1);
+            });
+        });
+
+        describe('with text sending failed', () => {
+            it('should render the text message with sk-msg-unsent and a retry prompt', () => {
+                const unsentProps = Object.assign(props, {
+                    sendStatus: SEND_STATUS.FAILED
+                });
+
+                component = wrapComponentWithStore(MessageComponent, unsentProps, mockedStore);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-msg-unsent').length.should.be.eq(1);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-retry').length.should.be.eq(1);
+            });
+        });
+
+        describe('location message', () => {
+            const props = Object.assign({}, defaultProps, {
+                role: 'appUser',
+                name: 'Smooch appUser',
+                avatarUrl: 'http://some-image.url',
+                type: 'location'
+            });
+
+            beforeEach(() => {
+                component = wrapComponentWithStore(MessageComponent, props, mockedStore);
+            });
+
+            describe('with location sending in progress', () => {
+                it('should render a loading spinner sk-msg-unsent', () => {
+                    const unsentProps = Object.assign(props, {
+                        sendStatus: SEND_STATUS.SENDING,
+                        text: null
+                    });
+
+                    component = wrapComponentWithStore(MessageComponent, unsentProps, mockedStore);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-msg-unsent').length.should.be.eq(1);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-message-location-loading').length.should.be.eq(1);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedText').length.should.eq(0);
+                });
+            });
+
+            describe('with location sending failed', () => {
+                it('should render the text message with sk-msg-unsent and a retry prompt', () => {
+                    const unsentProps = Object.assign(props, {
+                        sendStatus: SEND_STATUS.FAILED
+                    });
+
+                    component = wrapComponentWithStore(MessageComponent, unsentProps, mockedStore);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-msg-unsent').length.should.be.eq(1);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-retry').length.should.be.eq(1);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedText').length.should.eq(1);
+                });
+            });
+
+            it('should render the text message', () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedText').length.should.eq(1);
+            });
         });
     });
 
@@ -215,6 +289,30 @@ describe('Message Component', () => {
             it('should render the image message', () => {
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedImage').length.should.be.eq(1);
             });
+        });
+
+        it('should not contain any reply or locationRequest actions', () => {
+            const props = Object.assign({}, defaultProps, {
+                role: role,
+                name: `Smooch ${role}`,
+                avatarUrl: 'http://some-image.url',
+                actions: [
+                    {
+                        _id: '1',
+                        text: 'GIMME PRIZZA',
+                        type: 'reply',
+                        payload: 'REPLY'
+                    },
+                    {
+                        _id: '2',
+                        text: 'Send my location',
+                        type: 'locationRequest'
+                    }
+                ]
+            });
+
+            component = wrapComponentWithStore(MessageComponent, props, mockedStore);
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-action').length.should.be.eq(0);
         });
     });
 

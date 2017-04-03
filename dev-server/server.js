@@ -1,14 +1,13 @@
 module.exports = function(options) {
 
-    var express = require('express');
-    var bodyParser = require('body-parser');
-    var path = require('path');
+    const express = require('express');
+    const path = require('path');
 
     // require the page rendering logic
-    var Renderer = require('./SimpleRenderer.js');
+    const Renderer = require('./SimpleRenderer.js');
 
 
-    var config = require('../config/default/config.json');
+    const config = require('../config/default/config.json');
 
     try {
         Object.assign(config, require('../config/config.json'));
@@ -16,25 +15,30 @@ module.exports = function(options) {
     catch (e) {
         // do nothing
     }
-    var publicPath = options.devServer ?
-        'http://' + config.SERVER_HOST + '/_assets/' :
-        '/_assets/';
 
-    var app = express();
+    const app = express();
 
-    // serve the static assets
-    app.use('/_assets', express.static(path.join(__dirname, '..', 'dist'), {
-        maxAge: '200d' // We can cache them as they include hashes
-    }));
-    app.use('/', express.static(path.join(__dirname, '..', 'public'), {
-    }));
+    if (options.devServer) {
+        const webpack = require('webpack');
+        const config = require('../webpack-dev-server.config');
+        const compiler = webpack(config);
+        app.use(require('webpack-dev-middleware')(compiler, {
+            publicPath: '/_assets/',
+            quiet: true
+        }));
 
-    app.use(bodyParser.json());
-
+        app.use(require('webpack-hot-middleware')(compiler));
+    } else {
+        // serve the static assets
+        app.use('/_assets', express.static(path.join(__dirname, '..', 'dist'), {
+            maxAge: '200d' // We can cache them as they include hashes
+        }));
+        app.use('/', express.static(path.join(__dirname, '..', 'public'), {}));
+    }
 
     app.get('/embedded', function(req, res) {
-        var renderer = new Renderer({
-            scriptUrl: publicPath + 'smooch.js',
+        const renderer = new Renderer({
+            scriptUrl: '/_assets/smooch.js',
             data: config,
             embedded: true
         });
@@ -55,8 +59,8 @@ module.exports = function(options) {
 
     // application
     app.get('/*', function(req, res) {
-        var renderer = new Renderer({
-            scriptUrl: publicPath + 'smooch.js',
+        const renderer = new Renderer({
+            scriptUrl: '/_assets/smooch.js',
             data: config
         });
 
@@ -75,7 +79,7 @@ module.exports = function(options) {
     });
 
 
-    var port = process.env.PORT || options.defaultPort || 8080;
+    const port = process.env.PORT || options.defaultPort || 8080;
     app.listen(port, function() {
         console.log('Server listening on port ' + port); //eslint-disable-line no-console
     });

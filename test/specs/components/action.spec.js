@@ -4,15 +4,15 @@ import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
 import StripeCheckout from 'react-stripe-checkout';
 
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
 import { Action } from '../../../src/js/components/action.jsx';
 import { LoadingComponent } from '../../../src/js/components/loading.jsx';
 
-import * as stripeService from '../../../src/js/services/stripe-service';
-import * as userService from '../../../src/js/services/user-service';
-import * as conversationService from '../../../src/js/services/conversation-service';
+import * as stripeService from '../../../src/js/services/stripe';
+import * as userService from '../../../src/js/services/user';
+import * as conversationService from '../../../src/js/services/conversation';
 import * as appUtils from '../../../src/js/utils/app';
 
 const sandbox = sinon.sandbox.create();
@@ -100,14 +100,13 @@ describe('Action Component', () => {
 
     afterEach(() => {
         sandbox.restore();
-        mockedStore.restore();
     });
 
     describe('normal action link', () => {
         const props = getNormalProps();
 
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState());
+            mockedStore = createMockedStore(sandbox, getStoreState());
             component = wrapComponentWithStore(Action, props, mockedStore);
             componentNode = ReactDOM.findDOMNode(component);
         });
@@ -126,7 +125,7 @@ describe('Action Component', () => {
         });
 
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState());
+            mockedStore = createMockedStore(sandbox, getStoreState());
             component = wrapComponentWithStore(Action, props, mockedStore);
             componentNode = ReactDOM.findDOMNode(component);
         });
@@ -155,12 +154,11 @@ describe('Action Component', () => {
         });
 
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, storeState);
+            mockedStore = createMockedStore(sandbox, storeState);
         });
 
         afterEach(() => {
             appUtils.getIntegration.should.have.been.calledWithMatch(storeState.app.integrations, 'stripeConnect');
-            mockedStore.restore();
         });
 
         describe('buy action with stripe keys and offered state', () => {
@@ -222,7 +220,7 @@ describe('Action Component', () => {
                 const props = getBuyProps();
 
                 beforeEach(() => {
-                    mockedStore = mockAppStore(sandbox, getStoreState({
+                    mockedStore = createMockedStore(sandbox, getStoreState({
                         app: {
                             integrations: [
                                 {
@@ -380,7 +378,7 @@ describe('Action Component', () => {
 
         beforeEach(() => {
             appUtils.getIntegration.returns(undefined);
-            mockedStore = mockAppStore(sandbox, storeState);
+            mockedStore = createMockedStore(sandbox, storeState);
             component = wrapComponentWithStore(Action, props, mockedStore).getWrappedInstance();
         });
 

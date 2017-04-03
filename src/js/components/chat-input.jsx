@@ -1,17 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import isMobile from 'ismobilejs';
+import bindAll from 'lodash.bindall';
 
-import { sendMessage, resetUnreadCount } from '../services/conversation-service';
-import { store } from '../stores/app-store';
+import { sendMessage, resetUnreadCount } from '../services/conversation';
 
 import { ImageUpload } from './image-upload';
 
-function checkAndResetUnreadCount() {
-    if (store.getState().conversation.unreadCount > 0) {
-        resetUnreadCount();
-    }
-}
+
 
 export class ChatInputComponent extends Component {
 
@@ -19,43 +15,57 @@ export class ChatInputComponent extends Component {
         accentColor: PropTypes.string,
         imageUploadEnabled: PropTypes.bool.isRequired,
         inputPlaceholderText: PropTypes.string.isRequired,
-        sendButtonText: PropTypes.string.isRequired
+        sendButtonText: PropTypes.string.isRequired,
+        unreadCount: PropTypes.number.isRequired,
+        dispatch: PropTypes.func.isRequired
+    };
+
+    state = {
+        text: ''
     };
 
     constructor(...args) {
         super(...args);
-
-        this.state = {
-            text: ''
-        };
-
-        this.onChange = this.onChange.bind(this);
-        this.onSendMessage = this.onSendMessage.bind(this);
+        bindAll(this,
+            'blur',
+            'checkAndResetUnreadCount',
+            'onChange',
+            'onFocus',
+            'onSendMessage'
+        );
     }
 
     blur() {
         this.refs.input.blur();
     }
 
+    checkAndResetUnreadCount(unreadCount) {
+        const {dispatch} = this.props;
+        if (unreadCount > 0) {
+            dispatch(resetUnreadCount());
+        }
+    }
+
     onChange(e) {
-        checkAndResetUnreadCount();
+        this.checkAndResetUnreadCount(this.props.unreadCount);
         this.setState({
             text: e.target.value
         });
     }
 
     onFocus() {
-        checkAndResetUnreadCount();
+        this.checkAndResetUnreadCount(this.props.unreadCount);
     }
 
     onSendMessage(e) {
         e.preventDefault();
-        const text = this.state.text;
+        const {text} = this.state;
+        const {dispatch} = this.props;
         if (text.trim()) {
             this.setState({
                 text: ''
             });
-            sendMessage(text);
+            dispatch(sendMessage(text));
             this.refs.input.focus();
         }
     }
@@ -121,12 +131,13 @@ export class ChatInputComponent extends Component {
     }
 }
 
-export const ChatInput = connect(({appState, app, ui}) => {
+export const ChatInput = connect(({appState, app, ui, conversation: {unreadCount}}) => {
     return {
         imageUploadEnabled: appState.imageUploadEnabled,
         accentColor: app.settings.web.accentColor,
         sendButtonText: ui.text.sendButtonText,
-        inputPlaceholderText: ui.text.inputPlaceholder
+        inputPlaceholderText: ui.text.inputPlaceholder,
+        unreadCount
     };
 }, undefined, undefined, {
     withRef: true

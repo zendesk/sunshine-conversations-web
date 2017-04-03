@@ -1,23 +1,25 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import pick from 'lodash.pick';
+import { batchActions } from 'redux-batched-actions';
 
-import { store } from './stores/app-store';
+import { store } from './store';
 
 import { setAuth, resetAuth } from './actions/auth-actions';
 import * as userActions from './actions/user-actions';
 import { setStripeInfo, setApp } from './actions/app-actions';
 import { updateText } from './actions/ui-actions';
+import { setCurrentLocation } from './actions/browser-actions';
 import { resetConversation } from './actions/conversation-actions';
 import { resetIntegrations } from './actions/integrations-actions';
 import * as AppStateActions from './actions/app-state-actions';
 import { reset } from './actions/common-actions';
 
-import { openWidget, closeWidget, hideSettings, hideChannelPage } from './services/app-service';
-import { login } from './services/auth-service';
-import { getAccount } from './services/stripe-service';
-import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, updateNowViewing, immediateUpdate as immediateUpdateUser, getUserId } from './services/user-service';
-import { sendMessage, disconnectFaye, handleConversationUpdated } from './services/conversation-service';
+import { openWidget, closeWidget, hideSettings, hideChannelPage } from './services/app';
+import { login } from './services/auth';
+import { getAccount } from './services/stripe';
+import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, updateNowViewing, immediateUpdate as immediateUpdateUser, getUserId } from './services/user';
+import { sendMessage, disconnectFaye, handleConversationUpdated } from './services/conversation';
 import { core } from './services/core';
 
 import { observable, observeStore } from './utils/events';
@@ -74,6 +76,7 @@ observable.on('message:received', (message) => {
 
 let lastTriggeredMessageTimestamp = 0;
 let initialStoreChange = true;
+let isInitialized = false;
 let unsubscribeFromStore;
 
 function handleNotificationSound() {
@@ -101,6 +104,7 @@ function onStoreChange({messages, unreadCount}) {
                 }
             });
         }
+        observable.trigger('unreadCount', unreadCount);
     }
 }
 
@@ -116,6 +120,8 @@ export class Smooch {
     }
 
     init(props) {
+        isInitialized = true;
+
         props = {
             imageUploadEnabled: true,
             soundNotificationEnabled: true,
@@ -132,36 +138,41 @@ export class Smooch {
 
         this.appToken = props.appToken;
 
+        const actions = [];
+
         if (props.emailCaptureEnabled) {
-            store.dispatch(AppStateActions.enableEmailCapture());
+            actions.push(AppStateActions.enableEmailCapture());
         } else {
-            store.dispatch(AppStateActions.disableEmailCapture());
+            actions.push(AppStateActions.disableEmailCapture());
         }
 
         if (props.soundNotificationEnabled && isAudioSupported()) {
-            store.dispatch(AppStateActions.enableSoundNotification());
+            actions.push(AppStateActions.enableSoundNotification());
         } else {
-            store.dispatch(AppStateActions.disableSoundNotification());
+            actions.push(AppStateActions.disableSoundNotification());
         }
 
         if (props.imageUploadEnabled && isImageUploadSupported()) {
-            store.dispatch(AppStateActions.enableImageUpload());
+            actions.push(AppStateActions.enableImageUpload());
         } else {
-            store.dispatch(AppStateActions.disableImageUpload());
+            actions.push(AppStateActions.disableImageUpload());
         }
 
-        store.dispatch(AppStateActions.setEmbedded(!!props.embedded));
+        actions.push(AppStateActions.setEmbedded(!!props.embedded));
 
         if (props.customText) {
-            store.dispatch(updateText(props.customText));
+            actions.push(updateText(props.customText));
         }
 
         if (props.serviceUrl) {
-            store.dispatch(AppStateActions.setServerURL(props.serviceUrl));
+            actions.push(AppStateActions.setServerURL(props.serviceUrl));
         }
+
+        store.dispatch(batchActions(actions));
+
         unsubscribeFromStore = observeStore(store, ({conversation}) => conversation, onStoreChange);
 
-        monitorBrowserState();
+        monitorBrowserState(store.dispatch.bind(store));
         return this.login(props.userId, props.jwt, pick(props, EDITABLE_PROPERTIES));
     }
 
@@ -173,35 +184,38 @@ export class Smooch {
             attributes = {};
         }
 
+        const actions = [];
         // in case those are opened;
-        hideSettings();
-        hideChannelPage();
+        actions.push(hideSettings());
+        actions.push(hideChannelPage());
 
         // in case it comes from a previous authenticated state
-        store.dispatch(resetAuth());
-        store.dispatch(userActions.resetUser());
-        store.dispatch(resetConversation());
-        store.dispatch(resetIntegrations());
+        actions.push(resetAuth());
+        actions.push(userActions.resetUser());
+        actions.push(resetConversation());
+        actions.push(resetIntegrations());
 
-        disconnectFaye();
 
         attributes = pick(attributes, EDITABLE_PROPERTIES);
 
         if (store.getState().appState.emailCaptureEnabled && attributes.email) {
-            store.dispatch(AppStateActions.setEmailReadonly());
+            actions.push(AppStateActions.setEmailReadonly());
         } else {
-            store.dispatch(AppStateActions.unsetEmailReadonly());
+            actions.push(AppStateActions.unsetEmailReadonly());
         }
 
-        store.dispatch(setAuth({
+        actions.push(setAuth({
             jwt: jwt,
             appToken: this.appToken
         }));
+        store.dispatch(batchActions(actions));
+        store.dispatch(disconnectFaye());
 
         lastTriggeredMessageTimestamp = 0;
         initialStoreChange = true;
 
-        return login({
+
+        return store.dispatch(login({
             userId: userId,
             device: {
                 platform: 'web',
@@ -216,30 +230,39 @@ export class Smooch {
                     currentTitle: document.title
                 }
             }
-        }).then((loginResponse) => {
-            store.dispatch(userActions.setUser(loginResponse.appUser));
-            store.dispatch(setApp(loginResponse.app));
+        })).then((loginResponse) => {
+            const actions = [];
+            actions.push(userActions.setUser(loginResponse.appUser));
+            actions.push(setApp(loginResponse.app));
 
+            actions.push(setCurrentLocation(document.location));
             monitorUrlChanges(() => {
-                updateNowViewing(getDeviceId());
+                const actions = [
+                    setCurrentLocation(document.location),
+                    updateNowViewing(getDeviceId())
+                ];
+
+                store.dispatch(batchActions(actions));
             });
 
             if (hasChannels(loginResponse.app.settings.web)) {
-                store.dispatch(AppStateActions.disableEmailCapture());
+                actions.push(AppStateActions.disableEmailCapture());
             }
 
+            store.dispatch(batchActions(actions));
+
             if (getIntegration(loginResponse.app.integrations, 'stripeConnect')) {
-                return getAccount().then((r) => {
+                return store.dispatch(getAccount()).then((r) => {
                     store.dispatch(setStripeInfo(r.account));
                 }).catch(() => {
                     // do nothing about it and let the flow continue
                 });
             }
         }).then(() => {
-            return immediateUpdateUser(attributes).then(() => {
+            return store.dispatch(immediateUpdateUser(attributes)).then(() => {
                 const user = store.getState().user;
                 if (user.conversationStarted) {
-                    return handleConversationUpdated();
+                    return store.dispatch(handleConversationUpdated());
                 }
             });
         }).then(() => {
@@ -262,19 +285,20 @@ export class Smooch {
     }
 
     track(eventName, userProps) {
-        return trackEvent(eventName, userProps);
+        return store.dispatch(trackEvent(eventName, userProps));
     }
 
-    sendMessage(text) {
-        return sendMessage(text);
+    sendMessage(props) {
+        return store.dispatch(sendMessage(props));
     }
 
     updateUser(props) {
-        return updateUser(props).then((response) => {
+        return store.dispatch(updateUser(props)).then((response) => {
             if (response.appUser.conversationStarted) {
-                return handleConversationUpdated().then(() => {
-                    return response;
-                });
+                return store.dispatch(handleConversationUpdated())
+                    .then(() => {
+                        return response;
+                    });
             }
 
             return response;
@@ -282,23 +306,29 @@ export class Smooch {
     }
 
     getConversation() {
-        return handleConversationUpdated().then(() => {
-            store.dispatch(userActions.updateUser({
-                conversationStarted: true
-            }));
-            return store.getState().conversation;
-        });
+        return store.dispatch(handleConversationUpdated())
+            .then(() => {
+                store.dispatch(userActions.updateUser({
+                    conversationStarted: true
+                }));
+                return store.getState().conversation;
+            });
     }
 
     getUserId() {
-        return getUserId();
+        return getUserId(store.getState());
     }
 
     getCore() {
-        return core();
+        return core(store.getState());
     }
 
     destroy() {
+        if (!isInitialized) {
+            return;
+        }
+        isInitialized = false;
+
         if (!this.appToken) {
             console.warn('Smooch.destroy was called before Smooch.init was called properly.');
         }
@@ -310,15 +340,20 @@ export class Smooch {
         }
 
         const {embedded} = store.getState().appState;
-        disconnectFaye();
-        store.dispatch(reset());
+
+        store.dispatch(disconnectFaye());
+        const actions = [
+            reset()
+        ];
 
         if (embedded) {
             // retain the embed mode
-            store.dispatch(AppStateActions.setEmbedded(true));
+            actions.push(AppStateActions.setEmbedded(true));
         } else if (this._container) {
             document.body.removeChild(this._container);
         }
+
+        store.dispatch(batchActions(actions));
 
         stopMonitoringUrlChanges();
         unsubscribeFromStore();
@@ -331,11 +366,11 @@ export class Smooch {
     }
 
     open() {
-        openWidget();
+        store.dispatch(openWidget());
     }
 
     close() {
-        closeWidget();
+        store.dispatch(closeWidget());
     }
 
     isOpened() {

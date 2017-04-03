@@ -1,30 +1,20 @@
 import * as ConversationActions from '../actions/conversation-actions';
 import { RESET } from '../actions/common-actions';
+import { SEND_STATUS, GLOBAL_ACTION_TYPES } from '../constants/message';
 
 const INITIAL_STATE = {
     messages: [],
-    quickReplies: [],
+    replyActions: [],
     unreadCount: 0,
     hasMoreMessages: false,
     isFetchingMoreMessagesFromServer: false
 };
 
 const sortMessages = (messages) => messages.sort((messageA, messageB) => {
-    // received is undefined when it's the temp message from the user
-    if (!messageA.received && !messageB.received) {
-        // `_clientSent` is a local only prop
-        return messageA._clientSent - messageB._clientSent;
-    }
+    const messageADate = messageA.received || messageA._clientSent;
+    const messageBDate = messageB.received || messageB._clientSent;
 
-    if (!messageA.received) {
-        return 1;
-    }
-
-    if (!messageB.received) {
-        return -1;
-    }
-
-    return messageA.received - messageB.received;
+    return messageADate - messageBDate;
 });
 
 const manageGroupsBetweenMessages = (messages, previousMessageIndex, message) => {
@@ -54,15 +44,16 @@ const manageGroupsBetweenMessages = (messages, previousMessageIndex, message) =>
     }
 };
 
-const extractQuickReplies = ({actions=[]} = {}) => {
-    return actions.filter(({type}) => type === 'reply');
+const extractReplyActions = ({actions=[]} = {}) => {
+    return actions.filter(({type}) => type === 'reply' || type === 'locationRequest');
 };
 
 const addMessage = (messages, message) => {
-    const quickReplies = extractQuickReplies(message);
+    const replyActions = extractReplyActions(message);
+
     const hasText = (message.text && message.text.trim()) || (message.mediaUrl && message.mediaUrl.trim());
-    if (quickReplies.length > 0 && !hasText) {
-        // if the message contains quick replies and has no text,
+    if (replyActions.length > 0 && !hasText) {
+        // if the message contains reply actions and has no text,
         // don't add it to the messages
         return messages;
     }
@@ -77,6 +68,7 @@ const matchMessage = (message, queryProps) => Object.keys(queryProps).every((key
 
 const replaceMessage = (messages, query, newMessage) => {
     const existingMessage = messages.find((message) => matchMessage(message, query));
+
     if (!existingMessage) {
         return messages;
     }
@@ -94,15 +86,29 @@ const replaceMessage = (messages, query, newMessage) => {
     return [...messages.slice(0, index), newMessage, ...messages.slice(index + 1)];
 };
 
+const preserveFailedMessages = (messages) => {
+    return messages.filter((message) => message.status = SEND_STATUS.FAILED);
+};
+
 const cleanUpMessages = (messages) => {
     const cleanedMessages = [];
     const messagesHash = {};
 
     // removes duplicate messages and empty messages
     messages.forEach((message) => {
-        const key = message._id + message.role + message.mediaType;
-        const hasText = (message.text && !!message.text.trim()) || (message.mediaUrl && !!message.mediaUrl.trim());
-        if (!(key in messagesHash) && hasText) {
+        const messageText = (message.text && !!message.text.trim()) || (message.mediaUrl && !!message.mediaUrl.trim());
+
+        let key = message._id ? message._id + message.role + message.mediaType
+            : message._clientSent + message.role + message.mediaType;
+
+        // if there is no messageId, message is not yet sent
+        if (!message._id) {
+            key = message._clientSent;
+        }
+
+        const hasContent = messageText || (message.actions && message.actions.filter(({type}) => !GLOBAL_ACTION_TYPES.includes(type)).length > 0);
+
+        if (!(key in messagesHash) && hasContent) {
             messagesHash[key] = message;
             cleanedMessages.push(message);
         }
@@ -129,13 +135,13 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             return {
                 ...action.conversation,
                 messages: state.messages,
-                quickReplies: state.quickReplies
+                replyActions: state.replyActions
             };
         case ConversationActions.SET_MESSAGES:
             return {
                 ...state,
-                messages: assignGroups(sortMessages(cleanUpMessages(action.messages))),
-                quickReplies: extractQuickReplies(action.messages[action.messages.length - 1])
+                messages: assignGroups(sortMessages(cleanUpMessages([...action.messages, ...preserveFailedMessages(state.messages)]))),
+                replyActions: extractReplyActions(action.messages[action.messages.length - 1])
             };
         case ConversationActions.ADD_MESSAGES:
             return {
@@ -144,20 +150,21 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
                     [...state.messages, ...action.messages] :
                     [...action.messages, ...state.messages]
                 ))),
-                quickReplies: extractQuickReplies(action.messages[action.messages.length - 1])
+                replyActions: extractReplyActions(action.messages[action.messages.length - 1])
             };
         case ConversationActions.ADD_MESSAGE:
             return Object.assign({}, state, {
                 messages: addMessage(state.messages, action.message),
-                quickReplies: extractQuickReplies(action.message)
+                replyActions: extractReplyActions(action.message)
             });
         case ConversationActions.REPLACE_MESSAGE:
             return Object.assign({}, state, {
-                messages: sortMessages(replaceMessage(state.messages, action.queryProps, action.message))
+                messages: assignGroups(sortMessages(replaceMessage(state.messages, action.queryProps, action.message)))
             });
         case ConversationActions.REMOVE_MESSAGE:
             return Object.assign({}, state, {
-                messages: [...state.messages.filter((message) => !matchMessage(message, action.queryProps))]
+                messages: [...state.messages.filter((message) => !matchMessage(message, action.queryProps))],
+                replyActions: state.messages[state.messages.length - 2] && extractReplyActions(state.messages[state.messages.length - 2])
             });
         case ConversationActions.INCREMENT_UNREAD_COUNT:
             return Object.assign({}, state, {
