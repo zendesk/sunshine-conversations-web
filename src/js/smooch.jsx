@@ -329,10 +329,6 @@ export class Smooch {
         }
         isInitialized = false;
 
-        if (!this.appToken) {
-            console.warn('Smooch.destroy was called before Smooch.init was called properly.');
-        }
-
         stopMonitoringBrowserState();
 
         if (process.env.NODE_ENV !== 'test' && this._container) {
