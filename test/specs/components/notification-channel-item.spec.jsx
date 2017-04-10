@@ -3,7 +3,7 @@ import TestUtils from 'react-addons-test-utils';
 
 import { NotificationChannelItem } from '../../../src/js/components/notification-channel-item';
 
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 import { wrapComponentWithStore } from '../../utils/react';
 
 
@@ -20,7 +20,7 @@ describe('Notification Channel Item Component', () => {
                 name: 'name',
                 icon: '/icon/',
                 icon2x: '/icon2x/',
-                hasURL: 'true',
+                hasURL: true,
                 displayName: 'displayname'
             };
 
@@ -28,7 +28,7 @@ describe('Notification Channel Item Component', () => {
                 const props = Object.assign(defaultProps, {
                     linked: linked
                 });
-                mockedStore = mockAppStore(sandbox, {
+                mockedStore = createMockedStore(sandbox, {
                     app: {
                         settings: {
                             web: {
@@ -49,10 +49,6 @@ describe('Notification Channel Item Component', () => {
 
             afterEach(() => {
                 sandbox.restore();
-            });
-
-            after(() => {
-                mockedStore && mockedStore.restore();
             });
 
             it(`should ${linked ? '' : 'not'} render with linked class`, () => {
