@@ -13,7 +13,8 @@ export function createMock(sinon) {
             pingChannel: sinon.stub(),
             getMessages: sinon.stub(),
             sendMessage: sinon.stub(),
-            uploadImage: sinon.stub()
+            uploadImage: sinon.stub(),
+            transferRequest: sinon.stub()
         },
 
         conversations: {

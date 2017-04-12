@@ -1,15 +1,22 @@
 import thunkMiddleware from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 
-const AppStore = require('../../src/js/stores/app-store');
-const store = AppStore.store;
-
-function restoreAppStore() {
-    Object.defineProperty(AppStore, 'store', {
-        get: () => {
-            return store;
+export function generateBaseStoreProps() {
+    return {
+        ui: {
+            text: {}
+        },
+        app: {
+            integrations: []
+        },
+        integrations: {},
+        user: {
+            _id: '1234'
+        },
+        appState: {
+            visibleChannelType: null
         }
-    });
+    };
 }
 
 export function createMockedStore(sinon, mockedState = {}) {
@@ -18,21 +25,8 @@ export function createMockedStore(sinon, mockedState = {}) {
     const store = mockStore(mockedState);
 
     sinon.spy(store, 'dispatch');
-    store.restore = restoreAppStore;
     store.subscribe = sinon.spy(() => {
         return function() {};
     });
     return store;
-}
-
-export function mockAppStore(sinon, state) {
-    var mockedStore = createMockedStore(sinon, state);
-
-    Object.defineProperty(AppStore, 'store', {
-        get: () => {
-            return mockedStore;
-        }
-    });
-
-    return mockedStore;
 }

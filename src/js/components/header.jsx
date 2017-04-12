@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import bindAll from 'lodash.bindall';
 
-import { toggleWidget, showSettings, hideSettings, hideChannelPage } from '../services/app-service';
+import { toggleWidget, showSettings, hideSettings, hideChannelPage } from '../services/app';
 import { hasChannels } from '../utils/app';
 import { CHANNEL_DETAILS } from '../constants/channels';
 import { WIDGET_STATE } from '../constants/app';
@@ -15,18 +16,36 @@ export class HeaderComponent extends Component {
         unreadCount: PropTypes.number.isRequired
     };
 
-    showSettings(e) {
-        e.stopPropagation();
-        showSettings();
+    constructor(...args) {
+        super(...args);
+        bindAll(this,
+            'showSettings',
+            'hideSettings',
+            'onClick'
+        );
     }
 
-    hideSettings = (e) => {
+    showSettings(e) {
+        const {dispatch} = this.props;
         e.stopPropagation();
-        const {visibleChannelType} = this.props.appState;
+        dispatch(showSettings());
+    }
+
+    hideSettings(e) {
+        e.stopPropagation();
+        const {dispatch, appState: {visibleChannelType}} = this.props;
         if (visibleChannelType) {
-            hideChannelPage();
+            dispatch(hideChannelPage());
         } else {
-            hideSettings();
+            dispatch(hideSettings());
+        }
+    }
+
+    onClick(e) {
+        e.preventDefault();
+        const {dispatch, appState: {embedded}} = this.props;
+        if (!embedded) {
+            dispatch(toggleWidget());
         }
     }
 
@@ -88,7 +107,7 @@ export class HeaderComponent extends Component {
         }
 
         return <div id={ settingsMode ? 'sk-settings-header' : 'sk-header' }
-                    onClick={ !embedded && toggleWidget }
+                    onClick={ this.onClick }
                     className='sk-header-wrapper'
                     style={ style }>
                    { settingsButton }

@@ -3,7 +3,7 @@ import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
 
 import { mockComponent, findRenderedDOMComponentsWithId, wrapComponentWithStore } from '../../utils/react';
-import { mockAppStore } from '../../utils/redux';
+import { createMockedStore } from '../../utils/redux';
 
 import { Header } from '../../../src/js/components/header';
 import { Settings } from '../../../src/js/components/settings';
@@ -107,13 +107,9 @@ describe('Widget Component', () => {
         sandbox.restore();
     });
 
-    after(() => {
-        mockedStore && mockedStore.restore();
-    });
-
     describe('is closed', () => {
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState());
+            mockedStore = createMockedStore(sandbox, getStoreState());
             component = wrapComponentWithStore(Widget, null, mockedStore);
         });
 
@@ -124,7 +120,7 @@ describe('Widget Component', () => {
 
     describe('is opened', () => {
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState({
+            mockedStore = createMockedStore(sandbox, getStoreState({
                 appState: {
                     widgetState: WIDGET_STATE.OPENED
                 }
@@ -139,7 +135,7 @@ describe('Widget Component', () => {
 
     describe('conversation view', () => {
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState({
+            mockedStore = createMockedStore(sandbox, getStoreState({
                 appState: {
                     widgetState: WIDGET_STATE.OPENED
                 }
@@ -164,7 +160,7 @@ describe('Widget Component', () => {
 
     describe('settings view', () => {
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState({
+            mockedStore = createMockedStore(sandbox, getStoreState({
                 appState: {
                     widgetState: WIDGET_STATE.OPENED,
                     settingsVisible: true
@@ -190,7 +186,7 @@ describe('Widget Component', () => {
     describe('error notification', () => {
         describe('shown', () => {
             beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, getStoreState({
+                mockedStore = createMockedStore(sandbox, getStoreState({
                     appState: {
                         errorNotificationMessage: 'this is a notification message'
                     }
@@ -204,7 +200,7 @@ describe('Widget Component', () => {
         });
         describe('hidden', () => {
             beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, getStoreState({
+                mockedStore = createMockedStore(sandbox, getStoreState({
                     appState: {
                         errorNotificationMessage: null
                     }
@@ -221,7 +217,7 @@ describe('Widget Component', () => {
     describe('channels', () => {
 
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, getStoreState());
+            mockedStore = createMockedStore(sandbox, getStoreState());
             component = wrapComponentWithStore(Widget, null, mockedStore);
         });
 
@@ -234,7 +230,7 @@ describe('Widget Component', () => {
     describe('messenger button', () => {
 
         it('should not render the button in tab mode', () => {
-            mockedStore = mockAppStore(sandbox, getStoreState({
+            mockedStore = createMockedStore(sandbox, getStoreState({
                 app: {
                     settings: {
                         web: {
@@ -249,7 +245,7 @@ describe('Widget Component', () => {
         });
 
         it('should not render the button in embedded mode', () => {
-            mockedStore = mockAppStore(sandbox, getStoreState({
+            mockedStore = createMockedStore(sandbox, getStoreState({
                 appState: {
                     embedded: true
                 },
@@ -267,7 +263,7 @@ describe('Widget Component', () => {
         });
 
         it('should render the button in button mode', () => {
-            mockedStore = mockAppStore(sandbox, getStoreState({
+            mockedStore = createMockedStore(sandbox, getStoreState({
                 app: {
                     settings: {
                         web: {

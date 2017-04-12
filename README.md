@@ -145,16 +145,34 @@ var skPromise = Smooch.init({
         wechatQRCodeError: 'An error occurred while fetching your WeChat QR code. Please try again.',
         messengerChannelDescription: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.',
         frontendEmailChannelDescription: 'To talk to us using email just send a message to our email address and we\'ll reply shortly:',
-        smsChannelDescription: 'To talk to us using SMS, just send a text message to this number from your favorite SMS app:',
+        smsChannelDescription: 'Connect your SMS number to be notified when you get a reply and carry the conversation over SMS.',
         smsChannelPendingDescription: 'Check your messages at {number} to confirm your phone number.',
-        telegramChannelDescription: 'To talk to us using Telegram, add our bot:',
-        wechatChannelDescriptionMobile: 'To send us a message from WeChat, save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.',
-        wechatChannelDescription: 'To send us a message from WeChat, scan this QR code using the WeChat app.',
+        telegramChannelDescription: 'Connect your Telegram account to be notified when you get a reply and carry the conversation on Telegram',
+        wechatChannelDescriptionMobile: 'Connect your WeChat account to be notified when you get a reply and carry the conversation on WeChat. To get started, save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.',
+        wechatChannelDescription: 'Connect your WeChat account to be notified when you get a reply and carry the conversation on WeChat. To get started, scan this QR code using the WeChat app.',
         lineChannelDescription: 'To talk to us using LINE, scan this QR code using the LINE app and send us a message.',
+        viberChannelDescriptionMobile: 'Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, install the Viber app and tap Connect.',
+        viberChannelDescription: 'Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, scan the QR code using the Viber app.',
         smsTooManyRequestsError: 'A connection for that number was requested recently. Please try again in {seconds} seconds.',
         smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
         smsUnhandledError: 'Something went wrong. Please try again.',
-        smsPingChannelError: 'There was an error sending a message to your number.'
+        smsPingChannelError: 'There was an error sending a message to your number.',
+        smsLinkCancelled: 'Link to {appUserNumber} was cancelled.',
+        smsLinkPending: 'Pending',
+        smsStartTexting: 'Start Texting',
+        smsChangeNumber: 'Change my number',
+        smsSendText: 'Send me a text',
+        smsContinue: 'Continue',
+        smsCancel: 'Cancel',
+        transferError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
+        fetchingHistory: 'Retrieving history...',
+        fetchHistory: 'Load more',
+        clickToRetry: 'Message not delivered. Click to retry.',
+        tapToRetry: 'Message not delivered. Tap to retry.',
+        locationSendingFailed: 'Could not send location',
+        locationServicesDenied: 'This website cannot access your location. Please type your location instead.',
+        locationNotSupported: 'This website cannot access your location. Allow access in your settings or type your location instead.',
+        locationSecurityRestriction: 'Your browser does not support location services or it’s been disabled. Please type your location instead.'
     }
 });
 
@@ -224,10 +242,17 @@ Destroys the widget and makes it disappear. The widget has to be reinitialized w
 Smooch.destroy();
 ```
 
-#### sendMessage(text)
+#### sendMessage(message)
 Sends a message on the user's behalf
 
 ```javascript
+Smooch.sendMessage({
+    type: 'text',
+    text: 'hello'
+});
+
+// OR
+
 Smooch.sendMessage('hello');
 ```
 
@@ -318,6 +343,14 @@ Smooch.on('message', function(message) {
 });
 ```
 
+#### unreadCount
+```
+// This event triggers when the number of unread messages changes
+Smooch.on('unreadCount', function(unreadCount) {
+    console.log('the number of unread messages was updated', unreadCount);
+});
+```
+
 #### widget:opened
 ```
 // This event triggers when the widget is opened
@@ -352,7 +385,7 @@ git clone https://github.com/smooch/smooch-js
 npm install
 ```
 
-In one console, run `npm run dev` to start the web server. In another, run `npm run webpack` to start the webpack dev server.
+In one console, run `npm run dev` to start the web server.
 
 Then, go to `http://localhost:8282` to test the normal widget or `http://localhost:8282/embedded` for the embedded one.
 

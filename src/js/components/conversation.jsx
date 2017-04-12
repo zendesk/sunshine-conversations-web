@@ -7,11 +7,11 @@ import { MessageComponent } from './message';
 import { ConnectNotification } from './connect-notification';
 import { logo, logo2x } from '../constants/assets';
 import { Introduction } from './introduction';
-import { QuickReplies } from './quick-replies';
+import { ReplyActions } from './reply-actions';
 import { TypingIndicator } from './typing-indicator';
 
 import { setShouldScrollToBottom, setFetchingMoreMessages } from '../actions/app-state-actions';
-import { fetchMoreMessages } from '../services/conversation-service';
+import { fetchMoreMessages } from '../services/conversation';
 import { getTop, getBoundingRect } from '../utils/dom';
 import debounce from 'lodash.debounce';
 
@@ -33,7 +33,7 @@ export class ConversationComponent extends Component {
         settings: PropTypes.object.isRequired,
         text: PropTypes.object.isRequired,
         typingIndicatorShown: PropTypes.bool.isRequired,
-        quickReplies: PropTypes.array.isRequired
+        replyActions: PropTypes.array.isRequired
     };
 
     debounceOnScroll = debounce(() => {
@@ -98,19 +98,19 @@ export class ConversationComponent extends Component {
 
         // Timeout is needed because we need to compute sizes of HTML elements and thus need to make sure everything has rendered
         setTimeout(() => {
-            fetchMoreMessages();
+            dispatch(fetchMoreMessages());
         }, 400);
     };
 
     scrollToBottom = () => {
-        const {shouldScrollToBottom, quickReplies, typingIndicatorShown} = this.props;
+        const {shouldScrollToBottom, replyActions, typingIndicatorShown} = this.props;
         if (!this._isScrolling && (shouldScrollToBottom || this._forceScrollToBottom)) {
             this._isScrolling = true;
             const container = findDOMNode(this);
             const logo = this.refs.logo;
             let scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight - INTRO_BOTTOM_SPACER;
 
-            if (quickReplies.length > 0 || typingIndicatorShown) {
+            if (replyActions.length > 0 || typingIndicatorShown) {
                 scrollTop = scrollTop + EXTRA_COMPONENT_BOTTOM_SPACER;
             }
 
@@ -142,8 +142,8 @@ export class ConversationComponent extends Component {
     };
 
     componentWillUpdate(nextProps) {
-        const {messages: currentMessages, isFetchingMoreMessages, typingIndicatorShown: currentTypingIndicatorShown} = this.props;
-        const {messages: newMessages, typingIndicatorShown: newTypingIndicatorShown} = nextProps;
+        const {messages: currentMessages, isFetchingMoreMessages, typingIndicatorShown: currentTypingIndicatorShown, replyActions: currentReplyActions} = this.props;
+        const {messages: newMessages, typingIndicatorShown: newTypingIndicatorShown, replyActions: newReplyActions} = nextProps;
 
         if (!this._lastNode) {
             this._forceScrollToBottom = true;
@@ -152,6 +152,7 @@ export class ConversationComponent extends Component {
 
         // Check for new appMaker (and whisper) messages
         const isAppMakerMessage = newMessages.length - currentMessages.length === 1 ? newMessages.slice(-1)[0].role !== 'appUser' : false;
+
         if ((isAppMakerMessage || (currentTypingIndicatorShown !== newTypingIndicatorShown)) && !isFetchingMoreMessages) {
             const container = findDOMNode(this);
             const lastNodeBottom = getBoundingRect(this._lastNode).bottom;
@@ -164,6 +165,10 @@ export class ConversationComponent extends Component {
             } else {
                 this._forceScrollToBottom = false;
             }
+        }
+
+        if (currentMessages.length === newMessages.length && newReplyActions.length > 0 && currentReplyActions !== newReplyActions) {
+            this._forceScrollToBottom = true;
         }
     }
 
@@ -182,7 +187,7 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const {connectNotificationTimestamp, introHeight, messages, quickReplies, errorNotificationMessage, isFetchingMoreMessages, hasMoreMessages, text, settings, typingIndicatorShown, typingIndicatorName} = this.props;
+        const {connectNotificationTimestamp, introHeight, messages, replyActions, errorNotificationMessage, isFetchingMoreMessages, hasMoreMessages, text, settings, typingIndicatorShown, typingIndicatorName} = this.props;
         const {fetchingHistory, fetchHistory} = text;
         const {accentColor, linkColor} = settings;
 
@@ -236,20 +241,22 @@ export class ConversationComponent extends Component {
                                                key='typing-indicator' />);
         }
 
-        if (quickReplies.length > 0) {
-            const choices = quickReplies.map(({text, payload, iconUrl}) => {
+        if (replyActions.length > 0) {
+            const choices = replyActions.map(({text, iconUrl, type, metadata, payload}) => {
                 return {
                     text,
+                    iconUrl,
+                    metadata,
                     payload,
-                    iconUrl
+                    type
                 };
             });
             const refCallback = (c) => {
                 this._lastNode = findDOMNode(c);
             };
-            messageItems.push(<QuickReplies ref={ refCallback }
+            messageItems.push(<ReplyActions ref={ refCallback }
                                             choices={ choices }
-                                            key='quick-replies' />);
+                                            key='reply-actions' />);
         }
 
         if (connectNotificationTimestamp) {
@@ -327,7 +334,7 @@ export class ConversationComponent extends Component {
 export const Conversation = connect(({appState, conversation, ui: {text}, app}) => {
     return {
         messages: conversation.messages,
-        quickReplies: conversation.quickReplies,
+        replyActions: conversation.replyActions,
         embedded: appState.embedded,
         shouldScrollToBottom: appState.shouldScrollToBottom,
         isFetchingMoreMessages: appState.isFetchingMoreMessages,

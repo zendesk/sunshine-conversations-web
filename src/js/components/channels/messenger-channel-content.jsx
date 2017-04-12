@@ -1,43 +1,22 @@
 import React, { Component, PropTypes } from 'react';
-import MessengerPlugin from 'react-messenger-plugin';
+import { connect } from 'react-redux';
 
-export class MessengerChannelContent extends Component {
+import { TransferRequestChannelContent } from './transfer-request-channel-content';
+
+export class MessengerChannelContentComponent extends Component {
+
     static propTypes = {
-        appId: PropTypes.string.isRequired,
         pageId: PropTypes.string.isRequired,
-        smoochId: PropTypes.string.isRequired
-    };
-
-    state = {
-        sdkBlocked: false
-    };
-
-    facebookScriptDidLoad = () => {
-        // __globalCallbacks is one of the key added to FB when it's properly loaded.
-        if (!global.FB || !global.FB.__globalCallbacks) {
-            console.warn('Facebook SDK was blocked.');
-            this.setState({
-                sdkBlocked: true
-            });
-        }
+        channelState: PropTypes.object.isRequired
     };
 
     render() {
-        const {appId, pageId, smoochId} = this.props;
-
-        return this.state.sdkBlocked ?
-            <p>
-                <a href={ `https://m.me/${pageId}` }
-                   target='_blank'>
-                    { `https://m.me/${pageId}` }
-                </a>
-            </p> :
-            <div className='sk-fb-button-wrapper'>
-                <MessengerPlugin appId={ appId }
-                                 pageId={ pageId }
-                                 passthroughParams={ smoochId }
-                                 asyncScriptOnLoad={ this.facebookScriptDidLoad }
-                                 size='large' />
-            </div>;
+        const {pageId, channelState} = this.props;
+        const url = `https://m.me/${pageId}?ref=${channelState.transferRequestCode}`;
+        return <TransferRequestChannelContent type='messenger'
+                                              channelState={ channelState }
+                                              url={ url } />;
     }
 }
+
+export const MessengerChannelContent = connect()(MessengerChannelContentComponent);
