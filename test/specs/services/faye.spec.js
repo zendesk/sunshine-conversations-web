@@ -37,7 +37,7 @@ describe('Faye service', () => {
         mockedStore = createMockedStore(sandbox, getProps());
 
         sandbox.stub(Client.prototype, 'addExtension');
-        sandbox.stub(conversationService, 'getMessages');
+        sandbox.stub(conversationService, '_getMessages');
         sandbox.stub(conversationService, 'disconnectFaye');
         sandbox.stub(conversationService, 'handleConversationUpdated');
         sandbox.stub(appService, 'showSettings');
@@ -66,10 +66,10 @@ describe('Faye service', () => {
             });
         });
         describe('when conversation is started', () => {
-            it('should call getMessages when transport:up event is emitted', () => {
+            it('should call _getMessages when transport:up event is emitted', () => {
                 const client = mockedStore.dispatch(fayeService.getClient());
                 client.subscribe();
-                conversationService.getMessages.should.have.been.calledOnce;
+                conversationService._getMessages.should.have.been.calledOnce;
             });
         });
 
@@ -82,10 +82,10 @@ describe('Faye service', () => {
                 }));
             });
 
-            it('should not call getMessages when transport:up event is emitted', () => {
+            it('should not call _getMessages when transport:up event is emitted', () => {
                 const client = mockedStore.dispatch(fayeService.getClient());
                 client.subscribe();
-                conversationService.getMessages.should.not.have.been.called;
+                conversationService._getMessages.should.not.have.been.called;
             });
         });
     });
@@ -181,7 +181,7 @@ describe('Faye service', () => {
                 it('should fetch conversation', () => {
                     currentAppUser.conversationStarted = true;
                     mockedStore.dispatch(fayeService.updateUser(currentAppUser, nextAppUser));
-                    conversationService.getMessages.should.have.been.calledOnce;
+                    conversationService._getMessages.should.have.been.calledOnce;
                 });
             });
             describe('next appUser started conversation', () => {
