@@ -5,7 +5,7 @@ import { batchActions } from 'redux-batched-actions';
 import { setUser } from '../actions/user-actions';
 import { setFayeConversationSubscription, setFayeUserSubscription, setFayeConversationActivitySubscription } from '../actions/faye-actions';
 import { addMessage, incrementUnreadCount, resetUnreadCount } from '../actions/conversation-actions';
-import { getMessages, disconnectFaye, handleConversationUpdated } from './conversation';
+import { _getMessages, disconnectFaye, handleConversationUpdated } from './conversation';
 import { showSettings, hideChannelPage, hideConnectNotification, showTypingIndicator, hideTypingIndicator } from './app';
 import { getDeviceId } from '../utils/device';
 import { ANIMATION_TIMINGS } from '../constants/styles';
@@ -44,7 +44,7 @@ export function getClient() {
                 const {user} = getState();
 
                 if (user.conversationStarted) {
-                    dispatch(getMessages());
+                    dispatch(_getMessages());
                 }
             });
         }
@@ -135,7 +135,7 @@ export function updateUser(currentAppUser, nextAppUser) {
             if (currentAppUser.conversationStarted) {
                 // if the conversation is already started,
                 // fetch the conversation for merged messages
-                return dispatch(getMessages());
+                return dispatch(() => _getMessages());
             } else if (nextAppUser.conversationStarted) {
                 // if the conversation wasn't already started,
                 // `handleConversationUpdated` will connect faye and fetch it
