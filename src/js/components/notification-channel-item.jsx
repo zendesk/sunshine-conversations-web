@@ -1,14 +1,15 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import bindAll from 'lodash.bindall';
 
-import { showChannelPage } from '../services/app-service';
+import { showChannelPage } from '../services/app';
 
 export class NotificationChannelItemComponent extends Component {
     static propTypes = {
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         linked: PropTypes.bool.isRequired,
-        hasURL: PropTypes.string,
+        hasURL: PropTypes.bool,
         icon: PropTypes.string.isRequired,
         icon2x: PropTypes.string.isRequired,
         displayName: PropTypes.string,
@@ -17,9 +18,15 @@ export class NotificationChannelItemComponent extends Component {
         notificationSettingsConnectedText: PropTypes.string.isRequired
     };
 
-    onClick = () => {
-        showChannelPage(this.props.id);
-    };
+    constructor(...args) {
+        super(...args);
+        bindAll(this, 'onClick');
+    }
+
+    onClick() {
+        const {dispatch} = this.props;
+        dispatch(showChannelPage(this.props.id));
+    }
 
     render() {
         const {name, icon, icon2x, linked, hasURL, displayName, linkColor, notificationSettingsConnectedText, notificationSettingsConnectedAsText} = this.props;
@@ -40,6 +47,7 @@ export class NotificationChannelItemComponent extends Component {
                     onClick={ this.onClick }>
                    <div className='channel-item-header'>
                        <img className='channel-item-icon'
+                            alt={ name }
                             src={ icon }
                             srcSet={ `${icon} 1x, ${icon2x} 2x` } />
                        <div className={ contentClassNames.join(' ') }>
