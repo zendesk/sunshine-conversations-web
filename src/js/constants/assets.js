@@ -45,5 +45,11 @@ export const integrations = {
         icon2x: require('../../images/sms_icon_2x.png'),
         iconLarge: require('../../images/sms_large.png'),
         iconLarge2x: require('../../images/sms_large_2x.png')
+    },
+    twitter: {
+        icon: require('../../images/twitter_icon.png'),
+        icon2x: require('../../images/twitter_icon_2x.png'),
+        iconLarge: require('../../images/twitter_large.png'),
+        iconLarge2x: require('../../images/twitter_large_2x.png')
     }
 };

@@ -87,6 +87,12 @@ export const CHANNEL_DETAILS = {
         ...integrationsAssets.line,
         Component: !isMobile.any ? LineChannelContent : undefined,
         getURL: (channel) => `https://line.me/R/ti/p/@${channel.lineId}`
+    },
+    twitter: {
+        name: 'Twitter DM',
+        isLinkable: false,
+        ...integrationsAssets.twitter,
+        getURL: (channel) => `https://twitter.com/messages/compose?recipient_id=${channel.userId}`
     }
 };
 
