@@ -419,19 +419,51 @@ describe('Smooch', () => {
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, defaultState);
             disconnectFayeStub = sandbox.stub(conversationService, 'disconnectFaye');
+            loginStub = sandbox.stub(smooch, 'login').resolves();
         });
 
-        it('should reset store state and remove the container', () => {
-            smooch.destroy();
-            commonActions.reset.should.have.been.calledOnce;
-            document.body.removeChild.should.have.been.calledOnce;
+        describe('with init first', () => {
+            beforeEach((done) => {
+                smooch.init().then(done);
+            });
+
+            it('should reset store state and remove the container', () => {
+                smooch.destroy();
+                commonActions.reset.should.have.been.calledOnce;
+                document.body.removeChild.should.have.been.calledOnce;
+            });
+
+            it('should not remove the container from body if it is undefined', () => {
+                delete smooch._container;
+                smooch.destroy();
+                commonActions.reset.should.have.been.calledOnce;
+                document.body.removeChild.should.not.have.been.calledOnce;
+            });
         });
 
-        it('should not remove the container from body if it is undefined', () => {
-            delete smooch._container;
-            smooch.destroy();
-            commonActions.reset.should.have.been.calledOnce;
-            document.body.removeChild.should.not.have.been.calledOnce;
+        describe('without init first', () => {
+            it('should do nothing', () => {
+                smooch.destroy();
+                commonActions.reset.should.not.have.been.calledOnce;
+                document.body.removeChild.should.not.have.been.calledOnce;
+            });
+        });
+
+        describe('with init first then destroy twice', () => {
+            beforeEach((done) => {
+                smooch.init().then(done);
+            });
+
+            it('should do nothing on the second call', () => {
+                smooch.destroy();
+                commonActions.reset.should.have.been.calledOnce;
+                document.body.removeChild.should.have.been.calledOnce;
+
+                smooch.destroy();
+                commonActions.reset.should.not.have.been.calledTwice;
+                document.body.removeChild.should.not.have.been.calledTwice;
+            });
+
         });
     });
 

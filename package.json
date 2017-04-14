@@ -2,7 +2,7 @@
   "name": "smooch",
   "description": "Smooch.io powered web messaging",
   "analyze": false,
-  "version": "3.13.1",
+  "version": "3.14.4",
   "keywords": [
     "smooch",
     "javascript",
@@ -55,7 +55,7 @@
     "redux": "3.3.1",
     "redux-batched-actions": "0.1.5",
     "redux-thunk": "2.1.0",
-    "smooch-core": "2.1.0",
+    "smooch-core": "3.4.0",
     "urljoin": "0.1.5",
     "uuid": "2.0.1"
   },

@@ -1,9 +1,16 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+=======
+import isMobile from 'ismobilejs';
+
+import React, { Component, PropTypes } from 'react';
+>>>>>>> b83a9d88738a92e1e20a181ac540cd1275935d56
 import { connect } from 'react-redux';
 import { LoadingComponent } from '../../components/loading';
 import { fetchViberQRCode } from '../../services/integrations';
 
+import { TransferRequestChannelContent } from './transfer-request-channel-content';
 
 class ViberChannelContentComponent extends Component {
     static propTypes = {
@@ -12,7 +19,13 @@ class ViberChannelContentComponent extends Component {
     };
 
     render() {
-        const {channelState, ui: {text}} = this.props;
+        const {uri, channelState, ui: {text}} = this.props;
+        if (isMobile.any) {
+            const url = `viber://pa?chatURI=${uri}&context=${channelState.transferRequestCode}`;
+            return <TransferRequestChannelContent type='viber'
+                                                  channelState={ channelState }
+                                                  url={ url } />;
+        }
 
         if (channelState.hasError) {
             return <a className={ 'sk-error-link' }

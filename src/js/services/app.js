@@ -1,6 +1,7 @@
 import * as AppStateActions from '../actions/app-state-actions';
 import { preventMobilePageScroll, allowMobilePageScroll } from '../utils/dom';
 import { resetUnreadCount, connectFayeUser } from './conversation';
+import { fetchTransferRequestCode } from './integrations';
 import { observable } from '../utils/events';
 import { hasLinkableChannels, isChannelLinked } from '../utils/user';
 import { getIntegration } from '../utils/app';
@@ -74,24 +75,20 @@ export function showChannelPage(channelType) {
         const {user, app: {integrations}} = getState();
         const channelDetails = CHANNEL_DETAILS[channelType];
         const isLinked = isChannelLinked(user.clients, channelType);
-        const openLink = channelDetails.getURL && (!channelDetails.Component || isLinked);
+        const appChannel = getIntegration(integrations, channelType);
+        const url = channelDetails.getURL(appChannel);
+        const openLink = url && (!channelDetails.Component || isLinked);
 
         if (openLink) {
-            const appChannel = getIntegration(integrations, channelType);
-            const link = channelDetails.getURL(user, appChannel, isLinked);
-
-            if (link) {
-                window.open(link);
-                return (isLinked || !channelDetails.isLinkable) ? Promise.resolve() : dispatch(connectToFayeUser());
+            window.open(url);
+            if (!isLinked && channelDetails.isLinkable) {
+                return dispatch(connectToFayeUser());
             }
+        } else {
+            dispatch(AppStateActions.showChannelPage(channelType));
+            return dispatch(connectToFayeUser())
+                .then(() => dispatch(channelDetails.onChannelPage()));
         }
-
-        dispatch(AppStateActions.showChannelPage(channelType));
-
-        return dispatch(connectToFayeUser())
-            .then(() => {
-                return dispatch(channelDetails.onChannelPage());
-            });
     };
 }
 
