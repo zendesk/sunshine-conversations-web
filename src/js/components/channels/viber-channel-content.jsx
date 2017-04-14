@@ -1,11 +1,6 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-=======
 import isMobile from 'ismobilejs';
-
-import React, { Component, PropTypes } from 'react';
->>>>>>> b83a9d88738a92e1e20a181ac540cd1275935d56
 import { connect } from 'react-redux';
 import { LoadingComponent } from '../../components/loading';
 import { fetchViberQRCode } from '../../services/integrations';
