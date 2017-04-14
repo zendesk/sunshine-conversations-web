@@ -75,7 +75,7 @@ module.exports = function(options) {
 
     const plugins = [
         new webpack.PrefetchPlugin('react'),
-        new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment')
+        // new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment')
     ];
 
 
