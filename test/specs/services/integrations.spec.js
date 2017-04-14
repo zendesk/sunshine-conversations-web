@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import { createMock } from '../../mocks/core';
 import { createMockedStore } from '../../utils/redux';
 
+import { Throttle } from '../../../src/js/utils/throttle';
 import * as coreService from '../../../src/js/services/core';
 import * as integrationsService from '../../../src/js/services/integrations';
 import * as utilsFaye from '../../../src/js/services/faye';
@@ -15,6 +16,9 @@ describe('Integrations service', () => {
     let pendingAppUser;
 
     beforeEach(() => {
+        // Disable throttling for unit tests
+        sandbox.stub(Throttle.prototype, 'exec', (func) => func());
+
         pendingAppUser = {
             appuser: {
                 _id: '1',
@@ -39,6 +43,11 @@ describe('Integrations service', () => {
             conversation: {
             },
             messages: []
+        });
+        coreMock.appUsers.transferRequest.resolves({
+            transferRequests: [{
+                code: '1234'
+            }]
         });
 
         sandbox.stub(coreService, 'core', () => {
@@ -107,6 +116,17 @@ describe('Integrations service', () => {
         it('should call the ping channel API', () => {
             return mockedStore.dispatch(integrationsService.pingTwilioChannel('1')).then(() => {
                 coreMock.appUsers.pingChannel.should.have.been.calledWith('1', 'twilio');
+            });
+        });
+    });
+
+    describe('fetchTransferRequestCode', () => {
+        it('should call the transferrequest API', () => {
+            const channel = 'messenger';
+            return mockedStore.dispatch(integrationsService.fetchTransferRequestCode(channel)).then(() => {
+                coreMock.appUsers.transferRequest.should.have.been.calledWith('1', {
+                    type: channel
+                });
             });
         });
     });
