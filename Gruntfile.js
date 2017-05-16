@@ -35,16 +35,21 @@ module.exports = function(grunt) {
                 key: '<%= aws.key %>',
                 secret: '<%= aws.secret %>',
                 bucket: '<%= aws.bucket %>',
-                access: 'public-read'
+                access: 'public-read',
+                headers: {
+                    'Cache-Control': 'max-age=630720000, public'
+                }
             },
             js: {
                 // Files to be uploaded.
                 upload: [{
                     src: 'dist/smooch.js',
-                    dest: 'smooch.min.js'
-                }, {
-                    src: 'dist/smooch.js.map',
-                    dest: 'smooch.js.map'
+                    dest: 'smooch.min.js',
+                    options: {
+                        headers: {
+                            'Cache-Control': 'max-age=300, public'
+                        }
+                    }
                 }]
             },
             media: {
