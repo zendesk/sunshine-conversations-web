@@ -26,7 +26,7 @@ export class ConversationComponent extends Component {
         embedded: PropTypes.bool.isRequired,
         shouldScrollToBottom: PropTypes.bool.isRequired,
         isFetchingMoreMessages: PropTypes.bool.isRequired,
-        hasMoreMessages: PropTypes.bool.isRequired,
+        hasMoreMessages: PropTypes.bool,
         introHeight: PropTypes.number,
         connectNotificationTimestamp: PropTypes.number,
         errorNotificationMessage: PropTypes.string,

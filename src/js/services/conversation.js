@@ -20,14 +20,14 @@ import { getUserId } from './user';
 
 
 // Throttle requests per appUser
-const throttleMap = {}
+const throttleMap = {};
 const throttlePerUser = (userId) => {
     if (!throttleMap[userId]) {
         throttleMap[userId] = new Throttle();
     }
 
     return throttleMap[userId];
-}
+};
 
 const postSendMessage = (message) => {
     return (dispatch, getState) => {
@@ -259,24 +259,26 @@ export function uploadImage(file) {
     };
 }
 
-function _getMessages(dispatch, getState) {
-    const userId = getUserId(getState());
-    return core(getState()).appUsers.getMessages(userId).then((response) => {
-        dispatch(batchActions([
-            setConversation({
-                ...response.conversation,
-                hasMoreMessages: !!response.previous
-            }),
-            setMessages(response.messages)
-        ]));
-        return response;
-    });
+export function _getMessages() {
+    return (dispatch, getState) => {
+        const userId = getUserId(getState());
+        return core(getState()).appUsers.getMessages(userId).then((response) => {
+            dispatch(batchActions([
+                setConversation({
+                    ...response.conversation,
+                    hasMoreMessages: !!response.previous
+                }),
+                setMessages(response.messages)
+            ]));
+            return response;
+        });
+    };
 }
 
 export function getMessages() {
     return (dispatch, getState) => {
         const userId = getUserId(getState());
-        return throttlePerUser(userId).exec(() => _getMessages(dispatch, getState));
+        return throttlePerUser(userId).exec(() => dispatch(_getMessages()));
     };
 }
 

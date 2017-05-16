@@ -48,7 +48,13 @@ describe('ReplyActions Component', () => {
         sandbox.stub(conversationService, 'sendMessage');
         sandbox.stub(conversationService, 'sendLocation');
         geolocation = navigator.geolocation;
-        navigator.geolocation = true;
+        try {
+            // can't reassign this prop in Chrome
+            navigator.geolocation = true;
+        }
+        catch (e) {
+            console.log(e);
+        }
 
         component = wrapComponentWithStore(ReplyActions, {
             choices: CHOICES
@@ -56,8 +62,14 @@ describe('ReplyActions Component', () => {
     });
 
     afterEach(() => {
-        navigator.geolocation = geolocation;
         sandbox.restore();
+        try {
+            // can't reassign this prop in Chrome
+            navigator.geolocation = geolocation;
+        }
+        catch (e) {
+            console.log(e);
+        }
     });
 
     it('should render choices', () => {

@@ -291,182 +291,193 @@ describe('Conversation service', () => {
         });
     });
 
-    describe('sendLocation', () => {
-        const message = {
-            conversation: 'conversation',
-            _clientId: 2,
-            message: 'message'
-        };
+    try {
+        const _navigator = window.navigator;
+        window.navigator = true;
+        window.navigator = _navigator;
+        // If assigning window.navigator doesn't throw,
+        // we can run this test suite
 
-        let locationMessage;
-
-        beforeEach(() => {
-            coreMock.appUsers.sendMessage.resolves(message);
-            locationMessage = {
-                type: 'location',
-                _clientSent: Date.now() / 1000
+        describe('sendLocation', () => {
+            const message = {
+                conversation: 'conversation',
+                _clientId: 2,
+                message: 'message'
             };
-            navigator = {
-                geolocation: {
-                    getCurrentPosition: sandbox.stub().yields({
-                        coords: {
-                            latitude: 10,
-                            longitude: 10
-                        }
-                    })
-                }
-            };
-        });
 
-        conversationStartedSuite(conversationService.sendLocation(locationMessage));
+            let locationMessage;
 
-        const getCurrentLocationFailsSuite = (action) => {
-            let clock;
-
-            describe('getting the current position', () => {
-                beforeEach(() => {
-                    mockedStore = createMockedStore(sandbox, getProps());
-                    sandbox.stub(window, 'alert');
-                    clock = sinon.useFakeTimers();
-                    sandbox.stub(utilsDom, 'getWindowLocation').returns({
-                        protocol: 'https:'
-                    });
-                });
-
-                afterEach(() => {
-                    clock.restore();
-                });
-
-                const stubGeolocationFailure = (args, tick = 100) => {
-                    navigator = {
-                        geolocation: {
-                            getCurrentPosition: () => {
+            beforeEach(() => {
+                coreMock.appUsers.sendMessage.resolves(message);
+                locationMessage = {
+                    type: 'location',
+                    _clientSent: Date.now() / 1000
+                };
+                navigator = {
+                    geolocation: {
+                        getCurrentPosition: sandbox.stub().yields({
+                            coords: {
+                                latitude: 10,
+                                longitude: 10
                             }
-                        }
+                        })
+                    }
+                };
+            });
+
+            conversationStartedSuite(conversationService.sendLocation(locationMessage));
+
+            const getCurrentLocationFailsSuite = (action) => {
+                let clock;
+
+                describe('getting the current position', () => {
+                    beforeEach(() => {
+                        mockedStore = createMockedStore(sandbox, getProps());
+                        sandbox.stub(window, 'alert');
+                        clock = sinon.useFakeTimers();
+                        sandbox.stub(utilsDom, 'getWindowLocation').returns({
+                            protocol: 'https:'
+                        });
+                    });
+
+                    afterEach(() => {
+                        clock.restore();
+                    });
+
+                    const stubGeolocationFailure = (args, tick = 100) => {
+                        navigator = {
+                            geolocation: {
+                                getCurrentPosition: () => {
+                                }
+                            }
+                        };
+
+                        sandbox.stub(navigator.geolocation, 'getCurrentPosition', (success, failure) => {
+                            failure(args);
+                            clock.tick(tick);
+                        });
                     };
 
-                    sandbox.stub(navigator.geolocation, 'getCurrentPosition', (success, failure) => {
-                        failure(args);
-                        clock.tick(tick);
-                    });
-                };
+                    describe('fails with LOCATION_ERRORS.PERMISSION_DENIED', () => {
+                        beforeEach(() => {
+                            stubGeolocationFailure({
+                                code: LOCATION_ERRORS.PERMISSION_DENIED
+                            });
+                        });
 
-                describe('fails with LOCATION_ERRORS.PERMISSION_DENIED', () => {
-                    beforeEach(() => {
-                        stubGeolocationFailure({
-                            code: LOCATION_ERRORS.PERMISSION_DENIED
+                        it('should remove the message and display an alert', () => {
+                            return mockedStore.dispatch(action).then(() => {
+                                conversationActions.removeMessage.should.have.been.called;
+                                window.alert.should.have.been.calledOnce;
+                            });
                         });
                     });
 
-                    it('should remove the message and display an alert', () => {
-                        return mockedStore.dispatch(action).then(() => {
-                            conversationActions.removeMessage.should.have.been.called;
-                            window.alert.should.have.been.calledOnce;
+                    describe('fails due to a timeout', () => {
+                        beforeEach(() => {
+                            stubGeolocationFailure({
+                                code: LOCATION_ERRORS.TIMEOUT
+                            }, 100000);
+                        });
+
+                        it('should replace the message with a failed one', () => {
+                            return mockedStore.dispatch(action).then(() => {
+                                conversationActions.replaceMessage.should.have.been.calledOnce;
+                                window.alert.should.not.have.been.called;
+                            });
+                        });
+                    });
+
+                    describe('fails unexpectedly', () => {
+                        beforeEach(() => {
+                            stubGeolocationFailure({
+                                code: 10000
+                            });
+                        });
+
+                        it('should replace the message with a failed one', () => {
+                            return mockedStore.dispatch(action).then(() => {
+                                conversationActions.replaceMessage.should.have.been.calledOnce;
+                                window.alert.should.not.have.been.called;
+                            });
+                        });
+                    });
+
+                    describe('fails due to http protocol', () => {
+                        beforeEach(() => {
+                            utilsDom.getWindowLocation.returns({
+                                protocol: 'http:'
+                            });
+
+                            stubGeolocationFailure({
+                                code: LOCATION_ERRORS.PERMISSION_DENIED
+                            });
+                        });
+
+                        it('should remove the message and display an alert', () => {
+                            return mockedStore.dispatch(action).then(() => {
+                                conversationActions.removeMessage.should.have.been.called;
+                                window.alert.should.have.been.calledOnce;
+                            });
                         });
                     });
                 });
+            };
 
-                describe('fails due to a timeout', () => {
-                    beforeEach(() => {
-                        stubGeolocationFailure({
-                            code: LOCATION_ERRORS.TIMEOUT
-                        }, 100000);
-                    });
-
-                    it('should replace the message with a failed one', () => {
-                        return mockedStore.dispatch(action).then(() => {
-                            conversationActions.replaceMessage.should.have.been.calledOnce;
-                            window.alert.should.not.have.been.called;
-                        });
+            describe('message exists with coordinates', () => {
+                beforeEach(() => {
+                    Object.assign(locationMessage, {
+                        coordinates: {
+                            lat: 10.0,
+                            long: 10.0
+                        }
                     });
                 });
 
-                describe('fails unexpectedly', () => {
-                    beforeEach(() => {
-                        stubGeolocationFailure({
-                            code: 10000
-                        });
-                    });
+                it('should postSendMessage', () => {
+                    mockedStore = createMockedStore(sandbox, getProps());
 
-                    it('should replace the message with a failed one', () => {
-                        return mockedStore.dispatch(action).then(() => {
-                            conversationActions.replaceMessage.should.have.been.calledOnce;
-                            window.alert.should.not.have.been.called;
-                        });
-                    });
-                });
-
-                describe('fails due to http protocol', () => {
-                    beforeEach(() => {
-                        utilsDom.getWindowLocation.returns({
-                            protocol: 'http:'
-                        });
-
-                        stubGeolocationFailure({
-                            code: LOCATION_ERRORS.PERMISSION_DENIED
-                        });
-                    });
-
-                    it('should remove the message and display an alert', () => {
-                        return mockedStore.dispatch(action).then(() => {
-                            conversationActions.removeMessage.should.have.been.called;
-                            window.alert.should.have.been.calledOnce;
-                        });
+                    return mockedStore.dispatch(conversationService.sendLocation(locationMessage)).then(() => {
+                        conversationActions.addMessage.should.not.have.been.called;
+                        coreMock.appUsers.sendMessage.should.have.been.calledOnce;
                     });
                 });
             });
-        };
 
-        describe('message exists with coordinates', () => {
-            beforeEach(() => {
-                Object.assign(locationMessage, {
-                    coordinates: {
-                        lat: 10.0,
-                        long: 10.0
-                    }
+            describe('message exists without coordinates', () => {
+                it('should addMessage', () => {
+                    mockedStore = createMockedStore(sandbox, getProps());
+
+                    return mockedStore.dispatch(conversationService.sendLocation(locationMessage)).then(() => {
+                        conversationActions.addMessage.should.not.have.been.called;
+                        navigator.geolocation.getCurrentPosition.should.have.been.calledOnce;
+                        conversationActions.replaceMessage.should.have.been.called;
+                        coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                    });
                 });
+
+                getCurrentLocationFailsSuite(conversationService.sendLocation(locationMessage));
             });
 
-            it('should postSendMessage', () => {
-                mockedStore = createMockedStore(sandbox, getProps());
+            describe('message does not yet exist', () => {
+                it('should addMessage', () => {
+                    mockedStore = createMockedStore(sandbox, getProps());
 
-                return mockedStore.dispatch(conversationService.sendLocation(locationMessage)).then(() => {
-                    conversationActions.addMessage.should.not.have.been.called;
-                    coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                    return mockedStore.dispatch(conversationService.sendLocation()).then(() => {
+                        conversationActions.addMessage.should.have.been.calledOnce;
+                        navigator.geolocation.getCurrentPosition.should.have.been.calledOnce;
+                        conversationActions.replaceMessage.should.have.been.called;
+                        coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                    });
                 });
+
+                getCurrentLocationFailsSuite(conversationService.sendLocation());
             });
         });
-
-        describe('message exists without coordinates', () => {
-            it('should addMessage', () => {
-                mockedStore = createMockedStore(sandbox, getProps());
-
-                return mockedStore.dispatch(conversationService.sendLocation(locationMessage)).then(() => {
-                    conversationActions.addMessage.should.not.have.been.called;
-                    navigator.geolocation.getCurrentPosition.should.have.been.calledOnce;
-                    conversationActions.replaceMessage.should.have.been.called;
-                    coreMock.appUsers.sendMessage.should.have.been.calledOnce;
-                });
-            });
-
-            getCurrentLocationFailsSuite(conversationService.sendLocation(locationMessage));
-        });
-
-        describe('message does not yet exist', () => {
-            it('should addMessage', () => {
-                mockedStore = createMockedStore(sandbox, getProps());
-
-                return mockedStore.dispatch(conversationService.sendLocation()).then(() => {
-                    conversationActions.addMessage.should.have.been.calledOnce;
-                    navigator.geolocation.getCurrentPosition.should.have.been.calledOnce;
-                    conversationActions.replaceMessage.should.have.been.called;
-                    coreMock.appUsers.sendMessage.should.have.been.calledOnce;
-                });
-            });
-
-            getCurrentLocationFailsSuite(conversationService.sendLocation());
-        });
-    });
+    }
+    catch (e) {
+        // skip test suite if navigator is read only
+    }
 
     describe('resendMessage', () => {
         const message = {
