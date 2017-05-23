@@ -38,7 +38,7 @@ module.exports = function(options) {
 
     app.get('/embedded', function(req, res) {
         const renderer = new Renderer({
-            scriptUrl: '/_assets/smooch.js',
+            scriptUrl: '/_assets/host.js',
             data: config,
             embedded: true
         });
@@ -60,7 +60,7 @@ module.exports = function(options) {
     // application
     app.get('/*', function(req, res) {
         const renderer = new Renderer({
-            scriptUrl: '/_assets/smooch.js',
+            scriptUrl: '/_assets/host.js',
             data: config
         });
 

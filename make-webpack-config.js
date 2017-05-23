@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const webpack = require('webpack');
 const StatsPlugin = require('stats-webpack-plugin');
+const ReactStaticPlugin = require('react-static-webpack-plugin');
 const rulesByExtension = require('./webpack/lib/rulesByExtension');
 
 module.exports = function(options) {
@@ -19,12 +20,14 @@ module.exports = function(options) {
     }
 
     const entry = options.assetsOnly ? {
-        'assets': './src/js/constants/assets'
+        assets: './src/iframe/js/constants/assets'
     } : {
-        'smooch': ['./src/js/utils/polyfills', './src/js/umd']
+        host: ['./src/host/js/umd'],
+        smooch: ['./src/iframe/js/utils/polyfills', './src/iframe/js/umd']
     };
 
     if (options.hotComponents && !options.assetsOnly) {
+        entry.host.unshift('webpack-hot-middleware/client');
         entry.smooch.unshift('webpack-hot-middleware/client');
     }
 
@@ -35,7 +38,8 @@ module.exports = function(options) {
         'js': {
             loader: 'babel-loader',
             include: [
-                path.resolve(__dirname, 'src/js'),
+                path.resolve(__dirname, 'src/host/js'),
+                path.resolve(__dirname, 'src/iframe/js'),
                 path.resolve(__dirname, 'test')
             ]
         },
@@ -79,7 +83,10 @@ module.exports = function(options) {
 
     const plugins = [
         new webpack.PrefetchPlugin('react'),
-        new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment')
+        new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment'),
+        new ReactStaticPlugin({
+            template: './src/iframe/js/page/template.js',
+        })
     ];
 
     if (!options.test && !options.assetsOnly) {

@@ -1,7 +1,7 @@
 import { Smooch } from 'smooch-core/lib/smooch';
 import urljoin from 'urljoin';
 
-import { VERSION } from '../constants/version';
+import { VERSION } from '../../../shared/js/constants/version';
 
 export function core({auth, appState}) {
     return new Smooch(auth, {
