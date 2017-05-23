@@ -137,11 +137,10 @@
     "style-loader": "0.13.0",
     "underscore": "1.8.3",
     "url-loader": "0.5.7",
-    "webpack": "1.12.9",
+    "webpack": "2.6.0",
     "webpack-cli": "1.0.0",
     "webpack-dev-middleware": "1.9.0",
-    "webpack-dev-server": "1.14.0",
-    "webpack-hot-middleware": "2.15.0"
+    "webpack-hot-middleware": "2.18.0"
   },
   "peerDependencies": {
     "babel-polyfill": ">=6.9.0 <7.0",

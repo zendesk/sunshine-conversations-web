@@ -24,7 +24,7 @@ module.exports = function(options) {
         const compiler = webpack(config);
         app.use(require('webpack-dev-middleware')(compiler, {
             publicPath: '/_assets/',
-            quiet: true
+            quiet: false
         }));
 
         app.use(require('webpack-hot-middleware')(compiler));

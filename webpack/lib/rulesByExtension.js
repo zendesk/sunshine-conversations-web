@@ -7,25 +7,24 @@ function extsToRegExp(exts) {
     return new RegExp('\\.(' + extPatterns + ')(\\?.*)?$');
 }
 
-module.exports = function loadersByExtension(obj) {
-    var loaders = [];
+module.exports = function rulesByExtension(obj) {
+    var rules = [];
     Object.keys(obj).forEach(function(key) {
         var exts = key.split('|');
         var value = obj[key];
-        var entry = {
-            extensions: exts,
+        var rule = {
             test: extsToRegExp(exts)
         };
         if (Array.isArray(value)) {
-            entry.loaders = value;
+            rule.use = value;
         } else if (typeof value === 'string') {
-            entry.loader = value;
+            rule.use = [value];
         } else {
             Object.keys(value).forEach(function(valueKey) {
-                entry[valueKey] = value[valueKey];
+                rule[valueKey] = value[valueKey];
             });
         }
-        loaders.push(entry);
+        rules.push(rule);
     });
-    return loaders;
+    return rules;
 };
