@@ -19,10 +19,10 @@ module.exports = function(options) {
     }
 
     const entry = options.assetsOnly ? {
-        assets: './src/iframe/js/constants/assets'
+        assets: './src/frame/js/constants/assets'
     } : {
         host: ['./src/host/js/umd'],
-        frame: ['./src/iframe/js/utils/polyfills', './src/iframe/js/umd']
+        frame: ['./src/frame/js/utils/polyfills', './src/frame/js/umd']
     };
 
     if (options.hotComponents && !options.assetsOnly) {
@@ -38,7 +38,7 @@ module.exports = function(options) {
             loader: 'babel-loader',
             include: [
                 path.resolve(__dirname, 'src/host/js'),
-                path.resolve(__dirname, 'src/iframe/js'),
+                path.resolve(__dirname, 'src/frame/js'),
                 path.resolve(__dirname, 'test')
             ]
         },
@@ -81,17 +81,12 @@ module.exports = function(options) {
     const frameStyleRule = {
         test: /\.(less)(\?.*)?$/,
         include: [
-            path.resolve(__dirname, 'src/iframe/')
+            path.resolve(__dirname, 'src/frame/')
         ],
         use: [
             'css-loader',
             'less-loader'
         ]
-    };
-
-    const stylesheetLoaders = {
-        // 'css': ['css-loader'],
-        // 'less': ['less-loader', 'css-loader']
     };
 
     const publicPath = options.devServer ?
@@ -189,7 +184,6 @@ module.exports = function(options) {
         target: 'web',
         module: {
             rules: rulesByExtension(rules)
-                .concat(rulesByExtension(stylesheetLoaders))
                 .concat([
                     hostStyleRule,
                     frameStyleRule

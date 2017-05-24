@@ -1,6 +1,6 @@
 import { VERSION } from '../../shared/js/constants/version';
 import hostStyles from '../stylesheets/iframe.less';
-import frameStyles from '../../iframe/stylesheets/main.less';
+import frameStyles from '../../frame/stylesheets/main.less';
 import { waitForPage } from './utils/dom';
 
 const pendingOnCalls = [];
