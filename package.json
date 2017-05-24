@@ -123,6 +123,7 @@
     "mocha": "2.2.5",
     "nodemon": "1.9.2",
     "phantomjs-prebuilt": "2.1.4",
+    "raw-loader": "0.5.1",
     "react": "15.1.0",
     "react-addons-test-utils": "15.1.0",
     "react-dom": "15.1.0",

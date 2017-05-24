@@ -1,7 +1,7 @@
-@import "bootstrap/mixins.less";
-@import "mixins.less";
-@import "bootstrap/variables.less";
-@import "variables.less";
+@import "../../shared/stylesheets/bootstrap/mixins.less";
+@import "../../shared/stylesheets/mixins.less";
+@import "../../shared/stylesheets/bootstrap/variables.less";
+@import "../../shared/stylesheets/variables.less";
 .container() {
     @import "loading.less";
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -67,9 +67,6 @@
     @import "unread-badge.less";
     @import "messenger-button.less";
     #sk-container {
-        position: fixed;
-        right: @widget-horizontal-spacing;
-        margin-bottom: -1px;
         box-shadow: 0 0 24px rgba(0,0,0,0.15);
         border: 1px solid rgba(0,0,0,0.15);
         z-index: 9998; // 1 less than Stripe Checkout

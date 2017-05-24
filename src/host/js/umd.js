@@ -1,4 +1,4 @@
-import { Smooch } from './smooch';
+import Smooch from './smooch';
 
 (function(root, factory) {
     /* global define:false */
@@ -12,5 +12,5 @@ import { Smooch } from './smooch';
         root.Smooch = factory();
     }
 }(global, () => {
-    return new Smooch();
+    return Smooch;
 }));

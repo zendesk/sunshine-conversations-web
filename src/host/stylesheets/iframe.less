@@ -1,0 +1,33 @@
+@import "../../shared/stylesheets/bootstrap/mixins.less";
+@import "../../shared/stylesheets/mixins.less";
+@import "../../shared/stylesheets/bootstrap/variables.less";
+@import "../../shared/stylesheets/variables.less";
+
+:local {
+    .iframe {
+        border: none;
+        position: fixed;
+        right: @widget-horizontal-spacing;
+        bottom: 0px;
+        margin-bottom: -1px;
+
+        width: @widget-width-md;
+        height: @widget-height-md;
+        @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-min) {
+            width: @widget-width-lg;
+            height: @widget-height-lg;
+        }
+        @media (min-width: @screen-sm-min) and (min-height: @screen-sm-ht-min) and (max-height: @screen-sm-ht-max) {
+            width: @widget-width-md;
+            height: @widget-height-md;
+        }
+        @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
+            width: @widget-width-sm;
+            height: @widget-height-sm;
+        }
+        @media (max-width: @screen-sm-min) {
+            width: @widget-width-xs;
+            height: @widget-height-xs;
+        }
+    }
+}

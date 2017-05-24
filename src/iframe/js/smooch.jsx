@@ -1,3 +1,4 @@
+import './utils/polyfills';
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import pick from 'lodash.pick';
@@ -29,7 +30,6 @@ import { playNotificationSound, isAudioSupported } from './utils/sound';
 import { getDeviceId } from './utils/device';
 import { getIntegration, hasChannels } from './utils/app';
 
-import { stylesheet } from './constants/assets';
 import { VERSION } from '../../shared/js/constants/version';
 import { WIDGET_STATE } from './constants/app';
 
@@ -37,7 +37,6 @@ import { Root } from './root';
 
 
 function renderWidget(container) {
-    stylesheet.use();
     if (container) {
         render(<Root store={ store } />, container);
         return container;
@@ -358,7 +357,6 @@ export class Smooch {
         delete this._container;
         observable.trigger('destroy');
         observable.off();
-        stylesheet.unuse();
     }
 
     open() {

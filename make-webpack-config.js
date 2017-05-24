@@ -2,7 +2,6 @@ const path = require('path');
 const fs = require('fs');
 const webpack = require('webpack');
 const StatsPlugin = require('stats-webpack-plugin');
-const ReactStaticPlugin = require('react-static-webpack-plugin');
 const rulesByExtension = require('./webpack/lib/rulesByExtension');
 
 module.exports = function(options) {
@@ -23,12 +22,12 @@ module.exports = function(options) {
         assets: './src/iframe/js/constants/assets'
     } : {
         host: ['./src/host/js/umd'],
-        smooch: ['./src/iframe/js/utils/polyfills', './src/iframe/js/umd']
+        frame: ['./src/iframe/js/utils/polyfills', './src/iframe/js/umd']
     };
 
     if (options.hotComponents && !options.assetsOnly) {
         entry.host.unshift('webpack-hot-middleware/client');
-        entry.smooch.unshift('webpack-hot-middleware/client');
+        entry.frame.unshift('webpack-hot-middleware/client');
     }
 
     const fileLimit = options.bundleAll ? 100000 : 1;
@@ -57,9 +56,42 @@ module.exports = function(options) {
         }
     };
 
+    const hostStyleRule = {
+        test: /\.(less)(\?.*)?$/,
+        include: [
+            path.resolve(__dirname, 'src/host/')
+        ],
+        use: [
+            {
+                loader: 'style-loader/useable',
+                options: {
+                    insertAt: 'bottom'
+                }
+            },
+            {
+                loader: 'css-loader',
+                options: {
+                    modules: true
+                }
+            },
+            'less-loader',
+        ]
+    };
+
+    const frameStyleRule = {
+        test: /\.(less)(\?.*)?$/,
+        include: [
+            path.resolve(__dirname, 'src/iframe/')
+        ],
+        use: [
+            'css-loader',
+            'less-loader'
+        ]
+    };
+
     const stylesheetLoaders = {
-        'css': ['style-loader/useable', 'css-loader?insertAt=top'],
-        'less': ['style-loader/useable', 'css-loader?insertAt=top', 'less-loader']
+        // 'css': ['css-loader'],
+        // 'less': ['less-loader', 'css-loader']
     };
 
     const publicPath = options.devServer ?
@@ -83,10 +115,7 @@ module.exports = function(options) {
 
     const plugins = [
         new webpack.PrefetchPlugin('react'),
-        new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment'),
-        new ReactStaticPlugin({
-            template: './src/iframe/js/page/template.js',
-        })
+        new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment')
     ];
 
     if (!options.test && !options.assetsOnly) {
@@ -159,7 +188,12 @@ module.exports = function(options) {
         output: output,
         target: 'web',
         module: {
-            rules: rulesByExtension(rules).concat(rulesByExtension(stylesheetLoaders))
+            rules: rulesByExtension(rules)
+                .concat(rulesByExtension(stylesheetLoaders))
+                .concat([
+                    hostStyleRule,
+                    frameStyleRule
+                ])
         },
         devtool: options.devtool,
         resolve: {
