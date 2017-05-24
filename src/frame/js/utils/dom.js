@@ -1,9 +1,12 @@
 import isMobile from 'ismobilejs';
 
+import hostStyles from '../../../host/stylesheets/iframe.less';
 import { hasFocus } from '../actions/browser-actions';
 
 const pushState = window.history && window.history.pushState;
 const replaceState = window.history && window.history.replaceState;
+const frameContainer = window.__frameContainer;
+const parentDocument = parent.document;
 
 let monitorCallback;
 
@@ -20,16 +23,16 @@ export function waitForPage() {
 }
 
 export function preventMobilePageScroll() {
-    const htmlEl = document.querySelector('html');
-    htmlEl.classList.add('sk-widget-opened');
+    const htmlEl = parentDocument.querySelector('html');
+    htmlEl.classList.add(hostStyles.ref().locals.widgetOpened);
     if (isMobile.apple.device) {
         htmlEl.classList.add('sk-ios-device');
     }
 }
 
 export function allowMobilePageScroll() {
-    const htmlEl = document.querySelector('html');
-    htmlEl.classList.remove('sk-widget-opened');
+    const htmlEl = parentDocument.querySelector('html');
+    htmlEl.classList.remove(hostStyles.ref().locals.widgetOpened);
     if (isMobile.apple.device) {
         htmlEl.classList.remove('sk-ios-device');
     }

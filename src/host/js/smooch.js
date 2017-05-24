@@ -1,6 +1,5 @@
 import { VERSION } from '../../shared/js/constants/version';
 import hostStyles from '../stylesheets/iframe.less';
-import frameStyles from '../../frame/stylesheets/main.less';
 import { waitForPage } from './utils/dom';
 
 const pendingOnCalls = [];
@@ -18,6 +17,10 @@ const Smooch = {
     },
     init(...args) {
         pendingInitCall = args;
+        waitForPage(() => {
+            injectFrame();
+            hostStyles.use();
+        });
         return {
             then: (next) => pendingInitNext = next,
             catch: (next) => pendingInitCatch = next
@@ -72,17 +75,14 @@ function injectFrame() {
     iframe.className = hostStyles.ref().locals.iframe;
     iframe.onload = () => {
         iframe.contentWindow.__onLibReady = onSmoochReady;
+        iframe.contentWindow.__frameContainer = iframe;
+
         const doc = iframe.contentWindow.document;
         doc.open();
-        doc.write(`<html><head><style>${frameStyles}</style><script src="/_assets/frame.js"></script></head></html>`);
+        doc.write('<!DOCTYPE html><html><head><meta name="viewport" content="initial-scale=1.0, user-scalable=no"><script src="/_assets/frame.js"></script></head></html>');
         doc.close();
     };
     document.body.appendChild(iframe);
 }
-
-waitForPage(() => {
-    injectFrame();
-    hostStyles.use();
-});
 
 export default Smooch;

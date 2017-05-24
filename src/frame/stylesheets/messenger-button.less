@@ -1,7 +1,6 @@
 #sk-messenger-button {
     position: fixed;
-
-    right: @widget-horizontal-spacing;
+    right: 0;
 
     height: @messenger-button-size;
     width: @messenger-button-size;
@@ -23,7 +22,7 @@
                 animation: sk-messenger-button-shown-frames .4s cubic-bezier(.62, .28, .23, .99);
         -webkit-animation-delay: .2s;
                 animation-delay: .2s;
-        -webkit-animation-fill-mode: both;        
+        -webkit-animation-fill-mode: both;
                 animation-fill-mode: both;
     }
 
@@ -34,6 +33,11 @@
                 animation-delay: .0s;
         -webkit-animation-fill-mode: both;
                 animation-fill-mode: both;
+
+        @media (max-device-width: @screen-sm-min) {
+            right: @widget-horizontal-spacing;
+            bottom: 2 * @widget-vertical-spacing + @widget-messenger-button-vertical-spacing;
+        }
     }
 
     .default-icon {
@@ -61,12 +65,12 @@
 @keyframes sk-messenger-button-shown-frames {
     0% {
         transform: scale(0, 0);
-        bottom: @widget-vertical-spacing;
+        bottom: 0;
         opacity: 0;
     }
     1% {
         transform: scale(1, 1);
-        bottom: @widget-vertical-spacing;
+        bottom: 0;
         opacity: 0;
     }
     100% {
@@ -80,28 +84,40 @@
         bottom: @widget-messenger-button-vertical-spacing;
         opacity: 1;
         transform: scale(1, 1);
+        @media (max-device-width: @screen-sm-min) {
+            right: @widget-horizontal-spacing;
+            bottom: 2 * @widget-vertical-spacing + @widget-messenger-button-vertical-spacing;
+        }
     }
     99% {
-        bottom: @widget-vertical-spacing;
+        bottom: 0;
         opacity: 0;
         transform: scale(1, 1);
+        @media (max-device-width: @screen-sm-min) {
+            right: @widget-horizontal-spacing;
+            bottom: @widget-vertical-spacing;
+        }
     }
     100% {
-        bottom: @widget-vertical-spacing;
+        bottom: 0;
         opacity: 0;
         transform: scale(0, 0);
+        @media (max-device-width: @screen-sm-min) {
+            right: @widget-vertical-spacing;
+            bottom: @widget-horizontal-spacing;
+        }
     }
 }
 
 @-webkit-keyframes sk-messenger-button-shown-frames {
     0% {
         transform: scale(0, 0);
-        bottom: @widget-vertical-spacing;
+        bottom: 0;
         opacity: 0;
     }
     1% {
         transform: scale(1, 1);
-        bottom: @widget-vertical-spacing;
+        bottom: 0;
         opacity: 0;
     }
     100% {
@@ -116,15 +132,27 @@
         bottom: @widget-messenger-button-vertical-spacing;
         opacity: 1;
         transform: scale(1, 1);
+        @media (max-device-width: @screen-sm-min) {
+            right: @widget-horizontal-spacing;
+            bottom:2 *  @widget-vertical-spacing + @widget-messenger-button-vertical-spacing;
+        }
     }
     99% {
-        bottom: @widget-vertical-spacing;
+        bottom: 0;
         opacity: 0;
         transform: scale(1, 1);
+        @media (max-device-width: @screen-sm-min) {
+            right: @widget-horizontal-spacing;
+            bottom: @widget-vertical-spacing;
+        }
     }
     100% {
-        bottom: @widget-vertical-spacing;
+        bottom: 0;
         opacity: 0;
         transform: scale(0, 0);
+        @media (max-device-width: @screen-sm-min) {
+            right: @widget-vertical-spacing;
+            bottom: @widget-horizontal-spacing;
+        }
     }
 }

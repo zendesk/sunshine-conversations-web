@@ -58,3 +58,24 @@
         width: @content-width-xs;
     }
 }
+
+.widget-size(@offsetHeight: 0px) {
+    width: @widget-width-md;
+    height: @widget-height-md + @offsetHeight;
+    @media  (min-device-width: @screen-lg-min) and (min-device-height: @screen-md-ht-min) {
+        width: @widget-width-lg;
+        height: @widget-height-lg + @offsetHeight;
+    }
+    @media  (min-device-width: @screen-sm-min) and (min-device-height: @screen-sm-ht-min) and (max-device-height: @screen-sm-ht-max) {
+        width: @widget-width-md;
+        height: @widget-height-md + @offsetHeight;
+    }
+    @media  (min-device-width: @screen-sm-min) and (max-device-height: @screen-xs-ht-max) {
+        width: @widget-width-sm;
+        height: @widget-height-sm + @offsetHeight;
+    }
+    @media  (max-device-width: @screen-sm-min) {
+        width: @widget-width-xs;
+        height: @widget-height-xs + @offsetHeight;
+    }
+}

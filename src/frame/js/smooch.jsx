@@ -1,8 +1,9 @@
-import './utils/polyfills';
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import pick from 'lodash.pick';
 import { batchActions } from 'redux-batched-actions';
+
+import '../stylesheets/main.less';
 
 import { store } from './store';
 

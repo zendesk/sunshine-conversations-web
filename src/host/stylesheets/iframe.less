@@ -7,10 +7,66 @@
     .iframe {
         border: none;
         position: fixed;
-        right: @widget-horizontal-spacing;
-        bottom: 0px;
+        right: @widget-horizontal-spacing - @messenger-button-shadow-width;
+        bottom: @widget-vertical-spacing;
         margin-bottom: -1px;
+        width: @messenger-button-size + @messenger-button-shadow-width * 2;
+        height: @messenger-button-size + @widget-messenger-button-vertical-spacing;
+        -webkit-animation: iframe-close .4s cubic-bezier(.62, .28, .23, .99);
+                animation: iframe-close .4s cubic-bezier(.62, .28, .23, .99);
+        -webkit-animation-delay: .2s;
+                animation-delay: .2s;
+        -webkit-animation-fill-mode: both;
+                animation-fill-mode: both;
+    }
 
+    .widgetOpened {
+        body,
+        html {
+            @media (max-width: @screen-sm-min) {
+                overflow: hidden;
+                position: relative;
+                -webkit-overflow-scrolling: auto;
+                max-height: 100%;
+                height: 100%;
+                width: 100%;
+            }
+        }
+    }
+
+    .widgetOpened .iframe {
+        -webkit-animation: none;
+                animation: none;
+        width: @widget-width-md + 2 * @widget-box-shadow-width;
+        height: @widget-height-md + 2 * @widget-box-shadow-width;
+        @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-min) {
+            width: @widget-width-lg + 2 * @widget-box-shadow-width;
+            height: @widget-height-lg + 2 * @widget-box-shadow-width;
+        }
+        @media (min-width: @screen-sm-min) and (min-height: @screen-sm-ht-min) and (max-height: @screen-sm-ht-max) {
+            width: @widget-width-md + 2 * @widget-box-shadow-width;
+            height: @widget-height-md + 2 * @widget-box-shadow-width;
+        }
+        @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
+            width: @widget-width-sm + 2 * @widget-box-shadow-width;
+            height: @widget-height-sm + 2 * @widget-box-shadow-width;
+        }
+        @media (max-width: @screen-sm-min) {
+            width: @widget-width-xs;
+            height: @widget-height-xs;
+            right: 0;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            max-height: 100%;
+        }
+    }
+}
+
+@keyframes iframe-close {
+    0% {
         width: @widget-width-md;
         height: @widget-height-md;
         @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-min) {
@@ -29,5 +85,36 @@
             width: @widget-width-xs;
             height: @widget-height-xs;
         }
+    }
+    100% {
+        width: @messenger-button-size + 8px;
+        height: @messenger-button-size + @widget-messenger-button-vertical-spacing;
+    }
+}
+
+@-webkit-keyframes iframe-close {
+    0% {
+        width: @widget-width-md;
+        height: @widget-height-md;
+        @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-min) {
+            width: @widget-width-lg;
+            height: @widget-height-lg;
+        }
+        @media (min-width: @screen-sm-min) and (min-height: @screen-sm-ht-min) and (max-height: @screen-sm-ht-max) {
+            width: @widget-width-md;
+            height: @widget-height-md;
+        }
+        @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
+            width: @widget-width-sm;
+            height: @widget-height-sm;
+        }
+        @media (max-width: @screen-sm-min) {
+            width: @widget-width-xs;
+            height: @widget-height-xs;
+        }
+    }
+    100% {
+        width: @messenger-button-size + 8px;
+        height: @messenger-button-size + @widget-messenger-button-vertical-spacing;
     }
 }

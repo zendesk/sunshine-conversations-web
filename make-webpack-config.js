@@ -26,8 +26,8 @@ module.exports = function(options) {
     };
 
     if (options.hotComponents && !options.assetsOnly) {
-        entry.host.unshift('webpack-hot-middleware/client');
-        entry.frame.unshift('webpack-hot-middleware/client');
+        // entry.host.unshift('webpack-hot-middleware/client');
+        // entry.frame.unshift('webpack-hot-middleware/client');
     }
 
     const fileLimit = options.bundleAll ? 100000 : 1;
@@ -84,6 +84,7 @@ module.exports = function(options) {
             path.resolve(__dirname, 'src/frame/')
         ],
         use: [
+            'style-loader',
             'css-loader',
             'less-loader'
         ]
