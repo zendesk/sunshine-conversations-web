@@ -1,7 +1,8 @@
 import { Smooch } from './smooch';
 
 (function(root, factory) {
-    root.__onLibReady(factory());
-}(global, () => {
+    console.log(root.__readyFnName)
+    parent.window.__onLibReady(factory());
+}(window, () => {
     return new Smooch();
 }));

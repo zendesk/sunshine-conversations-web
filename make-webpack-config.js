@@ -39,6 +39,7 @@ module.exports = function(options) {
             include: [
                 path.resolve(__dirname, 'src/host/js'),
                 path.resolve(__dirname, 'src/frame/js'),
+                path.resolve(__dirname, 'src/shared/js'),
                 path.resolve(__dirname, 'test')
             ]
         },

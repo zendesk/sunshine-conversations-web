@@ -34,9 +34,9 @@
         -webkit-animation-fill-mode: both;
                 animation-fill-mode: both;
 
-        @media (max-device-width: @screen-sm-min) {
-            right: @widget-horizontal-spacing;
-            bottom: 2 * @widget-vertical-spacing + @widget-messenger-button-vertical-spacing;
+        @media (max-device-width: @screen-xs-max) {
+            right: @widget-horizontal-spacing - @messenger-button-shadow-width;
+            bottom: @widget-vertical-spacing + @widget-messenger-button-vertical-spacing;
         }
     }
 
@@ -79,36 +79,6 @@
     }
 }
 
-@keyframes sk-messenger-button-hidden-frames {
-    0% {
-        bottom: @widget-messenger-button-vertical-spacing;
-        opacity: 1;
-        transform: scale(1, 1);
-        @media (max-device-width: @screen-sm-min) {
-            right: @widget-horizontal-spacing;
-            bottom: 2 * @widget-vertical-spacing + @widget-messenger-button-vertical-spacing;
-        }
-    }
-    99% {
-        bottom: 0;
-        opacity: 0;
-        transform: scale(1, 1);
-        @media (max-device-width: @screen-sm-min) {
-            right: @widget-horizontal-spacing;
-            bottom: @widget-vertical-spacing;
-        }
-    }
-    100% {
-        bottom: 0;
-        opacity: 0;
-        transform: scale(0, 0);
-        @media (max-device-width: @screen-sm-min) {
-            right: @widget-vertical-spacing;
-            bottom: @widget-horizontal-spacing;
-        }
-    }
-}
-
 @-webkit-keyframes sk-messenger-button-shown-frames {
     0% {
         transform: scale(0, 0);
@@ -126,33 +96,88 @@
     }
 }
 
+@media (min-device-width: @screen-sm-min) {
+    @keyframes sk-messenger-button-hidden-frames {
+        0% {
+            bottom: @widget-messenger-button-vertical-spacing;
+            opacity: 1;
+            transform: scale(1, 1);
+        }
+        99% {
+            bottom: 0;
+            opacity: 0;
+            transform: scale(1, 1);
+        }
+        100% {
+            bottom: 0;
+            opacity: 0;
+            transform: scale(0, 0);
+        }
+    }
 
-@-webkit-keyframes sk-messenger-button-hidden-frames {
-    0% {
-        bottom: @widget-messenger-button-vertical-spacing;
-        opacity: 1;
-        transform: scale(1, 1);
-        @media (max-device-width: @screen-sm-min) {
-            right: @widget-horizontal-spacing;
-            bottom:2 *  @widget-vertical-spacing + @widget-messenger-button-vertical-spacing;
+    @-webkit-keyframes sk-messenger-button-hidden-frames {
+        0% {
+            bottom: @widget-messenger-button-vertical-spacing;
+            opacity: 1;
+            transform: scale(1, 1);
+        }
+        99% {
+            bottom: 0;
+            opacity: 0;
+            transform: scale(1, 1);
+        }
+        100% {
+            bottom: 0;
+            opacity: 0;
+            transform: scale(0, 0);
         }
     }
-    99% {
-        bottom: 0;
-        opacity: 0;
-        transform: scale(1, 1);
-        @media (max-device-width: @screen-sm-min) {
-            right: @widget-horizontal-spacing;
+}
+
+
+@media (max-device-width: @screen-xs-max) {
+    // We need a different keyframes setup on mobile since the iframe will take 100% height and width of the page
+    // The button will need to compensate for the new iframe positionning.
+    @keyframes sk-messenger-button-hidden-frames {
+        0% {
+            bottom: @widget-vertical-spacing + @widget-messenger-button-vertical-spacing;
+            right: @widget-horizontal-spacing - @messenger-button-shadow-width;
+            opacity: 1;
+            transform: scale(1, 1);
+        }
+        99% {
             bottom: @widget-vertical-spacing;
+            right: @widget-horizontal-spacing - @messenger-button-shadow-width;
+            opacity: 0;
+            transform: scale(1, 1);
+        }
+        100% {
+            bottom: @widget-vertical-spacing;
+            right: @widget-horizontal-spacing - @messenger-button-shadow-width;
+            opacity: 0;
+            transform: scale(0, 0);
         }
     }
-    100% {
-        bottom: 0;
-        opacity: 0;
-        transform: scale(0, 0);
-        @media (max-device-width: @screen-sm-min) {
-            right: @widget-vertical-spacing;
-            bottom: @widget-horizontal-spacing;
+
+    @-webkit-keyframes sk-messenger-button-hidden-frames {
+        0% {
+            bottom: @widget-vertical-spacing + @widget-messenger-button-vertical-spacing;
+            right: @widget-horizontal-spacing - @messenger-button-shadow-width;
+            opacity: 1;
+            transform: scale(1, 1);
+        }
+        99% {
+            bottom: @widget-vertical-spacing;
+            right: @widget-horizontal-spacing - @messenger-button-shadow-width;
+            opacity: 0;
+            transform: scale(1, 1);
+        }
+        100% {
+            bottom: @widget-vertical-spacing;
+            right: @widget-horizontal-spacing - @messenger-button-shadow-width;
+            opacity: 0;
+            transform: scale(0, 0);
         }
     }
+
 }

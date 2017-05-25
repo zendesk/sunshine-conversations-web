@@ -3,6 +3,7 @@
 @import "../../shared/stylesheets/bootstrap/variables.less";
 @import "../../shared/stylesheets/bootstrap/normalize.less";
 @import "../../shared/stylesheets/variables.less";
+
 .container() {
     @import "loading.less";
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -66,12 +67,12 @@ html, body {
             border: 1px solid rgba(0,0,0,0.15);
             .widget-size();
 
-            @media (max-device-width: @screen-sm-min) {
+            @media (max-width: @frame-width-sm - 1px) {
                 border-radius: 0;
             }
         }
 
-        @media (max-device-width: @screen-sm-min) {
+        @media (max-width: @frame-width-sm - 1px) {
             padding: 0;
             right: 0;
             left: 0;

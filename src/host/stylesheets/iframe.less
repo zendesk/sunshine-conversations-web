@@ -37,23 +37,23 @@
     .widgetOpened .iframe {
         -webkit-animation: none;
                 animation: none;
-        width: @widget-width-md + 2 * @widget-box-shadow-width;
-        height: @widget-height-md + 2 * @widget-box-shadow-width;
+        width: @frame-width-md + 2;
+        height: @frame-height-md + 2;
         @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-min) {
-            width: @widget-width-lg + 2 * @widget-box-shadow-width;
-            height: @widget-height-lg + 2 * @widget-box-shadow-width;
+            width: @frame-width-lg + 2;
+            height: @frame-height-lg + 2;
         }
         @media (min-width: @screen-sm-min) and (min-height: @screen-sm-ht-min) and (max-height: @screen-sm-ht-max) {
-            width: @widget-width-md + 2 * @widget-box-shadow-width;
-            height: @widget-height-md + 2 * @widget-box-shadow-width;
+            width: @frame-width-md + 2;
+            height: @frame-height-md + 2;
         }
         @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
-            width: @widget-width-sm + 2 * @widget-box-shadow-width;
-            height: @widget-height-sm + 2 * @widget-box-shadow-width;
+            width: @frame-width-sm + 2;
+            height: @frame-height-sm + 2;
         }
         @media (max-width: @screen-sm-min) {
-            width: @widget-width-xs;
-            height: @widget-height-xs;
+            width: @frame-width-xs;
+            height: @frame-height-xs;
             right: 0;
             left: 0;
             top: 0;
