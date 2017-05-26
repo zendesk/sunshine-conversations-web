@@ -1,7 +1,8 @@
 import React from 'react';
-import { render, unmountComponentAtNode } from 'react-dom';
+import { render as reactRender, unmountComponentAtNode } from 'react-dom';
 import pick from 'lodash.pick';
 import { batchActions } from 'redux-batched-actions';
+import { Provider } from 'react-redux';
 
 import '../stylesheets/main.less';
 
@@ -16,12 +17,13 @@ import { resetConversation } from './actions/conversation-actions';
 import { resetIntegrations } from './actions/integrations-actions';
 import * as AppStateActions from './actions/app-state-actions';
 import { reset } from './actions/common-actions';
+import { updateWidgetSize } from './actions/ui-actions';
 
 import { openWidget, closeWidget, hideSettings, hideChannelPage } from './services/app';
-import { login } from './services/auth';
+import * as authService from './services/auth';
 import { getAccount } from './services/stripe';
-import { EDITABLE_PROPERTIES, trackEvent, update as updateUser, updateNowViewing, immediateUpdate as immediateUpdateUser, getUserId } from './services/user';
-import { sendMessage, disconnectFaye, handleConversationUpdated } from './services/conversation';
+import * as userService from './services/user';
+import { sendMessage as _sendMessage, disconnectFaye, handleConversationUpdated } from './services/conversation';
 import { core } from './services/core';
 
 import { observable, observeStore } from './utils/events';
@@ -34,17 +36,28 @@ import { getIntegration, hasChannels } from './utils/app';
 import { VERSION } from '../../shared/js/constants/version';
 import { WIDGET_STATE } from './constants/app';
 
-import { Root } from './root';
+import { Widget } from './components/widget';
 
+let appToken;
+let _container;
+let lastTriggeredMessageTimestamp = 0;
+let initialStoreChange = true;
+let isInitialized = false;
+let unsubscribeFromStore;
 
 function renderWidget(container) {
     if (container) {
-        render(<Root store={ store } />, container);
+        reactRender(<Provider store={ store }>
+                   <Widget />
+               </Provider>, container);
         return container;
     } else {
+        store.dispatch(updateWidgetSize());
         const el = document.createElement('div');
         el.setAttribute('id', 'sk-holder');
-        render(<Root store={ store } />, el);
+        reactRender(<Provider store={ store }>
+                   <Widget />
+               </Provider>, el);
 
         waitForPage().then(() => {
             document.body.appendChild(el);
@@ -74,11 +87,6 @@ observable.on('message:received', (message) => {
     observable.trigger('message', message);
 });
 
-let lastTriggeredMessageTimestamp = 0;
-let initialStoreChange = true;
-let isInitialized = false;
-let unsubscribeFromStore;
-
 function handleNotificationSound() {
     const {appState: {soundNotificationEnabled}, browser: {hasFocus}} = store.getState();
 
@@ -86,7 +94,6 @@ function handleNotificationSound() {
         playNotificationSound();
     }
 }
-
 
 function onStoreChange({messages, unreadCount}) {
     if (messages.length > 0) {
@@ -108,272 +115,269 @@ function onStoreChange({messages, unreadCount}) {
     }
 }
 
-export class Smooch {
-    VERSION = VERSION
+export function on(...args) {
+    return observable.on(...args);
+}
 
-    on() {
-        return observable.on(...arguments);
+export function off(...args) {
+    return observable.off(...args);
+}
+
+export function init(props) {
+    isInitialized = true;
+
+    props = {
+        imageUploadEnabled: true,
+        soundNotificationEnabled: true,
+        ...props
+    };
+
+    if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
+        renderLink();
+        observable.trigger('ready');
+        return Promise.resolve();
+    } else if (/PhantomJS/.test(navigator.userAgent) && process.env.NODE_ENV !== 'test') {
+        return Promise.resolve();
     }
 
-    off() {
-        return observable.off(...arguments);
+    appToken = props.appToken;
+
+    const actions = [];
+
+    if (props.emailCaptureEnabled) {
+        actions.push(AppStateActions.enableEmailCapture());
+    } else {
+        actions.push(AppStateActions.disableEmailCapture());
     }
 
-    init(props) {
-        isInitialized = true;
+    if (props.soundNotificationEnabled && isAudioSupported()) {
+        actions.push(AppStateActions.enableSoundNotification());
+    } else {
+        actions.push(AppStateActions.disableSoundNotification());
+    }
 
-        props = {
-            imageUploadEnabled: true,
-            soundNotificationEnabled: true,
-            ...props
-        };
+    if (props.imageUploadEnabled && isImageUploadSupported()) {
+        actions.push(AppStateActions.enableImageUpload());
+    } else {
+        actions.push(AppStateActions.disableImageUpload());
+    }
 
-        if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
-            renderLink();
-            observable.trigger('ready');
-            return Promise.resolve();
-        } else if (/PhantomJS/.test(navigator.userAgent) && process.env.NODE_ENV !== 'test') {
-            return Promise.resolve();
+    actions.push(AppStateActions.setEmbedded(!!props.embedded));
+
+    if (props.customText) {
+        actions.push(updateText(props.customText));
+    }
+
+    if (props.serviceUrl) {
+        actions.push(AppStateActions.setServerURL(props.serviceUrl));
+    }
+
+    store.dispatch(batchActions(actions));
+
+    unsubscribeFromStore = observeStore(store, ({conversation}) => conversation, onStoreChange);
+
+    monitorBrowserState(store.dispatch.bind(store));
+    return login(props.userId, props.jwt, pick(props, userService.EDITABLE_PROPERTIES));
+}
+
+export function login(userId = '', jwt, attributes) {
+    if (arguments.length === 2 && typeof jwt === 'object') {
+        attributes = jwt;
+        jwt = undefined;
+    } else if (arguments.length < 3) {
+        attributes = {};
+    }
+
+    const actions = [];
+    // in case those are opened;
+    actions.push(hideSettings());
+    actions.push(hideChannelPage());
+
+    // in case it comes from a previous authenticated state
+    actions.push(resetAuth());
+    actions.push(userActions.resetUser());
+    actions.push(resetConversation());
+    actions.push(resetIntegrations());
+
+
+    attributes = pick(attributes, userService.EDITABLE_PROPERTIES);
+
+    if (store.getState().appState.emailCaptureEnabled && attributes.email) {
+        actions.push(AppStateActions.setEmailReadonly());
+    } else {
+        actions.push(AppStateActions.unsetEmailReadonly());
+    }
+
+    actions.push(setAuth({
+        jwt: jwt,
+        appToken
+    }));
+
+    store.dispatch(batchActions(actions));
+    store.dispatch(disconnectFaye());
+
+    lastTriggeredMessageTimestamp = 0;
+    initialStoreChange = true;
+
+
+    return store.dispatch(authService.login({
+        userId: userId,
+        device: {
+            platform: 'web',
+            id: getDeviceId(),
+            info: {
+                sdkVersion: VERSION,
+                URL: document.location.host,
+                userAgent: navigator.userAgent,
+                referrer: document.referrer,
+                browserLanguage: navigator.language,
+                currentUrl: document.location.href,
+                currentTitle: document.title
+            }
         }
-
-        this.appToken = props.appToken;
-
+    })).then((loginResponse) => {
         const actions = [];
+        actions.push(userActions.setUser(loginResponse.appUser));
+        actions.push(setApp(loginResponse.app));
 
-        if (props.emailCaptureEnabled) {
-            actions.push(AppStateActions.enableEmailCapture());
-        } else {
+        actions.push(setCurrentLocation(document.location));
+        monitorUrlChanges(() => {
+            const actions = [
+                setCurrentLocation(document.location),
+                userService.updateNowViewing(getDeviceId())
+            ];
+
+            store.dispatch(batchActions(actions));
+        });
+
+        if (hasChannels(loginResponse.app.settings.web)) {
             actions.push(AppStateActions.disableEmailCapture());
         }
 
-        if (props.soundNotificationEnabled && isAudioSupported()) {
-            actions.push(AppStateActions.enableSoundNotification());
-        } else {
-            actions.push(AppStateActions.disableSoundNotification());
-        }
-
-        if (props.imageUploadEnabled && isImageUploadSupported()) {
-            actions.push(AppStateActions.enableImageUpload());
-        } else {
-            actions.push(AppStateActions.disableImageUpload());
-        }
-
-        actions.push(AppStateActions.setEmbedded(!!props.embedded));
-
-        if (props.customText) {
-            actions.push(updateText(props.customText));
-        }
-
-        if (props.serviceUrl) {
-            actions.push(AppStateActions.setServerURL(props.serviceUrl));
-        }
-
         store.dispatch(batchActions(actions));
 
-        unsubscribeFromStore = observeStore(store, ({conversation}) => conversation, onStoreChange);
-
-        monitorBrowserState(store.dispatch.bind(store));
-        return this.login(props.userId, props.jwt, pick(props, EDITABLE_PROPERTIES));
-    }
-
-    login(userId = '', jwt, attributes) {
-        if (arguments.length === 2 && typeof jwt === 'object') {
-            attributes = jwt;
-            jwt = undefined;
-        } else if (arguments.length < 3) {
-            attributes = {};
-        }
-
-        const actions = [];
-        // in case those are opened;
-        actions.push(hideSettings());
-        actions.push(hideChannelPage());
-
-        // in case it comes from a previous authenticated state
-        actions.push(resetAuth());
-        actions.push(userActions.resetUser());
-        actions.push(resetConversation());
-        actions.push(resetIntegrations());
-
-
-        attributes = pick(attributes, EDITABLE_PROPERTIES);
-
-        if (store.getState().appState.emailCaptureEnabled && attributes.email) {
-            actions.push(AppStateActions.setEmailReadonly());
-        } else {
-            actions.push(AppStateActions.unsetEmailReadonly());
-        }
-
-        actions.push(setAuth({
-            jwt: jwt,
-            appToken: this.appToken
-        }));
-        store.dispatch(batchActions(actions));
-        store.dispatch(disconnectFaye());
-
-        lastTriggeredMessageTimestamp = 0;
-        initialStoreChange = true;
-
-
-        return store.dispatch(login({
-            userId: userId,
-            device: {
-                platform: 'web',
-                id: getDeviceId(),
-                info: {
-                    sdkVersion: VERSION,
-                    URL: document.location.host,
-                    userAgent: navigator.userAgent,
-                    referrer: document.referrer,
-                    browserLanguage: navigator.language,
-                    currentUrl: document.location.href,
-                    currentTitle: document.title
-                }
-            }
-        })).then((loginResponse) => {
-            const actions = [];
-            actions.push(userActions.setUser(loginResponse.appUser));
-            actions.push(setApp(loginResponse.app));
-
-            actions.push(setCurrentLocation(document.location));
-            monitorUrlChanges(() => {
-                const actions = [
-                    setCurrentLocation(document.location),
-                    updateNowViewing(getDeviceId())
-                ];
-
-                store.dispatch(batchActions(actions));
+        if (getIntegration(loginResponse.app.integrations, 'stripeConnect')) {
+            return store.dispatch(getAccount()).then((r) => {
+                store.dispatch(setStripeInfo(r.account));
+            }).catch(() => {
+                // do nothing about it and let the flow continue
             });
-
-            if (hasChannels(loginResponse.app.settings.web)) {
-                actions.push(AppStateActions.disableEmailCapture());
-            }
-
-            store.dispatch(batchActions(actions));
-
-            if (getIntegration(loginResponse.app.integrations, 'stripeConnect')) {
-                return store.dispatch(getAccount()).then((r) => {
-                    store.dispatch(setStripeInfo(r.account));
-                }).catch(() => {
-                    // do nothing about it and let the flow continue
-                });
-            }
-        }).then(() => {
-            return store.dispatch(immediateUpdateUser(attributes)).then(() => {
-                const user = store.getState().user;
-                if (user.conversationStarted) {
-                    return store.dispatch(handleConversationUpdated());
-                }
-            });
-        }).then(() => {
-            if (!store.getState().appState.embedded) {
-                if (!this._container) {
-                    this._container = this.render();
-                }
-            }
-
+        }
+    }).then(() => {
+        return store.dispatch(userService.immediateUpdate(attributes)).then(() => {
             const user = store.getState().user;
-
-            observable.trigger('ready', user);
-
-            return user;
-        });
-    }
-
-    logout() {
-        return this.login();
-    }
-
-    track(eventName, userProps) {
-        return store.dispatch(trackEvent(eventName, userProps));
-    }
-
-    sendMessage(props) {
-        return store.dispatch(sendMessage(props));
-    }
-
-    updateUser(props) {
-        return store.dispatch(updateUser(props)).then((response) => {
-            if (response.appUser.conversationStarted) {
-                return store.dispatch(handleConversationUpdated())
-                    .then(() => {
-                        return response;
-                    });
+            if (user.conversationStarted) {
+                return store.dispatch(handleConversationUpdated());
             }
-
-            return response;
         });
-    }
-
-    getConversation() {
-        return store.dispatch(handleConversationUpdated())
-            .then(() => {
-                store.dispatch(userActions.updateUser({
-                    conversationStarted: true
-                }));
-                return store.getState().conversation;
-            });
-    }
-
-    getUserId() {
-        return getUserId(store.getState());
-    }
-
-    getCore() {
-        return core(store.getState());
-    }
-
-    destroy() {
-        if (!isInitialized) {
-            return;
-        }
-        isInitialized = false;
-
-        stopMonitoringBrowserState();
-
-        if (process.env.NODE_ENV !== 'test' && this._container) {
-            unmountComponentAtNode(this._container);
+    }).then(() => {
+        if (!store.getState().appState.embedded) {
+            if (!_container) {
+                _container = render();
+            }
         }
 
-        const {embedded} = store.getState().appState;
+        const user = store.getState().user;
 
-        store.dispatch(disconnectFaye());
-        const actions = [
-            reset()
-        ];
+        observable.trigger('ready', user);
 
-        if (embedded) {
-            // retain the embed mode
-            actions.push(AppStateActions.setEmbedded(true));
-        } else if (this._container) {
-            document.body.removeChild(this._container);
+        return user;
+    });
+}
+
+export function logout() {
+    return this.login();
+}
+
+export function track(eventName, userProps) {
+    return store.dispatch(userService.trackEvent(eventName, userProps));
+}
+
+export function sendMessage(props) {
+    return store.dispatch(_sendMessage(props));
+}
+
+export function updateUser(props) {
+    return store.dispatch(userService.update(props)).then((response) => {
+        if (response.appUser.conversationStarted) {
+            return store.dispatch(handleConversationUpdated())
+                .then(() => {
+                    return response;
+                });
         }
 
-        store.dispatch(batchActions(actions));
+        return response;
+    });
+}
 
-        stopMonitoringUrlChanges();
-        unsubscribeFromStore();
+export function getConversation() {
+    return store.dispatch(handleConversationUpdated())
+        .then(() => {
+            store.dispatch(userActions.updateUser({
+                conversationStarted: true
+            }));
+            return store.getState().conversation;
+        });
+}
 
-        delete this.appToken;
-        delete this._container;
-        observable.trigger('destroy');
-        observable.off();
+export function getUserId() {
+    return userService.getUserId(store.getState());
+}
+
+export function getCore() {
+    return core(store.getState());
+}
+
+export function destroy() {
+    if (!isInitialized) {
+        return;
+    }
+    isInitialized = false;
+
+    stopMonitoringBrowserState();
+
+    if (process.env.NODE_ENV !== 'test' && this._container) {
+        unmountComponentAtNode(this._container);
     }
 
-    open() {
-        store.dispatch(openWidget());
+    const {embedded} = store.getState().appState;
+
+    store.dispatch(disconnectFaye());
+    const actions = [
+        reset()
+    ];
+
+    if (embedded) {
+        // retain the embed mode
+        actions.push(AppStateActions.setEmbedded(true));
+    } else if (this._container) {
+        document.body.removeChild(this._container);
     }
 
-    close() {
-        store.dispatch(closeWidget());
-    }
+    store.dispatch(batchActions(actions));
 
-    isOpened() {
-        return store.getState().appState.widgetState === WIDGET_STATE.OPENED;
-    }
+    stopMonitoringUrlChanges();
+    unsubscribeFromStore();
 
-    render(container) {
-        this._container = container;
-        return renderWidget(container);
-    }
+    appToken = undefined;
+    _container = undefined;
+    observable.trigger('destroy');
+    observable.off();
+}
+
+export function open() {
+    store.dispatch(openWidget());
+}
+
+export function close() {
+    store.dispatch(closeWidget());
+}
+
+export function isOpened() {
+    return store.getState().appState.widgetState === WIDGET_STATE.OPENED;
+}
+
+export function render(container) {
+    _container = container;
+    return renderWidget(container);
 }

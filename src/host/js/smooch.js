@@ -52,7 +52,7 @@ window.__onLibReady = function onSmoochReady(Lib) {
         ];
 
         for (let func = funcs[0], i = 0; i < funcs.length; func = funcs[++i]) {
-            Smooch[func] = Lib[func].bind(Lib);
+            Smooch[func] = Lib[func];
         }
 
         for (let call = pendingOnCalls[0], i = 0; i < pendingOnCalls.length; call = pendingOnCalls[++i]) {

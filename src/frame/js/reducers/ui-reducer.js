@@ -2,6 +2,10 @@ import { UPDATE_UI_TEXT, RESET_UI } from '../actions/ui-actions';
 import { RESET } from '../actions/common-actions';
 
 const INITIAL_STATE = {
+    widgetSize: {
+        height: '100%',
+        width: '100%'
+    },
     text: {
         headerText: 'How can we help?',
         inputPlaceholder: 'Type a message...',

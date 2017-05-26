@@ -22,7 +22,7 @@ module.exports = function(options) {
         assets: './src/frame/js/constants/assets'
     } : {
         host: ['./src/host/js/umd'],
-        frame: ['./src/frame/js/utils/polyfills', './src/frame/js/umd']
+        frame: ['./src/frame/js/utils/polyfills', './src/frame/js/index']
     };
 
     if (options.hotComponents && !options.assetsOnly) {

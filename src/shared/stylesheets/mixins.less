@@ -62,19 +62,19 @@
 .widget-size(@offsetHeight: 0px) {
     width: @widget-width-md;
     height: @widget-height-md + @offsetHeight;
-    @media (min-width: @frame-width-lg) and (min-height: @frame-height-md) {
+    @media screen and (min-width: @frame-width-lg) and (min-height: @frame-height-md) {
         width: @widget-width-lg;
         height: @widget-height-lg + @offsetHeight;
     }
-    @media (min-width:@frame-width-sm) and (min-height: @frame-height-sm) and (max-height: @frame-height-md - 1px) {
+    @media screen and (min-width:@frame-width-sm) and (min-height: @frame-height-sm) and (max-height: @frame-height-md - 1px) {
         width: @widget-width-md;
         height: @widget-height-md + @offsetHeight;
     }
-    @media (min-width: @frame-width-sm) and (max-height: @frame-height-sm - 1px) {
+    @media screen and (min-width: @frame-width-sm) and (max-height: @frame-height-sm - 1px) {
         width: @widget-width-sm;
         height: @widget-height-sm + @offsetHeight;
     }
-    @media (max-width: @frame-width-sm - 1px) {
+    @media screen and (max-width: @frame-width-sm - 1px) {
         width: @widget-width-xs;
         height: @widget-height-xs + @offsetHeight;
     }
