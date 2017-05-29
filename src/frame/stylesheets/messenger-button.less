@@ -34,7 +34,7 @@
         -webkit-animation-fill-mode: both;
                 animation-fill-mode: both;
 
-        @media (max-device-width: @screen-xs-max) {
+        @media (max-width: @screen-xs-max) {
             right: @widget-horizontal-spacing - @messenger-button-shadow-width;
             bottom: @widget-vertical-spacing + @widget-messenger-button-vertical-spacing;
         }
@@ -96,7 +96,7 @@
     }
 }
 
-@media (min-device-width: @screen-sm-min) {
+@media (min-width: @screen-sm-min) {
     @keyframes sk-messenger-button-hidden-frames {
         0% {
             bottom: @widget-messenger-button-vertical-spacing;
@@ -135,7 +135,7 @@
 }
 
 
-@media (max-device-width: @screen-xs-max) {
+@media (max-width: @screen-xs-max) {
     // We need a different keyframes setup on mobile since the iframe will take 100% height and width of the page
     // The button will need to compensate for the new iframe positionning.
     @keyframes sk-messenger-button-hidden-frames {

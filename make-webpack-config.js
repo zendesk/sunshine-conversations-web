@@ -60,7 +60,8 @@ module.exports = function(options) {
     const hostStyleRule = {
         test: /\.(less)(\?.*)?$/,
         include: [
-            path.resolve(__dirname, 'src/host/')
+            path.resolve(__dirname, 'src/host/'),
+            path.resolve(__dirname, 'src/shared/')
         ],
         use: [
             {
@@ -82,7 +83,8 @@ module.exports = function(options) {
     const frameStyleRule = {
         test: /\.(less)(\?.*)?$/,
         include: [
-            path.resolve(__dirname, 'src/frame/')
+            path.resolve(__dirname, 'src/frame/'),
+            path.resolve(__dirname, 'src/shared/')
         ],
         use: [
             'style-loader',

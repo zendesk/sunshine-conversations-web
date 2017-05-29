@@ -1,5 +1,4 @@
 @import "../../shared/stylesheets/bootstrap/mixins.less";
-@import "../../shared/stylesheets/mixins.less";
 @import "../../shared/stylesheets/bootstrap/variables.less";
 @import "../../shared/stylesheets/variables.less";
 
@@ -23,7 +22,7 @@
     .widgetOpened {
         body,
         html {
-            @media (max-width: @screen-sm-min) {
+            @media (max-width: @screen-xs-max) {
                 overflow: hidden;
                 position: relative;
                 -webkit-overflow-scrolling: auto;
@@ -51,7 +50,7 @@
             width: @frame-width-sm + 2;
             height: @frame-height-sm + 2;
         }
-        @media (max-width: @screen-sm-min) {
+        @media (max-width: @screen-xs-max) {
             width: @frame-width-xs;
             height: @frame-height-xs;
             right: 0;
@@ -81,7 +80,7 @@
             width: @widget-width-sm;
             height: @widget-height-sm;
         }
-        @media (max-width: @screen-sm-min) {
+        @media (max-width: @screen-xs-max) {
             width: @widget-width-xs;
             height: @widget-height-xs;
         }
@@ -108,7 +107,7 @@
             width: @widget-width-sm;
             height: @widget-height-sm;
         }
-        @media (max-width: @screen-sm-min) {
+        @media (max-width: @screen-xs-max) {
             width: @widget-width-xs;
             height: @widget-height-xs;
         }

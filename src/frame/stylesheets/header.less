@@ -1,7 +1,7 @@
 .header() {
     z-index: 10;
     height: @header-height;
-    line-height: @header-height;
+    line-height: @header-line-height;
     padding: @header-vertical-padding @header-horizontal-padding;
     position: relative;
     background-color: @sk-light-grey;
@@ -13,7 +13,7 @@
     border-bottom: 1px solid @sk-grey;
     color: @header-default-text-color;
 
-    @media (max-device-width: @screen-sm-min) {
+    .widget-xs & {
         border-radius: 0;
     }
 
@@ -43,7 +43,7 @@
 
     .settings-content {
         display: inline-block;
-        height: @header-extra-height;
+        height: @header-height;
         margin-top: -@header-vertical-padding;
         margin-left: -@header-horizontal-padding;
 

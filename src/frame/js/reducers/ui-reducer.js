@@ -1,11 +1,8 @@
-import { UPDATE_UI_TEXT, RESET_UI } from '../actions/ui-actions';
+import { UPDATE_UI_TEXT, RESET_UI, UPDATE_WIDGET_SIZE } from '../actions/ui-actions';
 import { RESET } from '../actions/common-actions';
 
 const INITIAL_STATE = {
-    widgetSize: {
-        height: '100%',
-        width: '100%'
-    },
+    widgetSize: 'md',
     text: {
         headerText: 'How can we help?',
         inputPlaceholder: 'Type a message...',
@@ -69,15 +66,22 @@ const INITIAL_STATE = {
 
 export function UIReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
+        case RESET_UI:
         case RESET:
-            return Object.assign({}, INITIAL_STATE);
+            // keep widget state even on a reset
+            return {
+                ...INITIAL_STATE,
+                widgetSize: state.widgetSize
+            };
         case UPDATE_UI_TEXT:
             return Object.assign({}, state, {
                 text: Object.assign({}, state.text, action.text)
             });
-
-        case RESET_UI:
-            return Object.assign({}, INITIAL_STATE);
+        case UPDATE_WIDGET_SIZE:
+            return {
+                ...state,
+                widgetSize: action.size
+            };
         default:
             return state;
     }

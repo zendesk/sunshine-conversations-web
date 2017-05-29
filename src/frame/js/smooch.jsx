@@ -45,19 +45,26 @@ let initialStoreChange = true;
 let isInitialized = false;
 let unsubscribeFromStore;
 
+window.addEventListener('message', ({data, origin}) => {
+    if (origin === `${location.protocol}//${location.host}`) {
+        if (data.type === 'sizeChange') {
+            store.dispatch(updateWidgetSize(data.value));
+        }
+    }
+}, false);
+
 function renderWidget(container) {
     if (container) {
         reactRender(<Provider store={ store }>
-                   <Widget />
-               </Provider>, container);
+                        <Widget />
+                    </Provider>, container);
         return container;
     } else {
-        store.dispatch(updateWidgetSize());
         const el = document.createElement('div');
         el.setAttribute('id', 'sk-holder');
         reactRender(<Provider store={ store }>
-                   <Widget />
-               </Provider>, el);
+                        <Widget />
+                    </Provider>, el);
 
         waitForPage().then(() => {
             document.body.appendChild(el);

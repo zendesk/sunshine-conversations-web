@@ -46,35 +46,34 @@
 }
 
 .content-width-mixin() {
-    width: @content-width-md;
-
-    @media (min-width: @frame-width-lg) and (min-height: @frame-height-md) {
+    .widget-lg & {
         width: @content-width-lg;
     }
-    @media (min-width: @frame-width-sm) and (max-height: @frame-height-sm - 1px) {
+    .widget-md & {
+        width: @content-width-md;
+    }
+    .widget-sm & {
         width: @content-width-sm;
     }
-    @media (max-width: @frame-width-sm - 1px) {
+    .widget-xs & {
         width: @content-width-xs;
     }
 }
 
 .widget-size(@offsetHeight: 0px) {
-    width: @widget-width-md;
-    height: @widget-height-md + @offsetHeight;
-    @media screen and (min-width: @frame-width-lg) and (min-height: @frame-height-md) {
+    .widget-lg & {
         width: @widget-width-lg;
         height: @widget-height-lg + @offsetHeight;
     }
-    @media screen and (min-width:@frame-width-sm) and (min-height: @frame-height-sm) and (max-height: @frame-height-md - 1px) {
+    .widget-md & {
         width: @widget-width-md;
         height: @widget-height-md + @offsetHeight;
     }
-    @media screen and (min-width: @frame-width-sm) and (max-height: @frame-height-sm - 1px) {
+    .widget-sm & {
         width: @widget-width-sm;
         height: @widget-height-sm + @offsetHeight;
     }
-    @media screen and (max-width: @frame-width-sm - 1px) {
+    .widget-xs & {
         width: @widget-width-xs;
         height: @widget-height-xs + @offsetHeight;
     }

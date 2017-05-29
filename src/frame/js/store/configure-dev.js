@@ -5,15 +5,14 @@ import { RootReducer } from '../reducers/root-reducer';
 
 const finalCreateStore = compose(
     applyMiddleware(thunkMiddleware),
-    window.devToolsExtension ? window.devToolsExtension() : (f) => f
+    parent.window.devToolsExtension ? parent.window.devToolsExtension() : (f) => f
 )(createStore);
 
 export function configureStore(initialState) {
     const store = finalCreateStore(RootReducer, initialState);
 
     if (module.hot) {
-        module.hot.accept('../reducers/root-reducer', () => store.replaceReducer(require('../reducers/root-reducer').RootReducer)
-        );
+        module.hot.accept('../reducers/root-reducer', () => store.replaceReducer(require('../reducers/root-reducer').RootReducer));
     }
 
     return store;

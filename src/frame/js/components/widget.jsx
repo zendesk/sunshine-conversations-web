@@ -3,7 +3,6 @@ import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import isMobile from 'ismobilejs';
-import debounce from 'lodash.debounce';
 
 import { MessengerButton } from './messenger-button';
 import { Header } from './header';
@@ -25,7 +24,7 @@ export class WidgetComponent extends Component {
         smoochId: PropTypes.string,
         app: PropTypes.object.isRequired,
         settings: PropTypes.object.isRequired,
-        ui: PropTypes.object.isRequired,
+        widgetSize: PropTypes.string.isRequired,
         appState: PropTypes.object.isRequired
     };
 
@@ -60,7 +59,7 @@ export class WidgetComponent extends Component {
     };
 
     render() {
-        const {appState, settings, smoochId} = this.props;
+        const {appState, settings, smoochId, widgetSize} = this.props;
         const {displayStyle, isBrandColorDark, isAccentColorDark, isLinkColorDark} = settings;
 
         const settingsComponent = appState.settingsVisible ? <Settings /> : null;
@@ -111,7 +110,7 @@ export class WidgetComponent extends Component {
             messengerButton = <MessengerButton shown={ appState.widgetState !== WIDGET_STATE.OPENED } />;
         }
 
-        return <div>
+        return <div className={ `widget-${widgetSize}` }>
                    <div id='sk-container'
                         className={ classNames.join(' ') }
                         onTouchStart={ this.onTouchStart }
@@ -147,7 +146,7 @@ export class WidgetComponent extends Component {
     }
 }
 
-export const Widget = connect(({appState: {settingsVisible, widgetState, errorNotificationMessage, embedded, showAnimation}, app, ui, user}) => {
+export const Widget = connect(({appState: {settingsVisible, widgetState, errorNotificationMessage, embedded, showAnimation}, app, ui: {widgetSize}, user}) => {
     // only extract what is needed from appState as this is something that might
     // mutate a lot
     return {
@@ -160,7 +159,7 @@ export const Widget = connect(({appState: {settingsVisible, widgetState, errorNo
         },
         app,
         settings: app.settings.web,
-        ui,
+        widgetSize,
         smoochId: user._id
     };
 })(WidgetComponent);

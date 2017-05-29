@@ -30,21 +30,21 @@
 @widget-padding: 40px;
 @widget-padding-channel: 30px;
 
-@main-region-height-mobile: ~"calc(100% - @{footer-height} - @{header-height} - 2* @{header-vertical-padding})";
+@main-region-height-mobile: ~"calc(100% - @{footer-height} - @{header-height} - 2 * @{header-vertical-padding})";
 
-@header-height: 32px;
+@header-line-height: 32px;
 @header-vertical-padding: 6px;
 @header-horizontal-padding: 18px;
+@header-height: @header-line-height + 2 * @header-vertical-padding;
 @footer-height: 45px;
 
-@header-extra-height: (@header-height + 2 * @header-vertical-padding);
-@widget-close-bottom-md: -@widget-height-md + @header-extra-height;
-@widget-close-bottom-lg: -@widget-height-lg + @header-extra-height;
-@widget-close-bottom-sm: -@widget-height-sm + @header-extra-height;
-@widget-close-bottom-xs: calc(~"@{header-extra-height} - @{widget-height-xs}");
-@widget-close-top: calc(~"100% - @{header-extra-height}");
+@widget-close-bottom-md: -@widget-height-md + @header-height;
+@widget-close-bottom-lg: -@widget-height-lg + @header-height;
+@widget-close-bottom-sm: -@widget-height-sm + @header-height;
+@widget-close-bottom-xs: calc(~"@{header-height} - @{widget-height-xs}");
+@widget-close-top: calc(~"100% - @{header-height}");
 
-@remaining-height: @header-extra-height + @footer-height;
+@remaining-height: @header-height + @footer-height;
 @conversation-height: calc(~"100% - @{remaining-height}");
 @conversation-height-mobile: ~"calc(100%  - @{remaining-height})";
 @conversation-width-mobile: 100%;
