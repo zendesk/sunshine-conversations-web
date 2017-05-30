@@ -30,8 +30,10 @@
 
     .channel-header {
         .channel-icon, .channel-name {
-            @media (max-height: 400px) and (max-width: @screen-sm-min) {
-                display: none;
+            .widget-xs & {
+                @media (max-height: 400px) {
+                    display: none;
+                }
             }
         }
 
@@ -39,7 +41,7 @@
             margin-bottom: 40px;
             height: 65px;
 
-            @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
+            .widget-sm & {
                 margin-bottom: 20px;
             }
         }
@@ -111,7 +113,7 @@
 
             // Prevent button from going off the widget chat on
             // small screens
-            @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
+            .widget-sm & {
                 margin-top: 10px;
             }
         }

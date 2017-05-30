@@ -112,22 +112,25 @@
         box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
         background-color: white;
         border: 1px solid #ccc;
-        max-height: 130px;
         overflow-y: scroll;
         border-radius: 3px;
         top: 43px;
 
         .content-width-mixin();
 
-        @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-min) {
+        .widget-lg & {
             max-height: 200px;
         }
 
-        @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
+        .widget-md & {
+            max-height: 130px;
+        }
+
+        .widget-sm & {
             max-height: 90px;
         }
 
-        @media (max-width: @screen-sm-min) {
+        .widget-xs & {
             width: @content-width-xs;
         }
 
