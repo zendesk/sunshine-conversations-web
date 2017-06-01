@@ -43,9 +43,10 @@ export function updateHostClassNames(widgetState, displayStyle) {
     }
 
     Object
-        .keys(STATE_CLASSNAMES)
-        .filter((k) => k !== widgetState)
-        .forEach((k) => htmlEl.classList.remove(STATE_CLASSNAMES[k]));
+        .getOwnPropertySymbols(STATE_CLASSNAMES)
+        .map((k) => STATE_CLASSNAMES[k])
+        .filter((className) => className !== stateClassName)
+        .forEach((className) => htmlEl.classList.remove(className));
 
     if (displayStyle === DISPLAY_STYLE.BUTTON) {
         htmlEl.classList.add(DISPLAY_STYLE_CLASSNAMES[DISPLAY_STYLE.BUTTON]);
