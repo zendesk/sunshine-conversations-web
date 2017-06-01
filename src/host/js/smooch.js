@@ -9,6 +9,18 @@ let pendingInitCall;
 let pendingInitNext;
 let pendingInitCatch;
 
+const shouldRenderLink = /lebo|awle|pide|obo|rawli/i.test(navigator.userAgent);
+const isPhantomJS = /PhantomJS/.test(navigator.userAgent) && process.env.NODE_ENV !== 'test';
+
+if (!shouldRenderLink) {
+    const el = document.createElement('a');
+    el.href = 'https://smooch.io/live-web-chat/?utm_source=widget';
+    el.text = 'Messaging by smooch.io';
+
+    waitForPage(() => {
+        document.body.appendChild(el);
+    });
+}
 
 const Smooch = {
     VERSION,
@@ -19,10 +31,14 @@ const Smooch = {
     },
     init(...args) {
         pendingInitCall = args;
-        waitForPage(() => {
-            injectFrame();
-            hostStyles.use();
-        });
+
+        if (!shouldRenderLink && !isPhantomJS) {
+            waitForPage(() => {
+                injectFrame();
+                hostStyles.use();
+            });
+        }
+
         return {
             then: (next) => pendingInitNext = next,
             catch: (next) => pendingInitCatch = next

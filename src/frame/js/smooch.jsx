@@ -74,19 +74,6 @@ function renderWidget(container) {
     }
 }
 
-function renderLink() {
-    const el = document.createElement('div');
-
-    render(<a href='https://smooch.io/live-web-chat/?utm_source=widget'>Messaging by smooch.io</a>, el);
-
-    waitForPage().then(() => {
-        document.body.appendChild(el);
-        setTimeout(() => el.className = '', 200);
-    });
-
-    return el;
-}
-
 observable.on('message:sent', (message) => {
     observable.trigger('message', message);
 });
@@ -138,14 +125,6 @@ export function init(props) {
         soundNotificationEnabled: true,
         ...props
     };
-
-    if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
-        renderLink();
-        observable.trigger('ready');
-        return Promise.resolve();
-    } else if (/PhantomJS/.test(navigator.userAgent) && process.env.NODE_ENV !== 'test') {
-        return Promise.resolve();
-    }
 
     appToken = props.appToken;
 
