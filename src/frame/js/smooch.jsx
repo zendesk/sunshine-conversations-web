@@ -27,7 +27,7 @@ import { sendMessage as _sendMessage, disconnectFaye, handleConversationUpdated 
 import { core } from './services/core';
 
 import { observable, observeStore } from './utils/events';
-import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState } from './utils/dom';
+import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState, updateHostClassNames } from './utils/dom';
 import { isImageUploadSupported } from './utils/media';
 import { playNotificationSound, isAudioSupported } from './utils/sound';
 import { getDeviceId } from './utils/device';
@@ -89,7 +89,7 @@ function handleNotificationSound() {
     }
 }
 
-function onStoreChange({messages, unreadCount}) {
+function onStoreChange({conversation: {messages, unreadCount}, widgetState, displayStyle}) {
     if (messages.length > 0) {
         if (unreadCount > 0) {
             // only handle non-user messages
@@ -107,6 +107,8 @@ function onStoreChange({messages, unreadCount}) {
         }
         observable.trigger('unreadCount', unreadCount);
     }
+
+    updateHostClassNames(widgetState, displayStyle);
 }
 
 export function on(...args) {
@@ -160,7 +162,13 @@ export function init(props) {
 
     store.dispatch(batchActions(actions));
 
-    unsubscribeFromStore = observeStore(store, ({conversation}) => conversation, onStoreChange);
+    unsubscribeFromStore = observeStore(store, ({conversation, appState: {widgetState}, app: {settings: {web: {displayStyle}}}}) => {
+        return {
+            conversation,
+            widgetState,
+            displayStyle
+        };
+    }, onStoreChange);
 
     monitorBrowserState(store.dispatch.bind(store));
     return login(props.userId, props.jwt, pick(props, userService.EDITABLE_PROPERTIES));

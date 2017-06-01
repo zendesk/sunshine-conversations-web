@@ -12,7 +12,7 @@ let pendingInitCatch;
 const shouldRenderLink = /lebo|awle|pide|obo|rawli/i.test(navigator.userAgent);
 const isPhantomJS = /PhantomJS/.test(navigator.userAgent) && process.env.NODE_ENV !== 'test';
 
-if (!shouldRenderLink) {
+if (shouldRenderLink) {
     const el = document.createElement('a');
     el.href = 'https://smooch.io/live-web-chat/?utm_source=widget';
     el.text = 'Messaging by smooch.io';

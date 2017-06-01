@@ -1,12 +1,23 @@
-import isMobile from 'ismobilejs';
-
 // Rewrite the loaders to avoid the style-loader used in the host part
 import hostStyles from '!css-loader?modules!less-loader!../../../host/stylesheets/iframe.less';
 import { hasFocus } from '../actions/browser-actions';
+import { WIDGET_STATE } from '../constants/app';
+import { DISPLAY_STYLE } from '../constants/styles';
 
 const pushState = window.history && window.history.pushState;
 const replaceState = window.history && window.history.replaceState;
 const parentDocument = parent.document;
+
+const STATE_CLASSNAMES = {
+    [WIDGET_STATE.OPENED]: hostStyles.locals.widgetOpened,
+    [WIDGET_STATE.CLOSED]: hostStyles.locals.widgetClosed,
+    [WIDGET_STATE.EMBEDDED]: hostStyles.locals.widgetEmbedded,
+};
+
+const DISPLAY_STYLE_CLASSNAMES = {
+    [DISPLAY_STYLE.BUTTON]: hostStyles.locals.displayButton,
+    [DISPLAY_STYLE.TAB]: hostStyles.locals.displayTab
+};
 
 let monitorCallback;
 
@@ -22,19 +33,26 @@ export function waitForPage() {
     });
 }
 
-export function preventMobilePageScroll() {
-    const htmlEl = parentDocument.querySelector('html');
-    htmlEl.classList.add(hostStyles.locals.widgetOpened);
-    if (isMobile.apple.device) {
-        htmlEl.classList.add('sk-ios-device');
-    }
-}
 
-export function allowMobilePageScroll() {
+export function updateHostClassNames(widgetState, displayStyle) {
+    const stateClassName = STATE_CLASSNAMES[widgetState];
+
     const htmlEl = parentDocument.querySelector('html');
-    htmlEl.classList.remove(hostStyles.locals.widgetOpened);
-    if (isMobile.apple.device) {
-        htmlEl.classList.remove('sk-ios-device');
+    if (stateClassName) {
+        htmlEl.classList.add(stateClassName);
+    }
+
+    Object
+        .keys(STATE_CLASSNAMES)
+        .filter((k) => k !== widgetState)
+        .forEach((k) => htmlEl.classList.remove(STATE_CLASSNAMES[k]));
+
+    if (displayStyle === DISPLAY_STYLE.BUTTON) {
+        htmlEl.classList.add(DISPLAY_STYLE_CLASSNAMES[DISPLAY_STYLE.BUTTON]);
+        htmlEl.classList.remove(DISPLAY_STYLE_CLASSNAMES[DISPLAY_STYLE.TAB]);
+    } else {
+        htmlEl.classList.add(DISPLAY_STYLE_CLASSNAMES[DISPLAY_STYLE.TAB]);
+        htmlEl.classList.remove(DISPLAY_STYLE_CLASSNAMES[DISPLAY_STYLE.BUTTON]);
     }
 }
 
@@ -42,19 +60,19 @@ export function monitorUrlChanges(callback) {
     stopMonitoringUrlChanges();
 
     monitorCallback = callback;
-    window.addEventListener('hashchange', monitorCallback);
+    parent.addEventListener('hashchange', monitorCallback);
 
-    if (window.history) {
-        window.history.pushState = (state, title, url, ...rest) => {
-            pushState && pushState.apply(window.history, [state, title, url, ...rest]);
+    if (parent.history) {
+        parent.history.pushState = (state, title, url, ...rest) => {
+            pushState && pushState.apply(parent.history, [state, title, url, ...rest]);
 
             if (url) {
                 monitorCallback();
             }
         };
 
-        window.history.replaceState = (state, title, url, ...rest) => {
-            replaceState && replaceState.apply(window.history, [state, title, url, ...rest]);
+        parent.history.replaceState = (state, title, url, ...rest) => {
+            replaceState && replaceState.apply(parent.history, [state, title, url, ...rest]);
 
             if (url) {
                 monitorCallback();
@@ -65,17 +83,17 @@ export function monitorUrlChanges(callback) {
 
 export function stopMonitoringUrlChanges() {
     if (monitorCallback) {
-        window.removeEventListener('hashchange', monitorCallback);
+        parent.removeEventListener('hashchange', monitorCallback);
 
-        if (window.history) {
-            window.history.pushState = pushState;
-            window.history.replaceState = replaceState;
+        if (parent.history) {
+            parent.history.pushState = pushState;
+            parent.history.replaceState = replaceState;
         }
     }
 }
 
 export function getWindowLocation() {
-    return window.location;
+    return parent.location;
 }
 
 
@@ -95,14 +113,14 @@ export function monitorBrowserState(dispatch) {
         };
     }
 
-    dispatch(hasFocus(document.hasFocus ? document.hasFocus() : true));
-    window.addEventListener('focus', onWindowFocus);
-    window.addEventListener('blur', onWindowBlur);
+    dispatch(hasFocus(parentDocument.hasFocus ? parentDocument.hasFocus() : true));
+    parent.addEventListener('focus', onWindowFocus);
+    parent.addEventListener('blur', onWindowBlur);
 }
 
 export function stopMonitoringBrowserState() {
-    window.removeEventListener('focus', onWindowFocus);
-    window.removeEventListener('blur', onWindowBlur);
+    parent.removeEventListener('focus', onWindowFocus);
+    parent.removeEventListener('blur', onWindowBlur);
 }
 
 export function getElementProperties(element) {

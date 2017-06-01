@@ -74,17 +74,15 @@ export class WidgetComponent extends Component {
             `sk-${displayStyle}-display`
         ];
 
-        if (appState.embedded) {
+        if (appState.widgetState === WIDGET_STATE.OPENED) {
+            classNames.push('sk-appear');
+        } else if (appState.widgetState === WIDGET_STATE.CLOSED) {
+            classNames.push('sk-close');
+        } else if (appState.widgetState === WIDGET_STATE.EMBEDDED) {
             classNames.push('sk-embedded');
         } else {
-            if (appState.widgetState === WIDGET_STATE.OPENED) {
-                classNames.push('sk-appear');
-            } else if (appState.widgetState === WIDGET_STATE.CLOSED) {
-                classNames.push('sk-close');
-            } else {
-                // state is WIDGET_STATE.INIT
-                classNames.push('sk-init');
-            }
+            // state is WIDGET_STATE.INIT
+            classNames.push('sk-init');
         }
 
         if (isMobile.apple.device) {

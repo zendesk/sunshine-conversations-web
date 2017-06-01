@@ -169,7 +169,7 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             return {
                 ...state,
                 embedded: action.value,
-                widgetState: action.value ? WIDGET_STATE.OPENED : state.widgetState
+                widgetState: action.value ? WIDGET_STATE.EMBEDDED : WIDGET_STATE.INIT
             };
 
         case AppStateActions.SET_INTRO_HEIGHT:

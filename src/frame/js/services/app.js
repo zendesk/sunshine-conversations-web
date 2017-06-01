@@ -1,7 +1,5 @@
 import * as AppStateActions from '../actions/app-state-actions';
-import { preventMobilePageScroll, allowMobilePageScroll } from '../utils/dom';
 import { resetUnreadCount, connectFayeUser } from './conversation';
-import { fetchTransferRequestCode } from './integrations';
 import { observable } from '../utils/events';
 import { hasLinkableChannels, isChannelLinked } from '../utils/user';
 import { getIntegration } from '../utils/app';
@@ -15,7 +13,6 @@ export function openWidget() {
             dispatch(AppStateActions.openWidget());
             observable.trigger('widget:opened');
             dispatch(resetUnreadCount());
-            preventMobilePageScroll();
         }
     };
 }
@@ -27,7 +24,6 @@ export function closeWidget() {
             dispatch(AppStateActions.closeWidget());
             observable.trigger('widget:closed');
             dispatch(resetUnreadCount());
-            allowMobilePageScroll();
         }
     };
 }
