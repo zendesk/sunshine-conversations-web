@@ -25,11 +25,6 @@ module.exports = function(options) {
         frame: ['./src/frame/js/utils/polyfills', './src/frame/js/index']
     };
 
-    if (options.hotComponents && !options.assetsOnly) {
-        // entry.host.unshift('webpack-hot-middleware/client');
-        // entry.frame.unshift('webpack-hot-middleware/client');
-    }
-
     const fileLimit = options.bundleAll ? 100000 : 1;
 
     const rules = {
