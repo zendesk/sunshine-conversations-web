@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
-var html = fs.readFileSync(path.resolve(__dirname, '../src/index.html'), 'utf-8');
-var embedded = fs.readFileSync(path.resolve(__dirname, '../src/embedded.html'), 'utf-8');
+var html = fs.readFileSync(path.resolve(__dirname, '../dev-site/index.html'), 'utf-8');
+var embedded = fs.readFileSync(path.resolve(__dirname, '../dev-site/embedded.html'), 'utf-8');
 
 function SimpleRenderer(options) {
     this.html = (options.embedded ? embedded : html)

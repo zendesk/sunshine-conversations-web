@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const webpack = require('webpack');
 const StatsPlugin = require('stats-webpack-plugin');
-const loadersByExtension = require('./webpack/lib/loadersByExtension');
+const rulesByExtension = require('./webpack/lib/rulesByExtension');
 
 module.exports = function(options) {
     const VERSION = require('./package.json').version;
@@ -19,41 +19,75 @@ module.exports = function(options) {
     }
 
     const entry = options.assetsOnly ? {
-        assets: './src/js/constants/assets'
+        assets: './src/frame/js/constants/assets'
     } : {
-        smooch: ['./src/js/utils/polyfills', './src/js/umd']
+        host: ['./src/host/js/umd'],
+        frame: ['./src/frame/js/utils/polyfills', './src/frame/js/index']
     };
-
-    if (options.hotComponents && !options.assetsOnly) {
-        entry.smooch.unshift('webpack-hot-middleware/client');
-    }
 
     const fileLimit = options.bundleAll ? 100000 : 1;
 
-
-    const loaders = {
+    const rules = {
         'jsx': options.hotComponents ? ['react-hot-loader', 'babel-loader'] : 'babel-loader',
         'js': {
             loader: 'babel-loader',
-            include: [path.join(__dirname, 'src/js'), path.join(__dirname, 'test')]
+            include: [
+                path.resolve(__dirname, 'src/host/js'),
+                path.resolve(__dirname, 'src/frame/js'),
+                path.resolve(__dirname, 'src/shared/js'),
+                path.resolve(__dirname, 'test')
+            ]
         },
-        'json': 'json-loader',
-        'png|jpg|jpeg|gif|svg': `url-loader?limit=${fileLimit}`,
-        'mp3': `url-loader?limit=${fileLimit}`
+        'png|jpg|jpeg|gif|svg': {
+            loader: 'url-loader',
+            options: {
+                limit: fileLimit
+            }
+        },
+        'mp3': {
+            loader: 'url-loader',
+            options: {
+                limit: fileLimit
+            }
+        }
     };
-    const cssLoader = options.minimize ? 'css-loader?insertAt=top' : 'css-loader?insertAt=top&localIdentName=[path][name]---[local]---[hash:base64:5]';
-    const stylesheetLoaders = {
-        'css': cssLoader,
-        'less': [cssLoader, 'less-loader']
+
+    const hostStyleRule = {
+        test: /\.(less)(\?.*)?$/,
+        include: [
+            path.resolve(__dirname, 'src/host/'),
+            path.resolve(__dirname, 'src/shared/')
+        ],
+        use: [
+            {
+                loader: 'style-loader/useable',
+                options: {
+                    insertAt: 'bottom'
+                }
+            },
+            {
+                loader: 'css-loader',
+                options: {
+                    modules: true
+                }
+            },
+            'less-loader',
+        ]
     };
-    const additionalLoaders = [];
 
-    const alias = {};
+    const frameStyleRule = {
+        test: /\.(less)(\?.*)?$/,
+        include: [
+            path.resolve(__dirname, 'src/frame/'),
+            path.resolve(__dirname, 'src/shared/')
+        ],
+        use: [
+            'style-loader',
+            'css-loader',
+            'less-loader'
+        ]
+    };
 
-    const externals = [];
-    const modulesDirectories = ['node_modules'];
-    const extensions = ['', '.web.js', '.js', '.jsx'];
-    const root = path.join(__dirname, 'src');
     const publicPath = options.devServer ?
         '/_assets/' :
         'https://cdn.smooch.io/';
@@ -78,22 +112,12 @@ module.exports = function(options) {
         new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment')
     ];
 
-
     if (!options.test && !options.assetsOnly) {
         plugins.push(new StatsPlugin('stats.json', {
             chunkModules: true,
             exclude: excludeFromStats
         }));
     }
-
-    Object.keys(stylesheetLoaders).forEach(function(ext) {
-        let stylesheetLoader = stylesheetLoaders[ext];
-        if (Array.isArray(stylesheetLoader)) {
-            stylesheetLoader = stylesheetLoader.join('!');
-        }
-
-        stylesheetLoaders[ext] = 'style/useable!' + stylesheetLoader;
-    });
 
     if (options.minimize) {
         plugins.push(
@@ -102,15 +126,15 @@ module.exports = function(options) {
                     warnings: false
                 }
             }),
-            new webpack.optimize.DedupePlugin(),
             new webpack.DefinePlugin({
                 'process.env': {
                     NODE_ENV: JSON.stringify('production')
                 }
             }),
-            new webpack.NoErrorsPlugin(),
+            new webpack.NoEmitOnErrorsPlugin(),
 
-            new webpack.BannerPlugin(PACKAGE_NAME + ' ' + VERSION + ' \n' + LICENSE, {
+            new webpack.BannerPlugin({
+                banner: PACKAGE_NAME + ' ' + VERSION + ' \n' + LICENSE,
                 entryOnly: true
             })
         );
@@ -142,10 +166,15 @@ module.exports = function(options) {
 
     if (options.hotComponents) {
         plugins.push(
-            new webpack.optimize.OccurrenceOrderPlugin(),
             new webpack.HotModuleReplacementPlugin(),
-            new webpack.NoErrorsPlugin()
+            new webpack.NoEmitOnErrorsPlugin()
         );
+    }
+
+    if (options.debug) {
+        plugins.push(new webpack.LoaderOptionsPlugin({
+            debug: true
+        }));
     }
 
     return {
@@ -153,19 +182,18 @@ module.exports = function(options) {
         output: output,
         target: 'web',
         module: {
-            loaders: loadersByExtension(loaders).concat(loadersByExtension(stylesheetLoaders)).concat(additionalLoaders)
+            rules: rulesByExtension(rules)
+                .concat([
+                    hostStyleRule,
+                    frameStyleRule
+                ])
         },
         devtool: options.devtool,
-        debug: options.debug,
-        resolveLoader: {
-            root: path.join(__dirname, 'node_modules')
-        },
-        externals: externals,
         resolve: {
-            root: root,
-            modulesDirectories: modulesDirectories,
-            extensions: extensions,
-            alias: alias
+            extensions: ['.js', '.jsx'],
+            modules: [
+                'node_modules'
+            ]
         },
         plugins: plugins,
         devServer: {
