@@ -1,0 +1,101 @@
+@background-color: #fff;
+@widget-box-shadow-width: 12px;
+@messenger-button-shadow-width: 6px;
+
+@widget-height-lg: 640px;
+@widget-height-md: 480px;
+@widget-height-sm: 420px;
+@widget-height-xs: 100%;
+
+@widget-width-lg: 410px;
+@widget-width-md: 350px;
+@widget-width-sm: 330px;
+@widget-width-xs: 100%;
+
+@frame-height-lg: @widget-height-lg + 2 * @widget-box-shadow-width;
+@frame-height-md: @widget-height-md + 2 * @widget-box-shadow-width;
+@frame-height-sm: @widget-height-sm + 2 * @widget-box-shadow-width;
+@frame-height-xs: @widget-height-xs;
+
+@frame-width-lg: @widget-width-lg + 2 * @widget-box-shadow-width;
+@frame-width-md: @widget-width-md + 2 * @widget-box-shadow-width;
+@frame-width-sm: @widget-width-sm + 2 * @widget-box-shadow-width;
+@frame-width-xs: @widget-width-xs;
+
+@content-width-lg: calc(~"@{widget-width-lg} - @{widget-padding} * 2");
+@content-width-md: calc(~"@{widget-width-md} - @{widget-padding} * 2");
+@content-width-sm: calc(~"@{widget-width-sm} - @{widget-padding} * 2");
+@content-width-xs: 240px;
+
+@widget-padding: 40px;
+@widget-padding-channel: 30px;
+
+@main-region-height-mobile: ~"calc(100% - @{footer-height} - @{header-height} - 2 * @{header-vertical-padding})";
+
+@header-line-height: 32px;
+@header-vertical-padding: 6px;
+@header-horizontal-padding: 18px;
+@header-height: @header-line-height + 2 * @header-vertical-padding;
+@footer-height: 45px;
+
+@widget-close-bottom-md: -@widget-height-md + @header-height;
+@widget-close-bottom-lg: -@widget-height-lg + @header-height;
+@widget-close-bottom-sm: -@widget-height-sm + @header-height;
+@widget-close-bottom-xs: calc(~"@{header-height} - @{widget-height-xs}");
+@widget-close-top: calc(~"100% - @{header-height}");
+
+@remaining-height: @header-height + @footer-height;
+@conversation-height: calc(~"100% - @{remaining-height}");
+@conversation-height-mobile: ~"calc(100%  - @{remaining-height})";
+@conversation-width-mobile: 100%;
+
+@logo-margin: ~"calc(50% - 83px)"; // 83 is width of text + logo + scrollbar width / 2
+
+@input-horizontal-margin: 9px;
+@input-horizontal-padding: 9px;
+
+@sk-blue: #00aeff;
+@sk-light-grey: #f4f4f4;
+@sk-grey: #eee;
+@sk-medium-grey: #b2b2b2;
+@sk-dark-grey: #808080;
+@sk-darker-grey: #424242;
+
+@sk-base-text-color: #787f8c;
+@sk-intro-background-color: #EFEFEF;
+
+@settings-header-color: #464646;
+@settings-channel-item-border-color: #EFEFEF;
+
+@font-size-base: 14px;
+
+@messenger-button-size: 58px;
+
+@widget-vertical-spacing: 20px;
+@widget-horizontal-spacing: 20px;
+@widget-messenger-button-vertical-spacing: 20px;
+
+// Original values were the following :
+// @screen-lg-ht-min: 835px;
+// @screen-md-ht-min: 648px;
+// @screen-sm-ht-min: 488px;
+// for some reason, LESS didn't like `@screen-lg-ht-min: 835px + @widget-vertical-spacing`
+// so the value was added manually.
+
+@screen-lg-ht-min: 855px;
+@screen-md-ht-min: 668px;
+@screen-sm-ht-min: 508px;
+
+@screen-md-ht-max: 854px;
+@screen-sm-ht-max: 667px;
+@screen-xs-ht-max: 507px;
+
+@header-default-text-color: #333;
+
+@widget-close-top-lg: calc(~"100% - @{widget-height-lg}");
+
+@notification-height: 56px;
+
+@intro-padding: 18px;
+@intro-padding-bottom: 22px;
+@intro-icon-size: 50px;
