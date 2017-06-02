@@ -1,5 +1,5 @@
 import React from 'react';
-import { render as reactRender, unmountComponentAtNode } from 'react-dom';
+import { render as reactRender } from 'react-dom';
 import pick from 'lodash.pick';
 import { batchActions } from 'redux-batched-actions';
 import { Provider } from 'react-redux';
@@ -16,7 +16,6 @@ import { setCurrentLocation } from './actions/browser-actions';
 import { resetConversation } from './actions/conversation-actions';
 import { resetIntegrations } from './actions/integrations-actions';
 import * as AppStateActions from './actions/app-state-actions';
-import { reset } from './actions/common-actions';
 
 import { openWidget, closeWidget, hideSettings, hideChannelPage } from './services/app';
 import * as authService from './services/auth';
@@ -38,7 +37,6 @@ import { WIDGET_STATE } from './constants/app';
 import { Widget } from './components/widget';
 
 let appToken;
-let _container;
 let lastTriggeredMessageTimestamp = 0;
 let initialStoreChange = true;
 let isInitialized = false;
@@ -53,25 +51,13 @@ window.addEventListener('message', ({data, origin}) => {
     }
 }, false);
 
-function renderWidget(container) {
-    if (container) {
+function renderWidget() {
+    waitForPage().then(() => {
+        const mount = document.querySelector('#mount');
         reactRender(<Provider store={ store }>
                         <Widget />
-                    </Provider>, container);
-        return container;
-    } else {
-        const el = document.createElement('div');
-        el.setAttribute('id', 'sk-holder');
-        reactRender(<Provider store={ store }>
-                        <Widget />
-                    </Provider>, el);
-
-        waitForPage().then(() => {
-            document.body.appendChild(el);
-        });
-
-        return el;
-    }
+                    </Provider>, mount);
+    });
 }
 
 observable.on('message:sent', (message) => {
@@ -266,9 +252,7 @@ export function login(userId = '', jwt, attributes) {
         });
     }).then(() => {
         if (!store.getState().appState.embedded) {
-            if (!_container) {
-                _container = render();
-            }
+            render();
         }
 
         const user = store.getState().user;
@@ -323,38 +307,18 @@ export function getCore() {
 }
 
 export function destroy() {
+    // `destroy()` only need to clean up handlers
+    // the rest will be cleaned up with the iframe removal
+
     if (!isInitialized) {
         return;
     }
-    isInitialized = false;
 
     stopMonitoringBrowserState();
-
-    if (process.env.NODE_ENV !== 'test' && this._container) {
-        unmountComponentAtNode(this._container);
-    }
-
-    const {widgetState} = store.getState().appState;
-
-    store.dispatch(disconnectFaye());
-    const actions = [
-        reset()
-    ];
-
-    if (widgetState === WIDGET_STATE.EMBEDDED) {
-        // retain the embed mode
-        actions.push(AppStateActions.setEmbedded(true));
-    } else if (this._container) {
-        document.body.removeChild(this._container);
-    }
-
-    store.dispatch(batchActions(actions));
-
     stopMonitoringUrlChanges();
     unsubscribeFromStore();
 
-    appToken = undefined;
-    _container = undefined;
+    store.dispatch(disconnectFaye());
     observable.trigger('destroy');
     observable.off();
 }
@@ -371,7 +335,6 @@ export function isOpened() {
     return store.getState().appState.widgetState === WIDGET_STATE.OPENED;
 }
 
-export function render(container) {
-    _container = container;
-    return renderWidget(container);
+export function render() {
+    return renderWidget();
 }

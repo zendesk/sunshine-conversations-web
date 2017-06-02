@@ -3,16 +3,37 @@ import hostStyles from '../stylesheets/iframe.less';
 import { waitForPage } from './utils/dom';
 import { init as initEnquire } from './utils/enquire';
 
+const Smooch = {};
+let Lib;
 let iframe;
-const pendingOnCalls = [];
-let pendingInitCall;
-let pendingInitNext;
-let pendingInitCatch;
+
 let isEmbedded;
 let embeddedContainer;
 
+let pendingOnCalls = [];
+let pendingInitCall;
+let pendingInitNext;
+let pendingInitCatch;
+
 const shouldRenderLink = /lebo|awle|pide|obo|rawli/i.test(navigator.userAgent);
 const isPhantomJS = /PhantomJS/.test(navigator.userAgent) && process.env.NODE_ENV !== 'test';
+
+const LIB_FUNCS = [
+    'init',
+    'login',
+    'on',
+    'off',
+    'logout',
+    'track',
+    'sendMessage',
+    'updateUser',
+    'getConversation',
+    'getUserId',
+    'getCore',
+    'open',
+    'close',
+    'isOpened'
+];
 
 if (shouldRenderLink) {
     const el = document.createElement('a');
@@ -24,9 +45,13 @@ if (shouldRenderLink) {
     });
 }
 
-const Smooch = {
+const Skeleton = {
     VERSION,
     on(...args) {
+        if (!pendingOnCalls) {
+            pendingOnCalls = [];
+        }
+
         pendingOnCalls.push({
             args
         });
@@ -53,56 +78,61 @@ const Smooch = {
         } else {
             embeddedContainer = container;
         }
+    },
+    destroy() {
+        if (Lib) {
+            Lib.destroy();
+            iframe.remove();
+            setUp();
+        }
     }
 };
 
-function onSmoochReady(Lib) {
-    window.__onLibReady = function() {};
+function setUp() {
+    Lib = undefined;
+    iframe = undefined;
+    window.__onLibReady = onSmoochReady;
+    for (let func = LIB_FUNCS[0], i = 0; i < LIB_FUNCS.length; func = LIB_FUNCS[++i]) {
+        Smooch[func] &&
+        delete Smooch[func];
+    }
+    Object.assign(Smooch, Skeleton);
+}
 
+function onSmoochReady(_Lib) {
+    window.__onLibReady = function() {};
+    Lib = _Lib;
     if (!isEmbedded) {
         initEnquire(iframe);
     }
 
-    const funcs = [
-        'init',
-        'login',
-        'on',
-        'off',
-        'logout',
-        'track',
-        'sendMessage',
-        'updateUser',
-        'getConversation',
-        'getUserId',
-        'getCore',
-        'destroy',
-        'open',
-        'close',
-        'isOpened'
-    ];
-
-    for (let func = funcs[0], i = 0; i < funcs.length; func = funcs[++i]) {
+    for (let func = LIB_FUNCS[0], i = 0; i < LIB_FUNCS.length; func = LIB_FUNCS[++i]) {
         Smooch[func] = Lib[func];
     }
 
-    for (let call = pendingOnCalls[0], i = 0; i < pendingOnCalls.length; call = pendingOnCalls[++i]) {
-        Lib.on(...call.args);
+    if (pendingOnCalls) {
+        for (let call = pendingOnCalls[0], i = 0; i < pendingOnCalls.length; call = pendingOnCalls[++i]) {
+            Lib.on(...call.args);
+        }
+        pendingOnCalls = undefined;
     }
+
 
     if (pendingInitCall) {
         const promise = Lib.init(...pendingInitCall);
+        pendingInitCall = undefined;
 
         if (pendingInitNext) {
             promise.then(pendingInitNext);
+            pendingInitNext = undefined;
         }
 
         if (pendingInitCatch) {
+            pendingInitCatch = undefined;
             promise.catch(pendingInitCatch);
         }
     }
 }
-
-window.__onLibReady = onSmoochReady;
 
 function injectFrame() {
     if (!iframe) {
@@ -115,7 +145,7 @@ function injectFrame() {
                 delete iframe.onload;
                 const doc = iframe.contentWindow.document;
                 doc.open();
-                doc.write('<!DOCTYPE html><html><head><script src="/_assets/frame.js"></script></head></html>');
+                doc.write('<!DOCTYPE html><html><head><script src="/_assets/frame.js"></script></head><body><div id="mount"></div></html>');
                 doc.close();
             }
         };
@@ -130,5 +160,7 @@ function injectFrame() {
         document.body.appendChild(iframe);
     }
 }
+
+setUp();
 
 export default Smooch;
