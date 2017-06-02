@@ -24,7 +24,7 @@ module.exports = function(options) {
         const compiler = webpack(config);
         app.use(require('webpack-dev-middleware')(compiler, {
             publicPath: '/_assets/',
-            quiet: true
+            quiet: false
         }));
 
         app.use(require('webpack-hot-middleware')(compiler));
@@ -38,7 +38,7 @@ module.exports = function(options) {
 
     app.get('/embedded', function(req, res) {
         const renderer = new Renderer({
-            scriptUrl: '/_assets/smooch.js',
+            scriptUrl: '/_assets/host.js',
             data: config,
             embedded: true
         });
@@ -60,7 +60,7 @@ module.exports = function(options) {
     // application
     app.get('/*', function(req, res) {
         const renderer = new Renderer({
-            scriptUrl: '/_assets/smooch.js',
+            scriptUrl: '/_assets/host.js',
             data: config
         });
 

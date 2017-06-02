@@ -1,0 +1,151 @@
+@import "../../shared/stylesheets/bootstrap/mixins.less";
+@import "../../shared/stylesheets/bootstrap/variables.less";
+@import "../../shared/stylesheets/bootstrap/normalize.less";
+@import "../../shared/stylesheets/variables.less";
+@import "mixins.less";
+@import "animations.less";
+@import "unread-badge.less";
+@import "messenger-button.less";
+@import "font-awesome.less";
+@import "forms.less";
+@import "buttons.less";
+@import "header.less";
+@import "notification.less";
+@import "conversation.less";
+@import "reply-actions.less";
+@import "typing-indicator.less";
+@import "footer.less";
+@import "settings.less";
+@import "channels.less";
+@import "visibility.less";
+@import (css) "~react-spinkit/css/three-bounce.css";
+
+.container() {
+    @import "loading.less";
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #333;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+
+    div,
+    a,
+    form,
+    input,
+    label {
+        box-sizing: border-box;
+    }
+}
+
+html, body {
+    overflow: hidden;
+    max-width: 100%;
+    width: 100%;
+    max-height: 100%;
+    height: 100%;
+}
+
+#sk-container {
+    z-index: 9998; // 1 less than Stripe Checkout
+    overflow: hidden;
+    .container();
+
+    padding: @widget-box-shadow-width;
+
+    #sk-wrapper {
+        position: relative;
+        background: @background-color;
+        position: relative;
+        border-radius: 10px;
+        box-shadow: 0 0 24px rgba(0,0,0,0.15);
+        border: 1px solid rgba(0,0,0,0.15);
+        .widget-size();
+
+        .widget-xs & {
+            border-radius: 0;
+        }
+    }
+
+    .widget-xs & {
+        padding: 0;
+        right: 0;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        position: fixed;
+        border-radius: 0;
+        width: 100%;
+        border: none;
+        height: 100%;
+        max-height: 100%;
+        &.sk-appear {
+            &,
+            #sk-wrapper {
+                height: 100%;
+                max-height: 100%;
+            }
+        }
+        #sk-wrapper {
+            width: 100%;
+            max-width: 100%;
+        }
+    }
+    .input {
+        background-color: white;
+        border: 1px solid white;
+        padding: 0px;
+        font: inherit;
+    }
+
+    .content-wrapper {
+        .scrollbar-mixin();
+        .widget-size();
+        overflow-y: auto;
+    }
+}
+
+#sk-container.sk-embedded {
+    .container();
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    #sk-wrapper {
+        background: @background-color;
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+    #sk-header,
+    #sk-settings-header {
+        cursor: default;
+        border-radius: 0;
+        .sk-close-handle,
+        .sk-show-handle {
+            display: none;
+        }
+    }
+    #sk-conversation {
+        height: ~"calc(100% - @{remaining-height})";
+        .sk-messages-container {
+            position: relative;
+        }
+    }
+    #sk-settings-handle {
+        display: block;
+        right: 10px;
+    }
+    #sk-footer {
+        box-shadow: none;
+        height: 50px;
+    }
+    .sk-settings {
+        width: 100%;
+        height: @widget-height-md;
+    }
+}
+
+@import "mobile.less";
+@import "print.less";
