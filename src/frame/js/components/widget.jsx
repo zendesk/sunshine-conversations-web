@@ -104,7 +104,7 @@ export class WidgetComponent extends Component {
 
         let messengerButton;
 
-        if (displayStyle === DISPLAY_STYLE.BUTTON && !appState.embedded) {
+        if (displayStyle === DISPLAY_STYLE.BUTTON && appState.widgetState !== WIDGET_STATE.EMBEDDED) {
             messengerButton = <MessengerButton shown={ appState.widgetState !== WIDGET_STATE.OPENED } />;
         }
 
@@ -144,7 +144,7 @@ export class WidgetComponent extends Component {
     }
 }
 
-export const Widget = connect(({appState: {settingsVisible, widgetState, errorNotificationMessage, embedded, showAnimation}, app, ui: {widgetSize}, user}) => {
+export const Widget = connect(({appState: {settingsVisible, widgetState, errorNotificationMessage, showAnimation, widgetSize}, app, user}) => {
     // only extract what is needed from appState as this is something that might
     // mutate a lot
     return {
@@ -152,7 +152,6 @@ export const Widget = connect(({appState: {settingsVisible, widgetState, errorNo
             settingsVisible,
             widgetState,
             errorNotificationMessage,
-            embedded,
             showAnimation
         },
         app,

@@ -8,8 +8,8 @@ import { WIDGET_STATE } from '../constants/app';
 
 export function openWidget() {
     return (dispatch, getState) => {
-        const {embedded} = getState().appState;
-        if (!embedded) {
+        const {widgetState} = getState().appState;
+        if (widgetState !== WIDGET_STATE.EMBEDDED) {
             dispatch(AppStateActions.openWidget());
             observable.trigger('widget:opened');
             dispatch(resetUnreadCount());
@@ -19,8 +19,8 @@ export function openWidget() {
 
 export function closeWidget() {
     return (dispatch, getState) => {
-        const {embedded} = getState().appState;
-        if (!embedded) {
+        const {widgetState} = getState().appState;
+        if (widgetState !== WIDGET_STATE.EMBEDDED) {
             dispatch(AppStateActions.closeWidget());
             observable.trigger('widget:closed');
             dispatch(resetUnreadCount());
@@ -31,8 +31,8 @@ export function closeWidget() {
 
 export function toggleWidget() {
     return (dispatch, getState) => {
-        const {embedded, widgetState} = getState().appState;
-        if (!embedded) {
+        const {widgetState} = getState().appState;
+        if (widgetState !== WIDGET_STATE.EMBEDDED) {
             if (widgetState === WIDGET_STATE.OPENED) {
                 return dispatch(closeWidget());
             }

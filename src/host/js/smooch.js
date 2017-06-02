@@ -8,6 +8,8 @@ const pendingOnCalls = [];
 let pendingInitCall;
 let pendingInitNext;
 let pendingInitCatch;
+let isEmbedded;
+let embeddedContainer;
 
 const shouldRenderLink = /lebo|awle|pide|obo|rawli/i.test(navigator.userAgent);
 const isPhantomJS = /PhantomJS/.test(navigator.userAgent) && process.env.NODE_ENV !== 'test';
@@ -31,6 +33,7 @@ const Smooch = {
     },
     init(...args) {
         pendingInitCall = args;
+        isEmbedded = args.length > 0 && !!args[0].embedded;
 
         if (!shouldRenderLink && !isPhantomJS) {
             waitForPage(() => {
@@ -43,12 +46,23 @@ const Smooch = {
             then: (next) => pendingInitNext = next,
             catch: (next) => pendingInitCatch = next
         };
+    },
+    render(container) {
+        if (iframe) {
+            container.appendChild(iframe);
+        } else {
+            embeddedContainer = container;
+        }
     }
 };
 
-window.__onLibReady = function onSmoochReady(Lib) {
+function onSmoochReady(Lib) {
     window.__onLibReady = function() {};
-    initEnquire(iframe);
+
+    if (!isEmbedded) {
+        initEnquire(iframe);
+    }
+
     const funcs = [
         'init',
         'login',
@@ -64,8 +78,7 @@ window.__onLibReady = function onSmoochReady(Lib) {
         'destroy',
         'open',
         'close',
-        'isOpened',
-        'render'
+        'isOpened'
     ];
 
     for (let func = funcs[0], i = 0; i < funcs.length; func = funcs[++i]) {
@@ -87,23 +100,35 @@ window.__onLibReady = function onSmoochReady(Lib) {
             promise.catch(pendingInitCatch);
         }
     }
-};
+}
+
+window.__onLibReady = onSmoochReady;
 
 function injectFrame() {
-    iframe = document.createElement('iframe');
-    iframe.className = hostStyles.ref().locals.iframe;
-    let loaded = false;
-    iframe.onload = () => {
-        if (!loaded) {
-            loaded = true;
-            delete iframe.onload;
-            const doc = iframe.contentWindow.document;
-            doc.open();
-            doc.write('<!DOCTYPE html><html><head><script src="/_assets/frame.js"></script></head></html>');
-            doc.close();
+    if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.className = hostStyles.ref().locals.iframe;
+        let loaded = false;
+        iframe.onload = () => {
+            if (!loaded) {
+                loaded = true;
+                delete iframe.onload;
+                const doc = iframe.contentWindow.document;
+                doc.open();
+                doc.write('<!DOCTYPE html><html><head><script src="/_assets/frame.js"></script></head></html>');
+                doc.close();
+            }
+        };
+    }
+
+    if (isEmbedded) {
+        if (embeddedContainer) {
+            embeddedContainer.appendChild(iframe);
+            embeddedContainer = undefined;
         }
-    };
-    document.body.appendChild(iframe);
+    } else {
+        document.body.appendChild(iframe);
+    }
 }
 
 export default Smooch;

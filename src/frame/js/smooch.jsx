@@ -17,7 +17,6 @@ import { resetConversation } from './actions/conversation-actions';
 import { resetIntegrations } from './actions/integrations-actions';
 import * as AppStateActions from './actions/app-state-actions';
 import { reset } from './actions/common-actions';
-import { updateWidgetSize } from './actions/ui-actions';
 
 import { openWidget, closeWidget, hideSettings, hideChannelPage } from './services/app';
 import * as authService from './services/auth';
@@ -45,10 +44,11 @@ let initialStoreChange = true;
 let isInitialized = false;
 let unsubscribeFromStore;
 
+// Listen for media query changes from the host page.
 window.addEventListener('message', ({data, origin}) => {
     if (origin === `${location.protocol}//${location.host}`) {
         if (data.type === 'sizeChange') {
-            store.dispatch(updateWidgetSize(data.value));
+            store.dispatch(AppStateActions.updateWidgetSize(data.value));
         }
     }
 }, false);
@@ -334,14 +334,14 @@ export function destroy() {
         unmountComponentAtNode(this._container);
     }
 
-    const {embedded} = store.getState().appState;
+    const {widgetState} = store.getState().appState;
 
     store.dispatch(disconnectFaye());
     const actions = [
         reset()
     ];
 
-    if (embedded) {
+    if (widgetState === WIDGET_STATE.EMBEDDED) {
         // retain the embed mode
         actions.push(AppStateActions.setEmbedded(true));
     } else if (this._container) {

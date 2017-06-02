@@ -13,6 +13,7 @@ import { TypingIndicator } from './typing-indicator';
 import { setShouldScrollToBottom, setFetchingMoreMessages } from '../actions/app-state-actions';
 import { fetchMoreMessages } from '../services/conversation';
 import { getTop, getBoundingRect } from '../utils/dom';
+import { WIDGET_STATE } from '../constants/app';
 import debounce from 'lodash.debounce';
 
 const INTRO_BOTTOM_SPACER = 10;
@@ -335,7 +336,7 @@ export const Conversation = connect(({appState, conversation, ui: {text}, app}) 
     return {
         messages: conversation.messages,
         replyActions: conversation.replyActions,
-        embedded: appState.embedded,
+        embedded: appState.widgetState === WIDGET_STATE.EMBEDDED,
         shouldScrollToBottom: appState.shouldScrollToBottom,
         isFetchingMoreMessages: appState.isFetchingMoreMessages,
         hasMoreMessages: conversation.hasMoreMessages,
