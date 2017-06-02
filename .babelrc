@@ -1,12 +1,25 @@
 {
-  "presets": [
-    "stage-2",
-    "es2015-loose",
-    "react"
-  ],
-  "plugins": [
-    "transform-runtime",
-    "transform-class-properties",
-    ["transform-es2015-classes", {"loose": true}]
-  ]
+  "env": {
+    "host": {
+      "presets": [
+        "env",
+        "stage-2"
+      ],
+      "plugins": [
+        "transform-object-assign"
+      ]
+    },
+    "frame": {
+      "presets": [
+        "env",
+        "stage-2",
+        "react"
+      ],
+      "plugins": [
+        "transform-runtime",
+        "transform-class-properties",
+        "transform-es2015-classes"
+      ]
+    }
+  }
 }

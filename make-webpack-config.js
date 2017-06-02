@@ -27,17 +27,8 @@ module.exports = function(options) {
 
     const fileLimit = options.bundleAll ? 100000 : 1;
 
+
     const rules = {
-        'jsx': options.hotComponents ? ['react-hot-loader', 'babel-loader'] : 'babel-loader',
-        'js': {
-            loader: 'babel-loader',
-            include: [
-                path.resolve(__dirname, 'src/host/js'),
-                path.resolve(__dirname, 'src/frame/js'),
-                path.resolve(__dirname, 'src/shared/js'),
-                path.resolve(__dirname, 'test')
-            ]
-        },
         'png|jpg|jpeg|gif|svg': {
             loader: 'url-loader',
             options: {
@@ -52,8 +43,40 @@ module.exports = function(options) {
         }
     };
 
+    const hostJsRule = {
+        test: /\.jsx?(\?.*)?$/,
+        include: [
+            path.resolve(__dirname, 'src/host/'),
+            path.resolve(__dirname, 'src/shared/')
+        ],
+        use: [
+            {
+                loader: 'babel-loader',
+                options: {
+                    forceEnv: 'host'
+                }
+            }
+        ]
+    };
+
+    const frameJsRule = {
+        test: /\.jsx?(\?.*)?$/,
+        include: [
+            path.resolve(__dirname, 'src/frame/'),
+            path.resolve(__dirname, 'src/shared/')
+        ],
+        use: [
+            {
+                loader: 'babel-loader',
+                options: {
+                    forceEnv: 'frame'
+                }
+            }
+        ]
+    };
+
     const hostStyleRule = {
-        test: /\.(less)(\?.*)?$/,
+        test: /\.less(\?.*)?$/,
         include: [
             path.resolve(__dirname, 'src/host/'),
             path.resolve(__dirname, 'src/shared/')
@@ -76,7 +99,7 @@ module.exports = function(options) {
     };
 
     const frameStyleRule = {
-        test: /\.(less)(\?.*)?$/,
+        test: /\.less(\?.*)?$/,
         include: [
             path.resolve(__dirname, 'src/frame/'),
             path.resolve(__dirname, 'src/shared/')
@@ -185,7 +208,9 @@ module.exports = function(options) {
             rules: rulesByExtension(rules)
                 .concat([
                     hostStyleRule,
-                    frameStyleRule
+                    frameStyleRule,
+                    hostJsRule,
+                    frameJsRule
                 ])
         },
         devtool: options.devtool,
