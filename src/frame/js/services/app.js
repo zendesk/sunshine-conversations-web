@@ -1,7 +1,5 @@
 import * as AppStateActions from '../actions/app-state-actions';
-import { preventMobilePageScroll, allowMobilePageScroll } from '../utils/dom';
 import { resetUnreadCount, connectFayeUser } from './conversation';
-import { fetchTransferRequestCode } from './integrations';
 import { observable } from '../utils/events';
 import { hasLinkableChannels, isChannelLinked } from '../utils/user';
 import { getIntegration } from '../utils/app';
@@ -10,24 +8,22 @@ import { WIDGET_STATE } from '../constants/app';
 
 export function openWidget() {
     return (dispatch, getState) => {
-        const {embedded} = getState().appState;
-        if (!embedded) {
+        const {widgetState} = getState().appState;
+        if (widgetState !== WIDGET_STATE.EMBEDDED) {
             dispatch(AppStateActions.openWidget());
             observable.trigger('widget:opened');
             dispatch(resetUnreadCount());
-            preventMobilePageScroll();
         }
     };
 }
 
 export function closeWidget() {
     return (dispatch, getState) => {
-        const {embedded} = getState().appState;
-        if (!embedded) {
+        const {widgetState} = getState().appState;
+        if (widgetState !== WIDGET_STATE.EMBEDDED) {
             dispatch(AppStateActions.closeWidget());
             observable.trigger('widget:closed');
             dispatch(resetUnreadCount());
-            allowMobilePageScroll();
         }
     };
 }
@@ -35,8 +31,8 @@ export function closeWidget() {
 
 export function toggleWidget() {
     return (dispatch, getState) => {
-        const {embedded, widgetState} = getState().appState;
-        if (!embedded) {
+        const {widgetState} = getState().appState;
+        if (widgetState !== WIDGET_STATE.EMBEDDED) {
             if (widgetState === WIDGET_STATE.OPENED) {
                 return dispatch(closeWidget());
             }
