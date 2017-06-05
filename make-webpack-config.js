@@ -150,11 +150,12 @@ module.exports = function(options) {
         /node_modules[\\\/]/
     ];
 
-    const baseFrameFileame = (options.frameOnly || options.hostOnly) ? `frame.${VERSION}` : 'frame';
+    const baseFrameFilename = (options.frameOnly || options.hostOnly) ? `frame.${VERSION}` : 'frame';
+    const frameFileExtension = options.npmRelease ? '.min.js' : fileExtension;
 
     const plugins = [
         new webpack.DefinePlugin({
-            FRAME_LIB_URL: `'${publicPath}${baseFrameFileame}${fileExtension}'`
+            FRAME_LIB_URL: `'${publicPath}${baseFrameFilename}${frameFileExtension}'`
         })
     ];
 
@@ -225,7 +226,6 @@ module.exports = function(options) {
     return {
         entry: entry,
         output: output,
-        externals: options.npmRelease ? ['enquire.js'] : undefined,
         target: 'web',
         module: {
             rules: rulesByExtension(rules)
