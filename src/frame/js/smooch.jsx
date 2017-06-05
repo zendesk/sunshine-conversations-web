@@ -1,5 +1,5 @@
 import React from 'react';
-import { render as reactRender, unmountComponentAtNode } from 'react-dom';
+import { render as reactRender } from 'react-dom';
 import pick from 'lodash.pick';
 import { batchActions } from 'redux-batched-actions';
 import { Provider } from 'react-redux';
@@ -16,8 +16,6 @@ import { setCurrentLocation } from './actions/browser-actions';
 import { resetConversation } from './actions/conversation-actions';
 import { resetIntegrations } from './actions/integrations-actions';
 import * as AppStateActions from './actions/app-state-actions';
-import { reset } from './actions/common-actions';
-import { updateWidgetSize } from './actions/ui-actions';
 
 import { openWidget, closeWidget, hideSettings, hideChannelPage } from './services/app';
 import * as authService from './services/auth';
@@ -27,7 +25,7 @@ import { sendMessage as _sendMessage, disconnectFaye, handleConversationUpdated 
 import { core } from './services/core';
 
 import { observable, observeStore } from './utils/events';
-import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState } from './utils/dom';
+import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState, updateHostClassNames } from './utils/dom';
 import { isImageUploadSupported } from './utils/media';
 import { playNotificationSound, isAudioSupported } from './utils/sound';
 import { getDeviceId } from './utils/device';
@@ -39,52 +37,27 @@ import { WIDGET_STATE } from './constants/app';
 import { Widget } from './components/widget';
 
 let appToken;
-let _container;
 let lastTriggeredMessageTimestamp = 0;
 let initialStoreChange = true;
 let isInitialized = false;
 let unsubscribeFromStore;
 
+// Listen for media query changes from the host page.
 window.addEventListener('message', ({data, origin}) => {
     if (origin === `${location.protocol}//${location.host}`) {
         if (data.type === 'sizeChange') {
-            store.dispatch(updateWidgetSize(data.value));
+            store.dispatch(AppStateActions.updateWidgetSize(data.value));
         }
     }
 }, false);
 
-function renderWidget(container) {
-    if (container) {
-        reactRender(<Provider store={ store }>
-                        <Widget />
-                    </Provider>, container);
-        return container;
-    } else {
-        const el = document.createElement('div');
-        el.setAttribute('id', 'sk-holder');
-        reactRender(<Provider store={ store }>
-                        <Widget />
-                    </Provider>, el);
-
-        waitForPage().then(() => {
-            document.body.appendChild(el);
-        });
-
-        return el;
-    }
-}
-
-function renderLink() {
-    const el = document.createElement('div');
-
-    render(<a href='https://smooch.io/live-web-chat/?utm_source=widget'>Messaging by smooch.io</a>, el);
-
+function renderWidget() {
     waitForPage().then(() => {
-        document.body.appendChild(el);
-        setTimeout(() => el.className = '', 200);
+        const mount = document.querySelector('#mount');
+        reactRender(<Provider store={ store }>
+                        <Widget />
+                    </Provider>, mount);
     });
-
-    return el;
 }
 
 observable.on('message:sent', (message) => {
@@ -102,7 +75,7 @@ function handleNotificationSound() {
     }
 }
 
-function onStoreChange({messages, unreadCount}) {
+function onStoreChange({conversation: {messages, unreadCount}, widgetState, displayStyle}) {
     if (messages.length > 0) {
         if (unreadCount > 0) {
             // only handle non-user messages
@@ -120,6 +93,8 @@ function onStoreChange({messages, unreadCount}) {
         }
         observable.trigger('unreadCount', unreadCount);
     }
+
+    updateHostClassNames(widgetState, displayStyle);
 }
 
 export function on(...args) {
@@ -138,14 +113,6 @@ export function init(props) {
         soundNotificationEnabled: true,
         ...props
     };
-
-    if (/lebo|awle|pide|obo|rawli/i.test(navigator.userAgent)) {
-        renderLink();
-        observable.trigger('ready');
-        return Promise.resolve();
-    } else if (/PhantomJS/.test(navigator.userAgent) && process.env.NODE_ENV !== 'test') {
-        return Promise.resolve();
-    }
 
     appToken = props.appToken;
 
@@ -181,7 +148,13 @@ export function init(props) {
 
     store.dispatch(batchActions(actions));
 
-    unsubscribeFromStore = observeStore(store, ({conversation}) => conversation, onStoreChange);
+    unsubscribeFromStore = observeStore(store, ({conversation, appState: {widgetState}, app: {settings: {web: {displayStyle}}}}) => {
+        return {
+            conversation,
+            widgetState,
+            displayStyle
+        };
+    }, onStoreChange);
 
     monitorBrowserState(store.dispatch.bind(store));
     return login(props.userId, props.jwt, pick(props, userService.EDITABLE_PROPERTIES));
@@ -279,9 +252,7 @@ export function login(userId = '', jwt, attributes) {
         });
     }).then(() => {
         if (!store.getState().appState.embedded) {
-            if (!_container) {
-                _container = render();
-            }
+            render();
         }
 
         const user = store.getState().user;
@@ -336,38 +307,18 @@ export function getCore() {
 }
 
 export function destroy() {
+    // `destroy()` only need to clean up handlers
+    // the rest will be cleaned up with the iframe removal
+
     if (!isInitialized) {
         return;
     }
-    isInitialized = false;
 
     stopMonitoringBrowserState();
-
-    if (process.env.NODE_ENV !== 'test' && this._container) {
-        unmountComponentAtNode(this._container);
-    }
-
-    const {embedded} = store.getState().appState;
-
-    store.dispatch(disconnectFaye());
-    const actions = [
-        reset()
-    ];
-
-    if (embedded) {
-        // retain the embed mode
-        actions.push(AppStateActions.setEmbedded(true));
-    } else if (this._container) {
-        document.body.removeChild(this._container);
-    }
-
-    store.dispatch(batchActions(actions));
-
     stopMonitoringUrlChanges();
     unsubscribeFromStore();
 
-    appToken = undefined;
-    _container = undefined;
+    store.dispatch(disconnectFaye());
     observable.trigger('destroy');
     observable.off();
 }
@@ -384,7 +335,6 @@ export function isOpened() {
     return store.getState().appState.widgetState === WIDGET_STATE.OPENED;
 }
 
-export function render(container) {
-    _container = container;
-    return renderWidget(container);
+export function render() {
+    return renderWidget();
 }
