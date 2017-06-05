@@ -74,17 +74,15 @@ export class WidgetComponent extends Component {
             `sk-${displayStyle}-display`
         ];
 
-        if (appState.embedded) {
+        if (appState.widgetState === WIDGET_STATE.OPENED) {
+            classNames.push('sk-appear');
+        } else if (appState.widgetState === WIDGET_STATE.CLOSED) {
+            classNames.push('sk-close');
+        } else if (appState.widgetState === WIDGET_STATE.EMBEDDED) {
             classNames.push('sk-embedded');
         } else {
-            if (appState.widgetState === WIDGET_STATE.OPENED) {
-                classNames.push('sk-appear');
-            } else if (appState.widgetState === WIDGET_STATE.CLOSED) {
-                classNames.push('sk-close');
-            } else {
-                // state is WIDGET_STATE.INIT
-                classNames.push('sk-init');
-            }
+            // state is WIDGET_STATE.INIT
+            classNames.push('sk-init');
         }
 
         if (isMobile.apple.device) {
@@ -106,7 +104,7 @@ export class WidgetComponent extends Component {
 
         let messengerButton;
 
-        if (displayStyle === DISPLAY_STYLE.BUTTON && !appState.embedded) {
+        if (displayStyle === DISPLAY_STYLE.BUTTON && appState.widgetState !== WIDGET_STATE.EMBEDDED) {
             messengerButton = <MessengerButton shown={ appState.widgetState !== WIDGET_STATE.OPENED } />;
         }
 
@@ -146,7 +144,7 @@ export class WidgetComponent extends Component {
     }
 }
 
-export const Widget = connect(({appState: {settingsVisible, widgetState, errorNotificationMessage, embedded, showAnimation}, app, ui: {widgetSize}, user}) => {
+export const Widget = connect(({appState: {settingsVisible, widgetState, errorNotificationMessage, showAnimation, widgetSize}, app, user}) => {
     // only extract what is needed from appState as this is something that might
     // mutate a lot
     return {
@@ -154,7 +152,6 @@ export const Widget = connect(({appState: {settingsVisible, widgetState, errorNo
             settingsVisible,
             widgetState,
             errorNotificationMessage,
-            embedded,
             showAnimation
         },
         app,
