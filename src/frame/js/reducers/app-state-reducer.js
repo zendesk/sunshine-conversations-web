@@ -7,12 +7,12 @@ const INITIAL_STATE = {
     settingsVisible: false,
     visibleChannelType: null,
     widgetState: WIDGET_STATE.INIT,
+    widgetSize: 'md',
     settingsEnabled: true,
     soundNotificationEnabled: true,
     imageUploadEnabled: true,
     emailCaptureEnabled: false,
     readOnlyEmail: false,
-    embedded: false,
     serverURL: 'https://api.smooch.io/',
     connectNotificationTimestamp: null,
     errorNotificationMessage: null,
@@ -29,8 +29,10 @@ const INITIAL_STATE = {
 export function AppStateReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case RESET:
+            // keep widget state even on a reset
             return {
-                ...INITIAL_STATE
+                ...INITIAL_STATE,
+                widgetSize: state.widgetSize
             };
         case RESET_CONVERSATION:
             return {
@@ -168,8 +170,8 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
         case AppStateActions.SET_EMBEDDED:
             return {
                 ...state,
-                embedded: action.value,
-                widgetState: action.value ? WIDGET_STATE.OPENED : state.widgetState
+                widgetState: action.value ? WIDGET_STATE.EMBEDDED : WIDGET_STATE.INIT,
+                widgetSize: action.value ? 'embedded' : state.widgetSize
             };
 
         case AppStateActions.SET_INTRO_HEIGHT:
@@ -224,7 +226,11 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             }
 
             return state;
-
+        case AppStateActions.UPDATE_WIDGET_SIZE:
+            return {
+                ...state,
+                widgetSize: action.size
+            };
         default:
             return state;
     }

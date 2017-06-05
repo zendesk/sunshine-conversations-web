@@ -27,6 +27,7 @@ export const SET_FETCHING_MORE_MESSAGES = 'SET_FETCHING_MORE_MESSAGES';
 export const SET_SHOULD_SCROLL_TO_BOTTOM = 'SET_SHOULD_SCROLL_TO_BOTTOM';
 export const SHOW_TYPING_INDICATOR = 'SHOW_TYPING_INDICATOR';
 export const HIDE_TYPING_INDICATOR = 'HIDE_TYPING_INDICATOR';
+export const UPDATE_WIDGET_SIZE = 'UPDATE_WIDGET_SIZE';
 
 export function toggleWidget() {
     return {
@@ -204,5 +205,12 @@ export function showTypingIndicator({avatarUrl, name, timeoutId}) {
 export function hideTypingIndicator() {
     return {
         type: HIDE_TYPING_INDICATOR
+    };
+}
+
+export function updateWidgetSize(size) {
+    return {
+        type: UPDATE_WIDGET_SIZE,
+        size
     };
 }

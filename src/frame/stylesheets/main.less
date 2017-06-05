@@ -3,7 +3,7 @@
 @import "../../shared/stylesheets/bootstrap/normalize.less";
 @import "../../shared/stylesheets/variables.less";
 @import "mixins.less";
-@import "animations.less";
+@import "display.less";
 @import "unread-badge.less";
 @import "messenger-button.less";
 @import "font-awesome.less";
@@ -107,16 +107,24 @@ html, body {
     }
 }
 
-#sk-container.sk-embedded {
+.widget-embedded #sk-container {
     .container();
+    padding: 0;
     height: 100%;
     width: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
     position: absolute;
     #sk-wrapper {
         background: @background-color;
         width: 100%;
         height: 100%;
         position: relative;
+        border-radius: 0;
+        box-shadow: none;
+        border: none;
     }
     #sk-header,
     #sk-settings-header {
