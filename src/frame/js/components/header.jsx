@@ -43,14 +43,14 @@ export class HeaderComponent extends Component {
 
     onClick(e) {
         e.preventDefault();
-        const {dispatch, appState: {embedded}} = this.props;
-        if (!embedded) {
+        const {dispatch, appState: {widgetState}} = this.props;
+        if (widgetState !== WIDGET_STATE.EMBEDDED) {
             dispatch(toggleWidget());
         }
     }
 
     render() {
-        const {appState: {emailCaptureEnabled, settingsVisible, widgetState, embedded, visibleChannelType}, unreadCount, settings, text} = this.props;
+        const {appState: {emailCaptureEnabled, settingsVisible, widgetState, visibleChannelType}, unreadCount, settings, text} = this.props;
         const {settingsHeaderText, headerText} = text;
         const {brandColor} = settings;
 
@@ -71,19 +71,16 @@ export class HeaderComponent extends Component {
             </div>
             ) : null;
 
-        const backButton = widgetOpened && settingsMode ? (
+        const backButton = settingsMode ? (
             <div className='sk-back-handle'
                  onClick={ this.hideSettings }>
                 <i className='fa fa-arrow-left'></i>
             </div>
             ) : null;
 
-        let closeHandle = null;
-        if (!embedded) {
-            closeHandle = widgetOpened ? <div className='sk-close-handle sk-close-hidden'>
-                                             <i className='fa fa-times'></i>
-                                         </div> : null;
-        }
+        let closeHandle = widgetOpened && <div className='sk-close-handle sk-close-hidden'>
+                                              <i className='fa fa-times'></i>
+                                          </div>;
 
         const settingsTextStyle = {
             display: 'inline-block',
@@ -118,13 +115,12 @@ export class HeaderComponent extends Component {
     }
 }
 
-function mapStateToProps({app, ui: {text}, appState: {emailCaptureEnabled, settingsVisible, widgetState, embedded, visibleChannelType}, conversation}) {
+function mapStateToProps({app, ui: {text}, appState: {emailCaptureEnabled, settingsVisible, widgetState, visibleChannelType}, conversation}) {
     return {
         appState: {
             emailCaptureEnabled,
             settingsVisible,
             widgetState,
-            embedded,
             visibleChannelType
         },
         unreadCount: conversation.unreadCount,
