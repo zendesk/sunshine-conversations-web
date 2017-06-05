@@ -3,7 +3,8 @@
     "host": {
       "presets": [
         "env",
-        "stage-2"
+        "stage-2",
+        ["es2015", { "modules": false }]
       ],
       "plugins": [
         "transform-object-assign"
@@ -13,7 +14,8 @@
       "presets": [
         "env",
         "stage-2",
-        "react"
+        "react",
+        ["es2015", { "modules": false }]
       ],
       "plugins": [
         "transform-runtime",

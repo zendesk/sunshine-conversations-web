@@ -26,8 +26,6 @@ module.exports = function(options) {
             publicPath: '/_assets/',
             quiet: false
         }));
-
-        app.use(require('webpack-hot-middleware')(compiler));
     } else {
         // serve the static assets
         app.use('/_assets', express.static(path.join(__dirname, '..', 'dist'), {

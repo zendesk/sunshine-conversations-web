@@ -18,12 +18,22 @@ module.exports = function(options) {
         // do nothing
     }
 
-    const entry = options.assetsOnly ? {
-        assets: './src/frame/js/constants/assets'
-    } : {
-        host: ['./src/host/js/umd'],
-        frame: ['./src/frame/js/utils/polyfills', './src/frame/js/index']
-    };
+    let entry;
+
+    if (options.hostOnly) {
+        entry = {
+            [options.npmRelease ? 'index' : 'smooch']: './src/host/js/umd'
+        };
+    } else if (options.frameOnly) {
+        entry = {
+            frame: './src/frame/js/index'
+        };
+    } else {
+        entry = {
+            host: './src/host/js/umd',
+            frame: './src/frame/js/index'
+        };
+    }
 
     const fileLimit = options.bundleAll ? 100000 : 1;
 
@@ -111,18 +121,28 @@ module.exports = function(options) {
         ]
     };
 
-    const publicPath = options.devServer ?
-        '/_assets/' :
-        'https://cdn.smooch.io/';
+    const publicPath = options.publicPath ?
+        options.publicPath :
+        options.devServer ?
+            '/_assets/' :
+            'https://cdn.smooch.io/';
+
+    const baseFilename = (options.frameOnly || options.hostOnly) && !options.npmRelease ?
+        `[name].${VERSION}` :
+        '[name]';
+
+    const fileExtension = options.minimize ?
+        '.min.js' :
+        '.js';
 
     const output = {
         path: options.outputPath || path.join(__dirname, 'dist'),
-        publicPath: publicPath,
-        filename: '[name].js' + (options.longTermCaching ? '?[chunkhash]' : ''),
-        chunkFilename: (options.devServer ? '[id].js' : '[name].js') + (options.longTermCaching ? '?[chunkhash]' : ''),
+        publicPath,
+        filename: baseFilename + fileExtension,
+        chunkFilename: options.devServer ? '[id].js' : '[name].js',
         sourceMapFilename: '[file].map',
-        library: options.assetsOnly ? undefined : 'Smooch',
-        libraryTarget: options.assetsOnly ? 'commonjs2' : 'var',
+        library: (options.npmRelease || options.frameOnly) ? undefined : 'Smooch',
+        libraryTarget: options.npmRelease ? 'commonjs2' : 'var',
         pathinfo: options.debug
     };
 
@@ -130,12 +150,15 @@ module.exports = function(options) {
         /node_modules[\\\/]/
     ];
 
+    const baseFrameFileame = (options.frameOnly || options.hostOnly) ? `frame.${VERSION}` : 'frame';
+
     const plugins = [
-        new webpack.PrefetchPlugin('react'),
-        new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment')
+        new webpack.DefinePlugin({
+            FRAME_LIB_URL: `'${publicPath}${baseFrameFileame}${fileExtension}'`
+        })
     ];
 
-    if (!options.test && !options.assetsOnly) {
+    if (options.generateStats) {
         plugins.push(new StatsPlugin('stats.json', {
             chunkModules: true,
             exclude: excludeFromStats
@@ -161,15 +184,21 @@ module.exports = function(options) {
                 entryOnly: true
             })
         );
-    } else if (options.test) {
+    } else if (options.npmRelease) {
         plugins.push(
             new webpack.DefinePlugin({
                 'process.env': {
-                    NODE_ENV: JSON.stringify('test')
+                    NODE_ENV: JSON.stringify('production')
                 }
+            }),
+            new webpack.NoEmitOnErrorsPlugin(),
+
+            new webpack.BannerPlugin({
+                banner: PACKAGE_NAME + ' ' + VERSION + ' \n' + LICENSE,
+                entryOnly: true
             })
         );
-    } else if (options.assetsOnly) {
+    } else if (options.test) {
         plugins.push(
             new webpack.DefinePlugin({
                 'process.env': {
@@ -187,13 +216,6 @@ module.exports = function(options) {
         );
     }
 
-    if (options.hotComponents) {
-        plugins.push(
-            new webpack.HotModuleReplacementPlugin(),
-            new webpack.NoEmitOnErrorsPlugin()
-        );
-    }
-
     if (options.debug) {
         plugins.push(new webpack.LoaderOptionsPlugin({
             debug: true
@@ -203,6 +225,7 @@ module.exports = function(options) {
     return {
         entry: entry,
         output: output,
+        externals: options.npmRelease ? ['enquire.js'] : undefined,
         target: 'web',
         module: {
             rules: rulesByExtension(rules)
