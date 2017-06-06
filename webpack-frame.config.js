@@ -1,5 +1,5 @@
 module.exports = require('./make-webpack-config')({
     minimize: true,
-    frameOnly: true,
+    buildType: 'frame',
     devtool: 'source-map'
 });

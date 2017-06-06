@@ -1,7 +1,5 @@
-const path = require('path');
 module.exports = require('./make-webpack-config')({
-    hostOnly: true,
+    buildType: 'npm',
     devtool: 'source-map',
-    npmRelease: true,
-    outputPath: path.join(__dirname, 'lib')
+    npmRelease: true
 });

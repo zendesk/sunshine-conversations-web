@@ -4,12 +4,25 @@ const webpack = require('webpack');
 const StatsPlugin = require('stats-webpack-plugin');
 const rulesByExtension = require('./webpack/lib/rulesByExtension');
 
+// Possible options:
+// buildType : possible values ['npm', 'host', 'frame', 'dev', 'test']
+//  - npm : build in prevision of the npm release
+//  - host : build the host lib only
+//  - frame : build the frame lib only
+//  - dev : build both the frame and the host for the dev server
+//  - test : build for tests
+// publicPath: a way to override the public path (in case of testing on a test CDN)
+// debug : should webpack be in debug mode or not
+// minimize : should the output be minified
+// devtool : webpack devtool options override (sourcemap config)
+// generateStats : should webpack generate a stats.json file for debugging
+
 module.exports = function(options) {
     const VERSION = require('./package.json').version;
     const PACKAGE_NAME = require('./package.json').name;
     const LICENSE = fs.readFileSync('LICENSE', 'utf8');
-
     const config = require('./config/default/config.json');
+    const {buildType} = options;
 
     try {
         Object.assign(config, require('./config/config.json'));
@@ -20,35 +33,38 @@ module.exports = function(options) {
 
     let entry;
 
-    if (options.hostOnly) {
+    if (buildType === 'npm') {
         entry = {
-            [options.npmRelease ? 'index' : 'smooch']: './src/host/js/umd'
+            index: './src/host/js/umd'
         };
-    } else if (options.frameOnly) {
+    } else if (buildType === 'host') {
         entry = {
+            smooch: './src/host/js/umd'
+        };
+    } else if (buildType === 'frame') {
+        entry = {
+            frame: './src/frame/js/index'
+        };
+    } else if (buildType === 'dev' || buildType === 'test') {
+        entry = {
+            smooch: './src/host/js/umd',
             frame: './src/frame/js/index'
         };
     } else {
-        entry = {
-            host: './src/host/js/umd',
-            frame: './src/frame/js/index'
-        };
+        throw new Error('Unknown build type');
     }
-
-    const fileLimit = options.bundleAll ? 100000 : 1;
-
 
     const rules = {
         'png|jpg|jpeg|gif|svg': {
             loader: 'url-loader',
             options: {
-                limit: fileLimit
+                limit: 100000
             }
         },
         'mp3': {
             loader: 'url-loader',
             options: {
-                limit: fileLimit
+                limit: 100000
             }
         }
     };
@@ -123,26 +139,29 @@ module.exports = function(options) {
 
     const publicPath = options.publicPath ?
         options.publicPath :
-        options.devServer ?
+        buildType === 'dev' ?
             '/_assets/' :
             'https://cdn.smooch.io/';
 
-    const baseFilename = (options.frameOnly || options.hostOnly) && !options.npmRelease ?
+    // Only need to append the version if we're building the host lib or the frame lib
+    // in prevision of a release.
+    const baseFilename = ['host', 'frame'].includes(buildType) ?
         `[name].${VERSION}` :
         '[name]';
 
+    // Only use .min.js if we ask for minification
     const fileExtension = options.minimize ?
         '.min.js' :
         '.js';
 
     const output = {
-        path: options.outputPath || path.join(__dirname, 'dist'),
+        path: options.outputPath || path.join(__dirname, buildType === 'npm' ? 'lib' : 'dist'),
         publicPath,
         filename: baseFilename + fileExtension,
-        chunkFilename: options.devServer ? '[id].js' : '[name].js',
+        chunkFilename: buildType === 'dev' ? '[id].js' : '[name].js',
         sourceMapFilename: '[file].map',
-        library: (options.npmRelease || options.frameOnly) ? undefined : 'Smooch',
-        libraryTarget: options.npmRelease ? 'commonjs2' : 'var',
+        library: buildType === 'host' ? 'Smooch' : undefined,
+        libraryTarget: buildType === 'npm' ? 'commonjs2' : 'var',
         pathinfo: options.debug
     };
 
@@ -150,12 +169,25 @@ module.exports = function(options) {
         /node_modules[\\\/]/
     ];
 
-    const baseFrameFilename = (options.frameOnly || options.hostOnly) ? `frame.${VERSION}` : 'frame';
-    const frameFileExtension = options.npmRelease ? '.min.js' : fileExtension;
+
+    // The following variable are about how the frame lib will be referenced in the iframe html.
+    // see `FRAME_LIB_URL` in `src/host/js/smooch.js`.
+    // In host and npm mode, it's referencing a file that should already (or soon to) be on the CDN
+    // so it should target the full name + version.
+    // In other cases, iframe.js will do just fine.
+    let frameLibFilename;
+
+    if (['host', 'npm'].includes(buildType)) {
+        // in this case, it's referencing an already built frame lib
+        // and it's mostly likely minified already.
+        frameLibFilename = `frame.${VERSION}.min.js`;
+    } else {
+        frameLibFilename = 'frame.js';
+    }
 
     const plugins = [
         new webpack.DefinePlugin({
-            FRAME_LIB_URL: `'${publicPath}${baseFrameFilename}${frameFileExtension}'`
+            FRAME_LIB_URL: `'${publicPath}${frameLibFilename}'`
         })
     ];
 
