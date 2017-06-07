@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import StripeCheckout from 'react-stripe-checkout';
+import StripeCheckout from '../lib/react-stripe-checkout';
 import { connect } from 'react-redux';
 import bindAll from 'lodash.bindall';
 
@@ -140,7 +140,8 @@ export class ActionComponent extends Component {
                                        currency={ currency.toUpperCase() }
                                        name={ stripeAccount.appName }
                                        image={ stripeAccount.iconUrl }
-                                       closed={ this.onStripeClose }>
+                                       closed={ this.onStripeClose }
+                                       executionContext={ parent }>
                            <a className='btn btn-sk-primary'
                               onClick={ this.onStripeClick }
                               style={ style }>
