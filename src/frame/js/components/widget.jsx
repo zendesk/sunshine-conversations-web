@@ -5,19 +5,20 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import isMobile from 'ismobilejs';
 
 import { MessengerButton } from './messenger-button';
-import { Header } from './header';
-import { Conversation } from './conversation';
-import { Settings } from './settings';
-import { Channel } from './channels/channel';
-import { ErrorNotification } from './error-notification';
-import { ChatInput } from './chat-input';
-import { MessageIndicator } from './message-indicator';
 
 import { resetUnreadCount } from '../services/conversation';
 import { hasChannels } from '../utils/app';
 import { DISPLAY_STYLE } from '../constants/styles';
 import { WIDGET_STATE } from '../constants/app';
 import { disableAnimation } from '../actions/app-state-actions';
+
+let Header;
+let Conversation;
+let Settings;
+let Channel;
+let ErrorNotification;
+let ChatInput;
+let MessageIndicator;
 
 export class WidgetComponent extends Component {
     static propTypes = {
@@ -26,6 +27,10 @@ export class WidgetComponent extends Component {
         settings: PropTypes.object.isRequired,
         widgetSize: PropTypes.string.isRequired,
         appState: PropTypes.object.isRequired
+    };
+
+    state = {
+        hasComponents: this.hasComponents()
     };
 
     onTouchStart = (e) => {
@@ -50,29 +55,97 @@ export class WidgetComponent extends Component {
         this.props.dispatch(disableAnimation());
     };
 
-    componentDidMount = () => {
+    componentDidMount() {
         window.addEventListener('resize', this.handleResize);
-    };
+    }
 
-    componentWillUnmount = () => {
+    componentWillMount() {
+        if(this.shouldLoadComponents()) {
+            this.loadComponents();
+        }
+    }
+
+    componentWillUpdate(nextProps){
+        if(this.shouldLoadComponents(nextProps)) {
+            this.loadComponents();
+        }
+    }
+
+    componentWillUnmount() {
         window.removeEventListener('resize', this.handleResize);
-    };
+    }
 
-    render() {
-        const {appState, settings, smoochId, widgetSize} = this.props;
+    shouldLoadComponents(props = this.props) {
+        if(this.hasComponents()) {
+            return false;
+        }
+
+        const {appState, settings: {displayStyle}} = props;
+
+        if(displayStyle === DISPLAY_STYLE.TAB || appState.widgetState === WIDGET_STATE.EMBEDDED) {
+            return true;
+        }
+
+        if(displayStyle === DISPLAY_STYLE.BUTTON && appState.widgetState === WIDGET_STATE.OPENED) {
+            return true;
+        }
+
+        return false;
+    }
+
+    hasComponents() {
+        return Header && Conversation && Settings && Channel && ErrorNotification && ChatInput && MessageIndicator;
+    }
+
+    loadComponents() {
+        Promise.all([
+            import('./header'),
+            import('./conversation'),
+            import('./settings'),
+            import('./channels/channel'),
+            import('./error-notification'),
+            import('./chat-input'),
+            import('./message-indicator')
+        ]).then(([
+            HeaderModule,
+            ConversationModule,
+            SettingsModule,
+            ChannelModule,
+            ErrorNotificationModule,
+            ChatInputModule,
+            MessageIndicatorModule
+        ]) => {
+            Header = HeaderModule.Header;
+            Conversation = ConversationModule.Conversation;
+            Settings = SettingsModule.Settings;
+            Channel = ChannelModule.Channel;
+            ErrorNotification = ErrorNotificationModule.ErrorNotification;
+            ChatInput = ChatInputModule.ChatInput;
+            MessageIndicator = MessageIndicatorModule.MessageIndicator;
+
+            this.setState({hasComponents: true});
+        });
+    }
+
+    renderContent() {
+        const {appState, settings, smoochId} = this.props;
         const {displayStyle, isBrandColorDark, isAccentColorDark, isLinkColorDark} = settings;
 
-        const settingsComponent = appState.settingsVisible ? <Settings /> : null;
+        const settingsComponent = appState.settingsVisible
+            ? <Settings/>
+            : null;
 
         // if no user set in store or the app has no channels,
         // no need to render the channel page manager
-        const channelsComponent = smoochId && hasChannels(settings) ? <Channel /> : null;
+        const channelsComponent = smoochId && hasChannels(settings)
+            ? <Channel/>
+            : null;
 
-        const footer = appState.settingsVisible ? null : <ChatInput ref='input' />;
+        const footer = appState.settingsVisible
+            ? null
+            : <ChatInput ref='input' />;
 
-        const classNames = [
-            `sk-${displayStyle}-display`
-        ];
+        const classNames = [`sk-${displayStyle}-display`];
 
         if (appState.widgetState === WIDGET_STATE.OPENED) {
             classNames.push('sk-appear');
@@ -93,14 +166,58 @@ export class WidgetComponent extends Component {
             classNames.push('sk-animation');
         }
 
-        const notification = appState.errorNotificationMessage ?
-            <ErrorNotification message={ appState.errorNotificationMessage } /> : null;
+        const notification = appState.errorNotificationMessage
+            ? <ErrorNotification message={ appState.errorNotificationMessage } />
+            : null;
 
         const wrapperClassNames = [
-            `sk-branding-color-${isBrandColorDark ? 'dark' : 'light'}`,
-            `sk-accent-color-${isAccentColorDark ? 'dark' : 'light'}`,
-            `sk-link-color-${isLinkColorDark ? 'dark' : 'light'}`
+            `sk-branding-color-${isBrandColorDark
+                ? 'dark'
+                : 'light'}`,
+            `sk-accent-color-${isAccentColorDark
+                ? 'dark'
+                : 'light'}`,
+            `sk-link-color-${isLinkColorDark
+                ? 'dark'
+                : 'light'}`
         ];
+
+        return <div id='sk-container'
+                    className={ classNames.join(' ') }
+                    onTouchStart={ this.onTouchStart }
+                    onClick={ this.onClick }>
+                   <MessageIndicator/>
+                   <div id='sk-wrapper'
+                        className={ wrapperClassNames.join(' ') }>
+                       <Header/>
+                       <ReactCSSTransitionGroup component='div'
+                                                className='sk-notification-container'
+                                                transitionName='sk-notification'
+                                                transitionAppear={ true }
+                                                transitionAppearTimeout={ 500 }
+                                                transitionEnterTimeout={ 500 }
+                                                transitionLeaveTimeout={ 500 }>
+                           { notification }
+                       </ReactCSSTransitionGroup>
+                       <ReactCSSTransitionGroup component='div'
+                                                transitionName='settings'
+                                                transitionAppear={ true }
+                                                transitionAppearTimeout={ 250 }
+                                                transitionEnterTimeout={ 250 }
+                                                transitionLeaveTimeout={ 250 }>
+                           { settingsComponent }
+                       </ReactCSSTransitionGroup>
+                       { channelsComponent }
+                       <Conversation/>
+                       { footer }
+                   </div>
+               </div>;
+    }
+
+    render() {
+        const {appState, widgetSize, settings} = this.props;
+        const {displayStyle} = settings;
+        const {hasComponents} = this.state;
 
         let messengerButton;
 
@@ -109,36 +226,7 @@ export class WidgetComponent extends Component {
         }
 
         return <div className={ `widget-${widgetSize}` }>
-                   <div id='sk-container'
-                        className={ classNames.join(' ') }
-                        onTouchStart={ this.onTouchStart }
-                        onClick={ this.onClick }>
-                       <MessageIndicator />
-                       <div id='sk-wrapper'
-                            className={ wrapperClassNames.join(' ') }>
-                           <Header />
-                           <ReactCSSTransitionGroup component='div'
-                                                    className='sk-notification-container'
-                                                    transitionName='sk-notification'
-                                                    transitionAppear={ true }
-                                                    transitionAppearTimeout={ 500 }
-                                                    transitionEnterTimeout={ 500 }
-                                                    transitionLeaveTimeout={ 500 }>
-                               { notification }
-                           </ReactCSSTransitionGroup>
-                           <ReactCSSTransitionGroup component='div'
-                                                    transitionName='settings'
-                                                    transitionAppear={ true }
-                                                    transitionAppearTimeout={ 250 }
-                                                    transitionEnterTimeout={ 250 }
-                                                    transitionLeaveTimeout={ 250 }>
-                               { settingsComponent }
-                           </ReactCSSTransitionGroup>
-                           { channelsComponent }
-                           <Conversation />
-                           { footer }
-                       </div>
-                   </div>
+                   { hasComponents && this.renderContent() }
                    { messengerButton }
                </div>;
     }

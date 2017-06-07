@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
-import bindAll from 'lodash.bindall';
 
 import { uploadImage } from '../services/conversation';
 import { preventDefault } from '../utils/events';
+import { bindAll } from '../utils/functions';
 
 export class ImageUploadComponent extends Component {
     state = {

@@ -1,12 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import isMobile from 'ismobilejs';
-import bindAll from 'lodash.bindall';
 
 import { sendMessage, resetUnreadCount } from '../services/conversation';
 
 import { ImageUpload } from './image-upload';
 
+import { bindAll } from '../utils/functions';
 
 
 export class ChatInputComponent extends Component {

@@ -163,7 +163,7 @@ module.exports = function(options) {
         path: options.outputPath || path.join(__dirname, buildType === 'npm' ? 'lib' : 'dist'),
         publicPath,
         filename: baseFilename + fileExtension,
-        chunkFilename: buildType === 'dev' ? '[id].js' : '[name].js',
+        chunkFilename: buildType === 'dev' ? '[id].js' : '[chunkhash].js',
         sourceMapFilename: '[file].map',
         library: buildType === 'host' ? 'Smooch' : undefined,
         libraryTarget: buildType === 'npm' ? 'commonjs2' : 'var',
@@ -190,7 +190,7 @@ module.exports = function(options) {
         frameCssFilename = `frame.${VERSION}.css`;
     } else {
         frameJsFilename = 'frame.js';
-        frameCssFilename = `frame.css`;
+        frameCssFilename = 'frame.css';
     }
 
     const plugins = [
@@ -203,7 +203,7 @@ module.exports = function(options) {
     if (buildType === 'frame') {
         plugins.push(new ExtractTextPlugin(`frame.${VERSION}.css`));
     } else {
-        plugins.push(new ExtractTextPlugin(`frame.css`));
+        plugins.push(new ExtractTextPlugin('frame.css'));
     }
 
     if (options.generateStats) {
