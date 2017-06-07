@@ -282,11 +282,10 @@ module.exports = function(options) {
         );
     }
 
-    if (options.debug) {
-        plugins.push(new webpack.LoaderOptionsPlugin({
-            debug: true
-        }));
-    }
+    plugins.push(new webpack.LoaderOptionsPlugin({
+        debug: !!options.debug,
+        minimize: !!options.minimize
+    }));
 
     return {
         entry: entry,
