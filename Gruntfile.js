@@ -16,7 +16,6 @@ module.exports = function(grunt) {
         awsConfig.key = (process.env.AWS_ACCESS_KEY_ID || awsConfig.key);
         awsConfig.secret = (process.env.AWS_SECRET_ACCESS_KEY || awsConfig.secret);
         awsConfig.bucket = (process.env.SK_JS_S3_BUCKET || awsConfig.bucket);
-        awsConfig.distributionId = (process.env.SK_JS_S3_DISTRIBUTION_ID || awsConfig.distributionId);
         awsConfig.region = (process.env.SK_JS_S3_REGION || awsConfig.region);
 
         grunt.config.set('aws', awsConfig);
@@ -40,47 +39,10 @@ module.exports = function(grunt) {
                     'Cache-Control': 'max-age=630720000, public'
                 }
             },
-            js: {
-                // Files to be uploaded.
-                upload: [{
-                    src: 'dist/smooch.js',
-                    dest: 'smooch.min.js',
-                    options: {
-                        headers: {
-                            'Cache-Control': 'max-age=300, public'
-                        }
-                    }
-                }]
-            },
-            media: {
-                upload: [{
-                    src: 'dist/*.mp3',
-                    dest: '/'
-                }, {
-                    src: 'dist/*.png',
-                    dest: '/'
-                }]
-            }
-        },
-
-        cloudfront: {
-            options: {
-                region: '<%= aws.region %>',
-                distributionId: '<%= aws.distributionId %>',
-                credentials: {
-                    accessKeyId: '<%= aws.key %>',
-                    secretAccessKey: '<%= aws.secret %>'
-                },
-                listInvalidations: false,
-                listDistributions: false
-            },
-            production: {
-                CallerReference: Date.now().toString(),
-                Paths: {
-                    Quantity: 1,
-                    Items: ['/smooch.min.js']
-                }
-            }
+            upload: [{
+                src: 'dist/*',
+                dest: '/'
+            }]
         },
 
         concurrent: {
@@ -136,7 +98,7 @@ module.exports = function(grunt) {
                 }
             },
             addDist: {
-                cmd: 'git add --force dist/smooch.js'
+                cmd: 'git add --force dist/'
             },
             addLib: {
                 cmd: 'git add --force lib/'
@@ -149,12 +111,6 @@ module.exports = function(grunt) {
             },
             buildNpm: {
                 cmd: 'npm run build:npm'
-            },
-            hotDevServer: {
-                cmd: 'npm run hot-dev-server'
-            },
-            devServer: {
-                cmd: 'npm run start-dev'
             }
         },
 
@@ -249,10 +205,8 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('build', ['clean', 'exec:build', 'exec:buildNpm']);
-    grunt.registerTask('dev', ['concurrent:dev']);
 
-    grunt.registerTask('deploy', ['build', 'awsconfig', 's3:js', 's3:media', 'cloudfront:production']);
-    grunt.registerTask('default', ['dev']);
+    grunt.registerTask('deploy', ['build', 'awsconfig', 's3']);
 
     grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist', 'exec:addLib']);
     grunt.registerTask('publish:release', ['release']);
