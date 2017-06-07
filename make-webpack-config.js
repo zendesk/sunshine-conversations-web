@@ -2,6 +2,10 @@ const path = require('path');
 const fs = require('fs');
 const webpack = require('webpack');
 const StatsPlugin = require('stats-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+
+
 const rulesByExtension = require('./webpack/lib/rulesByExtension');
 
 // Possible options:
@@ -130,11 +134,12 @@ module.exports = function(options) {
             path.resolve(__dirname, 'src/frame/'),
             path.resolve(__dirname, 'src/shared/')
         ],
-        use: [
-            'style-loader',
-            'css-loader',
-            'less-loader'
-        ]
+        use: ExtractTextPlugin.extract({
+            use: [
+                'css-loader',
+                'less-loader'
+            ]
+        })
     };
 
     const publicPath = options.publicPath ?
@@ -170,26 +175,36 @@ module.exports = function(options) {
     ];
 
 
-    // The following variable are about how the frame lib will be referenced in the iframe html.
-    // see `FRAME_LIB_URL` in `src/host/js/smooch.js`.
-    // In host and npm mode, it's referencing a file that should already (or soon to) be on the CDN
+    // The following variables are about how the frame files will be referenced in the iframe html.
+    // see `FRAME_JS_URL` and `FRAME_CSS_URL` in `src/host/js/smooch.js`.
+    // In host and npm mode, it's referencing files that should already (or soon to) be on the CDN
     // so it should target the full name + version.
-    // In other cases, iframe.js will do just fine.
-    let frameLibFilename;
+    // In other cases, iframe.js/css will do just fine.
+    let frameJsFilename;
+    let frameCssFilename;
 
     if (['host', 'npm'].includes(buildType)) {
         // in this case, it's referencing an already built frame lib
         // and it's mostly likely minified already.
-        frameLibFilename = `frame.${VERSION}.min.js`;
+        frameJsFilename = `frame.${VERSION}.min.js`;
+        frameCssFilename = `frame.${VERSION}.css`;
     } else {
-        frameLibFilename = 'frame.js';
+        frameJsFilename = 'frame.js';
+        frameCssFilename = `frame.css`;
     }
 
     const plugins = [
         new webpack.DefinePlugin({
-            FRAME_LIB_URL: `'${publicPath}${frameLibFilename}'`
+            FRAME_JS_URL: `'${publicPath}${frameJsFilename}'`,
+            FRAME_CSS_URL: `'${publicPath}${frameCssFilename}'`
         })
     ];
+
+    if (buildType === 'frame') {
+        plugins.push(new ExtractTextPlugin(`frame.${VERSION}.css`));
+    } else {
+        plugins.push(new ExtractTextPlugin(`frame.css`));
+    }
 
     if (options.generateStats) {
         plugins.push(new StatsPlugin('stats.json', {
@@ -215,6 +230,24 @@ module.exports = function(options) {
             new webpack.BannerPlugin({
                 banner: PACKAGE_NAME + ' ' + VERSION + ' \n' + LICENSE,
                 entryOnly: true
+            }),
+            new OptimizeCssAssetsPlugin({
+                assetNameRegExp: /\.css$/g,
+                cssProcessor: require('cssnano'),
+                cssProcessorOptions: {
+                    preset: [
+                        'default',
+                        {
+                            discardComments: {
+                                removeAll: true
+                            },
+                            discardDuplicates: {
+                                removeAll: true
+                            }
+                        }
+                    ]
+                },
+                canPrint: false
             })
         );
     } else if (buildType === 'npm') {
