@@ -6,7 +6,6 @@ module.exports = function(options) {
     // require the page rendering logic
     const Renderer = require('./SimpleRenderer.js');
 
-
     const config = require('../config/default/config.json');
 
     try {
@@ -26,8 +25,6 @@ module.exports = function(options) {
             publicPath: '/_assets/',
             quiet: false
         }));
-
-        app.use(require('webpack-hot-middleware')(compiler));
     } else {
         // serve the static assets
         app.use('/_assets', express.static(path.join(__dirname, '..', 'dist'), {
@@ -38,7 +35,7 @@ module.exports = function(options) {
 
     app.get('/embedded', function(req, res) {
         const renderer = new Renderer({
-            scriptUrl: '/_assets/host.js',
+            scriptUrl: '/_assets/smooch.js',
             data: config,
             embedded: true
         });
@@ -60,7 +57,7 @@ module.exports = function(options) {
     // application
     app.get('/*', function(req, res) {
         const renderer = new Renderer({
-            scriptUrl: '/_assets/host.js',
+            scriptUrl: '/_assets/smooch.js',
             data: config
         });
 
