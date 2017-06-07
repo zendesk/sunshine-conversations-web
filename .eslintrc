@@ -37,7 +37,8 @@
         "browser": true
     },
     "globals": {
-        "VERSION": true
+        "VERSION": true,
+        "FRAME_LIB_URL": true
     },
     "plugins": [
         "react",
