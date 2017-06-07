@@ -58,13 +58,13 @@ module.exports = function(options) {
         'png|jpg|jpeg|gif|svg': {
             loader: 'url-loader',
             options: {
-                limit: 100000
+                limit: 1
             }
         },
         'mp3': {
             loader: 'url-loader',
             options: {
-                limit: 100000
+                limit: 1
             }
         }
     };
