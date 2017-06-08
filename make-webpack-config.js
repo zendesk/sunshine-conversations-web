@@ -198,7 +198,7 @@ module.exports = function(options) {
             VERSION: `'${VERSION}'`,
             FRAME_JS_URL: `'${publicPath}${frameJsFilename}'`,
             FRAME_CSS_URL: `'${publicPath}${frameCssFilename}'`,
-            SENTRY_DSN: `'${options.sentryDsn}'` || 'undefined'
+            SENTRY_DSN: options.sentryDsn ? `'${options.sentryDsn}'` : 'undefined'
         })
     ];
 

@@ -3,6 +3,7 @@ import { render as reactRender } from 'react-dom';
 import pick from 'lodash.pick';
 import { batchActions } from 'redux-batched-actions';
 import { Provider } from 'react-redux';
+import Raven from 'raven-js';
 
 import '../stylesheets/main.less';
 
@@ -215,6 +216,14 @@ export function login(userId = '', jwt, attributes) {
             }
         }
     })).then((loginResponse) => {
+        Raven.setUserContext({
+            id: loginResponse.appUser.userId || loginResponse.appUser._id
+        });
+
+        Raven.setExtraContext({
+            appToken
+        });
+
         const actions = [];
         actions.push(userActions.setUser(loginResponse.appUser));
         actions.push(setApp(loginResponse.app));
