@@ -31,7 +31,6 @@ import { playNotificationSound, isAudioSupported } from './utils/sound';
 import { getDeviceId } from './utils/device';
 import { getIntegration, hasChannels } from './utils/app';
 
-import { VERSION } from '../../shared/js/constants/version';
 import { WIDGET_STATE } from './constants/app';
 
 import { Widget } from './components/widget';
