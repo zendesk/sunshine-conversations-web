@@ -31,7 +31,8 @@
     "build:npm": "rm -rf lib && webpack --config webpack-host-npm.config.js --progress --profile --colors",
     "start": "node dev-server/server-production",
     "lint": "eslint . --ext=js --ext=jsx",
-    "dev": "nodemon --watch dev-server/ --watch src/index.html --watch src/embedded.html --watch config/config.json dev-server/server-development"
+    "dev": "nodemon --watch dev-server/ --watch src/index.html --watch src/embedded.html --watch config/config.json dev-server/server-development",
+    "sentry-cli": "sentry-cli"
   },
   "main": "lib/index.js",
   "homepage": "https://smooch.io",
@@ -127,6 +128,7 @@
     "redux-mock-store": "1.0.2",
     "redux-thunk": "2.1.0",
     "semver": "4.3.6",
+    "sentry-cli-binary": "1.13.3",
     "sinon": "2.0.0-pre",
     "sinon-as-promised": "4.0.0",
     "sinon-chai": "2.7.0",
