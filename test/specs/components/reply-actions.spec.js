@@ -3,9 +3,9 @@ import TestUtils from 'react-addons-test-utils';
 
 import { createMockedStore } from '../../utils/redux';
 import { wrapComponentWithStore } from '../../utils/react';
-import { ReplyActions } from '../../../src/js/components/reply-actions';
+import { ReplyActions } from '../../../src/frame/js/components/reply-actions';
 
-const conversationService = require('../../../src/js/services/conversation');
+const conversationService = require('../../../src/frame/js/services/conversation');
 
 
 describe('ReplyActions Component', () => {

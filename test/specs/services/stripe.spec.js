@@ -3,8 +3,8 @@ import sinon from 'sinon';
 import { createMock } from '../../mocks/core';
 import { createMockedStore } from '../../utils/redux';
 
-import * as coreService from '../../../src/js/services/core';
-import { createTransaction, getAccount } from '../../../src/js/services/stripe';
+import * as coreService from '../../../src/frame/js/services/core';
+import { createTransaction, getAccount } from '../../../src/frame/js/services/stripe';
 
 describe('Stripe service', () => {
     var sandbox;

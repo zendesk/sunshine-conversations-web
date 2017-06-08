@@ -1,9 +1,9 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
-import { AlternateChannels } from '../../../src/js/components/alternate-channels';
-import { getAppChannelDetails } from '../../../src/js/utils/app';
-import * as appService from '../../../src/js/services/app';
+import { AlternateChannels } from '../../../src/frame/js/components/alternate-channels';
+import { getAppChannelDetails } from '../../../src/frame/js/utils/app';
+import * as appService from '../../../src/frame/js/services/app';
 
 import { wrapComponentWithStore } from '../../utils/react';
 import { createMockedStore } from '../../utils/redux';

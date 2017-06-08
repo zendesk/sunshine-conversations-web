@@ -3,22 +3,22 @@ import sinon from 'sinon';
 import { createMock } from '../../mocks/core';
 import { createMockedStore } from '../../utils/redux';
 
-import * as utilsDevice from '../../../src/js/utils/device';
-import * as utilsMedia from '../../../src/js/utils/media';
-import * as utilsUser from '../../../src/js/utils/user';
-import * as utilsDom from '../../../src/js/utils/dom';
-import * as conversationService from '../../../src/js/services/conversation';
-import * as coreService from '../../../src/js/services/core';
-import * as userService from '../../../src/js/services/user';
-import * as appService from '../../../src/js/services/app';
-import * as fayeService from '../../../src/js/services/faye';
-import * as appStateActions from '../../../src/js/actions/app-state-actions';
-import * as conversationActions from '../../../src/js/actions/conversation-actions';
-import * as userActions from '../../../src/js/actions/user-actions';
-import * as fayeActions from '../../../src/js/actions/faye-actions';
-import { Throttle } from '../../../src/js/utils/throttle';
+import * as utilsDevice from '../../../src/frame/js/utils/device';
+import * as utilsMedia from '../../../src/frame/js/utils/media';
+import * as utilsUser from '../../../src/frame/js/utils/user';
+import * as utilsDom from '../../../src/frame/js/utils/dom';
+import * as conversationService from '../../../src/frame/js/services/conversation';
+import * as coreService from '../../../src/frame/js/services/core';
+import * as userService from '../../../src/frame/js/services/user';
+import * as appService from '../../../src/frame/js/services/app';
+import * as fayeService from '../../../src/frame/js/services/faye';
+import * as appStateActions from '../../../src/frame/js/actions/app-state-actions';
+import * as conversationActions from '../../../src/frame/js/actions/conversation-actions';
+import * as userActions from '../../../src/frame/js/actions/user-actions';
+import * as fayeActions from '../../../src/frame/js/actions/faye-actions';
+import { Throttle } from '../../../src/frame/js/utils/throttle';
 
-import { SEND_STATUS, LOCATION_ERRORS } from '../../../src/js/constants/message';
+import { SEND_STATUS, LOCATION_ERRORS } from '../../../src/frame/js/constants/message';
 
 function getProps(props = {}) {
     const defaultProps = {

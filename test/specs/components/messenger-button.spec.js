@@ -2,8 +2,8 @@ import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
 
-import { MessengerButton } from '../../../src/js/components/messenger-button';
-import { DefaultButtonIconComponent } from '../../../src/js/components/default-button-icon';
+import { MessengerButton } from '../../../src/frame/js/components/messenger-button';
+import { DefaultButtonIconComponent } from '../../../src/frame/js/components/default-button-icon';
 
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 import { createMockedStore } from '../../utils/redux';

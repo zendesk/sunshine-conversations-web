@@ -5,18 +5,18 @@ import deepAssign from 'deep-assign';
 import { mockComponent, findRenderedDOMComponentsWithId, wrapComponentWithStore } from '../../utils/react';
 import { createMockedStore } from '../../utils/redux';
 
-import { Header } from '../../../src/js/components/header';
-import { Settings } from '../../../src/js/components/settings';
-import { Conversation } from '../../../src/js/components/conversation';
-import { ChatInput } from '../../../src/js/components/chat-input';
-import { ErrorNotification } from '../../../src/js/components/error-notification';
-import { Widget } from '../../../src/js/components/widget';
-import { Channel } from '../../../src/js/components/channels/channel';
-import { MessengerButton } from '../../../src/js/components/messenger-button';
-import { MessageIndicator } from '../../../src/js/components/message-indicator';
+import { Header } from '../../../src/frame/js/components/header';
+import { Settings } from '../../../src/frame/js/components/settings';
+import { Conversation } from '../../../src/frame/js/components/conversation';
+import { ChatInput } from '../../../src/frame/js/components/chat-input';
+import { ErrorNotification } from '../../../src/frame/js/components/error-notification';
+import { Widget } from '../../../src/frame/js/components/widget';
+import { Channel } from '../../../src/frame/js/components/channels/channel';
+import { MessengerButton } from '../../../src/frame/js/components/messenger-button';
+import { MessageIndicator } from '../../../src/frame/js/components/message-indicator';
 
-import * as appUtils from '../../../src/js/utils/app';
-import { WIDGET_STATE } from '../../../src/js/constants/app';
+import * as appUtils from '../../../src/frame/js/utils/app';
+import { WIDGET_STATE } from '../../../src/frame/js/constants/app';
 
 function getStoreState(state = {}) {
     const defaultState = {

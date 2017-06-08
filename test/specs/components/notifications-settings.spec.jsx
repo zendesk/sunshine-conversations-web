@@ -2,14 +2,14 @@ import sinon from 'sinon';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
-import { NotificationChannelItem } from '../../../src/js/components/notification-channel-item';
-import { NotificationsSettings } from '../../../src/js/components/notifications-settings';
-import { CHANNEL_DETAILS } from '../../../src/js/constants/channels';
+import { NotificationChannelItem } from '../../../src/frame/js/components/notification-channel-item';
+import { NotificationsSettings } from '../../../src/frame/js/components/notifications-settings';
+import { CHANNEL_DETAILS } from '../../../src/frame/js/constants/channels';
 
 import { createMockedStore } from '../../utils/redux';
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
-import * as appUtils from '../../../src/js/utils/app';
+import * as appUtils from '../../../src/frame/js/utils/app';
 
 const sandbox = sinon.sandbox.create();
 

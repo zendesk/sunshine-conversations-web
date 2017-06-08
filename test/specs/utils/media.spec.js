@@ -1,4 +1,4 @@
-import { isFileTypeSupported } from '../../../src/js/utils/media';
+import { isFileTypeSupported } from '../../../src/frame/js/utils/media';
 
 describe('isFileTypeSupported', () => {
     it('should be true for supported types', () => {

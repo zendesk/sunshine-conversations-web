@@ -3,10 +3,10 @@ import sinon from 'sinon';
 import { createMock } from '../../mocks/core';
 import { createMockedStore } from '../../utils/redux';
 
-import { Throttle } from '../../../src/js/utils/throttle';
-import * as coreService from '../../../src/js/services/core';
-import * as integrationsService from '../../../src/js/services/integrations';
-import * as utilsFaye from '../../../src/js/services/faye';
+import { Throttle } from '../../../src/frame/js/utils/throttle';
+import * as coreService from '../../../src/frame/js/services/core';
+import * as integrationsService from '../../../src/frame/js/services/integrations';
+import * as utilsFaye from '../../../src/frame/js/services/faye';
 
 const sandbox = sinon.sandbox.create();
 

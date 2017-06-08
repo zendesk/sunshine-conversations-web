@@ -4,9 +4,9 @@ import TestUtils from 'react-addons-test-utils';
 import { createMockedStore } from '../../utils/redux';
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
-import { ChatInput, ChatInputComponent } from '../../../src/js/components/chat-input';
-import { ImageUpload } from '../../../src/js/components/image-upload';
-const conversationService = require('../../../src/js/services/conversation');
+import { ChatInput, ChatInputComponent } from '../../../src/frame/js/components/chat-input';
+import { ImageUpload } from '../../../src/frame/js/components/image-upload';
+const conversationService = require('../../../src/frame/js/services/conversation');
 
 const sandbox = sinon.sandbox.create();
 

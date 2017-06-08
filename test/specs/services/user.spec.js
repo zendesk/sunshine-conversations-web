@@ -3,10 +3,10 @@ import sinon from 'sinon';
 import { createMock } from '../../mocks/core';
 import { createMockedStore } from '../../utils/redux';
 
-import * as coreService from '../../../src/js/services/core';
-import * as userService from '../../../src/js/services/user';
-import * as conversationService from '../../../src/js/services/conversation';
-import * as userActions from '../../../src/js/actions/user-actions';
+import * as coreService from '../../../src/frame/js/services/core';
+import * as userService from '../../../src/frame/js/services/user';
+import * as conversationService from '../../../src/frame/js/services/conversation';
+import * as userActions from '../../../src/frame/js/actions/user-actions';
 
 describe('User service', () => {
     let sandbox;

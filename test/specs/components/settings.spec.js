@@ -1,10 +1,10 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
-import { Settings } from '../../../src/js/components/settings';
-import { NotificationsSettings } from '../../../src/js/components/notifications-settings';
-import { EmailSettings } from '../../../src/js/components/email-settings';
-import * as appUtils from '../../../src/js/utils/app';
+import { Settings } from '../../../src/frame/js/components/settings';
+import { NotificationsSettings } from '../../../src/frame/js/components/notifications-settings';
+import { EmailSettings } from '../../../src/frame/js/components/email-settings';
+import * as appUtils from '../../../src/frame/js/utils/app';
 
 import { createMockedStore } from '../../utils/redux';
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';

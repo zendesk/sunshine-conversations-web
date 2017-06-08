@@ -1,5 +1,5 @@
-import { AppStateReducer } from '../../../src/js/reducers/app-state-reducer';
-import { TOGGLE_WIDGET, OPEN_WIDGET, CLOSE_WIDGET, DISABLE_ANIMATION, SET_FETCHING_MORE_MESSAGES, SET_SHOULD_SCROLL_TO_BOTTOM } from '../../../src/js/actions/app-state-actions';
+import { AppStateReducer } from '../../../src/frame/js/reducers/app-state-reducer';
+import { TOGGLE_WIDGET, OPEN_WIDGET, CLOSE_WIDGET, DISABLE_ANIMATION, SET_FETCHING_MORE_MESSAGES, SET_SHOULD_SCROLL_TO_BOTTOM } from '../../../src/frame/js/actions/app-state-actions';
 
 const INITIAL_STATE = AppStateReducer(undefined, {});
 

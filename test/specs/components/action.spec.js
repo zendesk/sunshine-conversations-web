@@ -7,13 +7,13 @@ import StripeCheckout from 'react-stripe-checkout';
 import { createMockedStore } from '../../utils/redux';
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
-import { Action } from '../../../src/js/components/action.jsx';
-import { Loading } from '../../../src/js/components/loading.jsx';
+import { Action } from '../../../src/frame/js/components/action.jsx';
+import { Loading } from '../../../src/frame/js/components/loading.jsx';
 
-import * as stripeService from '../../../src/js/services/stripe';
-import * as userService from '../../../src/js/services/user';
-import * as conversationService from '../../../src/js/services/conversation';
-import * as appUtils from '../../../src/js/utils/app';
+import * as stripeService from '../../../src/frame/js/services/stripe';
+import * as userService from '../../../src/frame/js/services/user';
+import * as conversationService from '../../../src/frame/js/services/conversation';
+import * as appUtils from '../../../src/frame/js/utils/app';
 
 const sandbox = sinon.sandbox.create();
 

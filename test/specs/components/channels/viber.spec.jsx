@@ -2,8 +2,8 @@ import sinon from 'sinon';
 import isMobile from 'ismobilejs';
 import TestUtils from 'react-addons-test-utils';
 
-import { ViberChannelContent } from '../../../../src/js/components/channels/viber-channel-content';
-import { Loading } from '../../../../src/js/components/loading';
+import { ViberChannelContent } from '../../../../src/frame/js/components/channels/viber-channel-content';
+import { Loading } from '../../../../src/frame/js/components/loading';
 
 import { wrapComponentWithStore } from '../../../utils/react';
 import { createMockedStore, generateBaseStoreProps } from '../../../utils/redux';

@@ -2,8 +2,8 @@ import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
 
-import { EmailSettings, EmailSettingsComponent } from '../../../src/js/components/email-settings';
-import * as userService from '../../../src/js/services/user';
+import { EmailSettings, EmailSettingsComponent } from '../../../src/frame/js/components/email-settings';
+import * as userService from '../../../src/frame/js/services/user';
 
 import { createMockedStore } from '../../utils/redux';
 import { wrapComponentWithStore } from '../../utils/react';

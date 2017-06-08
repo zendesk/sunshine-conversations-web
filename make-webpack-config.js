@@ -93,7 +93,8 @@ module.exports = function(options) {
         test: /\.jsx?(\?.*)?$/,
         include: [
             path.resolve(__dirname, 'src/frame/'),
-            path.resolve(__dirname, 'src/shared/')
+            path.resolve(__dirname, 'src/shared/'),
+            path.resolve(__dirname, 'test')
         ],
         use: [
             {

@@ -1,10 +1,10 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
-import { ChannelPage } from '../../../../src/js/components/channels/channel-page';
-import { Channel } from '../../../../src/js/components/channels/channel';
-import { CHANNEL_DETAILS } from '../../../../src/js/constants/channels';
-import * as appUtils from '../../../../src/js/utils/app';
+import { ChannelPage } from '../../../../src/frame/js/components/channels/channel-page';
+import { Channel } from '../../../../src/frame/js/components/channels/channel';
+import { CHANNEL_DETAILS } from '../../../../src/frame/js/constants/channels';
+import * as appUtils from '../../../../src/frame/js/utils/app';
 
 import { mockComponent, wrapComponentWithStore } from '../../../utils/react';
 import { generateBaseStoreProps, createMockedStore } from '../../../utils/redux';

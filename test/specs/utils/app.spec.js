@@ -1,5 +1,5 @@
-import { CHANNEL_DETAILS } from '../../../src/js/constants/channels';
-import { getIntegration, hasChannels, getAppChannelDetails } from '../../../src/js/utils/app';
+import { CHANNEL_DETAILS } from '../../../src/frame/js/constants/channels';
+import { getIntegration, hasChannels, getAppChannelDetails } from '../../../src/frame/js/utils/app';
 
 describe('App utils', () => {
     describe('getIntegration', () => {

@@ -2,17 +2,17 @@ import sinon from 'sinon';
 
 import { createMockedStore } from '../utils/redux';
 
-import * as authService from '../../src/js/services/auth';
-import * as conversationService from '../../src/js/services/conversation';
-import * as coreService from '../../src/js/services/core';
-import * as userService from '../../src/js/services/user';
-import * as appUtils from '../../src/js/utils/app';
-import * as commonActions from '../../src/js/actions/common-actions';
-import * as appStateActions from '../../src/js/actions/app-state-actions';
+import * as authService from '../../src/frame/js/services/auth';
+import * as conversationService from '../../src/frame/js/services/conversation';
+import * as coreService from '../../src/frame/js/services/core';
+import * as userService from '../../src/frame/js/services/user';
+import * as appUtils from '../../src/frame/js/utils/app';
+import * as commonActions from '../../src/frame/js/actions/common-actions';
+import * as appStateActions from '../../src/frame/js/actions/app-state-actions';
 
-import { Smooch } from '../../src/js/smooch';
+import { Smooch } from '../../src/frame/js/smooch';
 
-const AppStore = require('../../src/js/store');
+const AppStore = require('../../src/frame/js/store');
 const store = AppStore.store;
 
 function mockAppStore(sinon, state) {
