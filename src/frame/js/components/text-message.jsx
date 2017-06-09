@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { createMarkup, autolink, escapeHtml } from '../utils/html';
 
 export class TextMessage extends Component {
     static propTypes = {
-        text: React.PropTypes.string.isRequired,
-        className: React.PropTypes.string,
-        role: React.PropTypes.string.isRequired
+        text: PropTypes.string.isRequired,
+        className: PropTypes.string,
+        role: PropTypes.string.isRequired
     };
 
     render() {
