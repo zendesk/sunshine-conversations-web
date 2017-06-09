@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
 
-import { EmailSettings, EmailSettingsComponent } from '../../../src/frame/js/components/email-settings';
+import { EmailSettings, EmailSettingsComponent, __Rewire__ as EmailSettingsRewire } from '../../../src/frame/js/components/email-settings';
 import * as userService from '../../../src/frame/js/services/user';
 
 import { createMockedStore } from '../../utils/redux';
@@ -44,10 +44,11 @@ describe('Email Settings Component', () => {
 
     let component;
     let mockedStore;
+    let immediateUpdateStub;
 
     beforeEach(() => {
-        sandbox.stub(userService, 'immediateUpdate');
-        userService.immediateUpdate.resolves();
+        immediateUpdateStub = sandbox.stub(userService, 'immediateUpdate').resolves();
+        EmailSettingsRewire('immediateUpdate', immediateUpdateStub);
     });
 
     afterEach(() => {
@@ -174,7 +175,7 @@ describe('Email Settings Component', () => {
         describe('valid email', () => {
             it('should call immediateUpdate and hideSettings', () => {
                 return component.save(event).then(() => {
-                    userService.immediateUpdate.should.have.been.calledOnce;
+                    immediateUpdateStub.should.have.been.calledOnce;
                 });
 
             });

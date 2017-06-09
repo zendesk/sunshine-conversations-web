@@ -1,9 +1,7 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
-import { ConnectNotification } from '../../../src/frame/js/components/connect-notification';
-import * as appService from '../../../src/frame/js/services/app';
-import * as appUtils from '../../../src/frame/js/utils/app';
+import { ConnectNotification, __Rewire__ as ConnectNotificationRewire } from '../../../src/frame/js/components/connect-notification';
 import { CHANNEL_DETAILS } from '../../../src/frame/js/constants/channels';
 
 import { wrapComponentWithStore } from '../../utils/react';
@@ -37,12 +35,18 @@ function getStoreState(state = {}) {
 
 describe('ConnectNotification Component', () => {
     let mockedStore;
+    let showChannelPageSpy;
+    let hasChannelsStub;
+    let getAppChannelDetailsStub;
 
     beforeEach(() => {
-        sandbox.stub(appService, 'showChannelPage');
-        sandbox.stub(appService, 'showSettings');
-        sandbox.stub(appUtils, 'hasChannels');
-        sandbox.stub(appUtils, 'getAppChannelDetails');
+        showChannelPageSpy = sandbox.spy();
+        hasChannelsStub = sandbox.stub();
+        getAppChannelDetailsStub = sandbox.stub();
+        ConnectNotificationRewire('showChannelPage', showChannelPageSpy);
+        ConnectNotificationRewire('hasChannels', hasChannelsStub);
+        ConnectNotificationRewire('getAppChannelDetails', getAppChannelDetailsStub);
+
         mockedStore = createMockedStore(sandbox, getStoreState());
     });
 
@@ -57,7 +61,7 @@ describe('ConnectNotification Component', () => {
 
     describe('emailCaptureEnabled', () => {
         beforeEach(() => {
-            appUtils.getAppChannelDetails.returns([]);
+            getAppChannelDetailsStub.returns([]);
             mockedStore = createMockedStore(sandbox, getStoreState({
                 appState: {
                     emailCaptureEnabled: true
@@ -66,7 +70,7 @@ describe('ConnectNotification Component', () => {
         });
 
         it('should render the email capture link', () => {
-            appUtils.hasChannels.returns(false);
+            hasChannelsStub.returns(false);
 
             const component = wrapComponentWithStore(ConnectNotification, null, mockedStore);
 
@@ -75,7 +79,7 @@ describe('ConnectNotification Component', () => {
         });
 
         it('should not render the email capture link if has channels', () => {
-            appUtils.hasChannels.returns(true);
+            hasChannelsStub.returns(true);
 
             const component = wrapComponentWithStore(ConnectNotification, null, mockedStore);
 
@@ -86,11 +90,11 @@ describe('ConnectNotification Component', () => {
 
     describe('channels', () => {
         beforeEach(() => {
-            appUtils.hasChannels.returns(true);
+            hasChannelsStub.returns(true);
         });
 
         it('should render links to all linkable channels', () => {
-            appUtils.getAppChannelDetails.returns([
+            getAppChannelDetailsStub.returns([
                 {
                     channel: {
                         type: 'messenger'
@@ -119,7 +123,7 @@ describe('ConnectNotification Component', () => {
         });
 
         it('should call showChannelPage when link is clicked', () => {
-            appUtils.getAppChannelDetails.returns([
+            getAppChannelDetailsStub.returns([
                 {
                     channel: {
                         type: 'messenger'
@@ -131,7 +135,7 @@ describe('ConnectNotification Component', () => {
             const component = wrapComponentWithStore(ConnectNotification, null, mockedStore);
             const node = TestUtils.findRenderedDOMComponentWithTag(component, 'a');
             TestUtils.Simulate.click(node);
-            appService.showChannelPage.should.have.been.calledWith('messenger');
+            showChannelPageSpy.should.have.been.calledWith('messenger');
         });
     });
 });

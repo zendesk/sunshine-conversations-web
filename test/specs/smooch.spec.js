@@ -136,7 +136,6 @@ describe('Smooch', () => {
     });
 
     afterEach(() => {
-        __rewire_reset_all__();
         sandbox.restore();
         restoreAppStore();
     });

@@ -1,10 +1,9 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
-import { Settings } from '../../../src/frame/js/components/settings';
+import { Settings, __Rewire__ as SettingsRewire } from '../../../src/frame/js/components/settings';
 import { NotificationsSettings } from '../../../src/frame/js/components/notifications-settings';
 import { EmailSettings } from '../../../src/frame/js/components/email-settings';
-import * as appUtils from '../../../src/frame/js/utils/app';
 
 import { createMockedStore } from '../../utils/redux';
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
@@ -15,12 +14,18 @@ const props = {
 };
 
 describe('Settings Component', () => {
+    let hasChannelsStub;
+    beforeEach(() => {
+        hasChannelsStub = sandbox.stub();
+        SettingsRewire('hasChannels', hasChannelsStub);
+    });
+
     [true, false].forEach((hasChannels) => {
         describe(`has ${hasChannels ? '' : 'no'} channels`, () => {
             let component;
 
             beforeEach(() => {
-                sandbox.stub(appUtils, 'hasChannels').returns(hasChannels);
+                hasChannelsStub.returns(hasChannels);
                 mockComponent(sandbox, NotificationsSettings, 'div', {
                     className: 'mockedNotificationSettings'
                 });

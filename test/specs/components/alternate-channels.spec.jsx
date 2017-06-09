@@ -1,9 +1,8 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
-import { AlternateChannels } from '../../../src/frame/js/components/alternate-channels';
+import { AlternateChannels, __Rewire__ as AlternateChannelsRewire } from '../../../src/frame/js/components/alternate-channels';
 import { getAppChannelDetails } from '../../../src/frame/js/utils/app';
-import * as appService from '../../../src/frame/js/services/app';
 
 import { wrapComponentWithStore } from '../../utils/react';
 import { createMockedStore } from '../../utils/redux';
@@ -13,9 +12,11 @@ const sandbox = sinon.sandbox.create();
 
 describe('AlternateChannels Component', () => {
     let mockedStore;
+    let showChannelPageStub;
 
     beforeEach(() => {
-        sandbox.stub(appService, 'showChannelPage');
+        showChannelPageStub = sandbox.stub();
+        AlternateChannelsRewire('showChannelPage', showChannelPageStub);
         mockedStore = createMockedStore(sandbox);
     });
 
@@ -47,7 +48,7 @@ describe('AlternateChannels Component', () => {
 
         itemComponents.forEach((c, index) => {
             TestUtils.Simulate.click(c);
-            appService.showChannelPage.should.have.been.calledWith(channels[index].type);
+            showChannelPageStub.should.have.been.calledWith(channels[index].type);
         });
     });
 

@@ -3,10 +3,8 @@ import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
 
-import * as appService from '../../../src/frame/js/services/app';
-import * as appUtils from '../../../src/frame/js/utils/app';
 import { WIDGET_STATE } from '../../../src/frame/js/constants/app';
-import { Header, HeaderComponent } from '../../../src/frame/js/components/header';
+import { Header, HeaderComponent, __Rewire__ as HeaderRewire } from '../../../src/frame/js/components/header';
 
 import { createMockedStore } from '../../utils/redux';
 import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId, wrapComponentWithStore } from '../../utils/react';
@@ -42,7 +40,7 @@ function getStoreState(state = {}) {
 
     const newState = deepAssign(defaultState, state);
 
-    if(state.appState && state.appState.widgetState) {
+    if (state.appState && state.appState.widgetState) {
         // deep-assign is messing with the Symbol value otherwise
         newState.appState.widgetState = state.appState.widgetState;
     }
@@ -54,11 +52,12 @@ describe('Header Component', () => {
     let mockedStore;
     let header;
     let headerNode;
+    let toggleWidgetSpy;
 
     beforeEach(() => {
-        sandbox.stub(appService, 'toggleWidget');
-        sandbox.stub(appUtils, 'hasChannels');
-        appUtils.hasChannels.returns(true);
+        toggleWidgetSpy = sandbox.spy();
+        HeaderRewire('toggleWidget', toggleWidgetSpy);
+        HeaderRewire('hasChannels', sandbox.stub().returns(true));
         sandbox.stub(HeaderComponent.prototype, 'showSettings');
     });
 
@@ -88,7 +87,7 @@ describe('Header Component', () => {
 
         it('should call the toggleWidget action on header click', () => {
             TestUtils.Simulate.click(headerNode);
-            appService.toggleWidget.should.have.been.calledOnce;
+            toggleWidgetSpy.should.have.been.calledOnce;
         });
 
         it('should not contain the show handle', () => {
@@ -133,7 +132,7 @@ describe('Header Component', () => {
 
         it('should not call the toggleWidget action on header click', () => {
             TestUtils.Simulate.click(headerNode);
-            appService.toggleWidget.should.not.have.been.called;
+            toggleWidgetSpy.should.not.have.been.called;
         });
 
         it('should not contain the show handle', () => {

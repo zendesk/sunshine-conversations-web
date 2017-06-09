@@ -2,8 +2,7 @@ import sinon from 'sinon';
 
 import { createMock } from '../../mocks/core';
 import { createMockedStore } from '../../utils/redux';
-import * as coreService from '../../../src/frame/js/services/core';
-import { login } from '../../../src/frame/js/services/auth';
+import { login, __Rewire__ as AuthRewire } from '../../../src/frame/js/services/auth';
 
 describe('Auth service', () => {
     let mockedStore;
@@ -16,9 +15,7 @@ describe('Auth service', () => {
 
     beforeEach(() => {
         coreMock = createMock(sandbox);
-        sandbox.stub(coreService, 'core', () => {
-            return coreMock;
-        });
+        AuthRewire('core', () => coreMock);
         coreMock.appUsers.init.resolves();
         mockedStore = createMockedStore(sandbox);
     });

@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
 import { ChannelPage } from '../../../../src/frame/js/components/channels/channel-page';
-import { Channel } from '../../../../src/frame/js/components/channels/channel';
+import { Channel, __Rewire__ as ChannelRewire } from '../../../../src/frame/js/components/channels/channel';
 import { CHANNEL_DETAILS } from '../../../../src/frame/js/constants/channels';
 import * as appUtils from '../../../../src/frame/js/utils/app';
 
@@ -13,6 +13,8 @@ const sandbox = sinon.sandbox.create();
 const baseStoreProps = generateBaseStoreProps();
 
 describe('Channel Component', () => {
+    let getAppChannelDetailsStub;
+
     beforeEach(() => {
         mockComponent(sandbox, ChannelPage, 'div', {
             className: 'channel-page'
@@ -26,8 +28,8 @@ describe('Channel Component', () => {
             }
         });
 
-        sandbox.stub(appUtils, 'getAppChannelDetails');
-        appUtils.getAppChannelDetails.returns([]);
+        getAppChannelDetailsStub = sandbox.stub().returns([]);
+        ChannelRewire('getAppChannelDetails', getAppChannelDetailsStub);
     });
 
     afterEach(() => {
@@ -77,7 +79,7 @@ describe('Channel Component', () => {
         };
         const store = createMockedStore(sandbox, storeProps);
 
-        appUtils.getAppChannelDetails.returns([
+        getAppChannelDetailsStub.returns([
             {
                 channel: {
                     type: 'frontendEmail',
@@ -125,7 +127,7 @@ describe('Channel Component', () => {
 
         const store = createMockedStore(sandbox, storeProps);
 
-        appUtils.getAppChannelDetails.returns([
+        getAppChannelDetailsStub.returns([
             {
                 channel: {
                     type: 'frontendEmail',
@@ -173,7 +175,7 @@ describe('Channel Component', () => {
 
         const store = createMockedStore(sandbox, storeProps);
 
-        appUtils.getAppChannelDetails.returns([
+        getAppChannelDetailsStub.returns([
             {
                 channel: {
                     type: 'wechat'

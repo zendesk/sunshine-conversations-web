@@ -9,6 +9,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+    __rewire_reset_all__();
     if (getConsoleWarningErrorArray().length > 0) {
         `Check your console for warnings and errors : ${getConsoleWarningErrorArray().join(', ')}`.should.eq('');
     }
