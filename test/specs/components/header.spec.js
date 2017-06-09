@@ -33,7 +33,6 @@ function getStoreState(state = {}) {
             emailCaptureEnabled: false,
             settingsVisible: true,
             widgetState: WIDGET_STATE.OPENED,
-            embedded: false,
             visibleChannelType: false
         },
         conversation: {
@@ -41,7 +40,14 @@ function getStoreState(state = {}) {
         }
     };
 
-    return deepAssign(defaultState, state);
+    const newState = deepAssign(defaultState, state);
+
+    if(state.appState && state.appState.widgetState) {
+        // deep-assign is messing with the Symbol value otherwise
+        newState.appState.widgetState = state.appState.widgetState;
+    }
+
+    return newState;
 }
 
 describe('Header Component', () => {
@@ -100,7 +106,7 @@ describe('Header Component', () => {
             mockedStore = createMockedStore(sandbox, getStoreState({
                 appState: {
                     settingsVisible: false,
-                    embedded: true
+                    widgetState: WIDGET_STATE.EMBEDDED
                 }
             }));
             header = wrapComponentWithStore(Header, null, mockedStore);

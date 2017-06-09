@@ -36,7 +36,7 @@ describe('App Service', () => {
             beforeEach(() => {
                 mockedStore = createMockedStore(sandbox, {
                     appState: {
-                        embedded: isEmbedded
+                        widgetState: isEmbedded ? WIDGET_STATE.EMBEDDED : WIDGET_STATE.INIT
                     },
                     conversation: {}
                 });
@@ -92,7 +92,6 @@ describe('App Service', () => {
                             beforeEach(() => {
                                 mockedStore = createMockedStore(sandbox, {
                                     appState: {
-                                        embedded: isEmbedded,
                                         widgetState: isOpened ? WIDGET_STATE.OPENED : WIDGET_STATE.CLOSED
                                     },
                                     conversation: {}

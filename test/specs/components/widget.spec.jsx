@@ -26,8 +26,8 @@ function getStoreState(state = {}) {
         },
         appState: {
             widgetState: WIDGET_STATE.CLOSED,
+            widgetSize: 'lg',
             settingsVisible: false,
-            embedded: false,
             showAnimation: false,
             typingIndicatorShown: false
         },
@@ -247,7 +247,7 @@ describe('Widget Component', () => {
         it('should not render the button in embedded mode', () => {
             mockedStore = createMockedStore(sandbox, getStoreState({
                 appState: {
-                    embedded: true
+                    widgetState: WIDGET_STATE.EMBEDDED
                 },
                 app: {
                     settings: {

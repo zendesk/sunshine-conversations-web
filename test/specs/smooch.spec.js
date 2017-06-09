@@ -2,15 +2,10 @@ import sinon from 'sinon';
 
 import { createMockedStore } from '../utils/redux';
 
-import * as authService from '../../src/frame/js/services/auth';
-import * as conversationService from '../../src/frame/js/services/conversation';
-import * as coreService from '../../src/frame/js/services/core';
 import * as userService from '../../src/frame/js/services/user';
-import * as appUtils from '../../src/frame/js/utils/app';
-import * as commonActions from '../../src/frame/js/actions/common-actions';
-import * as appStateActions from '../../src/frame/js/actions/app-state-actions';
-
-import { Smooch } from '../../src/frame/js/smooch';
+import * as authService from '../../src/frame/js/services/auth';
+import * as Smooch from '../../src/frame/js/smooch';
+import { __Rewire__ as SmoochRewire } from '../../src/frame/js/smooch';
 
 const AppStore = require('../../src/frame/js/store');
 const store = AppStore.store;
@@ -54,30 +49,81 @@ const defaultState = {
     ui: {
         text: {}
     },
-    app: {}
+    app: {
+        settings: {
+            web: {}
+        }
+    }
 };
 
 describe('Smooch', () => {
     const sandbox = sinon.sandbox.create();
-    let smooch;
 
     let loginStub;
+    let coreStub;
+    let immediateUpdateStub;
+    let handleConversationUpdatedStub;
     let sendMessageStub;
-    let connectFayeStub;
     let disconnectFayeStub;
     let updateUserStub;
     let trackEventStub;
     let getUserIdStub;
-    let coreStub;
+    let openWidgetStub;
+    let closeWidgetStub;
     let mockedStore;
 
     beforeEach(() => {
-        sandbox.stub(Smooch.prototype, 'render');
-        sandbox.spy(commonActions, 'reset');
-        sandbox.spy(appStateActions, 'openWidget');
-        sandbox.spy(appStateActions, 'closeWidget');
-        smooch = new Smooch();
-        smooch._container = '_container';
+        SmoochRewire('renderWidget', sandbox.stub().returns({}));
+
+        handleConversationUpdatedStub = sandbox.stub().resolves({});
+        SmoochRewire('handleConversationUpdated', handleConversationUpdatedStub);
+
+        disconnectFayeStub = sandbox.stub();
+        SmoochRewire('disconnectFaye', disconnectFayeStub);
+
+        immediateUpdateStub = sandbox.stub().resolves({});
+        updateUserStub = sandbox.stub();
+        trackEventStub = sandbox.stub().resolves({});
+        getUserIdStub = sandbox.stub().returns('1234');
+        SmoochRewire('userService', {
+            ...userService,
+            update: updateUserStub,
+            immediateUpdate: immediateUpdateStub,
+            trackEvent: trackEventStub,
+            getUserId: getUserIdStub
+        });
+
+        loginStub = sandbox.stub().resolves({
+            appUser: {
+                _id: 1
+            },
+            app: {
+                settings: {
+                    web: {
+                        channels: {}
+                    }
+                },
+                integrations: []
+            }
+        });
+
+        SmoochRewire('authService', {
+            ...authService,
+            login: loginStub
+        });
+
+        SmoochRewire('hasChannels', sandbox.stub().returns(false));
+        SmoochRewire('getIntegration', sandbox.stub().returns({}));
+
+
+        openWidgetStub = sandbox.spy();
+        SmoochRewire('openWidget', openWidgetStub);
+        closeWidgetStub = sandbox.spy();
+        SmoochRewire('closeWidget', closeWidgetStub);
+
+        coreStub = sandbox.spy();
+        SmoochRewire('core', coreStub);
+
         sandbox.stub(document.body, 'appendChild');
         sandbox.stub(document.body, 'removeChild');
         sandbox.stub(document, 'addEventListener', (eventName, cb) => {
@@ -86,21 +132,21 @@ describe('Smooch', () => {
             }
         });
 
+        mockedStore = mockAppStore(sandbox, defaultState);
     });
 
     afterEach(() => {
+        __rewire_reset_all__();
         sandbox.restore();
         restoreAppStore();
-        delete smooch.appToken;
     });
 
     describe('Init', () => {
-        const state = Object.assign({}, defaultState);
+        let smoochLoginStub;
 
         beforeEach(() => {
-            loginStub = sandbox.stub(smooch, 'login');
-            loginStub.resolves();
-            mockedStore = mockAppStore(sandbox, state);
+            smoochLoginStub = sandbox.stub().resolves();
+            SmoochRewire('login', smoochLoginStub);
         });
 
         it('should call login', () => {
@@ -111,9 +157,8 @@ describe('Smooch', () => {
                 email: 'some@email.com'
             };
 
-            return smooch.init(props).then(() => {
-                smooch.appToken.should.eq(props.appToken);
-                loginStub.should.have.been.calledWith(props.userId, props.jwt, {
+            return Smooch.init(props).then(() => {
+                smoochLoginStub.should.have.been.calledWith(props.userId, props.jwt, {
                     email: 'some@email.com'
                 });
             });
@@ -122,49 +167,11 @@ describe('Smooch', () => {
     });
 
     describe('Login', () => {
-        let loginStub;
-        let immediateUpdateStub;
-        let handleConversationUpdatedStub;
-
-        beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, defaultState);
-            loginStub = sandbox.stub(authService, 'login');
-            loginStub.resolves({
-                appUser: {
-                    _id: 1
-                },
-                app: {
-                    settings: {}
-                }
-            });
-
-            immediateUpdateStub = sandbox.stub(userService, 'immediateUpdate');
-            immediateUpdateStub.resolves({});
-
-            connectFayeStub = sandbox.stub(conversationService, 'connectFayeConversation');
-            connectFayeStub.resolves({});
-
-            handleConversationUpdatedStub = sandbox.stub(conversationService, 'handleConversationUpdated');
-            handleConversationUpdatedStub.resolves({});
-
-            disconnectFayeStub = sandbox.stub(conversationService, 'disconnectFaye');
-
-            const hasChannelsStub = sandbox.stub(appUtils, 'hasChannels');
-            hasChannelsStub.returns(false);
-
-            const getIntegrationStub = sandbox.stub(appUtils, 'getIntegration');
-            getIntegrationStub.returns({});
-
-            const getMessagesStub = sandbox.stub(conversationService, 'getMessages');
-            getMessagesStub.resolves({});
-
-        });
-
         afterEach(() => {
             sandbox.restore();
         });
 
-        xit('should reset the user', () => {
+        it.skip('should reset the user', () => {
             const props = {
                 userId: 'some-id',
                 appToken: 'some-token',
@@ -172,7 +179,7 @@ describe('Smooch', () => {
                 email: 'some@email.com'
             };
 
-            return smooch.login(props.userId, props.jwt).then(() => {
+            return Smooch.login(props.userId, props.jwt).then(() => {
                 mockedStore.dispatch.firstCall.should.have.been.calledWith({
                     type: 'RESET_AUTH'
                 });
@@ -196,7 +203,7 @@ describe('Smooch', () => {
                 mockedStore = mockAppStore(sandbox, state);
             });
 
-            it('should call the auth service, get the conversation and not connect to faye', () => {
+            it('should call the auth service, update the user, and handle the conversation update', () => {
                 const props = {
                     userId: 'some-id',
                     appToken: 'some-token',
@@ -204,46 +211,13 @@ describe('Smooch', () => {
                     email: 'some@email.com'
                 };
 
-                return smooch.login(props.userId, props.jwt).then(() => {
+                return Smooch.login(props.userId, props.jwt).then(() => {
                     const callArgs = loginStub.args[0][0];
                     callArgs.userId.should.eq(props.userId);
                     immediateUpdateStub.should.have.been.calledWith, {
                         email: 'some@email.com'
                     };
                     handleConversationUpdatedStub.should.have.been.calledOnce;
-                    connectFayeStub.should.not.have.been.called;
-                });
-            });
-        });
-
-        describe('conversation not started', () => {
-            const state = Object.assign({}, defaultState, {
-                user: {
-                    conversationStarted: false
-                }
-            });
-
-            beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, state);
-            });
-
-            it('should call the auth service, get the conversation and not connect to faye', () => {
-                const props = {
-                    userId: 'some-id',
-                    appToken: 'some-token',
-                    jwt: 'some-jwt',
-                    email: 'some@email.com'
-                };
-
-                return smooch.login(props.userId, props.jwt).then(() => {
-                    const callArgs = loginStub.args[0][0];
-                    callArgs.userId.should.eq(props.userId);
-
-                    immediateUpdateStub.should.have.been.calledWith, {
-                        email: 'some@email.com'
-                    };
-                    handleConversationUpdatedStub.should.not.have.been.called;
-                    connectFayeStub.should.not.have.been.called;
                 });
             });
         });
@@ -251,20 +225,17 @@ describe('Smooch', () => {
 
     describe('Track event', () => {
         beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, defaultState);
-            trackEventStub = sandbox.stub(userService, 'trackEvent');
             trackEventStub.resolves({
                 conversationUpdated: true
             });
         });
-
 
         it('should call trackEvent', () => {
             const props = {
                 email: 'some@email.com'
             };
 
-            return smooch.track('some-event', props).then(() => {
+            return Smooch.track('some-event', props).then(() => {
                 trackEventStub.should.have.been.calledWith('some-event', props);
             });
         });
@@ -274,12 +245,12 @@ describe('Smooch', () => {
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, defaultState);
 
-            sendMessageStub = sandbox.stub(conversationService, 'sendMessage');
-            sendMessageStub.resolves({});
+            sendMessageStub = sandbox.stub().resolves({});
+            SmoochRewire('_sendMessage', sendMessageStub);
         });
 
         it('should call the conversation service', () => {
-            return smooch.sendMessage('here is my message').then(() => {
+            return Smooch.sendMessage('here is my message').then(() => {
                 sendMessageStub.should.have.been.calledWith('here is my message');
             });
         });
@@ -287,25 +258,20 @@ describe('Smooch', () => {
     });
 
     describe('Get conversation', () => {
-
-        let handleConversationUpdatedStub;
-
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, defaultState);
-            handleConversationUpdatedStub = sandbox.stub(conversationService, 'handleConversationUpdated');
-            handleConversationUpdatedStub.resolves({});
         });
 
         describe('conversation exists', () => {
 
             it('should call handleConversationUpdated', () => {
-                return smooch.getConversation().then(() => {
+                return Smooch.getConversation().then(() => {
                     handleConversationUpdatedStub.should.have.been.calledOnce;
                 });
             });
 
             it('should resolve conversation object', () => {
-                return smooch.getConversation().then((conversation) => {
+                return Smooch.getConversation().then((conversation) => {
                     if (!conversation.messages) {
                         return Promise.reject(new Error('Conversation not found'));
                     }
@@ -313,7 +279,7 @@ describe('Smooch', () => {
             });
 
             it('should update conversationStarted to true ', () => {
-                return smooch.getConversation().then(() => {
+                return Smooch.getConversation().then(() => {
                     mockedStore.dispatch.should.have.been.calledWith({
                         type: 'UPDATE_USER',
                         properties: {
@@ -330,13 +296,13 @@ describe('Smooch', () => {
             });
 
             it('should reject', (done) => {
-                return smooch.getConversation()
-                    .catch(() => done())
-                    .then(() => done(new Error('Promise should not have resolved')));
+                return Smooch.getConversation()
+                    .then(() => done(new Error('Promise should not have resolved')))
+                    .catch(() => done());
             });
 
             it('should not update conversationStarted to true ', () => {
-                return smooch.getConversation().catch(() => {
+                return Smooch.getConversation().catch(() => {
                     mockedStore.dispatch.should.not.have.been.calledWith({
                         type: 'UPDATE_USER',
                         properties: {
@@ -350,15 +316,6 @@ describe('Smooch', () => {
     });
 
     describe('Update user', () => {
-        beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, defaultState);
-
-            updateUserStub = sandbox.stub(userService, 'update');
-
-            sandbox.stub(conversationService, 'handleConversationUpdated');
-            conversationService.handleConversationUpdated.resolves({});
-        });
-
         describe('conversation started', () => {
             beforeEach(() => {
                 updateUserStub.resolves({
@@ -369,14 +326,14 @@ describe('Smooch', () => {
             });
 
             it('should call handleConversationUpdated', () => {
-                return smooch.updateUser({
+                return Smooch.updateUser({
                     email: 'update@me.com'
                 }).then(() => {
                     updateUserStub.should.have.been.calledWith({
                         email: 'update@me.com'
                     });
 
-                    conversationService.handleConversationUpdated.should.have.been.calledOnce;
+                    handleConversationUpdatedStub.should.have.been.calledOnce;
                 });
             });
         });
@@ -391,160 +348,49 @@ describe('Smooch', () => {
             });
 
             it('should not handleConversationUpdated', () => {
-                return smooch.updateUser({
+                return Smooch.updateUser({
                     email: 'update@me.com'
                 }).then(() => {
                     updateUserStub.should.have.been.calledWith({
                         email: 'update@me.com'
                     });
 
-                    conversationService.handleConversationUpdated.should.not.have.been.calledOnce;
+                    handleConversationUpdatedStub.should.not.have.been.calledOnce;
                 });
             });
         });
     });
 
     describe('Logout', () => {
-        beforeEach(() => {
-            loginStub = sandbox.stub(smooch, 'login');
-        });
-
         it('should call login', () => {
-            smooch.logout();
+            Smooch.logout();
             loginStub.should.have.been.called;
         });
     });
 
-    describe('Destroy', () => {
-        beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, defaultState);
-            disconnectFayeStub = sandbox.stub(conversationService, 'disconnectFaye');
-            loginStub = sandbox.stub(smooch, 'login').resolves();
-        });
-
-        describe('with init first', () => {
-            beforeEach((done) => {
-                smooch.init().then(done);
-            });
-
-            it('should reset store state and remove the container', () => {
-                smooch.destroy();
-                commonActions.reset.should.have.been.calledOnce;
-                document.body.removeChild.should.have.been.calledOnce;
-            });
-
-            it('should not remove the container from body if it is undefined', () => {
-                delete smooch._container;
-                smooch.destroy();
-                commonActions.reset.should.have.been.calledOnce;
-                document.body.removeChild.should.not.have.been.calledOnce;
-            });
-        });
-
-        describe('without init first', () => {
-            it('should do nothing', () => {
-                smooch.destroy();
-                commonActions.reset.should.not.have.been.calledOnce;
-                document.body.removeChild.should.not.have.been.calledOnce;
-            });
-        });
-
-        describe('with init first then destroy twice', () => {
-            beforeEach((done) => {
-                smooch.init().then(done);
-            });
-
-            it('should do nothing on the second call', () => {
-                smooch.destroy();
-                commonActions.reset.should.have.been.calledOnce;
-                document.body.removeChild.should.have.been.calledOnce;
-
-                smooch.destroy();
-                commonActions.reset.should.not.have.been.calledTwice;
-                document.body.removeChild.should.not.have.been.calledTwice;
-            });
-
-        });
-    });
-
     describe('Open', () => {
-        describe('normal', () => {
-            beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, defaultState);
-            });
-
-            it('should dispatch open action', () => {
-                smooch.open();
-                appStateActions.openWidget.should.have.been.calledOnce;
-            });
-        });
-
-        describe('embedded', () => {
-            beforeEach(() => {
-                const state = Object.assign({}, defaultState, {
-                    appState: Object.assign({}, defaultState.appState, {
-                        embedded: true
-                    })
-                });
-                mockedStore = mockAppStore(sandbox, state);
-            });
-
-            it('should not dispatch open action', () => {
-                smooch.open();
-                appStateActions.openWidget.should.not.have.been.called;
-            });
+        it('should dispatch open action', () => {
+            Smooch.open();
+            openWidgetStub.should.have.been.calledOnce;
         });
     });
 
     describe('Close', () => {
-        describe('normal', () => {
-            beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, defaultState);
-            });
-
-            it('should dispatch close action', () => {
-                smooch.close();
-                appStateActions.closeWidget.should.have.been.calledOnce;
-            });
-        });
-
-        describe('embedded', () => {
-            beforeEach(() => {
-                const state = Object.assign({}, defaultState, {
-                    appState: Object.assign({}, defaultState.appState, {
-                        embedded: true
-                    })
-                });
-                mockedStore = mockAppStore(sandbox, state);
-            });
-
-            it('should not dispatch close action', () => {
-                smooch.close();
-                appStateActions.closeWidget.should.not.have.been.called;
-            });
+        it('should dispatch close action', () => {
+            Smooch.close();
+            closeWidgetStub.should.have.been.calledOnce;
         });
     });
 
     describe('Get User Id', () => {
-        beforeEach(() => {
-            mockedStore = mockAppStore(sandbox, defaultState);
-
-            getUserIdStub = sandbox.stub(userService, 'getUserId');
-            getUserIdStub.returns('1234');
-        });
-
         it('should call the conversation service', () => {
-            return smooch.getUserId(mockedStore.getState()).should.eq('1234');
+            return Smooch.getUserId(mockedStore.getState()).should.eq('1234');
         });
     });
 
     describe('Get Core', () => {
-        beforeEach(() => {
-            coreStub = sandbox.stub(coreService, 'core');
-        });
-
         it('should call the core service', () => {
-            smooch.getCore();
+            Smooch.getCore();
             coreStub.should.have.been.calledOnce;
         });
     });

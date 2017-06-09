@@ -29,6 +29,23 @@
                 "transform-runtime",
                 "transform-class-properties"
             ]
+        },
+        "test": {
+            "presets": [
+                ["env",   {
+                    "useBuiltIns": true
+                }],
+                "stage-2",
+                "react",
+                ["es2015", {
+                    "modules": false
+                }]
+            ],
+            "plugins": [
+                "transform-runtime",
+                "transform-class-properties",
+                "rewire"
+            ]
         }
     }
 }

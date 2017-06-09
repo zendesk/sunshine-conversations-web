@@ -2,11 +2,11 @@ import sinon from 'sinon';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
-import StripeCheckout from 'react-stripe-checkout';
 
 import { createMockedStore } from '../../utils/redux';
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
+import StripeCheckout from '../../../src/frame/js/lib/react-stripe-checkout';
 import { Action } from '../../../src/frame/js/components/action.jsx';
 import { Loading } from '../../../src/frame/js/components/loading.jsx';
 

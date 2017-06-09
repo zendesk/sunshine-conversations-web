@@ -100,7 +100,7 @@ module.exports = function(options) {
             {
                 loader: 'babel-loader',
                 options: {
-                    forceEnv: 'frame'
+                    forceEnv: buildType === 'test' ? 'test' : 'frame'
                 }
             }
         ]
