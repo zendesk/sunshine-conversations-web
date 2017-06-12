@@ -20,14 +20,14 @@ import { getUserId } from './user';
 
 
 // Throttle requests per appUser
-const throttleMap = {}
+const throttleMap = {};
 const throttlePerUser = (userId) => {
     if (!throttleMap[userId]) {
         throttleMap[userId] = new Throttle();
     }
 
     return throttleMap[userId];
-}
+};
 
 const postSendMessage = (message) => {
     return (dispatch, getState) => {
@@ -395,7 +395,6 @@ export function fetchMoreMessages() {
 
 export function handleConnectNotification(response) {
     return (dispatch, getState) => {
-
         const {user: {clients, email}, app: {integrations, settings}, conversation: {messages}, appState: {emailCaptureEnabled}} = getState();
         const appUserMessages = messages.filter((message) => message.role === 'appUser');
 

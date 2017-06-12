@@ -3,13 +3,11 @@ import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
 import { NotificationChannelItem } from '../../../src/frame/js/components/notification-channel-item';
-import { NotificationsSettings } from '../../../src/frame/js/components/notifications-settings';
+import { NotificationsSettings, __Rewire__ as RewireNotificationsSettings } from '../../../src/frame/js/components/notifications-settings';
 import { CHANNEL_DETAILS } from '../../../src/frame/js/constants/channels';
 
 import { createMockedStore } from '../../utils/redux';
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
-
-import * as appUtils from '../../../src/frame/js/utils/app';
 
 const sandbox = sinon.sandbox.create();
 
@@ -17,6 +15,7 @@ describe('Notifications Settings', () => {
 
     let component;
     let mockedStore;
+    let getAppChannelDetailsStub;
 
     const defaultStoreProps = {
         app: {
@@ -31,7 +30,7 @@ describe('Notifications Settings', () => {
                     type: 'messenger',
                     username: 'messengerchloe'
                 }
-            ],
+            ]
         },
 
         ui: {
@@ -48,8 +47,9 @@ describe('Notifications Settings', () => {
             className: 'mockedChannelItem'
         });
 
-        sandbox.stub(appUtils, 'getAppChannelDetails');
-        appUtils.getAppChannelDetails.returns([
+        getAppChannelDetailsStub = sandbox.stub();
+        RewireNotificationsSettings('getAppChannelDetails', getAppChannelDetailsStub);
+        getAppChannelDetailsStub.returns([
             {
                 channel: {
                     type: 'telegram'
