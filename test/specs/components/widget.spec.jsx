@@ -5,18 +5,17 @@ import deepAssign from 'deep-assign';
 import { mockComponent, findRenderedDOMComponentsWithId, wrapComponentWithStore } from '../../utils/react';
 import { createMockedStore } from '../../utils/redux';
 
-import { Header } from '../../../src/js/components/header';
-import { Settings } from '../../../src/js/components/settings';
-import { Conversation } from '../../../src/js/components/conversation';
-import { ChatInput } from '../../../src/js/components/chat-input';
-import { ErrorNotification } from '../../../src/js/components/error-notification';
-import { Widget } from '../../../src/js/components/widget';
-import { Channel } from '../../../src/js/components/channels/channel';
-import { MessengerButton } from '../../../src/js/components/messenger-button';
-import { MessageIndicator } from '../../../src/js/components/message-indicator';
+import { Header } from '../../../src/frame/js/components/header';
+import { Settings } from '../../../src/frame/js/components/settings';
+import { Conversation } from '../../../src/frame/js/components/conversation';
+import { ChatInput } from '../../../src/frame/js/components/chat-input';
+import { ErrorNotification } from '../../../src/frame/js/components/error-notification';
+import { Widget, __Rewire__ as RewireWidget } from '../../../src/frame/js/components/widget';
+import { Channel } from '../../../src/frame/js/components/channels/channel';
+import { MessengerButton } from '../../../src/frame/js/components/messenger-button';
+import { MessageIndicator } from '../../../src/frame/js/components/message-indicator';
 
-import * as appUtils from '../../../src/js/utils/app';
-import { WIDGET_STATE } from '../../../src/js/constants/app';
+import { WIDGET_STATE } from '../../../src/frame/js/constants/app';
 
 function getStoreState(state = {}) {
     const defaultState = {
@@ -26,8 +25,8 @@ function getStoreState(state = {}) {
         },
         appState: {
             widgetState: WIDGET_STATE.CLOSED,
+            widgetSize: 'lg',
             settingsVisible: false,
-            embedded: false,
             showAnimation: false,
             typingIndicatorShown: false
         },
@@ -100,7 +99,7 @@ describe('Widget Component', () => {
             className: 'mockedMessageIndicator'
         });
 
-        sandbox.stub(appUtils, 'hasChannels').returns(true);
+        RewireWidget('hasChannels', sandbox.stub().returns(true));
     });
 
     afterEach(() => {
@@ -247,7 +246,7 @@ describe('Widget Component', () => {
         it('should not render the button in embedded mode', () => {
             mockedStore = createMockedStore(sandbox, getStoreState({
                 appState: {
-                    embedded: true
+                    widgetState: WIDGET_STATE.EMBEDDED
                 },
                 app: {
                     settings: {

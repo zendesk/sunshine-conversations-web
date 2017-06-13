@@ -2,9 +2,9 @@ import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
 
-import { Introduction } from '../../../src/js/components/introduction';
-import { AlternateChannels } from '../../../src/js/components/alternate-channels';
-import { DefaultAppIcon } from '../../../src/js/components/default-app-icon';
+import { Introduction } from '../../../src/frame/js/components/introduction';
+import { AlternateChannels } from '../../../src/frame/js/components/alternate-channels';
+import { DefaultAppIcon } from '../../../src/frame/js/components/default-app-icon';
 
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 import { createMockedStore } from '../../utils/redux';

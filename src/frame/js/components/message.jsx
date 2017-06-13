@@ -1,6 +1,7 @@
 import isMobile from 'ismobilejs';
 import { connect } from 'react-redux';
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import { TextMessage } from './text-message';
 import { ImageMessage } from './image-message';

@@ -3,14 +3,14 @@ import TestUtils from 'react-addons-test-utils';
 
 import { mockComponent } from '../../utils/react';
 
-import { MessageComponent } from '../../../src/js/components/message';
-import { Action } from '../../../src/js/components/action';
-import { ImageMessage } from '../../../src/js/components/image-message';
-import { TextMessage } from '../../../src/js/components/text-message';
+import { MessageComponent } from '../../../src/frame/js/components/message';
+import { Action } from '../../../src/frame/js/components/action';
+import { ImageMessage } from '../../../src/frame/js/components/image-message';
+import { TextMessage } from '../../../src/frame/js/components/text-message';
 
 import { wrapComponentWithStore } from '../../utils/react';
 import { createMockedStore } from '../../utils/redux';
-import { SEND_STATUS } from '../../../src/js/constants/message';
+import { SEND_STATUS } from '../../../src/frame/js/constants/message';
 
 const sandbox = sinon.sandbox.create();
 

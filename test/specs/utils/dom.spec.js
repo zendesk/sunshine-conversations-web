@@ -1,36 +1,30 @@
-import { monitorUrlChanges, stopMonitoringUrlChanges } from '../../../src/js/utils/dom';
+import { monitorUrlChanges } from '../../../src/frame/js/utils/dom';
 
 describe('monitorUrlChanges', () => {
     it('should monitor hash changes and call callback', (done) => {
-        stopMonitoringUrlChanges();
-
         monitorUrlChanges(() => {
             done();
         });
 
-        window.location.hash = 'blorp';
+        parent.location.hash = 'blorp';
     });
 
     it('should monitor push state changes and call callback', (done) => {
-        stopMonitoringUrlChanges();
-
         monitorUrlChanges(() => {
             done();
         });
 
-        history.pushState({
+        parent.history.pushState({
             blap: true
         }, 'blap', 'testerino');
     });
 
     it('should monitor replace state changes and call callback', (done) => {
-        stopMonitoringUrlChanges();
-
         monitorUrlChanges(() => {
             done();
         });
 
-        history.replaceState({
+        parent.history.replaceState({
             blap: true
         }, 'blap', 'testerino');
     });

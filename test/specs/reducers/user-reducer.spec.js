@@ -1,5 +1,5 @@
-import { UserReducer } from '../../../src/js/reducers/user-reducer';
-import { SET_USER, RESET_USER, UPDATE_USER } from '../../../src/js/actions/user-actions';
+import { UserReducer } from '../../../src/frame/js/reducers/user-reducer';
+import { SET_USER, RESET_USER, UPDATE_USER } from '../../../src/frame/js/actions/user-actions';
 
 describe('User reducer', () => {
     it('should be empty initialy', () => {

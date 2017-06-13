@@ -1,4 +1,4 @@
-import { createMarkup, autolink, escapeHtml } from '../../../src/js/utils/html';
+import { createMarkup, autolink, escapeHtml } from '../../../src/frame/js/utils/html';
 
 describe('HTML utils', () => {
     describe('createMarkup', () => {
