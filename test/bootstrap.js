@@ -8,4 +8,3 @@ sinon.defaultConfig = {
     useFakeTimers: true,
     useFakeServer: true
 };
-require('sinon-as-promised');
