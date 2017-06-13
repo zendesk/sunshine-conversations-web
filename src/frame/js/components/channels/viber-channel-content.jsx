@@ -2,7 +2,7 @@ import isMobile from 'ismobilejs';
 
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { LoadingComponent } from '../../components/loading';
+import { Loading } from '../../components/loading';
 import { fetchViberQRCode } from '../../services/integrations';
 
 import { TransferRequestChannelContent } from './transfer-request-channel-content';
@@ -41,7 +41,7 @@ class ViberChannelContentComponent extends Component {
             margin: 'auto'
         };
 
-        return <LoadingComponent dark={ true }
+        return <Loading dark={ true }
                                  style={ loadingStyle } />;
     }
 }

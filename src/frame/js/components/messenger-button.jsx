@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import bindAll from 'lodash.bindall';
 
 import { openWidget } from '../services/app';
+import { bindAll } from '../utils/functions';
 import { DefaultButtonIcon } from './default-button-icon';
 
 export class MessengerButtonComponent extends Component {

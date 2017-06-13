@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-export class LoadingComponent extends Component {
+export class Loading extends Component {
     render() {
         const classNames = ['sk-fading-circle'];
         const {color, dark, style} = this.props;
