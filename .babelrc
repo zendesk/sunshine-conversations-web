@@ -32,9 +32,7 @@
         },
         "test": {
             "presets": [
-                ["env",   {
-                    "useBuiltIns": true
-                }],
+                ["env"],
                 "stage-2",
                 "react",
                 ["es2015", {
