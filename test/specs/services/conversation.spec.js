@@ -6,9 +6,8 @@ import { createMockedStore } from '../../utils/redux';
 
 import * as conversationService from '../../../src/frame/js/services/conversation';
 import * as conversationActions from '../../../src/frame/js/actions/conversation-actions';
-import { showConnectNotification } from '../../../src/frame/js/services/app';
 import { updateUser } from '../../../src/frame/js/actions/user-actions';
-import { showErrorNotification } from '../../../src/frame/js/actions/app-state-actions';
+import { showErrorNotification, showConnectNotification } from '../../../src/frame/js/actions/app-state-actions';
 import { unsetFayeSubscriptions } from '../../../src/frame/js/actions/faye-actions';
 import { __Rewire__ as RewireConversationService } from '../../../src/frame/js/services/conversation';
 

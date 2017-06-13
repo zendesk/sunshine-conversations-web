@@ -82,18 +82,6 @@ export function showChannelPage(channelType) {
     };
 }
 
-export function showConnectNotification() {
-    return (dispatch) => {
-        dispatch(AppStateActions.showConnectNotification(Date.now() / 1000.0));
-    };
-}
-
-export function hideConnectNotification() {
-    return (dispatch) => {
-        dispatch(AppStateActions.hideConnectNotification());
-    };
-}
-
 export function showTypingIndicator(data) {
     return (dispatch, getState) => {
         const {typingIndicatorTimeoutId} = getState().appState;
