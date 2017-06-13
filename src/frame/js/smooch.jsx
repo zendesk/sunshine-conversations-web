@@ -3,6 +3,7 @@ import { render as reactRender } from 'react-dom';
 import pick from 'lodash.pick';
 import { batchActions } from 'redux-batched-actions';
 import { Provider } from 'react-redux';
+import Raven from 'raven-js';
 
 import '../stylesheets/main.less';
 
@@ -31,7 +32,6 @@ import { playNotificationSound, isAudioSupported } from './utils/sound';
 import { getDeviceId } from './utils/device';
 import { getIntegration, hasChannels } from './utils/app';
 
-import { VERSION } from '../../shared/js/constants/version';
 import { WIDGET_STATE } from './constants/app';
 
 import { Widget } from './components/widget';
@@ -216,6 +216,14 @@ export function login(userId = '', jwt, attributes) {
             }
         }
     })).then((loginResponse) => {
+        Raven.setUserContext({
+            id: loginResponse.appUser.userId || loginResponse.appUser._id
+        });
+
+        Raven.setExtraContext({
+            appToken
+        });
+
         const actions = [];
         actions.push(userActions.setUser(loginResponse.appUser));
         actions.push(setApp(loginResponse.app));

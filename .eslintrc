@@ -39,7 +39,8 @@
     "globals": {
         "VERSION": true,
         "FRAME_JS_URL": true,
-        "FRAME_CSS_URL": true
+        "FRAME_CSS_URL": true,
+        "SENTRY_DSN": true
     },
     "plugins": [
         "react",
