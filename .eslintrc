@@ -40,7 +40,8 @@
         "VERSION": true,
         "FRAME_JS_URL": true,
         "FRAME_CSS_URL": true,
-        "SENTRY_DSN": true
+        "SENTRY_DSN": true,
+        "__rewire_reset_all__": true
     },
     "plugins": [
         "react",

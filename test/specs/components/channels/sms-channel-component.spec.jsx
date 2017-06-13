@@ -3,9 +3,9 @@ import TestUtils from 'react-addons-test-utils';
 
 import { mockComponent, wrapComponentWithStore } from '../../../utils/react';
 import { createMockedStore } from '../../../utils/redux';
-import { ReactTelephoneInput } from '../../../../src/js/lib/react-telephone-input';
+import { ReactTelephoneInput } from '../../../../src/frame/js/lib/react-telephone-input';
 
-import { SMSChannelContent } from '../../../../src/js/components/channels/sms-channel-content';
+import { SMSChannelContent } from '../../../../src/frame/js/components/channels/sms-channel-content';
 
 const sandbox = sinon.sandbox.create();
 

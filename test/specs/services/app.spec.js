@@ -1,9 +1,9 @@
 import sinon from 'sinon';
 
-import { openWidget, closeWidget, toggleWidget } from '../../../src/js/services/app';
+import { openWidget, closeWidget, toggleWidget } from '../../../src/frame/js/services/app';
 import { createMockedStore } from '../../utils/redux';
-import { observable } from '../../../src/js/utils/events';
-import { WIDGET_STATE } from '../../../src/js/constants/app';
+import { observable } from '../../../src/frame/js/utils/events';
+import { WIDGET_STATE } from '../../../src/frame/js/constants/app';
 
 describe('App Service', () => {
     let mockedStore;
@@ -36,7 +36,7 @@ describe('App Service', () => {
             beforeEach(() => {
                 mockedStore = createMockedStore(sandbox, {
                     appState: {
-                        embedded: isEmbedded
+                        widgetState: isEmbedded ? WIDGET_STATE.EMBEDDED : WIDGET_STATE.INIT
                     },
                     conversation: {}
                 });
@@ -92,7 +92,6 @@ describe('App Service', () => {
                             beforeEach(() => {
                                 mockedStore = createMockedStore(sandbox, {
                                     appState: {
-                                        embedded: isEmbedded,
                                         widgetState: isOpened ? WIDGET_STATE.OPENED : WIDGET_STATE.CLOSED
                                     },
                                     conversation: {}

@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
-import { MessengerChannelContent } from '../../../../src/js/components/channels/messenger-channel-content';
+import { MessengerChannelContent } from '../../../../src/frame/js/components/channels/messenger-channel-content';
 
 import { wrapComponentWithStore } from '../../../utils/react';
 import { createMockedStore, generateBaseStoreProps } from '../../../utils/redux';

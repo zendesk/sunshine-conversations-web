@@ -1,5 +1,5 @@
 'use strict';
-require('../src/js/utils/polyfills');
+require('../src/frame/js/utils/polyfills');
 var sinon = require('sinon');
 sinon.behavior = require('sinon/lib/sinon/behavior');
 sinon.defaultConfig = {
@@ -8,4 +8,4 @@ sinon.defaultConfig = {
     useFakeTimers: true,
     useFakeServer: true
 };
-require('sinon-as-promised');
+require('./utils/sinon');

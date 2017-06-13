@@ -1,8 +1,8 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
-import { TransferRequestChannelContent } from '../../../../src/js/components/channels/transfer-request-channel-content';
-import { Loading } from '../../../../src/js/components/loading';
+import { TransferRequestChannelContent } from '../../../../src/frame/js/components/channels/transfer-request-channel-content';
+import { Loading } from '../../../../src/frame/js/components/loading';
 
 import { wrapComponentWithStore } from '../../../utils/react';
 import { createMockedStore, generateBaseStoreProps } from '../../../utils/redux';

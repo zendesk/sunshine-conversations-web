@@ -2,8 +2,8 @@ import sinon from 'sinon';
 import { findDOMNode } from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
-import { ImageUpload, ImageUploadComponent } from '../../../src/js/components/image-upload';
-const conversationService = require('../../../src/js/services/conversation');
+import { ImageUpload, ImageUploadComponent } from '../../../src/frame/js/components/image-upload';
+const conversationService = require('../../../src/frame/js/services/conversation');
 
 import { wrapComponentWithStore } from '../../utils/react';
 import { createMockedStore } from '../../utils/redux';
