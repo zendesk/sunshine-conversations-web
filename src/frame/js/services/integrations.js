@@ -10,7 +10,7 @@ import { updateUser } from '../actions/user-actions';
 let fetchingWeChat = false;
 let fetchingViber = false;
 
-function handleLinkFailure(error, type) {
+function handleLinkFailure(error) {
     return (dispatch, getState) => {
         const {ui: {text: {smsTooManyRequestsError, smsTooManyRequestsOneMinuteError, smsBadRequestError, smsUnhandledError}}} = getState();
         const retryAfter = error.headers ? error.headers.get('retry-after') : error.retryAfter;

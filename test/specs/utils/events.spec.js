@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 
-import { Observable } from '../../../src/js/utils/events';
+import { Observable } from '../../../src/frame/js/utils/events';
 
 
 describe('Events utils', () => {

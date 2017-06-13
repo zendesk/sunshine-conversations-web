@@ -2,12 +2,12 @@ import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
 
-import { Conversation } from '../../../src/js/components/conversation';
-import { MessageComponent } from '../../../src/js/components/message';
-import { Introduction } from '../../../src/js/components/introduction';
-import { ConnectNotification } from '../../../src/js/components/connect-notification';
-import { ReplyActions } from '../../../src/js/components/reply-actions';
-import { TypingIndicator } from '../../../src/js/components/typing-indicator';
+import { Conversation } from '../../../src/frame/js/components/conversation';
+import { MessageComponent } from '../../../src/frame/js/components/message';
+import { Introduction } from '../../../src/frame/js/components/introduction';
+import { ConnectNotification } from '../../../src/frame/js/components/connect-notification';
+import { ReplyActions } from '../../../src/frame/js/components/reply-actions';
+import { TypingIndicator } from '../../../src/frame/js/components/typing-indicator';
 
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 import { createMockedStore } from '../../utils/redux';

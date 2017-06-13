@@ -1,4 +1,4 @@
-import { isChannelLinked, getDisplayName, getLinkableChannels, hasLinkableChannels } from '../../../src/js/utils/user';
+import { isChannelLinked, getDisplayName, getLinkableChannels, hasLinkableChannels } from '../../../src/frame/js/utils/user';
 
 describe('User utils', () => {
     describe('isChannelLinked', () => {

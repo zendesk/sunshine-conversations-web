@@ -107,7 +107,7 @@ export function unsetEmailReadonly() {
     };
 }
 
-export function showConnectNotification(timestamp) {
+export function showConnectNotification(timestamp = Date.now() / 1000.0) {
     return {
         type: SHOW_CONNECT_NOTIFICATION,
         timestamp

@@ -3,12 +3,11 @@ import sinon from 'sinon';
 import { createMock } from '../../mocks/core';
 import { createMockedStore } from '../../utils/redux';
 
-import * as coreService from '../../../src/js/services/core';
-import { createTransaction, getAccount } from '../../../src/js/services/stripe';
+import { createTransaction, getAccount, __Rewire__ as StripeRewire } from '../../../src/frame/js/services/stripe';
 
 describe('Stripe service', () => {
-    var sandbox;
-    var coreMock;
+    let sandbox;
+    let coreMock;
     let mockedStore;
 
     before(() => {
@@ -23,9 +22,7 @@ describe('Stripe service', () => {
         });
 
         coreMock = createMock(sandbox);
-        sandbox.stub(coreService, 'core', () => {
-            return coreMock;
-        });
+        StripeRewire('core', () => coreMock);
         coreMock.appUsers.stripe.createTransaction.resolves();
         coreMock.stripe.getAccount.resolves();
     });

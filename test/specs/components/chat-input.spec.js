@@ -4,9 +4,8 @@ import TestUtils from 'react-addons-test-utils';
 import { createMockedStore } from '../../utils/redux';
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
-import { ChatInput, ChatInputComponent } from '../../../src/js/components/chat-input';
-import { ImageUpload } from '../../../src/js/components/image-upload';
-const conversationService = require('../../../src/js/services/conversation');
+import { ChatInput, ChatInputComponent, __Rewire__ as ChatInputRewire } from '../../../src/frame/js/components/chat-input';
+import { ImageUpload } from '../../../src/frame/js/components/image-upload';
 
 const sandbox = sinon.sandbox.create();
 
@@ -42,8 +41,9 @@ describe('ChatInput Component', () => {
     let onSendMessageSpy;
     let setStateSpy;
 
+    let uploadImageStub;
     let resetUnreadCountStub;
-    let serviceSendMessageStub;
+    let sendMessageStub;
 
     beforeEach(() => {
         onChangeSpy = sandbox.spy(ChatInputComponent.prototype, 'onChange');
@@ -53,9 +53,14 @@ describe('ChatInput Component', () => {
             className: 'image-upload'
         });
 
-        sandbox.stub(conversationService, 'uploadImage').resolves();
-        resetUnreadCountStub = sandbox.stub(conversationService, 'resetUnreadCount');
-        serviceSendMessageStub = sandbox.stub(conversationService, 'sendMessage');
+        uploadImageStub = sandbox.stub().returnsAsyncThunk();
+        ChatInputRewire('uploadImage', uploadImageStub);
+
+        resetUnreadCountStub = sandbox.stub().returnsAsyncThunk();
+        ChatInputRewire('resetUnreadCount', resetUnreadCountStub);
+
+        sendMessageStub = sandbox.stub().returnsAsyncThunk();
+        ChatInputRewire('sendMessage', sendMessageStub);
 
         // spy on it after rendering to avoid triggering it when the component mounts
         setStateSpy = sandbox.spy(ChatInputComponent.prototype, 'setState');
@@ -188,7 +193,7 @@ describe('ChatInput Component', () => {
                 });
 
                 setStateSpy.should.not.have.been.called;
-                serviceSendMessageStub.should.not.have.been.called;
+                sendMessageStub.should.not.have.been.called;
             });
         });
 
@@ -204,13 +209,13 @@ describe('ChatInput Component', () => {
 
             component.state.text.should.eq('');
 
-            serviceSendMessageStub.should.have.been.calledWith('this is a value!');
+            sendMessageStub.should.have.been.calledWith('this is a value!');
         });
     });
 
     describe('Image upload button', () => {
         [true, false].forEach((imageUploadEnabled) => {
-            it(`should${imageUploadEnabled ? '' : 'not'} display the image upload button`, () => {
+            it(`should${imageUploadEnabled ? '' : ' not'} display the image upload button`, () => {
                 mockedStore = createMockedStore(sandbox, getStoreState({
                     appState: {
                         imageUploadEnabled

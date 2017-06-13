@@ -18,7 +18,7 @@ import { resetConversation } from './actions/conversation-actions';
 import { resetIntegrations } from './actions/integrations-actions';
 import * as AppStateActions from './actions/app-state-actions';
 
-import { openWidget, closeWidget, hideSettings, hideChannelPage } from './services/app';
+import { openWidget, closeWidget } from './services/app';
 import * as authService from './services/auth';
 import { getAccount } from './services/stripe';
 import * as userService from './services/user';
@@ -170,8 +170,8 @@ export function login(userId = '', jwt, attributes) {
 
     const actions = [];
     // in case those are opened;
-    actions.push(hideSettings());
-    actions.push(hideChannelPage());
+    actions.push(AppStateActions.hideSettings());
+    actions.push(AppStateActions.hideChannelPage());
 
     // in case it comes from a previous authenticated state
     actions.push(resetAuth());
@@ -272,7 +272,7 @@ export function login(userId = '', jwt, attributes) {
 }
 
 export function logout() {
-    return this.login();
+    return login();
 }
 
 export function track(eventName, userProps) {
