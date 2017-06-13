@@ -398,10 +398,12 @@ export default class ReactStripeCheckout extends React.Component {
 
     onScriptLoaded = () => {
         const {executionContext} = this.props;
-        if (!ReactStripeCheckout.stripeHandler) {            
+        if (!ReactStripeCheckout.stripeHandler) {
             // for some reason in checkout.js, `buttonId instanceof Object` returns false when only the options are passed
             // so the behavior is reimplemented here for the buttonId
-            ReactStripeCheckout.stripeHandler = executionContext.StripeCheckout.configure("button" + executionContext.StripeCheckout.totalButtons++, {key: this.props.stripeKey});
+            ReactStripeCheckout.stripeHandler = executionContext.StripeCheckout.configure('button' + executionContext.StripeCheckout.totalButtons++, {
+                key: this.props.stripeKey
+            });
             if (this.hasPendingClick) {
                 this.showStripeDialog();
             }
@@ -416,14 +418,18 @@ export default class ReactStripeCheckout extends React.Component {
     }
 
     onClosed = (...args) => {
-        this.setState({open: false});
+        this.setState({
+            open: false
+        });
         if (this.props.closed) {
             this.props.closed.apply(this, args);
         }
     }
 
     onOpened = (...args) => {
-        this.setState({open: true});
+        this.setState({
+            open: true
+        });
         if (this.props.opened) {
             this.props.opened.apply(this, args);
         }
@@ -447,8 +453,8 @@ export default class ReactStripeCheckout extends React.Component {
         'alipay',
         'alipayReusable'
     ].reduce((config, key) => Object.assign({}, config, this.props.hasOwnProperty(key) && {
-        [key]: this.props[key]
-    }), {
+            [key]: this.props[key]
+        }), {
         opened: this.onOpened,
         closed: this.onClosed
     });
@@ -489,7 +495,8 @@ export default class ReactStripeCheckout extends React.Component {
         if (scriptDidError) {
             try {
                 throw new Error('Tried to call onClick, but StripeCheckout failed to load');
-            } catch (x) {} // eslint-disable-line no-empty
+            }
+            catch (x) {} // eslint-disable-line no-empty
         } else if (ReactStripeCheckout.stripeHandler) {
             this.showStripeDialog();
         } else {
@@ -499,11 +506,15 @@ export default class ReactStripeCheckout extends React.Component {
     }
 
     handleOnMouseDown = () => {
-        this.setState({buttonActive: true});
+        this.setState({
+            buttonActive: true
+        });
     }
 
     handleOnMouseUp = () => {
-        this.setState({buttonActive: false});
+        this.setState({
+            buttonActive: false
+        });
     }
 
     renderDefaultStripeButton() {
@@ -556,8 +567,8 @@ export default class ReactStripeCheckout extends React.Component {
     renderDisabledButton() {
         return (
             <button disabled
-                    style={ {    background: 'rgba(0,0,0,0.2)',    overflow: 'hidden',    display: 'inline-block',    border: 0,    padding: 1,    textDecoration: 'none',    borderRadius: 5,    userSelect: 'none'} }>
-                <span style={ {    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25)',    fontFamily: '"Helvetica Neue",Helvetica,Arial,sans-serif',    fontSize: 14,    position: 'relative',    padding: '0 12px',    display: 'block',    height: 30,    lineHeight: '30px',    borderRadius: 4,    color: '#999',    background: '#f8f9fa',    textShadow: '0 1px 0 rgba(255,255,255,0.5)'} }>{ this.props.label }</span>
+                    style={ { background: 'rgba(0,0,0,0.2)', overflow: 'hidden', display: 'inline-block', border: 0, padding: 1, textDecoration: 'none', borderRadius: 5, userSelect: 'none' } }>
+                <span style={ { boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25)', fontFamily: '"Helvetica Neue",Helvetica,Arial,sans-serif', fontSize: 14, position: 'relative', padding: '0 12px', display: 'block', height: 30, lineHeight: '30px', borderRadius: 4, color: '#999', background: '#f8f9fa', textShadow: '0 1px 0 rgba(255,255,255,0.5)' } }>{ this.props.label }</span>
             </button>
             );
     }

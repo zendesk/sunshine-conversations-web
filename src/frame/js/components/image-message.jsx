@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import ImageLoader from 'react-imageloader';
+import PropTypes from 'prop-types';
 
+import ImageLoader from '../lib/react-imageloader';
 import { ImageLoading } from './image-loading';
 import { SEND_STATUS } from '../constants/message';
 
 export class ImageMessage extends Component {
     static propTypes = {
-        mediaUrl: React.PropTypes.string.isRequired,
-        accentColor: React.PropTypes.string
+        mediaUrl: PropTypes.string.isRequired,
+        accentColor: PropTypes.string
     };
 
     state = {};

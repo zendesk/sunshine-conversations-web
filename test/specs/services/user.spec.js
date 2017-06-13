@@ -3,21 +3,21 @@ import sinon from 'sinon';
 import { createMock } from '../../mocks/core';
 import { createMockedStore } from '../../utils/redux';
 
-import * as coreService from '../../../src/js/services/core';
-import * as userService from '../../../src/js/services/user';
-import * as conversationService from '../../../src/js/services/conversation';
-import * as userActions from '../../../src/js/actions/user-actions';
+import * as userService from '../../../src/frame/js/services/user';
+import { __Rewire__ as UserRewire } from '../../../src/frame/js/services/user';
+import { setUser } from '../../../src/frame/js/actions/user-actions';
 
 describe('User service', () => {
     let sandbox;
     let coreMock;
     let mockedStore;
+    let setUserSpy;
+    let handleConversationUpdatedStub;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         coreMock = createMock(sandbox);
-
-        sandbox.spy(userActions, 'setUser');
+        UserRewire('core', () => coreMock);
 
         coreMock.appUsers.update.resolves({
             appUser: {
@@ -39,9 +39,11 @@ describe('User service', () => {
             }
         });
 
-        sandbox.stub(coreService, 'core', () => {
-            return coreMock;
-        });
+        setUserSpy = sandbox.spy(setUser);
+        UserRewire('setUser', setUserSpy);
+
+        handleConversationUpdatedStub = sandbox.stub();
+        UserRewire('handleConversationUpdated', handleConversationUpdatedStub);
 
         mockedStore = createMockedStore(sandbox, {
             user: {
@@ -100,7 +102,9 @@ describe('User service', () => {
                             email: 'mocked@email.com'
                         }
                     });
-                    userActions.setUser.should.have.been.calledWith({
+
+
+                    setUserSpy.should.have.been.calledWith({
                         _id: '1',
                         email: 'mocked@email.com'
                     });
@@ -116,14 +120,13 @@ describe('User service', () => {
                     conversationUpdated: true
                 });
 
-                sandbox.stub(conversationService, 'handleConversationUpdated');
-                conversationService.handleConversationUpdated.returns(() => Promise.resolve());
+                handleConversationUpdatedStub.returnsAsyncThunk();
             });
 
             it('should call getConversation and connectFaye', () => {
                 return mockedStore.dispatch(userService.trackEvent('event', 'props')).then(() => {
                     coreMock.appUsers.trackEvent.should.have.been.calledWith('1', 'event', 'props');
-                    conversationService.handleConversationUpdated.should.have.been.calledOnce;
+                    handleConversationUpdatedStub.should.have.been.calledOnce;
                 });
             });
         });
@@ -134,14 +137,13 @@ describe('User service', () => {
                     conversationUpdated: false
                 });
 
-                sandbox.stub(conversationService, 'handleConversationUpdated');
-                conversationService.handleConversationUpdated.returns(() => Promise.resolve());
+                handleConversationUpdatedStub.returnsAsyncThunk();
             });
 
             it('should call getConversation and connectFaye', () => {
                 return mockedStore.dispatch(userService.trackEvent('event', 'props')).then(() => {
                     coreMock.appUsers.trackEvent.should.have.been.calledWith('1', 'event', 'props');
-                    conversationService.handleConversationUpdated.should.not.have.been.called;
+                    handleConversationUpdatedStub.should.not.have.been.called;
                 });
             });
         });

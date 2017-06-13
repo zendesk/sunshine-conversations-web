@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
 
-import { TypingIndicator } from '../../../src/js/components/typing-indicator';
+import { TypingIndicator } from '../../../src/frame/js/components/typing-indicator';
 
 import { wrapComponentWithStore } from '../../utils/react';
 import { createMockedStore } from '../../utils/redux';
