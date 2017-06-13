@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import bindAll from 'lodash.bindall';
 
 import { showChannelPage } from '../services/app';
+import { bindAll } from '../utils/functions';
 
 export class AlternateChannelsComponent extends Component {
     static propTypes = {

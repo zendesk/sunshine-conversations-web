@@ -145,7 +145,18 @@ function injectFrame() {
                 delete iframe.onload;
                 const doc = iframe.contentWindow.document;
                 doc.open();
-                doc.write(`<!DOCTYPE html><html><head><script src="${FRAME_LIB_URL}"></script></head><body><div id="mount"></div></html>`);
+                doc.write(`
+                    <!DOCTYPE html>
+                    <html>
+                        <head>
+                            <script src="${FRAME_JS_URL}" async crossorigin="anonymous"></script>
+                            <link rel="stylesheet" href="${FRAME_CSS_URL}" type="text/css" />
+                        </head>
+                        <body>
+                            <div id="mount"></div>
+                        </body>
+                    </html>
+                    `);
                 doc.close();
             }
         };

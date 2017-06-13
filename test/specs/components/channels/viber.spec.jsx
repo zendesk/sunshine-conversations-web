@@ -3,7 +3,7 @@ import isMobile from 'ismobilejs';
 import TestUtils from 'react-addons-test-utils';
 
 import { ViberChannelContent } from '../../../../src/js/components/channels/viber-channel-content';
-import { LoadingComponent } from '../../../../src/js/components/loading';
+import { Loading } from '../../../../src/js/components/loading';
 
 import { wrapComponentWithStore } from '../../../utils/react';
 import { createMockedStore, generateBaseStoreProps } from '../../../utils/redux';
@@ -69,6 +69,6 @@ describe('Viber Channel Component', () => {
         const component = wrapComponentWithStore(ViberChannelContent , {
             channelState: {}
         }, store);
-        TestUtils.findRenderedComponentWithType(component, LoadingComponent);
+        TestUtils.findRenderedComponentWithType(component, Loading);
     });
 });
