@@ -9,7 +9,7 @@ import { findDOMNode } from 'react-dom';
 import { getElementProperties } from '../utils/dom';
 import { resendMessage } from '../services/conversation';
 import { SEND_STATUS, GLOBAL_ACTION_TYPES } from '../constants/message';
-import { LoadingComponent } from './loading';
+import { Loading } from './loading';
 
 class Message extends Component {
     static propTypes = {
@@ -189,7 +189,7 @@ class Message extends Component {
                              text={ locationSendingFailedText }
                              role={ role } />
                 : <div className={ locationClasses.join(' ') }>
-                      <LoadingComponent color={ !isAppUser ? accentColor : null } />
+                      <Loading color={ !isAppUser ? accentColor : null } />
                   </div> ;
         }
 
