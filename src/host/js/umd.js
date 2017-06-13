@@ -14,7 +14,7 @@ import Smooch from './smooch';
         if(root.__onSmoochHostReady__) {
             root.__onSmoochHostReady__(factory());
         } else {
-            console.error('Script loader not found. Please check out the setup instructions.')
+            console.error('Script loader not found. Please check out the setup instructions.');
         }
     }
 }(global, () => {
