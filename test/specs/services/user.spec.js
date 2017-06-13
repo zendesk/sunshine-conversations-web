@@ -120,7 +120,7 @@ describe('User service', () => {
                     conversationUpdated: true
                 });
 
-                handleConversationUpdatedStub.returns(() => Promise.resolve());
+                handleConversationUpdatedStub.returnsAsyncThunk();
             });
 
             it('should call getConversation and connectFaye', () => {
@@ -137,7 +137,7 @@ describe('User service', () => {
                     conversationUpdated: false
                 });
 
-                handleConversationUpdatedStub.returns(() => Promise.resolve());
+                handleConversationUpdatedStub.returnsAsyncThunk();
             });
 
             it('should call getConversation and connectFaye', () => {

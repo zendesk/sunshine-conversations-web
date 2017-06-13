@@ -53,13 +53,13 @@ describe('ChatInput Component', () => {
             className: 'image-upload'
         });
 
-        uploadImageStub = sandbox.stub().returns(() => Promise.resolve());
+        uploadImageStub = sandbox.stub().returnsAsyncThunk();
         ChatInputRewire('uploadImage', uploadImageStub);
 
-        resetUnreadCountStub = sandbox.stub().returns(() => Promise.resolve());
+        resetUnreadCountStub = sandbox.stub().returnsAsyncThunk();
         ChatInputRewire('resetUnreadCount', resetUnreadCountStub);
 
-        sendMessageStub = sandbox.stub().returns(() => Promise.resolve());
+        sendMessageStub = sandbox.stub().returnsAsyncThunk();
         ChatInputRewire('sendMessage', sendMessageStub);
 
         // spy on it after rendering to avoid triggering it when the component mounts

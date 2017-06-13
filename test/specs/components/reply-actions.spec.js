@@ -48,9 +48,9 @@ describe('ReplyActions Component', () => {
     beforeEach(() => {
         hasGeolocationSupportStub = sandbox.stub().returns(true);
         ReplyActionsRewire('hasGeolocationSupport', hasGeolocationSupportStub);
-        sendMessageStub = sandbox.stub().returns(() => Promise.resolve());
+        sendMessageStub = sandbox.stub().returnsAsyncThunk();
         ReplyActionsRewire('sendMessage', sendMessageStub);
-        sendLocationStub = sandbox.stub().returns(() => Promise.resolve());
+        sendLocationStub = sandbox.stub().returnsAsyncThunk();
         ReplyActionsRewire('sendLocation', sendLocationStub);
 
         component = wrapComponentWithStore(ReplyActions, {

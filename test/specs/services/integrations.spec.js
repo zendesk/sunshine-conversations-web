@@ -54,7 +54,7 @@ describe('Integrations service', () => {
 
         updateUserSpy = sandbox.spy(updateUser);
         IntegrationsRewire('updateUser', updateUserSpy);
-        handleConversationUpdatedStub = sandbox.stub().returns(() => Promise.resolve());
+        handleConversationUpdatedStub = sandbox.stub().returnsAsyncThunk();
         IntegrationsRewire('handleConversationUpdated', handleConversationUpdatedStub);
 
         mockedStore = createMockedStore(sandbox, {

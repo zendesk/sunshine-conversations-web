@@ -49,16 +49,16 @@ describe('Faye service', () => {
 
         sandbox.stub(Client.prototype, 'addExtension');
 
-        getMessagesStub = sandbox.stub().returns(() => Promise.resolve());
+        getMessagesStub = sandbox.stub().returnsAsyncThunk();
         FayeRewire('getMessages', getMessagesStub);
 
-        disconnectFayeStub = sandbox.stub().returns(() => Promise.resolve());
+        disconnectFayeStub = sandbox.stub().returnsAsyncThunk();
         FayeRewire('disconnectFaye', disconnectFayeStub);
 
-        handleConversationUpdatedStub = sandbox.stub().returns(() => Promise.resolve());
+        handleConversationUpdatedStub = sandbox.stub().returnsAsyncThunk();
         FayeRewire('handleConversationUpdated', handleConversationUpdatedStub);
 
-        showSettingsStub = sandbox.stub().returns(() => Promise.resolve());
+        showSettingsStub = sandbox.stub().returnsAsyncThunk();
         FayeRewire('showSettings', showSettingsStub);
 
         hideChannelPageSpy = sandbox.spy(hideChannelPage);

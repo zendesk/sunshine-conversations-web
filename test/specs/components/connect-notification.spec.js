@@ -40,7 +40,7 @@ describe('ConnectNotification Component', () => {
     let getAppChannelDetailsStub;
 
     beforeEach(() => {
-        showChannelPageStub = sandbox.stub().returns(() => Promise.resolve());
+        showChannelPageStub = sandbox.stub().returnsAsyncThunk();
         hasChannelsStub = sandbox.stub();
         getAppChannelDetailsStub = sandbox.stub();
         ConnectNotificationRewire('showChannelPage', showChannelPageStub);

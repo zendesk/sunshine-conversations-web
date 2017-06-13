@@ -15,7 +15,7 @@ describe('AlternateChannels Component', () => {
     let showChannelPageStub;
 
     beforeEach(() => {
-        showChannelPageStub = sandbox.stub().returns(() => Promise.resolve());
+        showChannelPageStub = sandbox.stub().returnsAsyncThunk();
         AlternateChannelsRewire('showChannelPage', showChannelPageStub);
         mockedStore = createMockedStore(sandbox);
     });

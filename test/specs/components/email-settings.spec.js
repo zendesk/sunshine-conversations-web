@@ -46,7 +46,7 @@ describe('Email Settings Component', () => {
     let immediateUpdateStub;
 
     beforeEach(() => {
-        immediateUpdateStub = sandbox.stub().returns(() => Promise.resolve());
+        immediateUpdateStub = sandbox.stub().returnsAsyncThunk();
         EmailSettingsRewire('immediateUpdate', immediateUpdateStub);
     });
 

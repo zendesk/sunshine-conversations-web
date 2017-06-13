@@ -112,10 +112,10 @@ describe('Conversation service', () => {
         // Faye service
         disconnectClientSpy = sandbox.spy();
         RewireConversationService('disconnectClient', disconnectClientSpy);
-        subscribeConversationStub = sandbox.stub().returns(() => Promise.resolve());
+        subscribeConversationStub = sandbox.stub().returnsAsyncThunk();
         RewireConversationService('subscribeConversation', subscribeConversationStub);
-        RewireConversationService('subscribeConversationActivity', sandbox.stub().returns(() => Promise.resolve()));
-        subscribeUserStub = sandbox.stub().returns(() => Promise.resolve());
+        RewireConversationService('subscribeConversationActivity', sandbox.stub().returnsAsyncThunk());
+        subscribeUserStub = sandbox.stub().returnsAsyncThunk();
         RewireConversationService('subscribeUser', subscribeUserStub);
 
         // Media Utils
@@ -142,7 +142,7 @@ describe('Conversation service', () => {
         RewireConversationService('showConnectNotification', showConnectNotificationSpy);
 
         // User service
-        immediateUpdateStub = sandbox.stub().returns(() => Promise.resolve());
+        immediateUpdateStub = sandbox.stub().returnsAsyncThunk();
         RewireConversationService('immediateUpdate', immediateUpdateStub);
 
         // Conversation actions
@@ -799,7 +799,7 @@ describe('Conversation service', () => {
 
     describe('handleConversationUpdated', () => {
         beforeEach(() => {
-            RewireConversationService('connectFayeConversation', sandbox.stub().returns(() => Promise.resolve()));
+            RewireConversationService('connectFayeConversation', sandbox.stub().returnsAsyncThunk());
         });
 
         [true, false].forEach((active) => {

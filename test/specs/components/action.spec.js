@@ -83,13 +83,13 @@ describe('Action Component', () => {
         });
 
 
-        immediateUpdateStub = sandbox.stub().returns(() => Promise.resolve());
+        immediateUpdateStub = sandbox.stub().returnsAsyncThunk();
         ActionRewire('immediateUpdate', immediateUpdateStub);
 
-        postPostbackStub = sandbox.stub().returns(() => Promise.resolve());
+        postPostbackStub = sandbox.stub().returnsAsyncThunk();
         ActionRewire('postPostback', postPostbackStub);
 
-        createTransactionStub = sandbox.stub().returns(() => Promise.resolve());
+        createTransactionStub = sandbox.stub().returnsAsyncThunk();
         ActionRewire('createTransaction', createTransactionStub);
 
         getIntegrationStub = sandbox.stub().returns(
@@ -295,7 +295,7 @@ describe('Action Component', () => {
 
                 beforeEach(() => {
                     component = wrapComponentWithStore(Action, props, mockedStore).getWrappedInstance();
-                    createTransactionStub.returns(() => Promise.reject());
+                    createTransactionStub.returnsAsyncThunk({rejects: true});
                 });
 
                 it('should set state to paid', () => {
