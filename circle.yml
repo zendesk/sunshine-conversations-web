@@ -8,8 +8,6 @@ dependencies:
 test:
     override:
         - npm run test:ci
-    post:
-      - grunt build
 
 general:
   artifacts:

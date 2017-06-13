@@ -354,6 +354,14 @@ describe('Conversation service', () => {
                 type: 'location',
                 _clientSent: Date.now() / 1000
             };
+
+            if (!navigator.geolocation) {
+                // in case of PhantomJS for instance
+                navigator.geolocation = {
+                    getCurrentPosition: function() {}
+                };
+            }
+
             sandbox.stub(navigator.geolocation, 'getCurrentPosition').yields({
                 coords: {
                     latitude: 10,
