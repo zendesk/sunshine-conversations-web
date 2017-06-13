@@ -24,7 +24,7 @@
     "test": "karma start karma.conf.js --no-single-run --reporters spec --browsers PhantomJS,Chrome",
     "test:phantom": "karma start karma.conf.js --no-single-run --reporters spec --browsers PhantomJS",
     "karma": "karma start karma.conf.js --reporters spec --browsers Chrome --singleRun false",
-    "test:ci": "karma start karma.conf.js --single-run --reporters junit --browsers PhantomJS",
+    "test:ci": "karma start karma.conf.js --single-run --reporters junit --browsers Chrome",
     "build": "rm -rf dist && npm run build:host && npm run build:frame",
     "build:host": "webpack --config webpack-host.config.js --progress --profile --colors",
     "build:frame": "webpack --config webpack-frame.config.js --progress --profile --colors",
