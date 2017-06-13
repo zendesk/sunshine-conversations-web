@@ -1,12 +1,12 @@
 import sinon from 'sinon';
 
-import { createMock } from '../../mocks/core';
+import { createMock as createCoreMock } from '../../mocks/core';
+import { createMock as createThrottleMock } from '../../mocks/throttle';
 import { createMockedStore } from '../../utils/redux';
 
-import { Throttle } from '../../../src/js/utils/throttle';
-import * as coreService from '../../../src/js/services/core';
-import * as integrationsService from '../../../src/js/services/integrations';
-import * as utilsFaye from '../../../src/js/services/faye';
+import * as integrationsService from '../../../src/frame/js/services/integrations';
+import { __Rewire__ as IntegrationsRewire } from '../../../src/frame/js/services/integrations';
+import { updateUser } from '../../../src/frame/js/actions/user-actions';
 
 const sandbox = sinon.sandbox.create();
 
@@ -14,11 +14,12 @@ describe('Integrations service', () => {
     let coreMock;
     let mockedStore;
     let pendingAppUser;
+    let updateUserSpy;
+    let handleConversationUpdatedStub;
 
     beforeEach(() => {
         // Disable throttling for unit tests
-        sandbox.stub(Throttle.prototype, 'exec', (func) => func());
-
+        IntegrationsRewire('Throttle', createThrottleMock(sandbox));
         pendingAppUser = {
             appuser: {
                 _id: '1',
@@ -33,7 +34,8 @@ describe('Integrations service', () => {
             }
         };
 
-        coreMock = createMock(sandbox);
+        coreMock = createCoreMock(sandbox);
+        IntegrationsRewire('core', () => coreMock);
         coreMock.appUsers.linkChannel.resolves({
             appUser: pendingAppUser
         });
@@ -50,12 +52,10 @@ describe('Integrations service', () => {
             }]
         });
 
-        sandbox.stub(coreService, 'core', () => {
-            return coreMock;
-        });
-
-        sandbox.stub(utilsFaye, 'subscribeConversation').resolves();
-        sandbox.stub(utilsFaye, 'subscribeConversationActivity').resolves();
+        updateUserSpy = sandbox.spy(updateUser);
+        IntegrationsRewire('updateUser', updateUserSpy);
+        handleConversationUpdatedStub = sandbox.stub().returnsAsyncThunk();
+        IntegrationsRewire('handleConversationUpdated', handleConversationUpdatedStub);
 
         mockedStore = createMockedStore(sandbox, {
             user: {
@@ -68,6 +68,9 @@ describe('Integrations service', () => {
             },
             faye: {
                 conversationSubscription: false
+            },
+            ui: {
+                text: {}
             }
         });
 
@@ -98,8 +101,7 @@ describe('Integrations service', () => {
                 type: 'twilio',
                 phoneNumber: '+0123456789'
             })).then(() => {
-                coreMock.appUsers.getMessages.should.have.been.calledOnce;
-                utilsFaye.subscribeConversation.should.have.been.calledOnce;
+                handleConversationUpdatedStub.should.have.been.calledOnce;
             });
         });
     });

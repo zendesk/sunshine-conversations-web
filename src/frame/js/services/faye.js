@@ -4,9 +4,10 @@ import { batchActions } from 'redux-batched-actions';
 
 import { setUser } from '../actions/user-actions';
 import { setFayeConversationSubscription, setFayeUserSubscription, setFayeConversationActivitySubscription } from '../actions/faye-actions';
+import { hideChannelPage, hideConnectNotification } from '../actions/app-state-actions';
 import { addMessage, incrementUnreadCount, resetUnreadCount } from '../actions/conversation-actions';
 import { getMessages, disconnectFaye, handleConversationUpdated } from './conversation';
-import { showSettings, hideChannelPage, hideConnectNotification, showTypingIndicator, hideTypingIndicator } from './app';
+import { showSettings, showTypingIndicator, hideTypingIndicator } from './app';
 import { getDeviceId } from '../utils/device';
 import { ANIMATION_TIMINGS } from '../constants/styles';
 import { cancelTwilioLink } from './integrations';

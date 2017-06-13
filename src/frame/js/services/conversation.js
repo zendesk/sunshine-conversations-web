@@ -1,9 +1,8 @@
 import { batchActions } from 'redux-batched-actions';
 
-import { showConnectNotification } from '../services/app';
 import { addMessage as addMessageAction, addMessages, removeMessage as removeMessageAction, replaceMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages, setFetchingMoreMessagesFromServer } from '../actions/conversation-actions';
 import { updateUser } from '../actions/user-actions';
-import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi } from '../actions/app-state-actions';
+import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi, showConnectNotification } from '../actions/app-state-actions';
 import { unsetFayeSubscriptions } from '../actions/faye-actions';
 import { core } from './core';
 import { immediateUpdate } from './user';
@@ -20,14 +19,14 @@ import { getUserId } from './user';
 
 
 // Throttle requests per appUser
-const throttleMap = {}
+const throttleMap = {};
 const throttlePerUser = (userId) => {
     if (!throttleMap[userId]) {
         throttleMap[userId] = new Throttle();
     }
 
     return throttleMap[userId];
-}
+};
 
 const postSendMessage = (message) => {
     return (dispatch, getState) => {
@@ -395,7 +394,6 @@ export function fetchMoreMessages() {
 
 export function handleConnectNotification(response) {
     return (dispatch, getState) => {
-
         const {user: {clients, email}, app: {integrations, settings}, conversation: {messages}, appState: {emailCaptureEnabled}} = getState();
         const appUserMessages = messages.filter((message) => message.role === 'appUser');
 

@@ -3,9 +3,9 @@ import TestUtils from 'react-addons-test-utils';
 
 import { mockComponent, wrapComponentWithStore } from '../../../utils/react';
 import { createMockedStore } from '../../../utils/redux';
-import { ReactTelephoneInput } from '../../../../src/js/lib/react-telephone-input';
+import { ReactTelephoneInput } from '../../../../src/frame/js/lib/react-telephone-input';
 
-import { TwilioChannelContent } from '../../../../src/js/components/channels/twilio-channel-content';
+import { TwilioChannelContent } from '../../../../src/frame/js/components/channels/twilio-channel-content';
 
 const sandbox = sinon.sandbox.create();
 

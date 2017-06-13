@@ -2,18 +2,13 @@ import sinon from 'sinon';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
-import StripeCheckout from 'react-stripe-checkout';
 
 import { createMockedStore } from '../../utils/redux';
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
-import { Action } from '../../../src/js/components/action.jsx';
-import { Loading } from '../../../src/js/components/loading.jsx';
-
-import * as stripeService from '../../../src/js/services/stripe';
-import * as userService from '../../../src/js/services/user';
-import * as conversationService from '../../../src/js/services/conversation';
-import * as appUtils from '../../../src/js/utils/app';
+import StripeCheckout from '../../../src/frame/js/lib/react-stripe-checkout';
+import { Action, __Rewire__ as ActionRewire } from '../../../src/frame/js/components/action.jsx';
+import { Loading } from '../../../src/frame/js/components/loading.jsx';
 
 const sandbox = sinon.sandbox.create();
 
@@ -74,6 +69,10 @@ describe('Action Component', () => {
     let component;
     let componentNode;
     let mockedStore;
+    let immediateUpdateStub;
+    let postPostbackStub;
+    let getIntegrationStub;
+    let createTransactionStub;
 
     beforeEach(() => {
         mockComponent(sandbox, StripeCheckout, 'div', {
@@ -83,19 +82,23 @@ describe('Action Component', () => {
             className: 'mockedLoading'
         });
 
-        sandbox.stub(userService, 'immediateUpdate');
-        userService.immediateUpdate.resolves();
 
-        sandbox.stub(conversationService, 'postPostback');
-        conversationService.postPostback.resolves();
+        immediateUpdateStub = sandbox.stub().returnsAsyncThunk();
+        ActionRewire('immediateUpdate', immediateUpdateStub);
 
-        sandbox.stub(appUtils, 'getIntegration');
-        appUtils.getIntegration.returns(
+        postPostbackStub = sandbox.stub().returnsAsyncThunk();
+        ActionRewire('postPostback', postPostbackStub);
+
+        createTransactionStub = sandbox.stub().returnsAsyncThunk();
+        ActionRewire('createTransaction', createTransactionStub);
+
+        getIntegrationStub = sandbox.stub().returns(
             {
                 type: 'stripeConnect',
                 publicKey: 'key'
             }
         );
+        ActionRewire('getIntegration', getIntegrationStub);
     });
 
     afterEach(() => {
@@ -158,7 +161,7 @@ describe('Action Component', () => {
         });
 
         afterEach(() => {
-            appUtils.getIntegration.should.have.been.calledWithMatch(storeState.app.integrations, 'stripeConnect');
+            getIntegrationStub.should.have.been.calledWithMatch(storeState.app.integrations, 'stripeConnect');
         });
 
         describe('buy action with stripe keys and offered state', () => {
@@ -238,16 +241,13 @@ describe('Action Component', () => {
                     }));
 
                     component = wrapComponentWithStore(Action, props, mockedStore);
-
-                    sandbox.stub(stripeService, 'createTransaction');
-                    stripeService.createTransaction.resolves();
                 });
 
                 it('call user update', () => {
                     return component.getWrappedInstance().onStripeToken({
                         email: 'email'
                     }).then(() => {
-                        userService.immediateUpdate.should.have.been.calledWith({
+                        immediateUpdateStub.should.have.been.calledWith({
                             email: 'email'
                         });
                     });
@@ -258,15 +258,13 @@ describe('Action Component', () => {
                 const props = getBuyProps();
                 beforeEach(() => {
                     component = wrapComponentWithStore(Action, props, mockedStore);
-                    sandbox.stub(stripeService, 'createTransaction');
-                    stripeService.createTransaction.resolves();
                 });
 
                 it('call user update', () => {
                     return component.getWrappedInstance().onStripeToken({
                         email: 'email'
                     }).then(() => {
-                        userService.immediateUpdate.should.not.have.been.called;
+                        immediateUpdateStub.should.not.have.been.called;
                     });
                 });
             });
@@ -278,8 +276,6 @@ describe('Action Component', () => {
 
                 beforeEach(() => {
                     component = wrapComponentWithStore(Action, props, mockedStore).getWrappedInstance();
-                    sandbox.stub(stripeService, 'createTransaction');
-                    stripeService.createTransaction.resolves();
                 });
 
                 it('should set state to paid', () => {
@@ -299,9 +295,7 @@ describe('Action Component', () => {
 
                 beforeEach(() => {
                     component = wrapComponentWithStore(Action, props, mockedStore).getWrappedInstance();
-                    sandbox.stub(stripeService, 'createTransaction');
-                    stripeService.createTransaction.rejects();
-
+                    createTransactionStub.returnsAsyncThunk({rejects: true});
                 });
 
                 it('should set state to paid', () => {
@@ -377,7 +371,7 @@ describe('Action Component', () => {
         });
 
         beforeEach(() => {
-            appUtils.getIntegration.returns(undefined);
+            getIntegrationStub.returns(undefined);
             mockedStore = createMockedStore(sandbox, storeState);
             component = wrapComponentWithStore(Action, props, mockedStore).getWrappedInstance();
         });
@@ -408,7 +402,7 @@ describe('Action Component', () => {
 
             // use setTimeout to let the promise chain resolve in onPostbackClick
             setTimeout(() => {
-                conversationService.postPostback.should.have.been.calledOnce;
+                postPostbackStub.should.have.been.calledOnce;
                 done();
             });
         });

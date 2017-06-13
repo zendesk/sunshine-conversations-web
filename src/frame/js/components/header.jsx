@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { toggleWidget, showSettings, hideSettings, hideChannelPage } from '../services/app';
@@ -77,7 +78,6 @@ export class HeaderComponent extends Component {
                 <i className='fa fa-arrow-left'></i>
             </div>
             ) : null;
-
         let closeHandle = widgetOpened && <div className='sk-close-handle sk-close-hidden'>
                                               <i className='fa fa-times'></i>
                                           </div>;

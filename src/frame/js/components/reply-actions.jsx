@@ -1,8 +1,10 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { sendMessage, sendLocation } from '../services/conversation';
 import { getRGB, rgbToHsl } from '../utils/colors';
+import { hasGeolocationSupport } from '../utils/dom';
 import { bindAll } from '../utils/functions';
 import { Location } from './location-icon';
 
@@ -33,7 +35,7 @@ export class ReplyActionsComponent extends Component {
     onSendLocation(data) {
         const {dispatch, locationNotSupportedText} = this.props;
 
-        if ('geolocation' in navigator) {
+        if (hasGeolocationSupport()) {
             dispatch(sendLocation(data));
         } else {
             alert(locationNotSupportedText);

@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
-import { NotificationChannelItem } from '../../../src/js/components/notification-channel-item';
+import { NotificationChannelItem } from '../../../src/frame/js/components/notification-channel-item';
 
 import { createMockedStore } from '../../utils/redux';
 import { wrapComponentWithStore } from '../../utils/react';
