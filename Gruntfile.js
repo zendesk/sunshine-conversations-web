@@ -70,7 +70,25 @@ module.exports = function(grunt) {
         exec: {
             createRelease: {
                 cmd: function() {
-                    return 'git checkout -b r/' + this.option('globalVersion');
+                    return [
+                        'git checkout -b r/' + this.option('globalVersion'),
+                        'npm run sentry-cli -- releases new ' + this.option('globalVersion')
+                    ].join(' && ');
+                }
+            },
+            setReleaseCommits: {
+                cmd: function () {
+                    return 'npm run sentry-cli -- releases set-commits ' + this.option('globalVersion') + ' --auto';
+                }
+            },
+            uploadSourceMap: {
+                cmd: function () {
+                    return 'npm run sentry-cli -- releases files ' + this.option('globalVersion') + ' upload-sourcemaps ./dist/';
+                }
+            },
+            finalizeRelease: {
+                cmd: function() {
+                    return 'npm run sentry-cli -- releases finalize ' + this.option('globalVersion');
                 }
             },
             cleanRelease: {
@@ -209,7 +227,7 @@ module.exports = function(grunt) {
     grunt.registerTask('deploy', ['build', 'awsconfig', 's3']);
 
     grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist', 'exec:addLib']);
-    grunt.registerTask('publish:release', ['release']);
+    grunt.registerTask('publish:release', ['release', 'exec:setReleaseCommits', 'exec:uploadSourceMap', 'exec:finalizeRelease']);
     grunt.registerTask('publish:cleanup', ['exec:cleanRelease', 'exec:push']);
 
     grunt.registerTask('branchCheck', 'Checks that you are publishing from Master branch with no working changes', ['gitinfo', 'checkBranchStatus']);
