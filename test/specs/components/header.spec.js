@@ -55,7 +55,7 @@ describe('Header Component', () => {
     let toggleWidgetSpy;
 
     beforeEach(() => {
-        toggleWidgetSpy = sandbox.spy();
+        toggleWidgetSpy = sandbox.stub().returns(() => null);
         HeaderRewire('toggleWidget', toggleWidgetSpy);
         HeaderRewire('hasChannels', sandbox.stub().returns(true));
         sandbox.stub(HeaderComponent.prototype, 'showSettings');
