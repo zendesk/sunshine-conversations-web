@@ -5,6 +5,7 @@ import { createMockedStore } from '../../utils/redux';
 
 import * as conversationService from '../../../src/frame/js/services/conversation';
 import * as conversationActions from '../../../src/frame/js/actions/conversation-actions';
+import { showConnectNotification } from '../../../src/frame/js/services/app';
 import { updateUser } from '../../../src/frame/js/actions/user-actions';
 import { showErrorNotification } from '../../../src/frame/js/actions/app-state-actions';
 import { unsetFayeSubscriptions } from '../../../src/frame/js/actions/faye-actions';
@@ -76,12 +77,12 @@ describe('Conversation service', () => {
     let updateUserSpy;
     let showErrorNotificationSpy;
     let unsetFayeSubscriptionsSpy;
-    let showConnectNotificationStub;
+    let showConnectNotificationSpy;
     let isFileTypeSupportedStub;
     let resizeImageStub;
     let subscribeConversationStub;
     let subscribeUserStub;
-    let disconnectClientStub;
+    let disconnectClientSpy;
 
     before(() => {
         sandbox = sinon.sandbox.create();
@@ -115,12 +116,12 @@ describe('Conversation service', () => {
         };
 
         // Faye service
-        disconnectClientStub = sandbox.stub().returns(null);
-        RewireConversationService('disconnectClient', sandbox.stub().returns(null));
-        subscribeConversationStub = sandbox.stub().resolves();
+        disconnectClientSpy = sandbox.spy();
+        RewireConversationService('disconnectClient', disconnectClientSpy);
+        subscribeConversationStub = sandbox.stub().returns(() => Promise.resolve());
         RewireConversationService('subscribeConversation', subscribeConversationStub);
-        RewireConversationService('subscribeConversationActivity', sandbox.stub().resolves());
-        subscribeUserStub = sandbox.stub().resolves();
+        RewireConversationService('subscribeConversationActivity', sandbox.stub().returns(() => Promise.resolve()));
+        subscribeUserStub = sandbox.stub().returns(() => Promise.resolve());
         RewireConversationService('subscribeUser', subscribeUserStub);
 
         // Media Utils
@@ -143,12 +144,11 @@ describe('Conversation service', () => {
         RewireConversationService('getWindowLocation', getWindowLocationStub);
 
         // App service
-        showConnectNotificationStub = sandbox.stub().returns(() => {
-        });
-        RewireConversationService('showConnectNotification', showConnectNotificationStub);
+        showConnectNotificationSpy = sandbox.spy(showConnectNotification);
+        RewireConversationService('showConnectNotification', showConnectNotificationSpy);
 
         // User service
-        immediateUpdateStub = sandbox.stub().resolves();
+        immediateUpdateStub = sandbox.stub().returns(() => Promise.resolve());
         RewireConversationService('immediateUpdate', immediateUpdateStub);
 
         // Conversation actions
@@ -240,7 +240,7 @@ describe('Conversation service', () => {
             }));
 
             mockedStore.dispatch(conversationService.handleConnectNotification({}));
-            showConnectNotificationStub.should.have.been.calledOnce;
+            showConnectNotificationSpy.should.have.been.calledOnce;
         });
 
         it('should show connect notification 24 hours later', () => {
@@ -260,7 +260,7 @@ describe('Conversation service', () => {
             }));
 
             mockedStore.dispatch(conversationService.handleConnectNotification({}));
-            showConnectNotificationStub.should.have.been.calledOnce;
+            showConnectNotificationSpy.should.have.been.calledOnce;
 
         });
 
@@ -281,7 +281,7 @@ describe('Conversation service', () => {
             }));
 
             mockedStore.dispatch(conversationService.handleConnectNotification({}));
-            showConnectNotificationStub.should.not.have.been.called;
+            showConnectNotificationSpy.should.not.have.been.called;
         });
     });
 
@@ -360,16 +360,12 @@ describe('Conversation service', () => {
                 type: 'location',
                 _clientSent: Date.now() / 1000
             };
-            navigator = {
-                geolocation: {
-                    getCurrentPosition: sandbox.stub().yields({
-                        coords: {
-                            latitude: 10,
-                            longitude: 10
-                        }
-                    })
+            sandbox.stub(navigator.geolocation,'getCurrentPosition').yields({
+                coords: {
+                    latitude: 10,
+                    longitude: 10
                 }
-            };
+            });
         });
 
         conversationStartedSuite(conversationService.sendLocation(locationMessage));
@@ -392,13 +388,8 @@ describe('Conversation service', () => {
                 });
 
                 const stubGeolocationFailure = (args, tick = 100) => {
-                    navigator = {
-                        geolocation: {
-                            getCurrentPosition: () => {
-                            }
-                        }
-                    };
-
+                    // reset stub defined above
+                    navigator.geolocation.getCurrentPosition.restore();
                     sandbox.stub(navigator.geolocation, 'getCurrentPosition', (success, failure) => {
                         failure(args);
                         clock.tick(tick);
@@ -742,7 +733,7 @@ describe('Conversation service', () => {
         });
     });
 
-    describe.only('disconnectFaye', () => {
+    describe('disconnectFaye', () => {
         [true, false].forEach((active) => {
             describe(`with${active ? '' : 'out'} subscription active`, () => {
                 it(`should ${active ? '' : 'not'} cancel subscription`, () => {
@@ -754,7 +745,7 @@ describe('Conversation service', () => {
                     mockedStore.dispatch(conversationService.disconnectFaye());
 
                     userSubscriptionMock.cancel.should.not.have.been.called;
-                    disconnectClientStub.should.have.been.called;
+                    disconnectClientSpy.should.have.been.called;
                     unsetFayeSubscriptionsSpy.should.have.been.called;
                     if (active) {
                         conversationSubscriptionMock.cancel.should.have.been.called;
@@ -776,7 +767,7 @@ describe('Conversation service', () => {
                     mockedStore.dispatch(conversationService.disconnectFaye());
 
                     conversationSubscriptionMock.cancel.should.not.have.been.called;
-                    disconnectClientStub.should.have.been.called;
+                    disconnectClientSpy.should.have.been.called;
                     unsetFayeSubscriptionsSpy.should.have.been.called;
                     if (subscribed) {
                         userSubscriptionMock.cancel.should.have.been.called;
