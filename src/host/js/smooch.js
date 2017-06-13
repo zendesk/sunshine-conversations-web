@@ -1,4 +1,3 @@
-import { VERSION } from '../../shared/js/constants/version';
 import hostStyles from '../stylesheets/iframe.less';
 import { waitForPage } from './utils/dom';
 import { init as initEnquire } from './utils/enquire';

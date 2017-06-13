@@ -195,8 +195,10 @@ module.exports = function(options) {
 
     const plugins = [
         new webpack.DefinePlugin({
+            VERSION: `'${VERSION}'`,
             FRAME_JS_URL: `'${publicPath}${frameJsFilename}'`,
-            FRAME_CSS_URL: `'${publicPath}${frameCssFilename}'`
+            FRAME_CSS_URL: `'${publicPath}${frameCssFilename}'`,
+            SENTRY_DSN: options.sentryDsn ? `'${options.sentryDsn}'` : 'undefined'
         })
     ];
 
