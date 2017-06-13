@@ -1,5 +1,5 @@
 export function createMock(sinon) {
-    var mock = {
+    const mock = {
         appUsers: {
             init: sinon.stub(),
             update: sinon.stub(),

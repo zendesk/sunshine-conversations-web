@@ -2,7 +2,7 @@ import { batchActions } from 'redux-batched-actions';
 
 import { core } from './core';
 
-import { setError, unsetError, setWeChatQRCode, setWeChatError, unsetWeChatError, setTwilioIntegrationState, resetTwilioIntegrationState, setViberQRCode, setViberError, unsetViberError, setLinkCode, setTransferRequestCode } from '../actions/integrations-actions';
+import { setError, unsetError, setWeChatQRCode, setTwilioIntegrationState, resetTwilioIntegrationState, setViberQRCode, setTransferRequestCode } from '../actions/integrations-actions';
 import { handleConversationUpdated } from './conversation';
 import { getUserId } from './user';
 import { updateUser } from '../actions/user-actions';
@@ -208,10 +208,10 @@ export function fetchTransferRequestCode(channel) {
         return core(getState()).appUsers.transferRequest(userId, {
             type: channel
         }).then((res) => {
-            const transferRequestCode = res.transferRequests[0].code
+            const transferRequestCode = res.transferRequests[0].code;
             dispatch(setTransferRequestCode(channel, transferRequestCode));
         }).catch(() => {
             dispatch(setError(channel));
         });
-    }
+    };
 }

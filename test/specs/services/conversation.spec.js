@@ -1,6 +1,7 @@
 import sinon from 'sinon';
 
-import { createMock } from '../../mocks/core';
+import { createMock as createCoreMock } from '../../mocks/core';
+import { createMock as createThrottleMock } from '../../mocks/throttle';
 import { createMockedStore } from '../../utils/redux';
 
 import * as conversationService from '../../../src/frame/js/services/conversation';
@@ -90,15 +91,9 @@ describe('Conversation service', () => {
 
     beforeEach(() => {
         // Disable throttling for unit tests
-        RewireConversationService('Throttle',
-            class {
-                exec(func) {
-                    return func();
-                }
-            }
-        );
+        RewireConversationService('Throttle', createThrottleMock(sandbox));
 
-        coreMock = createMock(sandbox);
+        coreMock = createCoreMock(sandbox);
         coreMock.appUsers.getMessages.resolves({
             conversation: {
             },
@@ -360,7 +355,7 @@ describe('Conversation service', () => {
                 type: 'location',
                 _clientSent: Date.now() / 1000
             };
-            sandbox.stub(navigator.geolocation,'getCurrentPosition').yields({
+            sandbox.stub(navigator.geolocation, 'getCurrentPosition').yields({
                 coords: {
                     latitude: 10,
                     longitude: 10
