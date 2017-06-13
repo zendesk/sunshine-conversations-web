@@ -35,15 +35,15 @@ function getStoreState(state = {}) {
 
 describe('ConnectNotification Component', () => {
     let mockedStore;
-    let showChannelPageSpy;
+    let showChannelPageStub;
     let hasChannelsStub;
     let getAppChannelDetailsStub;
 
     beforeEach(() => {
-        showChannelPageSpy = sandbox.spy();
+        showChannelPageStub = sandbox.stub().returns(() => Promise.resolve());
         hasChannelsStub = sandbox.stub();
         getAppChannelDetailsStub = sandbox.stub();
-        ConnectNotificationRewire('showChannelPage', showChannelPageSpy);
+        ConnectNotificationRewire('showChannelPage', showChannelPageStub);
         ConnectNotificationRewire('hasChannels', hasChannelsStub);
         ConnectNotificationRewire('getAppChannelDetails', getAppChannelDetailsStub);
 
@@ -135,7 +135,7 @@ describe('ConnectNotification Component', () => {
             const component = wrapComponentWithStore(ConnectNotification, null, mockedStore);
             const node = TestUtils.findRenderedDOMComponentWithTag(component, 'a');
             TestUtils.Simulate.click(node);
-            showChannelPageSpy.should.have.been.calledWith('messenger');
+            showChannelPageStub.should.have.been.calledWith('messenger');
         });
     });
 });
