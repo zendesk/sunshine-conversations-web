@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { batchActions } from 'redux-batched-actions';
 
 import { hideChannelPage } from '../../services/app';
-import { LoadingComponent } from '../../components/loading';
+import { Loading } from '../../components/loading';
 import { resetTransferRequestCode, unsetError } from '../../actions/integrations-actions';
 import { fetchTransferRequestCode } from '../../services/integrations';
 
@@ -54,7 +54,7 @@ export class TransferRequestChannelContentComponent extends Component {
             margin: 'auto'
         };
 
-        return <LoadingComponent dark={ true }
+        return <Loading dark={ true }
                                  style={ loadingStyle } />;
     }
 }

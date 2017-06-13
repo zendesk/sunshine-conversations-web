@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import bindAll from 'lodash.bindall';
 
 import { toggleWidget, showSettings, hideSettings, hideChannelPage } from '../services/app';
 import { hasChannels } from '../utils/app';
+import { bindAll } from '../utils/functions';
 import { CHANNEL_DETAILS } from '../constants/channels';
 import { WIDGET_STATE } from '../constants/app';
 

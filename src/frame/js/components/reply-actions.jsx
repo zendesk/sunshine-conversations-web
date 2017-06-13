@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import bindAll from 'lodash.bindall';
 
 import { sendMessage, sendLocation } from '../services/conversation';
 import { getRGB, rgbToHsl } from '../utils/colors';
+import { bindAll } from '../utils/functions';
 import { Location } from './location-icon';
 
 export class ReplyActionsComponent extends Component {
