@@ -97,6 +97,10 @@ export function getWindowLocation() {
     return parent.location;
 }
 
+export function hasGeolocationSupport() {
+    return 'geolocation' in navigator;
+}
+
 
 let onWindowFocus;
 let onWindowBlur;

@@ -3,14 +3,15 @@ import TestUtils from 'react-addons-test-utils';
 
 import { createMockedStore } from '../../utils/redux';
 import { wrapComponentWithStore } from '../../utils/react';
-import { ReplyActions } from '../../../src/frame/js/components/reply-actions';
-
-const conversationService = require('../../../src/frame/js/services/conversation');
+import { ReplyActions, __Rewire__ as ReplyActionsRewire } from '../../../src/frame/js/components/reply-actions';
 
 
 describe('ReplyActions Component', () => {
     let component;
-    let geolocation;
+    let hasGeolocationSupportStub;
+    let sendMessageStub;
+    let sendLocationStub;
+
     const sandbox = sinon.sandbox.create();
     const mockedStore = createMockedStore(sandbox, {
         app: {
@@ -45,10 +46,12 @@ describe('ReplyActions Component', () => {
     ];
 
     beforeEach(() => {
-        sandbox.stub(conversationService, 'sendMessage');
-        sandbox.stub(conversationService, 'sendLocation');
-        geolocation = navigator.geolocation;
-        navigator.geolocation = true;
+        hasGeolocationSupportStub = sandbox.stub().returns(true);
+        ReplyActionsRewire('hasGeolocationSupport', hasGeolocationSupportStub);
+        sendMessageStub = sandbox.stub().returns(() => Promise.resolve());
+        ReplyActionsRewire('sendMessage', sendMessageStub);
+        sendLocationStub = sandbox.stub().returns(() => Promise.resolve());
+        ReplyActionsRewire('sendLocation', sendLocationStub);
 
         component = wrapComponentWithStore(ReplyActions, {
             choices: CHOICES
@@ -56,7 +59,6 @@ describe('ReplyActions Component', () => {
     });
 
     afterEach(() => {
-        navigator.geolocation = geolocation;
         sandbox.restore();
     });
 
@@ -83,12 +85,12 @@ describe('ReplyActions Component', () => {
             TestUtils.Simulate.click(node);
 
             if (choice.type === 'locationRequest') {
-                conversationService.sendLocation.should.have.been.calledOnce;
-                conversationService.sendLocation.should.have.been.calledWith({
+                sendLocationStub.should.have.been.calledOnce;
+                sendLocationStub.should.have.been.calledWith({
                     metadata: choice.metadata
                 });
             } else {
-                conversationService.sendMessage.should.have.been.calledWith({
+                sendMessageStub.should.have.been.calledWith({
                     text: choice.text,
                     payload: choice.payload,
                     metadata: choice.metadata
