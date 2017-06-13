@@ -79,6 +79,9 @@ module.exports = function(options) {
             path.resolve(__dirname, 'src/host/'),
             path.resolve(__dirname, 'src/shared/')
         ],
+        exclude: [
+            path.resolve(__dirname, 'src/host/js/umd.js')
+        ],
         use: [
             {
                 loader: 'babel-loader',
