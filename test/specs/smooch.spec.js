@@ -4,6 +4,7 @@ import { createMockedStore } from '../utils/redux';
 
 import * as userService from '../../src/frame/js/services/user';
 import * as authService from '../../src/frame/js/services/auth';
+import { openWidget, closeWidget } from '../../src/frame/js/actions/app-state-actions';
 import * as Smooch from '../../src/frame/js/smooch';
 import { __Rewire__ as SmoochRewire } from '../../src/frame/js/smooch';
 
@@ -75,16 +76,17 @@ describe('Smooch', () => {
     beforeEach(() => {
         SmoochRewire('renderWidget', sandbox.stub().returns({}));
 
-        handleConversationUpdatedStub = sandbox.stub().resolves({});
+        handleConversationUpdatedStub = sandbox.stub().returns(() => Promise.resolve());
         SmoochRewire('handleConversationUpdated', handleConversationUpdatedStub);
 
-        disconnectFayeStub = sandbox.stub();
+        disconnectFayeStub = sandbox.stub().returns(() => Promise.resolve());
         SmoochRewire('disconnectFaye', disconnectFayeStub);
 
-        immediateUpdateStub = sandbox.stub().resolves({});
+        immediateUpdateStub = sandbox.stub().returns(() => Promise.resolve());
         updateUserStub = sandbox.stub();
-        trackEventStub = sandbox.stub().resolves({});
+        trackEventStub = sandbox.stub();
         getUserIdStub = sandbox.stub().returns('1234');
+
         SmoochRewire('userService', {
             ...userService,
             update: updateUserStub,
@@ -93,7 +95,7 @@ describe('Smooch', () => {
             getUserId: getUserIdStub
         });
 
-        loginStub = sandbox.stub().resolves({
+        loginStub = sandbox.stub().returns(() => Promise.resolve({
             appUser: {
                 _id: 1
             },
@@ -105,7 +107,7 @@ describe('Smooch', () => {
                 },
                 integrations: []
             }
-        });
+        }));
 
         SmoochRewire('authService', {
             ...authService,
@@ -116,9 +118,9 @@ describe('Smooch', () => {
         SmoochRewire('getIntegration', sandbox.stub().returns({}));
 
 
-        openWidgetStub = sandbox.spy();
+        openWidgetStub = sandbox.spy(openWidget);
         SmoochRewire('openWidget', openWidgetStub);
-        closeWidgetStub = sandbox.spy();
+        closeWidgetStub = sandbox.spy(closeWidget);
         SmoochRewire('closeWidget', closeWidgetStub);
 
         coreStub = sandbox.spy();
@@ -224,9 +226,9 @@ describe('Smooch', () => {
 
     describe('Track event', () => {
         beforeEach(() => {
-            trackEventStub.resolves({
+            trackEventStub.returns(() => Promise.resolve({
                 conversationUpdated: true
-            });
+            }));
         });
 
         it('should call trackEvent', () => {
@@ -244,7 +246,7 @@ describe('Smooch', () => {
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, defaultState);
 
-            sendMessageStub = sandbox.stub().resolves({});
+            sendMessageStub = sandbox.stub().returns(() => Promise.resolve({}));
             SmoochRewire('_sendMessage', sendMessageStub);
         });
 
@@ -291,7 +293,7 @@ describe('Smooch', () => {
 
         describe('conversation does not exist', () => {
             beforeEach(() => {
-                handleConversationUpdatedStub.rejects();
+                handleConversationUpdatedStub.returns(() => Promise.reject());
             });
 
             it('should reject', (done) => {
@@ -317,11 +319,11 @@ describe('Smooch', () => {
     describe('Update user', () => {
         describe('conversation started', () => {
             beforeEach(() => {
-                updateUserStub.resolves({
+                updateUserStub.returns(() => Promise.resolve({
                     appUser: {
                         conversationStarted: true
                     }
-                });
+                }));
             });
 
             it('should call handleConversationUpdated', () => {
@@ -339,11 +341,11 @@ describe('Smooch', () => {
 
         describe('conversation not started', () => {
             beforeEach(() => {
-                updateUserStub.resolves({
+                updateUserStub.returns(() => Promise.resolve({
                     appUser: {
                         conversationStarted: false
                     }
-                });
+                }));
             });
 
             it('should not handleConversationUpdated', () => {
@@ -361,9 +363,17 @@ describe('Smooch', () => {
     });
 
     describe('Logout', () => {
+        let smoochLoginStub;
+
+        beforeEach(() => {
+            smoochLoginStub = sandbox.stub().resolves();
+            SmoochRewire('login', smoochLoginStub);
+        });
+
         it('should call login', () => {
-            Smooch.logout();
-            loginStub.should.have.been.called;
+            Smooch.logout().then(() => {
+                smoochLoginStub.should.have.been.called;
+            });
         });
     });
 

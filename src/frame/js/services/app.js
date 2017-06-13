@@ -60,12 +60,6 @@ export function showSettings() {
     };
 }
 
-export function hideSettings() {
-    return (dispatch) => {
-        dispatch(AppStateActions.hideSettings());
-    };
-}
-
 export function showChannelPage(channelType) {
     return (dispatch, getState) => {
         const {user, app: {integrations}} = getState();
@@ -85,12 +79,6 @@ export function showChannelPage(channelType) {
             return dispatch(connectToFayeUser())
                 .then(() => dispatch(channelDetails.onChannelPage()));
         }
-    };
-}
-
-export function hideChannelPage() {
-    return (dispatch) => {
-        dispatch(AppStateActions.hideChannelPage());
     };
 }
 

@@ -1,9 +1,11 @@
-import { monitorUrlChanges, stopMonitoringUrlChanges } from '../../../src/frame/js/utils/dom';
+import { monitorUrlChanges, __Rewire__ as DomRewire } from '../../../src/frame/js/utils/dom';
 
 describe('monitorUrlChanges', () => {
-    it('should monitor hash changes and call callback', (done) => {
-        stopMonitoringUrlChanges();
+    beforeEach(() => {
+        DomRewire('parent', window);
+    });
 
+    it('should monitor hash changes and call callback', (done) => {
         monitorUrlChanges(() => {
             done();
         });
@@ -12,8 +14,6 @@ describe('monitorUrlChanges', () => {
     });
 
     it('should monitor push state changes and call callback', (done) => {
-        stopMonitoringUrlChanges();
-
         monitorUrlChanges(() => {
             done();
         });
@@ -24,8 +24,6 @@ describe('monitorUrlChanges', () => {
     });
 
     it('should monitor replace state changes and call callback', (done) => {
-        stopMonitoringUrlChanges();
-
         monitorUrlChanges(() => {
             done();
         });
