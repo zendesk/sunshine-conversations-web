@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import TestUtils from 'react-addons-test-utils';
 
 import { TransferRequestChannelContent } from '../../../../src/js/components/channels/transfer-request-channel-content';
-import { LoadingComponent } from '../../../../src/js/components/loading';
+import { Loading } from '../../../../src/js/components/loading';
 
 import { wrapComponentWithStore } from '../../../utils/react';
 import { createMockedStore, generateBaseStoreProps } from '../../../utils/redux';
@@ -44,7 +44,7 @@ describe('TransferRequestChannelContent', () => {
         }, store);
 
         const links = TestUtils.scryRenderedDOMComponentsWithTag(component, 'a').length.should.eql(0);
-        TestUtils.findRenderedComponentWithType(component, LoadingComponent);
+        TestUtils.findRenderedComponentWithType(component, Loading);
     });
 
     it('should render error retry link', () => {

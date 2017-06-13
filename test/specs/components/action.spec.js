@@ -8,7 +8,7 @@ import { createMockedStore } from '../../utils/redux';
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
 import { Action } from '../../../src/js/components/action.jsx';
-import { LoadingComponent } from '../../../src/js/components/loading.jsx';
+import { Loading } from '../../../src/js/components/loading.jsx';
 
 import * as stripeService from '../../../src/js/services/stripe';
 import * as userService from '../../../src/js/services/user';
@@ -79,7 +79,7 @@ describe('Action Component', () => {
         mockComponent(sandbox, StripeCheckout, 'div', {
             className: 'mockedStripe'
         });
-        mockComponent(sandbox, LoadingComponent, 'div', {
+        mockComponent(sandbox, Loading, 'div', {
             className: 'mockedLoading'
         });
 

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import { LoadingComponent } from '../../components/loading';
+import { Loading } from '../../components/loading';
 import { fetchWeChatQRCode } from '../../services/integrations';
 
 export class WeChatChannelContentComponent extends Component {
@@ -33,7 +33,7 @@ export class WeChatChannelContentComponent extends Component {
             margin: 'auto'
         };
 
-        return <LoadingComponent dark={ true }
+        return <Loading dark={ true }
                                  style={ loadingStyle } />;
     }
 }

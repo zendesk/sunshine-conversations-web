@@ -1,15 +1,15 @@
 import React, { Component, PropTypes } from 'react';
 import StripeCheckout from '../lib/react-stripe-checkout';
 import { connect } from 'react-redux';
-import bindAll from 'lodash.bindall';
 
 import { createTransaction } from '../services/stripe';
 import { immediateUpdate } from '../services/user';
 import { postPostback } from '../services/conversation';
 
 import { getIntegration } from '../utils/app';
+import { bindAll } from '../utils/functions';
 
-import { LoadingComponent } from './loading';
+import { Loading } from './loading';
 
 export class ActionComponent extends Component {
 
@@ -151,7 +151,7 @@ export class ActionComponent extends Component {
             } else {
                 const buttonText = state === 'paid' ?
                     actionPaymentCompletedText :
-                    <LoadingComponent />;
+                    <Loading />;
 
                 if (state === 'paid') {
                     style = {};
@@ -167,7 +167,7 @@ export class ActionComponent extends Component {
         } else if (type === 'postback') {
             const isProcessing = state === 'processing';
             const buttonText = isProcessing ?
-                <LoadingComponent /> :
+                <Loading /> :
                 text;
 
             return <div className='sk-action'>
