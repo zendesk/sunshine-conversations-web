@@ -3,6 +3,8 @@ module.exports = function(options) {
     const express = require('express');
     const path = require('path');
     const fs = require('fs');
+    const uglifyJs =  require('uglify-js');
+
     // require the page rendering logic
     const Renderer = require('./SimpleRenderer.js');
 
@@ -68,6 +70,10 @@ module.exports = function(options) {
 
     // application
     app.get('/*', function(req, res) {
+        if(config.minifyLoader) {
+            loaderScriptContent = uglifyJs.minify(loaderScriptContent, {compress: false}).code;
+        }
+
         const renderer = new Renderer({
             loaderScript: loaderScriptContent,
             data: config

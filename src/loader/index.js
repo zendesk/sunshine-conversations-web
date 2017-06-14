@@ -1,3 +1,4 @@
+/* eslint no-empty:"off" */
 (function(w, d, globalVarName, appId) {
     var initArgs;
     var onCallArgs = [];
@@ -53,4 +54,4 @@
     req.open('GET', 'https://' + appId + '.webloader.smooch.io/', true);
     req.responseType = 'json';
     req.send();
-})(window, document, 'Smooch', '<APPID>');
+})(window, document, 'Smooch', '<app-id>');
