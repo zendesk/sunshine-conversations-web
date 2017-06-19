@@ -2,7 +2,7 @@ import { batchActions } from 'redux-batched-actions';
 
 import { core } from './core';
 
-import { setError, unsetError, setWeChatQRCode, setTwilioIntegrationState, resetTwilioIntegrationState, setViberQRCode, setTransferRequestCode } from '../actions/integrations-actions';
+import { setError, unsetError, setWeChatQRCode, setTwilioIntegrationState, resetTwilioIntegrationState, setMessageBirdIntegrationState, resetMessageBirdIntegrationState, setViberQRCode, setTransferRequestCode } from '../actions/integrations-actions';
 import { handleConversationUpdated } from './conversation';
 import { getUserId } from './user';
 import { updateUser } from '../actions/user-actions';
@@ -30,11 +30,11 @@ function handleLinkFailure(error) {
             errorMessage = smsBadRequestError;
         }
 
-        dispatch(updateTwilioAttributes({
+        dispatch(updateSMSAttributes({
             hasError: true,
             linkState: 'unlinked',
             errorMessage: errorMessage
-        }));
+        }, type));
     };
 }
 
@@ -61,15 +61,46 @@ export function fetchWeChatQRCode() {
     };
 }
 
+const smsFunctionMap = {
+    twilio: {
+        updateSMSAttributes: updateTwilioAttributes,
+        resetSMSAttributes: resetTwilioAttributes
+    },
+    messagebird: {
+        updateSMSAttributes: updateMessageBirdAttributes,
+        resetSMSAttributes: resetMessageBirdAttributes
+    }
+};
+
+export function updateSMSAttributes(attr, type) {
+    return smsFunctionMap[type].updateSMSAttributes(attr);
+}
+
 export function updateTwilioAttributes(attr) {
     return (dispatch) => {
         dispatch(setTwilioIntegrationState(attr));
     };
 }
 
+export function updateMessageBirdAttributes(attr) {
+    return (dispatch) => {
+        dispatch(setMessageBirdIntegrationState(attr));
+    };
+}
+
+export function resetSMSAttributes(type) {
+    return smsFunctionMap[type].resetSMSAttributes();
+}
+
 export function resetTwilioAttributes() {
     return (dispatch) => {
         dispatch(resetTwilioIntegrationState());
+    };
+}
+
+export function resetMessageBirdAttributes() {
+    return (dispatch) => {
+        dispatch(resetMessageBirdIntegrationState());
     };
 }
 
@@ -93,7 +124,27 @@ export function fetchTwilioAttributes() {
     };
 }
 
-export function linkTwilioChannel(userId, data) {
+export function fetchMessageBirdAttributes() {
+    return (dispatch, getState) => {
+        const {user: {clients, pendingClients}} = getState();
+        const client = clients.find((client) => client.platform === 'messagebird');
+        const pendingClient = pendingClients.find((client) => client.platform === 'messagebird');
+
+        if (client) {
+            dispatch(updateMessageBirdAttributes({
+                linkState: 'linked',
+                appUserNumber: client.displayName
+            }));
+        } else if (pendingClient) {
+            dispatch(updateMessageBirdAttributes({
+                linkState: 'pending',
+                appUserNumber: pendingClient.displayName
+            }));
+        }
+    };
+}
+
+export function linkSMSChannel(userId, data) {
     return (dispatch, getState) => {
         return core(getState()).appUsers.linkChannel(userId, data)
             .then(({appUser}) => {
@@ -104,83 +155,83 @@ export function linkTwilioChannel(userId, data) {
                 }
             })
             .then(() => {
-                dispatch(updateTwilioAttributes({
+                dispatch(updateSMSAttributes({
                     linkState: 'pending'
-                }));
+                }, data.type));
             })
             .catch((e) => {
-                dispatch(handleLinkFailure(e.response));
+                dispatch(handleLinkFailure(e.response, data.type));
             });
     };
 }
 
-export function unlinkTwilioChannel(userId) {
+export function unlinkSMSChannel(userId, type) {
     return (dispatch, getState) => {
-        return core(getState()).appUsers.unlinkChannel(userId, 'twilio')
+        return core(getState()).appUsers.unlinkChannel(userId, type)
             .then(() => {
                 const {user: {clients, pendingClients}} = getState();
                 dispatch(updateUser({
-                    pendingClients: pendingClients.filter((pendingClient) => pendingClient.platform !== 'twilio'),
-                    clients: clients.filter((client) => client.platform !== 'twilio')
+                    pendingClients: pendingClients.filter((pendingClient) => pendingClient.platform !== type),
+                    clients: clients.filter((client) => client.platform !== type)
                 }));
             })
             .then(() => {
-                dispatch(updateTwilioAttributes({
+                dispatch(updateSMSAttributes({
                     linkState: 'unlinked',
                     appUserNumber: '',
                     appUserNumberValid: false
-                }));
+                }, type));
             })
             .catch((e) => {
                 const {response: {status}} = e;
                 const {ui: {text: {smsBadRequestError}}} = getState();
                 // Deleting a client that was never linked
                 if (status === 400) {
-                    dispatch(updateTwilioAttributes({
+                    dispatch(updateSMSAttributes({
                         linkState: 'unlinked'
-                    }));
+                    }, type));
                 } else {
-                    dispatch(updateTwilioAttributes({
+                    dispatch(updateSMSAttributes({
                         linkState: 'unlinked',
                         hasError: true,
                         errorMessage: smsBadRequestError
-                    }));
+                    }, type));
                 }
             });
     };
 }
 
-export function pingTwilioChannel(userId) {
+export function pingSMSChannel(userId, type) {
     return (dispatch, getState) => {
-        return core(getState()).appUsers.pingChannel(userId, 'twilio')
+        return core(getState()).appUsers.pingChannel(userId, type)
             .then(() => {
-                dispatch(updateTwilioAttributes({
+                dispatch(updateSMSAttributes({
                     linkState: 'linked'
-                }));
+                }, type));
             })
             .catch(() => {
                 const {ui: {text: {smsPingChannelError}}} = getState();
-                dispatch(updateTwilioAttributes({
+                dispatch(updateSMSAttributes({
                     hasError: true,
                     errorMessage: smsPingChannelError
-                }));
+                }, type));
             });
     };
 }
 
-export function cancelTwilioLink() {
+export function cancelSMSLink(type) {
     return (dispatch, getState) => {
-        const {user: {pendingClients}, integrations: {twilio: {appUserNumber}}, ui: {text: {smsLinkCancelled}}} = getState();
-
+        const {user: {pendingClients}, ui: {text: {smsLinkCancelled}}} = getState();
+        const {appuserNumber} = integrations[type]
         dispatch(batchActions([
             updateUser({
-                pendingClients: pendingClients.filter((pendingClient) => pendingClient.platform !== 'twilio')
+                pendingClients: pendingClients.filter((pendingClient) => pendingClient.platform !== type)
             }),
-            updateTwilioAttributes({
+            updateSMSAttributes({
                 linkState: 'unlinked',
                 hasError: true,
                 errorMessage: smsLinkCancelled.replace('{appUserNumber}', appUserNumber)
-            })
+            }, type)
         ]));
     };
 }

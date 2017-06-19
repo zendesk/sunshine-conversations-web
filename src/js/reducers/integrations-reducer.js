@@ -1,7 +1,7 @@
 import { RESET_APP } from '../actions/app-actions';
 import { RESET } from '../actions/common-actions';
 
-import { SET_ERROR, UNSET_ERROR, SET_WECHAT_QR_CODE, SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE, RESET_INTEGRATIONS, SET_VIBER_QR_CODE, SET_TRANSFER_REQUEST_CODE, RESET_TRANSFER_REQUEST_CODE } from '../actions/integrations-actions';
+import { SET_ERROR, UNSET_ERROR, SET_WECHAT_QR_CODE, SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE, SET_MESSAGEBIRD_INTEGRATION_STATE, RESET_MESSAGEBIRD_INTEGRATION_STATE, RESET_INTEGRATIONS, SET_VIBER_QR_CODE, SET_TRANSFER_REQUEST_CODE, RESET_TRANSFER_REQUEST_CODE } from '../actions/integrations-actions';
 
 const INITIAL_STATE = {
     messenger: {
@@ -13,6 +13,11 @@ const INITIAL_STATE = {
         transferRequestCode: ''
     },
     twilio: {
+        linkState: 'unlinked',
+        appUserNumber: '',
+        hasError: false
+    },
+    messagebird: {
         linkState: 'unlinked',
         appUserNumber: '',
         hasError: false
@@ -77,6 +82,16 @@ export function IntegrationsReducer(state = INITIAL_STATE, action) {
                 }
             };
         case RESET_TWILIO_INTEGRATION_STATE:
+            return INITIAL_STATE;
+        case SET_MESSAGEBIRD_INTEGRATION_STATE:
+            return {
+                ...state,
+                messagebird: {
+                    ...state.messagebird,
+                    ...action.attrs
+                }
+            };
+        case RESET_MESSAGEBIRD_INTEGRATION_STATE:
             return INITIAL_STATE;
         case SET_TRANSFER_REQUEST_CODE:
             return {

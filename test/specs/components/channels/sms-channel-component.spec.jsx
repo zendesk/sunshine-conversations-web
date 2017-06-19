@@ -5,11 +5,11 @@ import { mockComponent, wrapComponentWithStore } from '../../../utils/react';
 import { createMockedStore } from '../../../utils/redux';
 import { ReactTelephoneInput } from '../../../../src/js/lib/react-telephone-input';
 
-import { TwilioChannelContent } from '../../../../src/js/components/channels/twilio-channel-content';
+import { SMSChannelContent } from '../../../../src/js/components/channels/sms-channel-content';
 
 const sandbox = sinon.sandbox.create();
 
-describe('Twilio Channel Content Component', () => {
+describe('SMS Channel Content Component', () => {
     let component;
     let mockedStore;
 

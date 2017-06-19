@@ -4,6 +4,8 @@ export const SET_WECHAT_QR_CODE = 'SET_WECHAT_QR_CODE';
 export const RESET_INTEGRATIONS = 'RESET_INTEGRATIONS';
 export const SET_TWILIO_INTEGRATION_STATE = 'SET_TWILIO_INTEGRATION_STATE';
 export const RESET_TWILIO_INTEGRATION_STATE = 'RESET_TWILIO_INTEGRATION_STATE';
+export const SET_MESSAGEBIRD_INTEGRATION_STATE = 'SET_MESSAGEBIRD_INTEGRATION_STATE';
+export const RESET_MESSAGEBIRD_INTEGRATION_STATE = 'RESET_MESSAGEBIRD_INTEGRATION_STATE';
 export const SET_VIBER_QR_CODE = 'SET_VIBER_QR_CODE';
 export const SET_TRANSFER_REQUEST_CODE = 'SET_TRANSFER_REQUEST_CODE';
 export const RESET_TRANSFER_REQUEST_CODE = 'RESET_TRANSFER_REQUEST_CODE';
@@ -44,6 +46,19 @@ export function setTwilioIntegrationState(attrs) {
 export function resetTwilioIntegrationState() {
     return {
         type: RESET_TWILIO_INTEGRATION_STATE
+    };
+}
+
+export function setMessageBirdIntegrationState(attrs) {
+    return {
+        type: SET_MESSAGEBIRD_INTEGRATION_STATE,
+        attrs
+    };
+}
+
+export function resetMessageBirdIntegrationState() {
+    return {
+        type: RESET_MESSAGEBIRD_INTEGRATION_STATE
     };
 }
 
