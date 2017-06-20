@@ -10,30 +10,32 @@ import { updateUser } from '../actions/user-actions';
 let fetchingWeChat = false;
 let fetchingViber = false;
 
-function handleLinkFailure(dispatch, getState, error) {
-    const {ui: {text: {smsTooManyRequestsError, smsTooManyRequestsOneMinuteError, smsBadRequestError, smsUnhandledError}}} = getState();
+function handleLinkFailure(error) {
+    return (dispatch, getState) => {
+        const {ui: {text: {smsTooManyRequestsError, smsTooManyRequestsOneMinuteError, smsBadRequestError, smsUnhandledError}}} = getState();
 
-    const {status} = error;
-    let errorMessage;
+        const {status} = error;
+        let errorMessage;
 
-    if (status === 429) {
-        const minutes = Math.ceil(error.retryAfter / 60);
-        if (minutes > 1) {
-            errorMessage = smsTooManyRequestsError.replace('{minutes}', minutes);
+        if (status === 429) {
+            const minutes = Math.ceil(error.retryAfter / 60);
+            if (minutes > 1) {
+                errorMessage = smsTooManyRequestsError.replace('{minutes}', minutes);
+            } else {
+                errorMessage = smsTooManyRequestsOneMinuteError;
+            }
+        } else if (status > 499) {
+            errorMessage = smsUnhandledError;
         } else {
-            errorMessage = smsTooManyRequestsOneMinuteError;
+            errorMessage = smsBadRequestError;
         }
-    } else if (status > 499) {
-        errorMessage = smsUnhandledError;
-    } else {
-        errorMessage = smsBadRequestError;
-    }
 
-    dispatch(updateTwilioAttributes({
-        hasError: true,
-        linkState: 'unlinked',
-        errorMessage: errorMessage
-    }));
+        dispatch(updateTwilioAttributes({
+            hasError: true,
+            linkState: 'unlinked',
+            errorMessage: errorMessage
+        }));
+    };
 }
 
 export function fetchWeChatQRCode() {
@@ -107,7 +109,7 @@ export function linkTwilioChannel(userId, data) {
                 }));
             })
             .catch((e) => {
-                handleLinkFailure(dispatch, getState, e.response);
+                dispatch(handleLinkFailure(e.response));
             });
     };
 }
@@ -184,8 +186,8 @@ export function cancelTwilioLink() {
 }
 
 export function failTwilioLink(error) {
-    return (dispatch, getState) => {
-        handleLinkFailure(dispatch, getState, error);
+    return (dispatch) => {
+        dispatch(handleLinkFailure(error));
     };
 }
 
