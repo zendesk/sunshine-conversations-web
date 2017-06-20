@@ -4,22 +4,6 @@
 
 module.exports = function(grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
-    grunt.registerTask('awsconfig', function() {
-        var awsConfig;
-        try {
-            awsConfig = grunt.file.readJSON('grunt-aws.json');
-        }
-        catch (e) {
-            awsConfig = {};
-        }
-
-        awsConfig.key = (process.env.AWS_ACCESS_KEY_ID || awsConfig.key);
-        awsConfig.secret = (process.env.AWS_SECRET_ACCESS_KEY || awsConfig.secret);
-        awsConfig.bucket = (process.env.SK_JS_S3_BUCKET || awsConfig.bucket);
-        awsConfig.region = (process.env.SK_JS_S3_REGION || awsConfig.region);
-
-        grunt.config.set('aws', awsConfig);
-    });
 
     // Project configuration
     grunt.initConfig({
@@ -28,22 +12,6 @@ module.exports = function(grunt) {
         license: grunt.file.read('LICENSE'),
         globalVersion: '<%= pkg.version %>',
         clean: ['dist/*'],
-
-        s3: {
-            options: {
-                key: '<%= aws.key %>',
-                secret: '<%= aws.secret %>',
-                bucket: '<%= aws.bucket %>',
-                access: 'public-read',
-                headers: {
-                    'Cache-Control': 'max-age=630720000, public'
-                }
-            },
-            upload: [{
-                src: 'dist/*',
-                dest: '/'
-            }]
-        },
 
         concurrent: {
             dev: ['exec:hotDevServer', 'exec:devServer'],
@@ -129,6 +97,15 @@ module.exports = function(grunt) {
             },
             buildNpm: {
                 cmd: 'npm run build:npm'
+            },
+            buildAmd: {
+                cmd: 'npm run build:amd'
+            },
+            uploadCdn: {
+                cmd: 'npm run upload:cdn'
+            },
+            updateLoader: {
+                cmd: 'npm run update:loader'
             }
         },
 
@@ -224,9 +201,9 @@ module.exports = function(grunt) {
 
     grunt.registerTask('build', ['clean', 'exec:build', 'exec:buildNpm']);
 
-    grunt.registerTask('deploy', ['build', 'awsconfig', 's3']);
+    grunt.registerTask('deploy', ['build', 'exec:uploadCdn', 'exec:updateLoader']);
 
-    grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist', 'exec:addLib']);
+    grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:buildAmd', 'exec:addDist', 'exec:addLib']);
     grunt.registerTask('publish:release', ['release', 'exec:setReleaseCommits', 'exec:uploadSourceMap', 'exec:finalizeRelease']);
     grunt.registerTask('publish:cleanup', ['exec:cleanRelease', 'exec:push']);
 
