@@ -13,12 +13,12 @@ let fetchingViber = false;
 function handleLinkFailure(error) {
     return (dispatch, getState) => {
         const {ui: {text: {smsTooManyRequestsError, smsTooManyRequestsOneMinuteError, smsBadRequestError, smsUnhandledError}}} = getState();
-
+        const retryAfter = error.headers ? error.headers.get('retry-after') : error.retryAfter;
         const {status} = error;
         let errorMessage;
 
         if (status === 429) {
-            const minutes = Math.ceil(error.retryAfter / 60);
+            const minutes = Math.ceil(retryAfter / 60);
             if (minutes > 1) {
                 errorMessage = smsTooManyRequestsError.replace('{minutes}', minutes);
             } else {
