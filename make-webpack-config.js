@@ -11,6 +11,7 @@ const rulesByExtension = require('./webpack/lib/rulesByExtension');
 // Possible options:
 // buildType : possible values ['npm', 'host', 'frame', 'dev', 'test']
 //  - npm : build in prevision of the npm release
+//  - amd : build in prevision of the bower release
 //  - host : build the host lib only
 //  - frame : build the frame lib only
 //  - dev : build both the frame and the host for the dev server
@@ -39,11 +40,16 @@ module.exports = function(options) {
 
     if (buildType === 'npm') {
         entry = {
-            index: './src/host/js/umd'
+            index: './src/host/js/npm'
+        };
+    }
+    if (buildType === 'amd') {
+        entry = {
+            amd: './src/host/js/amd'
         };
     } else if (buildType === 'host') {
         entry = {
-            smooch: './src/host/js/umd'
+            smooch: './src/host/js/index'
         };
     } else if (buildType === 'frame') {
         entry = {
@@ -51,7 +57,7 @@ module.exports = function(options) {
         };
     } else if (buildType === 'dev' || buildType === 'test') {
         entry = {
-            smooch: './src/host/js/umd',
+            smooch: './src/host/js/index',
             frame: './src/frame/js/index'
         };
     } else {
@@ -78,9 +84,6 @@ module.exports = function(options) {
         include: [
             path.resolve(__dirname, 'src/host/'),
             path.resolve(__dirname, 'src/shared/')
-        ],
-        exclude: [
-            path.resolve(__dirname, 'src/host/js/umd.js')
         ],
         use: [
             {
@@ -169,7 +172,6 @@ module.exports = function(options) {
         filename: baseFilename + fileExtension,
         chunkFilename: buildType === 'dev' ? '[id].js' : '[chunkhash].js',
         sourceMapFilename: '[file].map',
-        library: buildType === 'host' ? 'Smooch' : undefined,
         libraryTarget: buildType === 'npm' ? 'commonjs2' : 'var',
         pathinfo: options.debug
     };
