@@ -19,7 +19,7 @@ describe('Channel Component', () => {
         });
         Object.keys(CHANNEL_DETAILS).forEach((key) => {
             const details = CHANNEL_DETAILS[key];
-            if (details.Component) {
+            if (details.Component && details.name !== 'SMS') {
                 mockComponent(sandbox, details.Component, 'div', {
                     className: key
                 });
