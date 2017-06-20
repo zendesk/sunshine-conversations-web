@@ -12,14 +12,14 @@ export function setError(channel) {
     return {
         type: SET_ERROR,
         channel
-    }
+    };
 }
 
 export function unsetError(channel) {
     return {
         type: UNSET_ERROR,
         channel
-    }
+    };
 }
 
 export function setWeChatQRCode(code) {
@@ -59,12 +59,12 @@ export function setTransferRequestCode(channel, transferRequestCode) {
         type: SET_TRANSFER_REQUEST_CODE,
         channel,
         transferRequestCode
-    }
+    };
 }
 
 export function resetTransferRequestCode(channel) {
     return {
         type: RESET_TRANSFER_REQUEST_CODE,
         channel
-    }
+    };
 }
