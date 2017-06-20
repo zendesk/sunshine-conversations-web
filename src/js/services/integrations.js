@@ -2,13 +2,41 @@ import { batchActions } from 'redux-batched-actions';
 
 import { core } from './core';
 
-import { setError, unsetError, setWeChatQRCode, setWeChatError, unsetWeChatError, setTwilioIntegrationState, resetTwilioIntegrationState, setViberQRCode, setViberError, unsetViberError, setLinkCode, setTransferRequestCode } from '../actions/integrations-actions';
+import { setError, unsetError, setWeChatQRCode, setTwilioIntegrationState, resetTwilioIntegrationState, setViberQRCode, setTransferRequestCode } from '../actions/integrations-actions';
 import { handleConversationUpdated } from './conversation';
 import { getUserId } from './user';
 import { updateUser } from '../actions/user-actions';
 
 let fetchingWeChat = false;
 let fetchingViber = false;
+
+function handleLinkFailure(error) {
+    return (dispatch, getState) => {
+        const {ui: {text: {smsTooManyRequestsError, smsTooManyRequestsOneMinuteError, smsBadRequestError, smsUnhandledError}}} = getState();
+        const retryAfter = error.headers ? error.headers.get('retry-after') : error.retryAfter;
+        const {status} = error;
+        let errorMessage;
+
+        if (status === 429) {
+            const minutes = Math.ceil(retryAfter / 60);
+            if (minutes > 1) {
+                errorMessage = smsTooManyRequestsError.replace('{minutes}', minutes);
+            } else {
+                errorMessage = smsTooManyRequestsOneMinuteError;
+            }
+        } else if (status > 499) {
+            errorMessage = smsUnhandledError;
+        } else {
+            errorMessage = smsBadRequestError;
+        }
+
+        dispatch(updateTwilioAttributes({
+            hasError: true,
+            linkState: 'unlinked',
+            errorMessage: errorMessage
+        }));
+    };
+}
 
 export function fetchWeChatQRCode() {
     return (dispatch, getState) => {
@@ -81,28 +109,7 @@ export function linkTwilioChannel(userId, data) {
                 }));
             })
             .catch((e) => {
-                const {ui: {text: {smsTooManyRequestsError, smsTooManyRequestsOneMinuteError, smsBadRequestError, smsUnhandledError}}} = getState();
-
-                const {response: {status}} = e;
-                let errorMessage;
-
-                if (status === 429) {
-                    const minutes = Math.ceil(e.response.headers.get('retry-after') / 60);
-                    if (minutes > 1) {
-                        errorMessage = smsTooManyRequestsError.replace('{minutes}', minutes);
-                    } else {
-                        errorMessage = smsTooManyRequestsOneMinuteError;
-                    }
-                } else if (status > 499) {
-                    errorMessage = smsUnhandledError;
-                } else {
-                    errorMessage = smsBadRequestError;
-                }
-
-                dispatch(updateTwilioAttributes({
-                    hasError: true,
-                    errorMessage: errorMessage
-                }));
+                dispatch(handleLinkFailure(e.response));
             });
     };
 }
@@ -178,6 +185,12 @@ export function cancelTwilioLink() {
     };
 }
 
+export function failTwilioLink(error) {
+    return (dispatch) => {
+        dispatch(handleLinkFailure(error));
+    };
+}
+
 export function fetchViberQRCode() {
     return (dispatch, getState) => {
         const {integrations: {viber}} = getState();
@@ -208,10 +221,10 @@ export function fetchTransferRequestCode(channel) {
         return core(getState()).appUsers.transferRequest(userId, {
             type: channel
         }).then((res) => {
-            const transferRequestCode = res.transferRequests[0].code
+            const transferRequestCode = res.transferRequests[0].code;
             dispatch(setTransferRequestCode(channel, transferRequestCode));
         }).catch(() => {
             dispatch(setError(channel));
         });
-    }
+    };
 }
