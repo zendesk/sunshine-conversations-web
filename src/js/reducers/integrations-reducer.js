@@ -43,7 +43,7 @@ export function IntegrationsReducer(state = INITIAL_STATE, action) {
                     ...state[action.channel],
                     hasError: true
                 }
-            }
+            };
         case UNSET_ERROR:
             return {
                 ...state,
@@ -51,7 +51,7 @@ export function IntegrationsReducer(state = INITIAL_STATE, action) {
                     ...state[action.channel],
                     hasError: false
                 }
-            }
+            };
         case SET_WECHAT_QR_CODE:
             return {
                 ...state,
