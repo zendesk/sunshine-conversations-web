@@ -10,7 +10,7 @@ import { updateUser } from '../actions/user-actions';
 let fetchingWeChat = false;
 let fetchingViber = false;
 
-function handleLinkFailure(error) {
+function handleLinkFailure(error, type) {
     return (dispatch, getState) => {
         const {ui: {text: {smsTooManyRequestsError, smsTooManyRequestsOneMinuteError, smsBadRequestError, smsUnhandledError}}} = getState();
         const retryAfter = error.headers ? error.headers.get('retry-after') : error.retryAfter;
@@ -221,8 +221,8 @@ export function pingSMSChannel(userId, type) {
 
 export function cancelSMSLink(type) {
     return (dispatch, getState) => {
-        const {user: {pendingClients}, ui: {text: {smsLinkCancelled}}} = getState();
-        const {appuserNumber} = integrations[type]
+        const {user: {pendingClients}, integrations, ui: {text: {smsLinkCancelled}}} = getState();
+        const {appUserNumber} = integrations[type];
         dispatch(batchActions([
             updateUser({
                 pendingClients: pendingClients.filter((pendingClient) => pendingClient.platform !== type)
@@ -236,9 +236,9 @@ export function cancelSMSLink(type) {
     };
 }
 
-export function failTwilioLink(error) {
+export function failSMSLink(error, type) {
     return (dispatch) => {
-        dispatch(handleLinkFailure(error));
+        dispatch(handleLinkFailure(error, type));
     };
 }
 
