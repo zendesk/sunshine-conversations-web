@@ -30,11 +30,11 @@ function handleLinkFailure(error, type) {
             errorMessage = smsBadRequestError;
         }
 
-        dispatch(updateSMSAttributes({
+        dispatch(updateTwilioAttributes({
             hasError: true,
             linkState: 'unlinked',
             errorMessage: errorMessage
-        }, type));
+        }));
     };
 }
 

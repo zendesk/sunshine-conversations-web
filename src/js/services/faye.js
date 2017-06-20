@@ -178,6 +178,12 @@ export function handleUserSubscription({appUser, event}) {
             if (pendingClient && (pendingClient.platform === 'twilio' || pendingClient.platform === 'messagebird')) {
                 return dispatch(failSMSLink(event.err, pendingClient.platform));
             }
+        } else if (event.type === 'link:failed') {
+            const pendingClient = currentAppUser.pendingClients.find((c) => c.id === event.clientId);
+
+            if (pendingClient && pendingClient.platform === 'twilio') {
+                return dispatch(failSMSLink(event.err));
+            }
         }
 
         return dispatch(updateUser(currentAppUser, appUser));
