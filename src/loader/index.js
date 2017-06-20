@@ -2,6 +2,8 @@
 (function(w, d, globalVarName, appId) {
     var initArgs;
     var onCallArgs = [];
+    var renderArgs;
+    var destroyArgs;
     var next;
     w[globalVarName] = {
         init: function() {
@@ -14,6 +16,12 @@
         },
         on: function() {
             onCallArgs.push(arguments);
+        },
+        render: function() {
+            renderArgs = arguments;
+        },
+        destroy: function() {
+            destroyArgs = arguments;
         }
     };
 
@@ -27,6 +35,14 @@
             if (next) {
                 initCall.then(next);
             }
+        }
+
+        if (renderArgs) {
+            Lib.render.apply(Lib, renderArgs);
+        }
+
+        if (destroyArgs) {
+            Lib.destroy.apply(Lib, destroyArgs);
         }
 
         for (var i = 0; i < onCallArgs.length; i++) {

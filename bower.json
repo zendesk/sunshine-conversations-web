@@ -7,7 +7,7 @@
     "Julian Garritano <julian@smooch.io>"
   ],
   "description": "Smooch Javascript SDK",
-  "main": "dist/smooch.js",
+  "main": "dist/amd.js",
   "keywords": [
     "smooch",
     "javascript",
