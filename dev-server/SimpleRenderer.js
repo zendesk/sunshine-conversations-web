@@ -5,7 +5,7 @@ var embedded = fs.readFileSync(path.resolve(__dirname, '../dev-site/embedded.htm
 
 function SimpleRenderer(options) {
     this.html = (options.embedded ? embedded : html)
-        .replace('SCRIPT_URL', options.scriptUrl)
+        .replace('LOADER_SCRIPT', options.loaderScript)
         .replace('ROOT_URL', options.data.ROOT_URL || '')
         .replace('APP_TOKEN', options.data.APP_TOKEN || '')
         .replace('GIVEN_NAME', options.data.GIVEN_NAME || '')
