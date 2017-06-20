@@ -32,7 +32,8 @@
     "start": "node dev-server/server-production",
     "lint": "eslint . --ext=js --ext=jsx",
     "dev": "nodemon --watch dev-server/ --watch src/index.html --watch src/embedded.html --watch config/config.json dev-server/server-development",
-    "sentry-cli": "sentry-cli"
+    "sentry-cli": "sentry-cli",
+    "uglify:loader": "uglifyjs --mangle -- src/loader/index.js"
   },
   "main": "lib/index.js",
   "homepage": "https://smooch.io",
@@ -134,6 +135,7 @@
     "smooch-core": "3.4.0",
     "stats-webpack-plugin": "0.2.2",
     "style-loader": "0.13.0",
+    "uglify-js": "3.0.16",
     "underscore": "1.8.3",
     "url-loader": "0.5.7",
     "urljoin": "0.1.5",
@@ -144,9 +146,5 @@
   },
   "browser": {
     "faye": "faye/browser/faye-browser"
-  },
-  "dependencies": {
-    "react": "15.5.4",
-    "react-dom": "15.5.4"
   }
 }

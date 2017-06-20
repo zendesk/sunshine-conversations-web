@@ -90,7 +90,7 @@ const Skeleton = {
 function setUp() {
     Lib = undefined;
     iframe = undefined;
-    window.__onLibReady = onSmoochReady;
+    window.__onSmoochFrameReady__ = onSmoochReady;
     for (let func = LIB_FUNCS[0], i = 0; i < LIB_FUNCS.length; func = LIB_FUNCS[++i]) {
         Smooch[func] &&
         delete Smooch[func];
@@ -99,7 +99,7 @@ function setUp() {
 }
 
 function onSmoochReady(_Lib) {
-    window.__onLibReady = function() {};
+    window.__onSmoochFrameReady__ = function() {};
     Lib = _Lib;
     if (!isEmbedded) {
         initEnquire(iframe);

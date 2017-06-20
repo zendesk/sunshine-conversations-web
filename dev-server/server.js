@@ -2,11 +2,19 @@ module.exports = function(options) {
 
     const express = require('express');
     const path = require('path');
+    const fs = require('fs');
+    const uglifyJs = require('uglify-js');
 
     // require the page rendering logic
     const Renderer = require('./SimpleRenderer.js');
 
     const config = require('../config/default/config.json');
+    let loaderScriptContent = fs.readFileSync(path.join(__dirname, '../src/loader/index.js')).toString();
+    loaderScriptContent = loaderScriptContent
+        .replace(
+            '\'https://\' + appId + \'.webloader.smooch.io/\'',
+            '\'/webloader\''
+    );
 
     try {
         Object.assign(config, require('../config/config.json'));
@@ -35,8 +43,8 @@ module.exports = function(options) {
 
     app.get('/embedded', function(req, res) {
         const renderer = new Renderer({
-            scriptUrl: '/_assets/smooch.js',
             data: config,
+            loaderScript: loaderScriptContent,
             embedded: true
         });
 
@@ -54,10 +62,22 @@ module.exports = function(options) {
         );
     });
 
+    app.get('/webloader', function(req, res) {
+        res.json({
+            url: '/_assets/smooch.js'
+        });
+    });
+
     // application
     app.get('/*', function(req, res) {
+        if (config.minifyLoader) {
+            loaderScriptContent = uglifyJs.minify(loaderScriptContent, {
+                compress: false
+            }).code;
+        }
+
         const renderer = new Renderer({
-            scriptUrl: '/_assets/smooch.js',
+            loaderScript: loaderScriptContent,
             data: config
         });
 
