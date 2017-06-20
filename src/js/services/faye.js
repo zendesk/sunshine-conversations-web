@@ -9,7 +9,7 @@ import { getMessages, disconnectFaye, handleConversationUpdated } from './conver
 import { showSettings, hideChannelPage, hideConnectNotification, showTypingIndicator, hideTypingIndicator } from './app';
 import { getDeviceId } from '../utils/device';
 import { ANIMATION_TIMINGS } from '../constants/styles';
-import { cancelTwilioLink, failTwilioLink } from './integrations';
+import { cancelSMSLink, failSMSLink } from './integrations';
 
 
 let client;
@@ -169,14 +169,20 @@ export function handleUserSubscription({appUser, event}) {
             }
         } else if (event.type === 'link:cancelled') {
             const {platform} = appUser.pendingClients.find((c) => c.id === event.clientId);
-            if (platform === 'twilio') {
-                return dispatch(cancelTwilioLink());
+            if (platform === 'twilio' || platform === 'messagebird') {
+                return dispatch(cancelSMSLink(platform));
+            }
+        } else if (event.type === 'link:failed') {
+            const pendingClient = currentAppUser.pendingClients.find((c) => c.id === event.clientId);
+
+            if (pendingClient && (pendingClient.platform === 'twilio' || pendingClient.platform === 'messagebird')) {
+                return dispatch(failSMSLink(event.err, pendingClient.platform));
             }
         } else if (event.type === 'link:failed') {
             const pendingClient = currentAppUser.pendingClients.find((c) => c.id === event.clientId);
 
             if (pendingClient && pendingClient.platform === 'twilio') {
-                return dispatch(failTwilioLink(event.err));
+                return dispatch(failSMSLink(event.err));
             }
         }
 

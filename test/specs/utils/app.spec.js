@@ -95,12 +95,18 @@ describe('App utils', () => {
 
             details[0].should.deep.eq({
                 channel: channel1,
-                details: CHANNEL_DETAILS[channel1.type]
+                details: {
+                    type: channel1.type,
+                    ...CHANNEL_DETAILS[channel1.type]
+                }
             });
 
             details[1].should.deep.eq({
                 channel: channel2,
-                details: CHANNEL_DETAILS[channel2.type]
+                details: {
+                    type: channel2.type,
+                    ...CHANNEL_DETAILS[channel2.type]
+                }
             });
         });
     });

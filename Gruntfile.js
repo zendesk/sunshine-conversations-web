@@ -16,25 +16,10 @@ module.exports = function(grunt) {
         awsConfig.key = (process.env.AWS_ACCESS_KEY_ID || awsConfig.key);
         awsConfig.secret = (process.env.AWS_SECRET_ACCESS_KEY || awsConfig.secret);
         awsConfig.bucket = (process.env.SK_JS_S3_BUCKET || awsConfig.bucket);
+        awsConfig.distributionId = (process.env.SK_JS_S3_DISTRIBUTION_ID || awsConfig.distributionId);
+        awsConfig.region = (process.env.SK_JS_S3_REGION || awsConfig.region);
 
         grunt.config.set('aws', awsConfig);
-    });
-
-    grunt.registerTask('maxcdnconfig', function() {
-        var maxCDN;
-        try {
-            maxCDN = grunt.file.readJSON('grunt-maxcdn.json');
-        }
-        catch (e) {
-            maxCDN = {};
-        }
-
-        maxCDN.companyAlias = (process.env.MAXCDN_COMPANY_ALIAS || maxCDN.companyAlias);
-        maxCDN.consumerKey = (process.env.MAXCDN_CONSUMER_KEY || maxCDN.consumerKey);
-        maxCDN.consumerSecret = (process.env.MAXCDN_CONSUMER_SECRET || maxCDN.consumerSecret);
-        maxCDN.zoneId = (process.env.MAXCDN_ZONE_ID || maxCDN.zoneId);
-
-        grunt.config.set('maxcdn.options', maxCDN);
     });
 
     // Project configuration
@@ -50,16 +35,21 @@ module.exports = function(grunt) {
                 key: '<%= aws.key %>',
                 secret: '<%= aws.secret %>',
                 bucket: '<%= aws.bucket %>',
-                access: 'public-read'
+                access: 'public-read',
+                headers: {
+                    'Cache-Control': 'max-age=630720000, public'
+                }
             },
             js: {
                 // Files to be uploaded.
                 upload: [{
                     src: 'dist/smooch.js',
-                    dest: 'smooch.min.js'
-                }, {
-                    src: 'dist/smooch.js.map',
-                    dest: 'smooch.js.map'
+                    dest: 'smooch.min.js',
+                    options: {
+                        headers: {
+                            'Cache-Control': 'max-age=300, public'
+                        }
+                    }
                 }]
             },
             media: {
@@ -73,27 +63,30 @@ module.exports = function(grunt) {
             }
         },
 
+        cloudfront: {
+            options: {
+                region: '<%= aws.region %>',
+                distributionId: '<%= aws.distributionId %>',
+                credentials: {
+                    accessKeyId: '<%= aws.key %>',
+                    secretAccessKey: '<%= aws.secret %>'
+                },
+                listInvalidations: false,
+                listDistributions: false
+            },
+            production: {
+                CallerReference: Date.now().toString(),
+                Paths: {
+                    Quantity: 1,
+                    Items: ['/smooch.min.js']
+                }
+            }
+        },
+
         concurrent: {
             dev: ['exec:hotDevServer', 'exec:devServer'],
             options: {
                 logConcurrentOutput: true
-            }
-        },
-
-        maxcdn: {
-            purgeCache: {
-                options: {
-                    companyAlias: '<%= maxcdn.options.companyAlias %>',
-                    consumerKey: '<%= maxcdn.options.consumerKey %>',
-                    consumerSecret: '<%= maxcdn.options.consumerSecret %>',
-                    zone_id: '<%= maxcdn.options.zoneId %>',
-                    method: 'delete'
-                },
-                files: [
-                    {
-                        dest: '/smooch.min.js'
-                    }
-                ]
             }
         },
 
@@ -258,7 +251,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['clean', 'exec:build', 'exec:buildNpm']);
     grunt.registerTask('dev', ['concurrent:dev']);
 
-    grunt.registerTask('deploy', ['build', 'awsconfig', 'maxcdnconfig', 's3:js', 's3:media', 'maxcdn']);
+    grunt.registerTask('deploy', ['build', 'awsconfig', 's3:js', 's3:media', 'cloudfront:production']);
     grunt.registerTask('default', ['dev']);
 
     grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist', 'exec:addLib']);
