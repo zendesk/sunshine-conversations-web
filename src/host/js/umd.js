@@ -11,7 +11,7 @@ import Smooch from './smooch';
     } else {
         // in this case, the host lib must be used in conjunction with
         // the script loader
-        if(root.__onSmoochHostReady__) {
+        if (root.__onSmoochHostReady__) {
             root.__onSmoochHostReady__(factory());
         } else {
             console.error('Script loader not found. Please check out the setup instructions.');
