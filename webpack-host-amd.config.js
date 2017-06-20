@@ -1,4 +1,4 @@
 module.exports = require('./make-webpack-config')({
-    buildType: 'npm',
+    buildType: 'amd',
     devtool: 'source-map'
 });
