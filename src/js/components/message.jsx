@@ -70,7 +70,16 @@ class Message extends Component {
         const hasLocation = type === 'location';
         const isAppUser = role === 'appUser';
         const hasActions = actions.length > 0;
-        const lastItem = hasActions ? 'actions' : (hasText || hasFile) ? 'text' : hasLocation ? 'location' : null;
+        
+        let lastItem;
+        
+        if (hasActions) {
+            lastItem = 'actions';        
+        } else if (hasText || hasFile) {
+            lastItem = 'text';
+        } else if (hasLocation) {
+            lastItem = 'location'
+        }
 
         const avatarClass = hasImage ? ['sk-msg-avatar', 'sk-msg-avatar-img'] : ['sk-msg-avatar'];
         const avatarPlaceHolder = isAppUser ? null : (<div className='sk-msg-avatar-placeholder' />);
