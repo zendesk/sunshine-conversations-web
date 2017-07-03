@@ -65,11 +65,21 @@ class Message extends Component {
         const {name, role, avatarUrl, text, accentColor, firstInGroup, lastInGroup, linkColor, type, mediaUrl, sendStatus, clickToRetryText, tapToRetryText, locationSendingFailedText} = this.props;
         const actions = this.props.actions.filter(({type}) => !GLOBAL_ACTION_TYPES.includes(type));
         const hasText = text && text.trim() && text.trim() !== mediaUrl;
+        const hasFile = type === 'file';
         const hasImage = type === 'image';
         const hasLocation = type === 'location';
         const isAppUser = role === 'appUser';
         const hasActions = actions.length > 0;
-        const lastItem = hasActions ? 'actions' : hasText ? 'text' : hasLocation ? 'location' : null;
+        
+        let lastItem;
+        
+        if (hasActions) {
+            lastItem = 'actions';        
+        } else if (hasText || hasFile) {
+            lastItem = 'text';
+        } else if (hasLocation) {
+            lastItem = 'location'
+        }
 
         const avatarClass = hasImage ? ['sk-msg-avatar', 'sk-msg-avatar-img'] : ['sk-msg-avatar'];
         const avatarPlaceHolder = isAppUser ? null : (<div className='sk-msg-avatar-placeholder' />);
@@ -96,8 +106,8 @@ class Message extends Component {
             textClasses.push('sk-last-item');
         }
 
-        const textPart = hasText && <TextMessage {...this.props}
-                                                 className={ textClasses.join(' ') } />;
+        const textPart = (hasText || hasFile) && <TextMessage {...this.props}
+                                                              className={ textClasses.join(' ') } />;
         const imagePart = hasImage && <ImageMessage {...this.props} />;
 
         const style = {};

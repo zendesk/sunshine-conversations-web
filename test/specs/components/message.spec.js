@@ -142,6 +142,22 @@ describe('Message Component', () => {
             });
         });
 
+        describe('file message', () => {
+            const props = Object.assign({}, defaultProps, {
+                role: 'appUser',
+                name: 'Smooch appUser',
+                type: 'file'
+            });
+
+            beforeEach(() => {
+                component = wrapComponentWithStore(MessageComponent, props, mockedStore);
+            });
+
+            it('should render the text message', () => {
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedText').length.should.be.eq(1);
+            });
+        });
+
         describe('location message', () => {
             const props = Object.assign({}, defaultProps, {
                 role: 'appUser',
