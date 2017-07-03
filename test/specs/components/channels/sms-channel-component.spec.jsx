@@ -5,11 +5,11 @@ import { mockComponent, wrapComponentWithStore } from '../../../utils/react';
 import { createMockedStore } from '../../../utils/redux';
 import { ReactTelephoneInput } from '../../../../src/js/lib/react-telephone-input';
 
-import { TwilioChannelContent } from '../../../../src/js/components/channels/twilio-channel-content';
+import { SMSChannelContent } from '../../../../src/js/components/channels/sms-channel-content';
 
 const sandbox = sinon.sandbox.create();
 
-describe('Twilio Channel Content Component', () => {
+describe('SMS Channel Content Component', () => {
     let component;
     let mockedStore;
 
@@ -54,7 +54,7 @@ describe('Twilio Channel Content Component', () => {
             }
         };
         it('should render linked component', () => {
-            component = wrapComponentWithStore(TwilioChannelContent, linkedProps, mockedStore);
+            component = wrapComponentWithStore(SMSChannelContent, linkedProps, mockedStore);
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'linked-state').length.should.eq(1);
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedTelephoneInput').length.should.eq(0);
 
@@ -78,7 +78,7 @@ describe('Twilio Channel Content Component', () => {
         };
 
         it('should render unlinked component', () => {
-            component = wrapComponentWithStore(TwilioChannelContent, unlinkedProps, mockedStore);
+            component = wrapComponentWithStore(SMSChannelContent, unlinkedProps, mockedStore);
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedTelephoneInput').length.should.eq(1);
         });
 
@@ -92,7 +92,7 @@ describe('Twilio Channel Content Component', () => {
                             appUserNumberValid: appUserNumberValid
                         }
                     };
-                    component = wrapComponentWithStore(TwilioChannelContent, props, mockedStore);
+                    component = wrapComponentWithStore(SMSChannelContent, props, mockedStore);
                     TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-primary').length.should.eq(appUserNumberValid ? 1 : 0);
 
                     if (appUserNumberValid) {
@@ -113,7 +113,7 @@ describe('Twilio Channel Content Component', () => {
                         appUserNumberValid: false
                     }
                 };
-                component = wrapComponentWithStore(TwilioChannelContent, props, mockedStore);
+                component = wrapComponentWithStore(SMSChannelContent, props, mockedStore);
                 const warning = TestUtils.findRenderedDOMComponentWithClass(component, 'warning-message');
                 warning.textContent.should.eq(storeState.ui.text.smsInvalidNumberError);
             });
@@ -127,7 +127,7 @@ describe('Twilio Channel Content Component', () => {
                         errorMessage: 'error-message'
                     }
                 };
-                component = wrapComponentWithStore(TwilioChannelContent, props, mockedStore);
+                component = wrapComponentWithStore(SMSChannelContent, props, mockedStore);
                 const warning = TestUtils.findRenderedDOMComponentWithClass(component, 'warning-message');
                 warning.textContent.should.eq(props.channelState.errorMessage);
             });
@@ -146,7 +146,7 @@ describe('Twilio Channel Content Component', () => {
         };
 
         it('should render pending component', () => {
-            component = wrapComponentWithStore(TwilioChannelContent, pendingProps, mockedStore);
+            component = wrapComponentWithStore(SMSChannelContent, pendingProps, mockedStore);
             TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedTelephoneInput').length.should.eq(0);
 
             const appUserPhoneNumber = TestUtils.findRenderedDOMComponentWithClass(component, 'phone-number');

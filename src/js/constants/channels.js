@@ -4,11 +4,11 @@ import { fetchTransferRequestCode } from '../services/integrations';
 
 import { integrations as integrationsAssets } from '../constants/assets';
 
-import { fetchViberQRCode, fetchWeChatQRCode, fetchTwilioAttributes } from '../services/integrations';
+import { fetchViberQRCode, fetchWeChatQRCode, fetchTwilioAttributes, fetchMessageBirdAttributes } from '../services/integrations';
 
 import { MessengerChannelContent } from '../components/channels/messenger-channel-content';
 import { EmailChannelContent } from '../components/channels/email-channel-content';
-import { TwilioChannelContent } from '../components/channels/twilio-channel-content';
+import { SMSChannelContent } from '../components/channels/sms-channel-content';
 import { TelegramChannelContent } from '../components/channels/telegram-channel-content';
 import { WeChatChannelContent } from '../components/channels/wechat-channel-content';
 import { ViberChannelContent } from '../components/channels/viber-channel-content';
@@ -43,8 +43,23 @@ export const CHANNEL_DETAILS = {
         isLinkable: true,
         ...integrationsAssets.sms,
         renderPageIfLinked: true,
-        Component: TwilioChannelContent,
+        Component: SMSChannelContent,
         onChannelPage: fetchTwilioAttributes
+    },
+    messagebird: {
+        name: 'SMS',
+        getDescription: ({text, pendingClient}) => {
+            if (pendingClient) {
+                return text.smsChannelPendingDescription.replace('{number}', pendingClient.displayName);
+            }
+
+            return text.smsChannelDescription;
+        },
+        isLinkable: true,
+        ...integrationsAssets.sms,
+        renderPageIfLinked: true,
+        Component: SMSChannelContent,
+        onChannelPage: fetchMessageBirdAttributes
     },
     telegram: {
         name: 'Telegram',
@@ -53,7 +68,7 @@ export const CHANNEL_DETAILS = {
         ...integrationsAssets.telegram,
         Component: TelegramChannelContent,
         onChannelPage: () => fetchTransferRequestCode('telegram'),
-        getURL: (channel) => `https://telegram.me/${channel.username}` 
+        getURL: (channel) => `https://telegram.me/${channel.username}`
     },
     viber: {
         name: 'Viber',

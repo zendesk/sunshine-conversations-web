@@ -78,9 +78,9 @@ describe('Integrations service', () => {
     });
 
 
-    describe('linkTwilioChannel', () => {
+    describe('linkSMSChannel', () => {
         it('should set the twilio integration to pending state', () => {
-            return mockedStore.dispatch(integrationsService.linkTwilioChannel('1', {
+            return mockedStore.dispatch(integrationsService.linkSMSChannel('1', {
                 type: 'twilio',
                 phoneNumber: '+0123456789'
             })).then(() => {
@@ -94,7 +94,7 @@ describe('Integrations service', () => {
         it('should start faye if user returns with conversationStarted', () => {
             pendingAppUser.conversationStarted = true;
 
-            return mockedStore.dispatch(integrationsService.linkTwilioChannel('1', {
+            return mockedStore.dispatch(integrationsService.linkSMSChannel('1', {
                 type: 'twilio',
                 phoneNumber: '+0123456789'
             })).then(() => {
@@ -104,17 +104,17 @@ describe('Integrations service', () => {
         });
     });
 
-    describe('unlinkTwilioChannel', () => {
-        it('should set the twilio integration state to unlinked', () => {
-            return mockedStore.dispatch(integrationsService.unlinkTwilioChannel('1')).then(() => {
+    describe('unlinkSMSChannel', () => {
+        it('should set the sms integration state to unlinked', () => {
+            return mockedStore.dispatch(integrationsService.unlinkSMSChannel('1', 'twilio')).then(() => {
                 coreMock.appUsers.unlinkChannel.should.have.been.calledWith('1', 'twilio');
             });
         });
     });
 
-    describe('pingTwilioChannel', () => {
+    describe('pingSMSChannel', () => {
         it('should call the ping channel API', () => {
-            return mockedStore.dispatch(integrationsService.pingTwilioChannel('1')).then(() => {
+            return mockedStore.dispatch(integrationsService.pingSMSChannel('1', 'twilio')).then(() => {
                 coreMock.appUsers.pingChannel.should.have.been.calledWith('1', 'twilio');
             });
         });
