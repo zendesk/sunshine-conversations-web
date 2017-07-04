@@ -11,14 +11,6 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         license: grunt.file.read('LICENSE'),
         globalVersion: '<%= pkg.version %>',
-        clean: ['dist/*'],
-
-        concurrent: {
-            dev: ['exec:hotDevServer', 'exec:devServer'],
-            options: {
-                logConcurrentOutput: true
-            }
-        },
 
         release: {
             options: {
@@ -199,7 +191,7 @@ module.exports = function(grunt) {
         grunt.task.run('branchCheck', 'publish:prepare', 'publish:release', 'publish:cleanup');
     });
 
-    grunt.registerTask('build', ['clean', 'exec:build', 'exec:buildNpm']);
+    grunt.registerTask('build', ['exec:build', 'exec:buildNpm']);
 
     grunt.registerTask('deploy', ['build', 'exec:uploadCdn', 'exec:updateLoader']);
 
