@@ -42,8 +42,7 @@ module.exports = function(options) {
         entry = {
             index: './src/host/js/npm'
         };
-    }
-    if (buildType === 'amd') {
+    } else if (buildType === 'amd') {
         entry = {
             amd: './src/host/js/amd'
         };
