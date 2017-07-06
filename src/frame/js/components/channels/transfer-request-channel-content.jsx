@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { batchActions } from 'redux-batched-actions';
 
-import { hideChannelPage } from '../../services/app';
+import { hideChannelPage } from '../../actions/app-state-actions';
 import { Loading } from '../../components/loading';
 import { resetTransferRequestCode, unsetError } from '../../actions/integrations-actions';
 import { fetchTransferRequestCode } from '../../services/integrations';
@@ -32,7 +32,7 @@ export class TransferRequestChannelContentComponent extends Component {
     }
 
     render() {
-        const {type, channelState, url, transferError} = this.props;
+        const {channelState, url, transferError} = this.props;
         const {transferRequestCode, hasError} = channelState;
 
         if (hasError) {
