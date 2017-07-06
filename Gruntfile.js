@@ -11,14 +11,6 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         license: grunt.file.read('LICENSE'),
         globalVersion: '<%= pkg.version %>',
-        clean: ['dist/*'],
-
-        concurrent: {
-            dev: ['exec:hotDevServer', 'exec:devServer'],
-            options: {
-                logConcurrentOutput: true
-            }
-        },
 
         release: {
             options: {
@@ -39,38 +31,38 @@ module.exports = function(grunt) {
             createRelease: {
                 cmd: function() {
                     return [
-                        'git checkout -b r/' + this.option('globalVersion'),
-                        'npm run sentry-cli -- releases new ' + this.option('globalVersion')
+                        'git checkout -b r/' + grunt.config.get('globalVersion'),
+                        'npm run sentry-cli -- releases new ' + grunt.config.get('globalVersion')
                     ].join(' && ');
                 }
             },
             setReleaseCommits: {
-                cmd: function () {
-                    return 'npm run sentry-cli -- releases set-commits ' + this.option('globalVersion') + ' --auto';
+                cmd: function() {
+                    return 'npm run sentry-cli -- releases set-commits ' + grunt.config.get('globalVersion') + ' --auto';
                 }
             },
             uploadSourceMap: {
-                cmd: function () {
-                    return 'npm run sentry-cli -- releases files ' + this.option('globalVersion') + ' upload-sourcemaps ./dist/';
+                cmd: function() {
+                    return 'npm run sentry-cli -- releases files ' + grunt.config.get('globalVersion') + ' upload-sourcemaps ./dist/';
                 }
             },
             finalizeRelease: {
                 cmd: function() {
-                    return 'npm run sentry-cli -- releases finalize ' + this.option('globalVersion');
+                    return 'npm run sentry-cli -- releases finalize ' + grunt.config.get('globalVersion');
                 }
             },
             cleanRelease: {
                 cmd: function() {
                     return [
                         'git checkout master',
-                        'git branch -D r/' + this.option('globalVersion'),
-                        'git tag -d ' + this.option('globalVersion')
+                        'git branch -D r/' + grunt.config.get('globalVersion'),
+                        'git tag -d ' + grunt.config.get('globalVersion')
                     ].join(' && ');
                 }
             },
             commitFiles: {
                 cmd: function() {
-                    return 'git commit -am "Release v' + this.option('globalVersion') + ' [ci skip]"';
+                    return 'git commit -am "Release v' + grunt.config.get('globalVersion') + ' [ci skip]"';
                 }
             },
             push: {
@@ -105,7 +97,7 @@ module.exports = function(grunt) {
                 cmd: 'npm run upload:cdn'
             },
             updateLoader: {
-                cmd: 'npm run update:loader'
+                cmd: () => `VERSION=${grunt.config.get('globalVersion')} npm run update:loader`
             }
         },
 
@@ -199,7 +191,7 @@ module.exports = function(grunt) {
         grunt.task.run('branchCheck', 'publish:prepare', 'publish:release', 'publish:cleanup');
     });
 
-    grunt.registerTask('build', ['clean', 'exec:build', 'exec:buildNpm']);
+    grunt.registerTask('build', ['exec:build', 'exec:buildNpm']);
 
     grunt.registerTask('deploy', ['build', 'exec:uploadCdn', 'exec:updateLoader']);
 
