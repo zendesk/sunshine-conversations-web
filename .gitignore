@@ -17,3 +17,4 @@ example/*
 !example/template/*.html
 npm-debug*
 package-lock.json
+.env
