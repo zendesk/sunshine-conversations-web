@@ -127,10 +127,16 @@ module.exports = function(options) {
             {
                 loader: 'css-loader',
                 options: {
-                    modules: true
+                    modules: true,
+                    sourceMap: true
                 }
             },
-            'less-loader',
+            {
+                loader: 'less-loader',
+                options: {
+                    sourceMap: true
+                }
+            },
         ]
     };
 
@@ -170,7 +176,6 @@ module.exports = function(options) {
         publicPath,
         filename: baseFilename + fileExtension,
         chunkFilename: buildType === 'dev' ? '[id].js' : '[chunkhash].js',
-        sourceMapFilename: '[file].map',
         libraryTarget: buildType === 'npm' ? 'commonjs2' : 'var',
         pathinfo: options.debug
     };
@@ -223,6 +228,7 @@ module.exports = function(options) {
     if (options.minimize) {
         plugins.push(
             new webpack.optimize.UglifyJsPlugin({
+                sourceMap: true,
                 compressor: {
                     warnings: false
                 }
@@ -294,6 +300,10 @@ module.exports = function(options) {
         minimize: !!options.minimize
     }));
 
+    plugins.push(new webpack.SourceMapDevToolPlugin({
+        filename: '[file].map'
+    }));
+
     return {
         entry: entry,
         output: output,
@@ -307,7 +317,6 @@ module.exports = function(options) {
                     frameJsRule
                 ])
         },
-        devtool: options.devtool,
         resolve: {
             extensions: ['.js', '.jsx'],
             modules: [
