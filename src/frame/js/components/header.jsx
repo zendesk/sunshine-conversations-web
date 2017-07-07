@@ -52,12 +52,12 @@ export class HeaderComponent extends Component {
     }
 
     render() {
-        const {appState: {emailCaptureEnabled, settingsVisible, widgetState, visibleChannelType}, unreadCount, settings, text} = this.props;
+        const {appState: {settingsVisible, widgetState, visibleChannelType}, unreadCount, settings, text} = this.props;
         const {settingsHeaderText, headerText} = text;
         const {brandColor} = settings;
 
         const settingsMode = !!(settingsVisible || visibleChannelType);
-        const showSettingsButton = (hasChannels(settings) || emailCaptureEnabled) && !settingsMode;
+        const showSettingsButton = hasChannels(settings)&& !settingsMode;
         const widgetOpened = widgetState === WIDGET_STATE.OPENED;
 
         const unreadBadge = !settingsMode && unreadCount > 0 ? (
@@ -79,7 +79,7 @@ export class HeaderComponent extends Component {
                 <i className='fa fa-arrow-left'></i>
             </div>
             ) : null;
-        let closeHandle = widgetOpened && <div className='sk-close-handle sk-close-hidden'>
+        const closeHandle = widgetOpened && <div className='sk-close-handle sk-close-hidden'>
                                               <i className='fa fa-times'></i>
                                           </div>;
 
@@ -116,10 +116,9 @@ export class HeaderComponent extends Component {
     }
 }
 
-function mapStateToProps({app, ui: {text}, appState: {emailCaptureEnabled, settingsVisible, widgetState, visibleChannelType}, conversation}) {
+function mapStateToProps({app, ui: {text}, appState: {settingsVisible, widgetState, visibleChannelType}, conversation}) {
     return {
         appState: {
-            emailCaptureEnabled,
             settingsVisible,
             widgetState,
             visibleChannelType

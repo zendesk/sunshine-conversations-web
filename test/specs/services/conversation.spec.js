@@ -42,9 +42,6 @@ function getProps(props = {}) {
         conversation: {
             messages: []
         },
-        appState: {
-            emailCaptureEnabled: true
-        },
         faye: {
             userSubscription: null,
             conversationSubscription: null

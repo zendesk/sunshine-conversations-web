@@ -4,13 +4,11 @@ import { connect } from 'react-redux';
 import { findDOMNode } from 'react-dom';
 
 import { getAppChannelDetails, hasChannels } from '../utils/app';
-import { createMarkup } from '../utils/html';
 import { showChannelPage, showSettings } from '../services/app';
 
 export class ConnectNotificationComponent extends Component {
     static propTypes = {
         appChannels: PropTypes.array.isRequired,
-        emailCaptureEnabled: PropTypes.bool.isRequired,
         settings: PropTypes.object.isRequired,
         connectNotificationText: PropTypes.string.isRequired,
         settingsNotificationText: PropTypes.string.isRequired
@@ -44,7 +42,7 @@ export class ConnectNotificationComponent extends Component {
     }
 
     render() {
-        const {appChannels, emailCaptureEnabled, connectNotificationText, settingsNotificationText, settings, dispatch} = this.props;
+        const {appChannels, connectNotificationText, settings, dispatch} = this.props;
 
         const isConnectNotification = hasChannels(settings);
 
@@ -87,21 +85,13 @@ export class ConnectNotificationComponent extends Component {
                    </div>;
         }
 
-        if (emailCaptureEnabled) {
-            return <div className='connect-notification'>
-                       <span ref='text'
-                             dangerouslySetInnerHTML={ createMarkup(settingsNotificationText) }></span>
-                   </div>;
-        }
-
         return null;
     }
 }
 
-export const ConnectNotification = connect(({app, appState, ui: {text}}) => {
+export const ConnectNotification = connect(({app, ui: {text}}) => {
     return {
         appChannels: app.integrations,
-        emailCaptureEnabled: appState.emailCaptureEnabled,
         connectNotificationText: text.connectNotificationText,
         settingsNotificationText: text.settingsNotificationText,
         settings: app.settings.web
