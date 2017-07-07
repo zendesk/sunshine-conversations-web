@@ -232,10 +232,6 @@ export function login(userId = '', jwt, attributes) {
             store.dispatch(batchActions(actions));
         });
 
-        if (hasChannels(loginResponse.app.settings.web)) {
-            actions.push(AppStateActions.disableEmailCapture());
-        }
-
         store.dispatch(batchActions(actions));
 
         if (getIntegration(loginResponse.app.integrations, 'stripeConnect')) {
