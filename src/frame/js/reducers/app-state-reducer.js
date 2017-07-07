@@ -11,7 +11,6 @@ const INITIAL_STATE = {
     settingsEnabled: true,
     soundNotificationEnabled: true,
     imageUploadEnabled: true,
-    emailCaptureEnabled: false,
     readOnlyEmail: false,
     serverURL: 'https://api.smooch.io/',
     connectNotificationTimestamp: null,
@@ -38,18 +37,6 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             return {
                 ...state,
                 connectNotificationTimestamp: null
-            };
-
-        case AppStateActions.ENABLE_EMAIL_CAPTURE:
-            return {
-                ...state,
-                emailCaptureEnabled: true
-            };
-
-        case AppStateActions.DISABLE_EMAIL_CAPTURE:
-            return {
-                ...state,
-                emailCaptureEnabled: false
             };
 
         case AppStateActions.ENABLE_IMAGE_UPLOAD:
