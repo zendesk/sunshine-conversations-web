@@ -8,7 +8,7 @@ export function ImageLoading({color} = {}) {
     }
 
     return <div className='image-overlay'>
-               <div className='three-bounce spinner'>
+               <div className='sk-three-bounce spinner'>
                    <div className='bounce1'
                         style={ bounceStyle }></div>
                    <div className='bounce2'
