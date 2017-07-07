@@ -13,7 +13,6 @@ const INITIAL_STATE = {
         settingsInputPlaceholder: 'Your email address',
         settingsSaveButtonText: 'Save',
         settingsHeaderText: 'Settings',
-        settingsNotificationText: 'In case we\'re slow to respond you can <a href data-ui-settings-link>leave us your email</a>.',
         actionPaymentError: 'An error occurred while processing the card. <br> Please try again or use a different card.',
         actionPaymentCompleted: 'Payment Completed',
         actionPostbackError: 'An error occurred while processing your action. Please try again.',
