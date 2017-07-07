@@ -135,9 +135,11 @@ function onSmoochReady(_Lib) {
 
 function injectFrame() {
     if (!iframe) {
-        iframe = document.createElement('iframe');
-        iframe.className = hostStyles.ref().locals.iframe;
         let loaded = false;
+        iframe = document.createElement('iframe');
+
+        iframe.frameborder = 0;
+        iframe.className = hostStyles.ref().locals.iframe;
         iframe.onload = () => {
             if (!loaded) {
                 loaded = true;
