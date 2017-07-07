@@ -3,7 +3,7 @@ import TestUtils from 'react-addons-test-utils';
 import deepAssign from 'deep-assign';
 
 import { MessengerButton } from '../../../src/frame/js/components/messenger-button';
-import { DefaultButtonIconComponent } from '../../../src/frame/js/components/default-button-icon';
+import { DefaultButtonIcon } from '../../../src/frame/js/components/default-button-icon';
 
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 import { createMockedStore } from '../../utils/redux';
@@ -34,7 +34,7 @@ function getStoreState(state = {}) {
 describe('Messenger Button Component', () => {
     let mockedStore;
     beforeEach(() => {
-        mockComponent(sandbox, DefaultButtonIconComponent, 'div', {
+        mockComponent(sandbox, DefaultButtonIcon, 'div', {
             className: 'mockedDefaultButtonIcon'
         });
     });
