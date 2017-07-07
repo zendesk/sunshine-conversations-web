@@ -3,8 +3,6 @@ export const OPEN_WIDGET = 'OPEN_WIDGET';
 export const CLOSE_WIDGET = 'CLOSE_WIDGET';
 export const ENABLE_SETTINGS = 'ENABLE_SETTINGS';
 export const DISABLE_SETTINGS = 'DISABLE_SETTINGS';
-export const ENABLE_EMAIL_CAPTURE = 'ENABLE_EMAIL_CAPTURE';
-export const DISABLE_EMAIL_CAPTURE = 'DISABLE_EMAIL_CAPTURE';
 export const ENABLE_SOUND_NOTIFICATION = 'ENABLE_SOUND_NOTIFICATION';
 export const DISABLE_SOUND_NOTIFICATION = 'DISABLE_SOUND_NOTIFICATION';
 export const SHOW_SETTINGS = 'SHOW_SETTINGS';
@@ -56,18 +54,6 @@ export function showSettings() {
 export function hideSettings() {
     return {
         type: HIDE_SETTINGS
-    };
-}
-
-export function enableEmailCapture() {
-    return {
-        type: ENABLE_EMAIL_CAPTURE
-    };
-}
-
-export function disableEmailCapture() {
-    return {
-        type: DISABLE_EMAIL_CAPTURE
     };
 }
 

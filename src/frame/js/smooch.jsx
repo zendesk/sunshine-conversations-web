@@ -118,12 +118,6 @@ export function init(props) {
 
     const actions = [];
 
-    if (props.emailCaptureEnabled) {
-        actions.push(AppStateActions.enableEmailCapture());
-    } else {
-        actions.push(AppStateActions.disableEmailCapture());
-    }
-
     if (props.soundNotificationEnabled && isAudioSupported()) {
         actions.push(AppStateActions.enableSoundNotification());
     } else {

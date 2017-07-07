@@ -394,16 +394,15 @@ export function fetchMoreMessages() {
 
 export function handleConnectNotification(response) {
     return (dispatch, getState) => {
-        const {user: {clients, email}, app: {integrations, settings}, conversation: {messages}, appState: {emailCaptureEnabled}} = getState();
+        const {user: {clients}, app: {integrations, settings}, conversation: {messages}} = getState();
         const appUserMessages = messages.filter((message) => message.role === 'appUser');
 
         const channelsAvailable = hasLinkableChannels(integrations, clients, settings.web);
-        const showEmailCapture = emailCaptureEnabled && !email;
         const hasSomeChannelLinked = getLinkableChannels(integrations, settings.web).some((channelType) => {
             return isChannelLinked(clients, channelType);
         });
 
-        if ((showEmailCapture || channelsAvailable) && !hasSomeChannelLinked) {
+        if (channelsAvailable && !hasSomeChannelLinked) {
             if (appUserMessages.length === 1) {
                 dispatch(showConnectNotification());
             } else {
