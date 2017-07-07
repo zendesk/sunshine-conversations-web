@@ -34,7 +34,7 @@ export class ImageMessage extends Component {
                    </div>;
         };
         const image = <ImageLoader src={ this.props.mediaUrl }
-                                   imgProps={ {    alt: 'Uploaded image'} }
+                                   imgProps={ { alt: 'Uploaded image' } }
                                    wrapper={ React.DOM.div }
                                    preloader={ preloader }
                                    onLoad={ this.props.onLoad }>
