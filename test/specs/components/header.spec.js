@@ -28,7 +28,6 @@ function getStoreState(state = {}) {
             }
         },
         appState: {
-            emailCaptureEnabled: false,
             settingsVisible: true,
             widgetState: WIDGET_STATE.OPENED,
             visibleChannelType: false

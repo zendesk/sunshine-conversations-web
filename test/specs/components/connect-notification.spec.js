@@ -24,9 +24,6 @@ function getStoreState(state = {}) {
                 settingsNotificationText: 'settingsNotificationText',
                 connectNotificationText: 'connectNotificationText'
             }
-        },
-        appState: {
-            emailCaptureEnabled: false
         }
     };
 
@@ -57,35 +54,6 @@ describe('ConnectNotification Component', () => {
     it('should render nothing if has no channels and email capture is disabled', () => {
         const component = wrapComponentWithStore(ConnectNotification, null, mockedStore);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'connect-notification').length.should.eq(0);
-    });
-
-    describe('emailCaptureEnabled', () => {
-        beforeEach(() => {
-            getAppChannelDetailsStub.returns([]);
-            mockedStore = createMockedStore(sandbox, getStoreState({
-                appState: {
-                    emailCaptureEnabled: true
-                }
-            }));
-        });
-
-        it('should render the email capture link', () => {
-            hasChannelsStub.returns(false);
-
-            const component = wrapComponentWithStore(ConnectNotification, null, mockedStore);
-
-            const node = TestUtils.findRenderedDOMComponentWithTag(component, 'span');
-            node.textContent.should.be.eq(getStoreState().ui.text.settingsNotificationText);
-        });
-
-        it('should not render the email capture link if has channels', () => {
-            hasChannelsStub.returns(true);
-
-            const component = wrapComponentWithStore(ConnectNotification, null, mockedStore);
-
-            const nodes = TestUtils.scryRenderedDOMComponentsWithTag(component, 'span');
-            nodes.length.should.eq(0);
-        });
     });
 
     describe('channels', () => {
