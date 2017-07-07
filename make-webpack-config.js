@@ -70,7 +70,7 @@ module.exports = function(options) {
                 limit: 1
             }
         },
-        'mp3': {
+        mp3: {
             loader: 'url-loader',
             options: {
                 limit: 1
