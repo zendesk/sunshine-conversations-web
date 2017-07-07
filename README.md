@@ -99,7 +99,6 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | jwt | Yes | - | Token to authenticate your communication with the server (see http://docs.smooch.io/javascript/#authenticating-users-optional)
 | userId | Yes | - | User's id |
 | properties | Yes | - | An object with all properties you want to set on your user |
-| emailCaptureEnabled | Yes | `false` | *Deprecated* won't be supported in 4.x - Enables prompt for email after the first user's message. You can retrieve that email in Slack using `/sk !profile`. Forced to false if other messaging channels are enabled in your Smooch app |
 | soundNotificationEnabled | Yes | `true` | Enables the sound notification for new messages |
 | imageUploadEnabled | Yes | `true` | Enables the image upload feature. |
 | embedded | Yes | False | Tells the widget it will be embedded. (see Embedded section below) |
@@ -124,12 +123,7 @@ var skPromise = Smooch.init({
         sendButtonText: 'Send',
         introductionText: 'We\'re here to talk, so ask us anything!',
         introAppText: 'Message us below or from your favorite app.',
-        settingsText: 'You can leave us your email so that we can get back to you this way.',
-        settingsReadOnlyText: 'We\'ll get back to you at this email address if we missed you.',
-        settingsInputPlaceholder: 'Your email address',
-        settingsSaveButtonText: 'Save',
         settingsHeaderText: 'Settings',
-        settingsNotificationText: 'In case we\'re slow to respond you can <a href data-ui-settings-link>leave us your email</a>.',
         actionPaymentError: 'An error occurred while processing the card. <br> Please try again or use a different card.',
         actionPaymentCompleted: 'Payment Completed',
         actionPostbackError: 'An error occurred while processing your action. Please try again.',

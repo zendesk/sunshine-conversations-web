@@ -118,12 +118,6 @@ export function init(props) {
 
     const actions = [];
 
-    if (props.emailCaptureEnabled) {
-        actions.push(AppStateActions.enableEmailCapture());
-    } else {
-        actions.push(AppStateActions.disableEmailCapture());
-    }
-
     if (props.soundNotificationEnabled && isAudioSupported()) {
         actions.push(AppStateActions.enableSoundNotification());
     } else {
@@ -237,10 +231,6 @@ export function login(userId = '', jwt, attributes) {
 
             store.dispatch(batchActions(actions));
         });
-
-        if (hasChannels(loginResponse.app.settings.web)) {
-            actions.push(AppStateActions.disableEmailCapture());
-        }
 
         store.dispatch(batchActions(actions));
 

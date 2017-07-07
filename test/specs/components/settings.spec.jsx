@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
 import { NotificationChannelItem } from '../../../src/frame/js/components/notification-channel-item';
-import { NotificationsSettings, __Rewire__ as RewireNotificationsSettings } from '../../../src/frame/js/components/notifications-settings';
+import { Settings, __Rewire__ as RewireSettings } from '../../../src/frame/js/components/settings';
 import { CHANNEL_DETAILS } from '../../../src/frame/js/constants/channels';
 
 import { createMockedStore } from '../../utils/redux';
@@ -11,7 +11,7 @@ import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
 
-describe('Notifications Settings', () => {
+describe('Settings', () => {
 
     let component;
     let mockedStore;
@@ -48,7 +48,7 @@ describe('Notifications Settings', () => {
         });
 
         getAppChannelDetailsStub = sandbox.stub();
-        RewireNotificationsSettings('getAppChannelDetails', getAppChannelDetailsStub);
+        RewireSettings('getAppChannelDetails', getAppChannelDetailsStub);
         getAppChannelDetailsStub.returns([
             {
                 channel: {
@@ -74,7 +74,7 @@ describe('Notifications Settings', () => {
 
         mockedStore = createMockedStore(sandbox, storeProps);
 
-        component = wrapComponentWithStore(NotificationsSettings, null, mockedStore);
+        component = wrapComponentWithStore(Settings, null, mockedStore);
     });
 
     afterEach(() => {
@@ -99,7 +99,7 @@ describe('Notifications Settings', () => {
         beforeEach(() => {
             mockedStore = createMockedStore(sandbox, defaultStoreProps);
 
-            component = wrapComponentWithStore(NotificationsSettings, null, mockedStore);
+            component = wrapComponentWithStore(Settings, null, mockedStore);
         });
 
         it('should not render', () => {
