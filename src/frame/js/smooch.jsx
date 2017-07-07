@@ -30,7 +30,7 @@ import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowse
 import { isImageUploadSupported } from './utils/media';
 import { playNotificationSound, isAudioSupported } from './utils/sound';
 import { getDeviceId } from './utils/device';
-import { getIntegration, hasChannels } from './utils/app';
+import { getIntegration } from './utils/app';
 
 import { WIDGET_STATE } from './constants/app';
 
@@ -44,7 +44,7 @@ let unsubscribeFromStore;
 
 // Listen for media query changes from the host page.
 window.addEventListener('message', ({data, origin}) => {
-    if (origin === `${location.protocol}//${location.host}`) {
+    if (origin === `${parent.document.location.protocol}//${parent.document.location.host}`) {
         if (data.type === 'sizeChange') {
             store.dispatch(AppStateActions.updateWidgetSize(data.value));
         }
@@ -201,12 +201,12 @@ export function login(userId = '', jwt, attributes) {
             id: getDeviceId(),
             info: {
                 sdkVersion: VERSION,
-                URL: document.location.host,
+                URL: parent.document.location.host,
                 userAgent: navigator.userAgent,
-                referrer: document.referrer,
+                referrer: parent.document.referrer,
                 browserLanguage: navigator.language,
-                currentUrl: document.location.href,
-                currentTitle: document.title
+                currentUrl: parent.document.location.href,
+                currentTitle: parent.document.title
             }
         }
     })).then((loginResponse) => {
@@ -222,10 +222,10 @@ export function login(userId = '', jwt, attributes) {
         actions.push(userActions.setUser(loginResponse.appUser));
         actions.push(setApp(loginResponse.app));
 
-        actions.push(setCurrentLocation(document.location));
+        actions.push(setCurrentLocation(parent.document.location));
         monitorUrlChanges(() => {
             const actions = [
-                setCurrentLocation(document.location),
+                setCurrentLocation(parent.document.location),
                 userService.updateNowViewing(getDeviceId())
             ];
 
