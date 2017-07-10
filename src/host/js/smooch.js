@@ -138,7 +138,10 @@ function injectFrame() {
         let loaded = false;
         iframe = document.createElement('iframe');
 
-        iframe.frameborder = 0;
+        iframe.frameBorder = 0;
+        iframe.allowFullscreen = true;
+        iframe.allowTransparency = true;
+        
         iframe.className = hostStyles.ref().locals.iframe;
         iframe.onload = () => {
             if (!loaded) {
@@ -150,8 +153,8 @@ function injectFrame() {
                     <!DOCTYPE html>
                     <html>
                         <head>
-                            <script src="${FRAME_JS_URL}" async crossorigin="anonymous"></script>
                             <link rel="stylesheet" href="${FRAME_CSS_URL}" type="text/css" />
+                            <script src="${FRAME_JS_URL}" async crossorigin="anonymous"></script>
                         </head>
                         <body>
                             <div id="mount"></div>

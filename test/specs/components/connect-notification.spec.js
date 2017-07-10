@@ -21,7 +21,6 @@ function getStoreState(state = {}) {
         },
         ui: {
             text: {
-                settingsNotificationText: 'settingsNotificationText',
                 connectNotificationText: 'connectNotificationText'
             }
         }
@@ -51,7 +50,7 @@ describe('ConnectNotification Component', () => {
         sandbox.restore();
     });
 
-    it('should render nothing if has no channels and email capture is disabled', () => {
+    it('should render nothing if has no channels', () => {
         const component = wrapComponentWithStore(ConnectNotification, null, mockedStore);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'connect-notification').length.should.eq(0);
     });
