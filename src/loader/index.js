@@ -52,12 +52,22 @@
 
     function onLoad() {
         try {
-            if (this.response.url) {
+            var data;
+
+            if (typeof this.response === 'string') {
+                // IE10 doesn't care about `responseType = 'json'` and returns
+                // text anyway
+                data = JSON.parse(this.response);
+            } else {
+                data = this.response;
+            }
+
+            if (data.url) {
                 var firstTag = d.getElementsByTagName('script')[0];
                 var tag = d.createElement('script');
 
                 tag.async = true;
-                tag.src = this.response.url;
+                tag.src = data.url;
                 firstTag.parentNode.insertBefore(tag, firstTag);
             }
         }
