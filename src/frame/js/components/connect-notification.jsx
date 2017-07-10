@@ -10,8 +10,7 @@ export class ConnectNotificationComponent extends Component {
     static propTypes = {
         appChannels: PropTypes.array.isRequired,
         settings: PropTypes.object.isRequired,
-        connectNotificationText: PropTypes.string.isRequired,
-        settingsNotificationText: PropTypes.string.isRequired
+        connectNotificationText: PropTypes.string.isRequired
     };
 
     bindHandler() {
@@ -93,7 +92,6 @@ export const ConnectNotification = connect(({app, ui: {text}}) => {
     return {
         appChannels: app.integrations,
         connectNotificationText: text.connectNotificationText,
-        settingsNotificationText: text.settingsNotificationText,
         settings: app.settings.web
     };
 })(ConnectNotificationComponent);
