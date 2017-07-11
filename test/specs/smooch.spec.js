@@ -67,7 +67,6 @@ describe('Smooch', () => {
     let sendMessageStub;
     let disconnectFayeStub;
     let updateUserStub;
-    let trackEventStub;
     let getUserIdStub;
     let openWidgetStub;
     let closeWidgetStub;
@@ -84,14 +83,12 @@ describe('Smooch', () => {
 
         immediateUpdateStub = sandbox.stub().returnsAsyncThunk();
         updateUserStub = sandbox.stub();
-        trackEventStub = sandbox.stub();
         getUserIdStub = sandbox.stub().returns('1234');
 
         SmoochRewire('userService', {
             ...userService,
             update: updateUserStub,
             immediateUpdate: immediateUpdateStub,
-            trackEvent: trackEventStub,
             getUserId: getUserIdStub
         });
 
@@ -222,26 +219,6 @@ describe('Smooch', () => {
                     };
                     handleConversationUpdatedStub.should.have.been.calledOnce;
                 });
-            });
-        });
-    });
-
-    describe('Track event', () => {
-        beforeEach(() => {
-            trackEventStub.returnsAsyncThunk({
-                value: {
-                    conversationUpdated: true
-                }
-            });
-        });
-
-        it('should call trackEvent', () => {
-            const props = {
-                email: 'some@email.com'
-            };
-
-            return Smooch.track('some-event', props).then(() => {
-                trackEventStub.should.have.been.calledWith('some-event', props);
             });
         });
     });
