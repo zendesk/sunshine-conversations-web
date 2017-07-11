@@ -112,43 +112,7 @@ describe('User service', () => {
             });
         });
     });
-
-    describe('trackEvent', () => {
-        describe('conversation updated', () => {
-            beforeEach(() => {
-                coreMock.appUsers.trackEvent.resolves({
-                    conversationUpdated: true
-                });
-
-                handleConversationUpdatedStub.returnsAsyncThunk();
-            });
-
-            it('should call getConversation and connectFaye', () => {
-                return mockedStore.dispatch(userService.trackEvent('event', 'props')).then(() => {
-                    coreMock.appUsers.trackEvent.should.have.been.calledWith('1', 'event', 'props');
-                    handleConversationUpdatedStub.should.have.been.calledOnce;
-                });
-            });
-        });
-
-        describe('conversation not updated', () => {
-            beforeEach(() => {
-                coreMock.appUsers.trackEvent.resolves({
-                    conversationUpdated: false
-                });
-
-                handleConversationUpdatedStub.returnsAsyncThunk();
-            });
-
-            it('should call getConversation and connectFaye', () => {
-                return mockedStore.dispatch(userService.trackEvent('event', 'props')).then(() => {
-                    coreMock.appUsers.trackEvent.should.have.been.calledWith('1', 'event', 'props');
-                    handleConversationUpdatedStub.should.not.have.been.called;
-                });
-            });
-        });
-    });
-
+    
     // skip these untils fake timers weirdness is resolved.
     describe.skip('update', () => {
         beforeEach(() => {
