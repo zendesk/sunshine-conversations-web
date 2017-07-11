@@ -27,7 +27,7 @@
 
     w.__onSmoochHostReady__ = function onHostReady(Lib) {
         delete w.__onSmoochHostReady__;
-        // hydrate skeleton with all the stuff from the real lib
+        // replace skeleton with real lib
         w[globalVarName] = Lib;
 
         if (initArgs) {
