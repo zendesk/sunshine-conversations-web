@@ -1,6 +1,6 @@
-import * as AppStateActions from '../actions/app-state-actions';
-import { RESET } from '../actions/common-actions';
-import { RESET_CONVERSATION, ADD_MESSAGE } from '../actions/conversation-actions';
+import * as AppStateActions from '../actions/app-state';
+import { RESET } from '../actions/common';
+import { RESET_CONVERSATION, ADD_MESSAGE } from '../actions/conversation';
 import { WIDGET_STATE } from '../constants/app';
 
 const INITIAL_STATE = {

@@ -2,10 +2,10 @@ import { batchActions } from 'redux-batched-actions';
 
 import { core } from './core';
 
-import { setError, unsetError, setWeChatQRCode, setTwilioIntegrationState, resetTwilioIntegrationState, setMessageBirdIntegrationState, resetMessageBirdIntegrationState, setViberQRCode, setTransferRequestCode } from '../actions/integrations-actions';
+import { setError, unsetError, setWeChatQRCode, setTwilioIntegrationState, resetTwilioIntegrationState, setMessageBirdIntegrationState, resetMessageBirdIntegrationState, setViberQRCode, setTransferRequestCode } from '../actions/integrations';
 import { handleConversationUpdated } from './conversation';
 import { getUserId } from './user';
-import { updateUser } from '../actions/user-actions';
+import { updateUser } from '../actions/user';
 
 let fetchingWeChat = false;
 let fetchingViber = false;

@@ -4,7 +4,7 @@ import { createMockedStore } from '../utils/redux';
 
 import * as userService from '../../src/frame/js/services/user';
 import * as authService from '../../src/frame/js/services/auth';
-import { openWidget, closeWidget } from '../../src/frame/js/actions/app-state-actions';
+import { openWidget, closeWidget } from '../../src/frame/js/actions/app-state';
 import * as Smooch from '../../src/frame/js/smooch';
 import { __Rewire__ as SmoochRewire } from '../../src/frame/js/smooch';
 

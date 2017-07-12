@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { toggleWidget, showSettings } from '../services/app';
-import { hideSettings, hideChannelPage } from '../actions/app-state-actions';
+import { hideSettings, hideChannelPage } from '../actions/app-state';
 import { hasChannels } from '../utils/app';
 import { bindAll } from '../utils/functions';
 import { CHANNEL_DETAILS } from '../constants/channels';

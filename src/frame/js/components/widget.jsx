@@ -18,7 +18,7 @@ import { resetUnreadCount } from '../services/conversation';
 import { hasChannels } from '../utils/app';
 import { DISPLAY_STYLE } from '../constants/styles';
 import { WIDGET_STATE } from '../constants/app';
-import { disableAnimation } from '../actions/app-state-actions';
+import { disableAnimation } from '../actions/app-state';
 
 export class WidgetComponent extends Component {
     static propTypes = {
