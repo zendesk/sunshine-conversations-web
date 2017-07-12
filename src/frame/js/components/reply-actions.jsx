@@ -90,7 +90,7 @@ export class ReplyActionsComponent extends Component {
                    </button>;
         });
 
-        return <div className='sk-reply-actions-container'>
+        return <div className='sk-reply-container'>
                    { items }
                </div>;
     }

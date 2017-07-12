@@ -1,4 +1,4 @@
-import { showErrorNotification } from '../actions/app-state-actions';
+import { showErrorNotification } from '../actions/app-state';
 import { core } from './core';
 import { getUserId } from './user';
 

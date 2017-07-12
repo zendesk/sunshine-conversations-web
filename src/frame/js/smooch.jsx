@@ -9,14 +9,14 @@ import '../stylesheets/main.less';
 
 import { store } from './store';
 
-import { setAuth, resetAuth } from './actions/auth-actions';
-import * as userActions from './actions/user-actions';
-import { setStripeInfo, setApp } from './actions/app-actions';
-import { updateText } from './actions/ui-actions';
-import { setCurrentLocation } from './actions/browser-actions';
-import { resetConversation } from './actions/conversation-actions';
-import { resetIntegrations } from './actions/integrations-actions';
-import * as AppStateActions from './actions/app-state-actions';
+import { setAuth, resetAuth } from './actions/auth';
+import * as userActions from './actions/user';
+import { setStripeInfo, setApp } from './actions/app';
+import { updateText } from './actions/ui';
+import { setCurrentLocation } from './actions/browser';
+import { resetConversation } from './actions/conversation';
+import { resetIntegrations } from './actions/integrations';
+import * as AppStateActions from './actions/app-state';
 
 import { openWidget, closeWidget } from './services/app';
 import * as authService from './services/auth';

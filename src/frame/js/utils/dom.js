@@ -1,6 +1,6 @@
 // Rewrite the loaders to avoid the style-loader used in the host part
 import hostStyles from '!css-loader?modules!less-loader!../../../host/stylesheets/iframe.less';
-import { hasFocus } from '../actions/browser-actions';
+import { hasFocus } from '../actions/browser';
 import { WIDGET_STATE } from '../constants/app';
 import { DISPLAY_STYLE } from '../constants/styles';
 

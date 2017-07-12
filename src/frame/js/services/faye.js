@@ -2,10 +2,10 @@ import { Client } from 'faye';
 import urljoin from 'urljoin';
 import { batchActions } from 'redux-batched-actions';
 
-import { setUser } from '../actions/user-actions';
-import { setFayeConversationSubscription, setFayeUserSubscription, setFayeConversationActivitySubscription } from '../actions/faye-actions';
-import { hideChannelPage, hideConnectNotification } from '../actions/app-state-actions';
-import { addMessage, incrementUnreadCount, resetUnreadCount } from '../actions/conversation-actions';
+import { setUser } from '../actions/user';
+import { setFayeConversationSubscription, setFayeUserSubscription, setFayeConversationActivitySubscription } from '../actions/faye';
+import { hideChannelPage, hideConnectNotification } from '../actions/app-state';
+import { addMessage, incrementUnreadCount, resetUnreadCount } from '../actions/conversation';
 import { getMessages, disconnectFaye, handleConversationUpdated } from './conversation';
 import { showSettings, showTypingIndicator, hideTypingIndicator } from './app';
 import { getDeviceId } from '../utils/device';

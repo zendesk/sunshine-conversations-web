@@ -1,5 +1,5 @@
-import { UPDATE_UI_TEXT, RESET_UI } from '../actions/ui-actions';
-import { RESET } from '../actions/common-actions';
+import { UPDATE_UI_TEXT, RESET_UI } from '../actions/ui';
+import { RESET } from '../actions/common';
 
 const INITIAL_STATE = {
     text: {
