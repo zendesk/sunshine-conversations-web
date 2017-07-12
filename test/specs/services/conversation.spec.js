@@ -5,10 +5,10 @@ import { createMock as createThrottleMock } from '../../mocks/throttle';
 import { createMockedStore } from '../../utils/redux';
 
 import * as conversationService from '../../../src/frame/js/services/conversation';
-import * as conversationActions from '../../../src/frame/js/actions/conversation-actions';
-import { updateUser } from '../../../src/frame/js/actions/user-actions';
-import { showErrorNotification, showConnectNotification } from '../../../src/frame/js/actions/app-state-actions';
-import { unsetFayeSubscriptions } from '../../../src/frame/js/actions/faye-actions';
+import * as conversationActions from '../../../src/frame/js/actions/conversation';
+import { updateUser } from '../../../src/frame/js/actions/user';
+import { showErrorNotification, showConnectNotification } from '../../../src/frame/js/actions/app-state';
+import { unsetFayeSubscriptions } from '../../../src/frame/js/actions/faye';
 import { __Rewire__ as RewireConversationService } from '../../../src/frame/js/services/conversation';
 
 import { SEND_STATUS, LOCATION_ERRORS } from '../../../src/frame/js/constants/message';

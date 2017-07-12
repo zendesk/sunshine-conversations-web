@@ -1,5 +1,5 @@
-import { AuthReducer } from '../../../src/frame/js/reducers/auth-reducer';
-import { SET_AUTH, RESET_AUTH } from '../../../src/frame/js/actions/auth-actions';
+import { AuthReducer } from '../../../src/frame/js/reducers/auth';
+import { SET_AUTH, RESET_AUTH } from '../../../src/frame/js/actions/auth';
 
 describe('Auth reducer', () => {
     it('should be empty initialy', () => {

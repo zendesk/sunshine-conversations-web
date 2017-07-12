@@ -11,7 +11,7 @@ import { Introduction } from './introduction';
 import { ReplyActions } from './reply-actions';
 import { TypingIndicator } from './typing-indicator';
 
-import { setShouldScrollToBottom, setFetchingMoreMessages } from '../actions/app-state-actions';
+import { setShouldScrollToBottom, setFetchingMoreMessages } from '../actions/app-state';
 import { fetchMoreMessages } from '../services/conversation';
 import { getTop, getBoundingRect } from '../utils/dom';
 import { WIDGET_STATE } from '../constants/app';
@@ -258,7 +258,7 @@ export class ConversationComponent extends Component {
             };
             messageItems.push(<ReplyActions ref={ refCallback }
                                             choices={ choices }
-                                            key='reply-actions' />);
+                                            key='reply' />);
         }
 
         if (connectNotificationTimestamp) {

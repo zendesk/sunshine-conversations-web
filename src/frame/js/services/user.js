@@ -1,6 +1,6 @@
 import deepEqual from 'deep-equal';
 
-import { setUser } from '../actions/user-actions';
+import { setUser } from '../actions/user';
 import { core } from './core';
 import { handleConversationUpdated } from './conversation';
 

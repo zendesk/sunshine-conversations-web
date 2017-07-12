@@ -1,5 +1,5 @@
-import { SET_AUTH, RESET_AUTH } from '../actions/auth-actions';
-import { RESET } from '../actions/common-actions';
+import { SET_AUTH, RESET_AUTH } from '../actions/auth';
+import { RESET } from '../actions/common';
 
 const INITIAL_STATE = {};
 

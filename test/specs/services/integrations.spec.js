@@ -6,7 +6,7 @@ import { createMockedStore } from '../../utils/redux';
 
 import * as integrationsService from '../../../src/frame/js/services/integrations';
 import { __Rewire__ as IntegrationsRewire } from '../../../src/frame/js/services/integrations';
-import { updateUser } from '../../../src/frame/js/actions/user-actions';
+import { updateUser } from '../../../src/frame/js/actions/user';
 
 const sandbox = sinon.sandbox.create();
 

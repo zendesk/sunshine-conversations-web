@@ -2,10 +2,10 @@ import sinon from 'sinon';
 import { Client } from 'faye';
 
 import { createMockedStore } from '../../utils/redux';
-import { hideChannelPage, hideConnectNotification } from '../../../src/frame/js/actions/app-state-actions';
-import { addMessage, incrementUnreadCount, resetUnreadCount } from '../../../src/frame/js/actions/conversation-actions';
-import { setFayeUserSubscription, setFayeConversationSubscription } from '../../../src/frame/js/actions/faye-actions';
-import { setUser } from '../../../src/frame/js/actions/user-actions';
+import { hideChannelPage, hideConnectNotification } from '../../../src/frame/js/actions/app-state';
+import { addMessage, incrementUnreadCount, resetUnreadCount } from '../../../src/frame/js/actions/conversation';
+import { setFayeUserSubscription, setFayeConversationSubscription } from '../../../src/frame/js/actions/faye';
+import { setUser } from '../../../src/frame/js/actions/user';
 import * as fayeService from '../../../src/frame/js/services/faye';
 import { __Rewire__ as FayeRewire } from '../../../src/frame/js/services/faye';
 
