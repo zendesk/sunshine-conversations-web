@@ -3,7 +3,7 @@ import { findDOMNode } from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
 import ImageUpload, { ImageUploadComponent } from '../../../src/frame/js/components/ImageUpload';
-import conversationService from '../../../src/frame/js/services/conversation';
+import conversationService from '../../../src/frame/js/actions/conversation';
 
 import { wrapComponentWithStore } from '../../utils/react';
 import { createMockedStore } from '../../utils/redux';

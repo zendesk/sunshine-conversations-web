@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import Loading from '../Loading';
-import { fetchViberQRCode } from '../../services/integrations';
+import { fetchViberQRCode } from '../../actions/integrations';
 
 import TransferRequestChannelContent from './TransferRequestChannelContent';
 

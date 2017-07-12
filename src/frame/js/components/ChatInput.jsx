@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import isMobile from 'ismobilejs';
 
-import { sendMessage, resetUnreadCount } from '../services/conversation';
+import { sendMessage, resetUnreadCount } from '../actions/conversation';
 
 import ImageUpload from './ImageUpload';
 

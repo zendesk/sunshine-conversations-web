@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 
-import { uploadImage } from '../services/conversation';
+import { uploadImage } from '../actions/conversation';
 import { preventDefault } from '../utils/events';
 import { bindAll } from '../utils/functions';
 

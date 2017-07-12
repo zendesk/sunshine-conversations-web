@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import StripeCheckout from '../lib/react-stripe-checkout';
 import { connect } from 'react-redux';
 
-import { createTransaction } from '../services/stripe';
-import { immediateUpdate } from '../services/user';
-import { postPostback } from '../services/conversation';
+import { createTransaction } from '../actions/stripe';
+import { immediateUpdate } from '../actions/user';
+import { postPostback } from '../actions/conversation';
 
 import { getIntegration } from '../utils/app';
 import { bindAll } from '../utils/functions';

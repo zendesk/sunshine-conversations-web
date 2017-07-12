@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { showChannelPage } from '../services/app';
+import { showChannelPage } from '../actions/app';
 import { bindAll } from '../utils/functions';
 
 export class AlternateChannelsComponent extends Component {

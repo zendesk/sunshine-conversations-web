@@ -2,9 +2,9 @@ import sinon from 'sinon';
 
 import { createMock } from '../../mocks/core';
 import { createMockedStore } from '../../utils/redux';
-import { login, __Rewire__ as AuthRewire } from '../../../src/frame/js/services/auth';
+import { login, __Rewire__ as AuthRewire } from '../../../src/frame/js/actions/auth';
 
-describe('Auth service', () => {
+describe('Auth Actions', () => {
     let mockedStore;
     let sandbox;
     let coreMock;

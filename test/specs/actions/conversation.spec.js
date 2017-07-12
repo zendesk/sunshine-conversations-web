@@ -4,12 +4,11 @@ import { createMock as createCoreMock } from '../../mocks/core';
 import { createMock as createThrottleMock } from '../../mocks/throttle';
 import { createMockedStore } from '../../utils/redux';
 
-import * as conversationService from '../../../src/frame/js/services/conversation';
 import * as conversationActions from '../../../src/frame/js/actions/conversation';
+import { __Rewire__ as RewireConversationActions } from '../../../src/frame/js/actions/conversation';
 import { updateUser } from '../../../src/frame/js/actions/user';
 import { showErrorNotification, showConnectNotification } from '../../../src/frame/js/actions/app-state';
 import { unsetFayeSubscriptions } from '../../../src/frame/js/actions/faye';
-import { __Rewire__ as RewireConversationService } from '../../../src/frame/js/services/conversation';
 
 import { SEND_STATUS, LOCATION_ERRORS } from '../../../src/frame/js/constants/message';
 
@@ -56,7 +55,7 @@ function getProps(props = {}) {
     return Object.assign({}, defaultProps, props);
 }
 
-describe('Conversation service', () => {
+describe('Conversation Actions', () => {
     let sandbox;
     let coreMock;
     let mockedStore;
@@ -87,7 +86,7 @@ describe('Conversation service', () => {
 
     beforeEach(() => {
         // Disable throttling for unit tests
-        RewireConversationService('Throttle', createThrottleMock(sandbox));
+        RewireConversationActions('Throttle', createThrottleMock(sandbox));
 
         coreMock = createCoreMock(sandbox);
         coreMock.appUsers.getMessages.resolves({
@@ -96,7 +95,7 @@ describe('Conversation service', () => {
             messages: []
         });
 
-        RewireConversationService('core', () => coreMock);
+        RewireConversationActions('core', () => coreMock);
 
         conversationSubscriptionMock = {
             cancel: sandbox.stub().resolves()
@@ -108,65 +107,65 @@ describe('Conversation service', () => {
 
         // Faye service
         disconnectClientSpy = sandbox.spy();
-        RewireConversationService('disconnectClient', disconnectClientSpy);
+        RewireConversationActions('disconnectClient', disconnectClientSpy);
         subscribeConversationStub = sandbox.stub().returnsAsyncThunk();
-        RewireConversationService('subscribeConversation', subscribeConversationStub);
-        RewireConversationService('subscribeConversationActivity', sandbox.stub().returnsAsyncThunk());
+        RewireConversationActions('subscribeConversation', subscribeConversationStub);
+        RewireConversationActions('subscribeConversationActivity', sandbox.stub().returnsAsyncThunk());
         subscribeUserStub = sandbox.stub().returnsAsyncThunk();
-        RewireConversationService('subscribeUser', subscribeUserStub);
+        RewireConversationActions('subscribeUser', subscribeUserStub);
 
         // Media Utils
-        RewireConversationService('isImageUploadSupported', sandbox.stub().returns(true));
+        RewireConversationActions('isImageUploadSupported', sandbox.stub().returns(true));
         isFileTypeSupportedStub = sandbox.stub();
-        RewireConversationService('isFileTypeSupported', isFileTypeSupportedStub);
+        RewireConversationActions('isFileTypeSupported', isFileTypeSupportedStub);
         resizeImageStub = sandbox.stub();
-        RewireConversationService('resizeImage', resizeImageStub);
-        RewireConversationService('getBlobFromDataUrl', sandbox.stub().returns('this-is-a-blob'));
+        RewireConversationActions('resizeImage', resizeImageStub);
+        RewireConversationActions('getBlobFromDataUrl', sandbox.stub().returns('this-is-a-blob'));
 
         // Device utils
-        RewireConversationService('getDeviceId', sandbox.stub().returns('1234'));
+        RewireConversationActions('getDeviceId', sandbox.stub().returns('1234'));
 
         // User utils
-        RewireConversationService('hasLinkableChannels', sandbox.stub().returns(true));
-        RewireConversationService('isChannelLinked', sandbox.stub().returns(false));
+        RewireConversationActions('hasLinkableChannels', sandbox.stub().returns(true));
+        RewireConversationActions('isChannelLinked', sandbox.stub().returns(false));
 
         // DOM utils
         getWindowLocationStub = sandbox.stub();
-        RewireConversationService('getWindowLocation', getWindowLocationStub);
+        RewireConversationActions('getWindowLocation', getWindowLocationStub);
 
         // App service
         showConnectNotificationSpy = sandbox.spy(showConnectNotification);
-        RewireConversationService('showConnectNotification', showConnectNotificationSpy);
+        RewireConversationActions('showConnectNotification', showConnectNotificationSpy);
 
         // User service
         immediateUpdateStub = sandbox.stub().returnsAsyncThunk();
-        RewireConversationService('immediateUpdate', immediateUpdateStub);
+        RewireConversationActions('immediateUpdate', immediateUpdateStub);
 
         // Conversation actions
         setConversationSpy = sandbox.spy(conversationActions.setConversation);
-        RewireConversationService('setConversation', setConversationSpy);
+        RewireConversationActions('setConversation', setConversationSpy);
         replaceMessageSpy = sandbox.spy(conversationActions.replaceMessage);
-        RewireConversationService('replaceMessage', replaceMessageSpy);
+        RewireConversationActions('replaceMessage', replaceMessageSpy);
         addMessagesSpy = sandbox.spy(conversationActions.addMessages);
-        RewireConversationService('addMessages', addMessagesSpy);
+        RewireConversationActions('addMessages', addMessagesSpy);
         addMessageActionSpy = sandbox.spy(conversationActions.addMessage);
-        RewireConversationService('addMessageAction', addMessageActionSpy);
+        RewireConversationActions('addMessageAction', addMessageActionSpy);
         removeMessageActionSpy = sandbox.spy(conversationActions.removeMessage);
-        RewireConversationService('removeMessageAction', removeMessageActionSpy);
+        RewireConversationActions('removeMessageAction', removeMessageActionSpy);
         resetUnreadCountActionSpy = sandbox.spy(conversationActions.resetUnreadCount);
-        RewireConversationService('resetUnreadCountAction', resetUnreadCountActionSpy);
+        RewireConversationActions('resetUnreadCountAction', resetUnreadCountActionSpy);
 
         // User actions
         updateUserSpy = sandbox.spy(updateUser);
-        RewireConversationService('updateUser', updateUserSpy);
+        RewireConversationActions('updateUser', updateUserSpy);
 
         // AppState actions
         showErrorNotificationSpy = sandbox.spy(showErrorNotification);
-        RewireConversationService('showErrorNotification', showErrorNotificationSpy);
+        RewireConversationActions('showErrorNotification', showErrorNotificationSpy);
 
         // Faye actions
         unsetFayeSubscriptionsSpy = sandbox.spy(unsetFayeSubscriptions);
-        RewireConversationService('unsetFayeSubscriptions', unsetFayeSubscriptionsSpy);
+        RewireConversationActions('unsetFayeSubscriptions', unsetFayeSubscriptionsSpy);
     });
 
     afterEach(() => {
@@ -230,7 +229,7 @@ describe('Conversation service', () => {
                 }
             }));
 
-            mockedStore.dispatch(conversationService.handleConnectNotification({}));
+            mockedStore.dispatch(conversationActions.handleConnectNotification({}));
             showConnectNotificationSpy.should.have.been.calledOnce;
         });
 
@@ -250,7 +249,7 @@ describe('Conversation service', () => {
                 }
             }));
 
-            mockedStore.dispatch(conversationService.handleConnectNotification({}));
+            mockedStore.dispatch(conversationActions.handleConnectNotification({}));
             showConnectNotificationSpy.should.have.been.calledOnce;
 
         });
@@ -271,7 +270,7 @@ describe('Conversation service', () => {
                 }
             }));
 
-            mockedStore.dispatch(conversationService.handleConnectNotification({}));
+            mockedStore.dispatch(conversationActions.handleConnectNotification({}));
             showConnectNotificationSpy.should.not.have.been.called;
         });
     });
@@ -287,12 +286,12 @@ describe('Conversation service', () => {
             coreMock.appUsers.sendMessage.resolves(message);
         });
 
-        conversationStartedSuite(conversationService.sendMessage('message'));
+        conversationStartedSuite(conversationActions.sendMessage('message'));
 
         it('should add message and send message', () => {
             mockedStore = createMockedStore(sandbox, getProps());
 
-            return mockedStore.dispatch(conversationService.sendMessage('message')).then(() => {
+            return mockedStore.dispatch(conversationActions.sendMessage('message')).then(() => {
                 addMessageActionSpy.should.have.been.calledOnce;
                 coreMock.appUsers.sendMessage.should.have.been.calledOnce;
             });
@@ -301,8 +300,8 @@ describe('Conversation service', () => {
         it('should accept string or message properties', () => {
             mockedStore = createMockedStore(sandbox, getProps());
 
-            return mockedStore.dispatch(conversationService.sendMessage('message'))
-                .then(() => mockedStore.dispatch(conversationService.sendMessage({
+            return mockedStore.dispatch(conversationActions.sendMessage('message'))
+                .then(() => mockedStore.dispatch(conversationActions.sendMessage({
                     type: 'text',
                     text: 'message'
                 })))
@@ -324,7 +323,7 @@ describe('Conversation service', () => {
 
             it('should update message send status', () => {
                 mockedStore = createMockedStore(sandbox, getProps());
-                return mockedStore.dispatch(conversationService.sendMessage(message))
+                return mockedStore.dispatch(conversationActions.sendMessage(message))
                     .then(() => {
                         replaceMessageSpy.should.have.been.calledWith({
                             _clientId: message._clientId
@@ -367,7 +366,7 @@ describe('Conversation service', () => {
             });
         });
 
-        conversationStartedSuite(conversationService.sendLocation(locationMessage));
+        conversationStartedSuite(conversationActions.sendLocation(locationMessage));
 
         const getCurrentLocationFailsSuite = (action) => {
             let clock;
@@ -474,7 +473,7 @@ describe('Conversation service', () => {
             it('should postSendMessage', () => {
                 mockedStore = createMockedStore(sandbox, getProps());
 
-                return mockedStore.dispatch(conversationService.sendLocation(locationMessage)).then(() => {
+                return mockedStore.dispatch(conversationActions.sendLocation(locationMessage)).then(() => {
                     addMessageActionSpy.should.not.have.been.called;
                     coreMock.appUsers.sendMessage.should.have.been.calledOnce;
                 });
@@ -485,7 +484,7 @@ describe('Conversation service', () => {
             it('should addMessage', () => {
                 mockedStore = createMockedStore(sandbox, getProps());
 
-                return mockedStore.dispatch(conversationService.sendLocation(locationMessage)).then(() => {
+                return mockedStore.dispatch(conversationActions.sendLocation(locationMessage)).then(() => {
                     addMessageActionSpy.should.not.have.been.called;
                     navigator.geolocation.getCurrentPosition.should.have.been.calledOnce;
                     replaceMessageSpy.should.have.been.called;
@@ -493,14 +492,14 @@ describe('Conversation service', () => {
                 });
             });
 
-            getCurrentLocationFailsSuite(conversationService.sendLocation(locationMessage));
+            getCurrentLocationFailsSuite(conversationActions.sendLocation(locationMessage));
         });
 
         describe('message does not yet exist', () => {
             it('should addMessage', () => {
                 mockedStore = createMockedStore(sandbox, getProps());
 
-                return mockedStore.dispatch(conversationService.sendLocation()).then(() => {
+                return mockedStore.dispatch(conversationActions.sendLocation()).then(() => {
                     addMessageActionSpy.should.have.been.calledOnce;
                     navigator.geolocation.getCurrentPosition.should.have.been.calledOnce;
                     replaceMessageSpy.should.have.been.called;
@@ -508,7 +507,7 @@ describe('Conversation service', () => {
                 });
             });
 
-            getCurrentLocationFailsSuite(conversationService.sendLocation());
+            getCurrentLocationFailsSuite(conversationActions.sendLocation());
         });
     });
 
@@ -538,14 +537,14 @@ describe('Conversation service', () => {
                 })));
             });
 
-            conversationStartedSuite(conversationService.resendMessage(message._clientId), {
+            conversationStartedSuite(conversationActions.resendMessage(message._clientId), {
                 conversation: {
                     messages: [message]
                 }
             });
 
             it('should update send status and post upload image', () => {
-                return mockedStore.dispatch(conversationService.resendMessage(message._clientId)).then(() => {
+                return mockedStore.dispatch(conversationActions.resendMessage(message._clientId)).then(() => {
                     coreMock.appUsers.uploadImage.should.have.been.calledOnce;
                     replaceMessageSpy.should.have.been.calledTwice;
                 });
@@ -571,14 +570,14 @@ describe('Conversation service', () => {
                 })));
             });
 
-            conversationStartedSuite(conversationService.resendMessage(message._clientId), {
+            conversationStartedSuite(conversationActions.resendMessage(message._clientId), {
                 conversation: {
                     messages: [message]
                 }
             });
 
             it('should update send status and send message', () => {
-                return mockedStore.dispatch(conversationService.resendMessage(message._clientId)).then(() => {
+                return mockedStore.dispatch(conversationActions.resendMessage(message._clientId)).then(() => {
                     coreMock.appUsers.sendMessage.should.have.been.calledOnce;
                     replaceMessageSpy.should.have.been.calledTwice;
                 });
@@ -597,7 +596,7 @@ describe('Conversation service', () => {
             resizeImageStub.resolves({});
         });
 
-        conversationStartedSuite(conversationService.uploadImage({}));
+        conversationStartedSuite(conversationActions.uploadImage({}));
 
         describe('errors', () => {
             beforeEach(() => {
@@ -620,7 +619,7 @@ describe('Conversation service', () => {
                 });
 
                 it('should show an error notification', () => {
-                    return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
+                    return mockedStore.dispatch(conversationActions.uploadImage({})).then(() => {
                         isFileTypeSupportedStub.should.have.been.called;
                         resizeImageStub.should.not.have.been.called;
                         showErrorNotificationSpy.should.have.been.called;
@@ -635,7 +634,7 @@ describe('Conversation service', () => {
                 });
 
                 it('should show an error notification', () => {
-                    return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
+                    return mockedStore.dispatch(conversationActions.uploadImage({})).then(() => {
                         isFileTypeSupportedStub.should.have.been.called;
                         resizeImageStub.should.have.been.called;
                         showErrorNotificationSpy.should.have.been.called;
@@ -651,7 +650,7 @@ describe('Conversation service', () => {
                 });
 
                 it('should update message send status', () => {
-                    return mockedStore.dispatch(conversationService.uploadImage({})).then(() => {
+                    return mockedStore.dispatch(conversationActions.uploadImage({})).then(() => {
                         isFileTypeSupportedStub.should.have.been.called;
                         resizeImageStub.should.have.been.called;
                         coreMock.appUsers.uploadImage.should.have.been.called;
@@ -674,7 +673,7 @@ describe('Conversation service', () => {
         });
 
         it('should call smooch-core conversation api and dispatch conversation', () => {
-            return mockedStore.dispatch(conversationService.getMessages()).then((response) => {
+            return mockedStore.dispatch(conversationActions.getMessages()).then((response) => {
                 coreMock.appUsers.getMessages.should.have.been.calledWith('1');
 
                 response.should.deep.eq({
@@ -698,7 +697,7 @@ describe('Conversation service', () => {
                         }
                     })) : createMockedStore(sandbox, getProps());
 
-                    return mockedStore.dispatch(conversationService.connectFayeConversation()).then(() => {
+                    return mockedStore.dispatch(conversationActions.connectFayeConversation()).then(() => {
                         if (active) {
                             subscribeConversationStub.should.not.have.been.called;
                         } else {
@@ -720,7 +719,7 @@ describe('Conversation service', () => {
                         }
                     })) : createMockedStore(sandbox, getProps());
 
-                    return mockedStore.dispatch(conversationService.connectFayeUser()).then(() => {
+                    return mockedStore.dispatch(conversationActions.connectFayeUser()).then(() => {
                         if (subscribed) {
                             subscribeUserStub.should.have.not.been.called;
                         } else {
@@ -741,7 +740,7 @@ describe('Conversation service', () => {
                             conversationSubscription: conversationSubscriptionMock
                         }
                     })) : createMockedStore(sandbox, getProps());
-                    mockedStore.dispatch(conversationService.disconnectFaye());
+                    mockedStore.dispatch(conversationActions.disconnectFaye());
 
                     userSubscriptionMock.cancel.should.not.have.been.called;
                     disconnectClientSpy.should.have.been.called;
@@ -763,7 +762,7 @@ describe('Conversation service', () => {
                             userSubscription: userSubscriptionMock
                         }
                     })) : createMockedStore(sandbox, getProps());
-                    mockedStore.dispatch(conversationService.disconnectFaye());
+                    mockedStore.dispatch(conversationActions.disconnectFaye());
 
                     conversationSubscriptionMock.cancel.should.not.have.been.called;
                     disconnectClientSpy.should.have.been.called;
@@ -789,14 +788,14 @@ describe('Conversation service', () => {
                     unreadCount: 20
                 }
             }));
-            mockedStore.dispatch(conversationService.resetUnreadCount());
+            mockedStore.dispatch(conversationActions.resetUnreadCount());
             coreMock.conversations.resetUnreadCount.should.have.been.calledWithMatch('1');
         });
     });
 
     describe('handleConversationUpdated', () => {
         beforeEach(() => {
-            RewireConversationService('connectFayeConversation', sandbox.stub().returnsAsyncThunk());
+            RewireConversationActions('connectFayeConversation', sandbox.stub().returnsAsyncThunk());
         });
 
         [true, false].forEach((active) => {
@@ -811,7 +810,7 @@ describe('Conversation service', () => {
                         }
                     })) : createMockedStore(sandbox, getProps());
 
-                    return mockedStore.dispatch(conversationService.handleConversationUpdated()).then(() => {
+                    return mockedStore.dispatch(conversationActions.handleConversationUpdated()).then(() => {
                         if (active) {
                             coreMock.appUsers.getMessages.should.not.have.been.called;
                         } else {
@@ -842,7 +841,7 @@ describe('Conversation service', () => {
         });
 
         it('should post postback', () => {
-            mockedStore.dispatch(conversationService.postPostback(actionId));
+            mockedStore.dispatch(conversationActions.postPostback(actionId));
             coreMock.conversations.postPostback.should.have.been.calledWithMatch('1', actionId);
         });
 
@@ -852,7 +851,7 @@ describe('Conversation service', () => {
             });
 
             it('should show an error notification', () => {
-                return mockedStore.dispatch(conversationService.postPostback(actionId)).then(() => {
+                return mockedStore.dispatch(conversationActions.postPostback(actionId)).then(() => {
                     coreMock.conversations.postPostback.should.have.been.calledWithMatch('1', actionId);
                     showErrorNotificationSpy.should.have.been.calledWithMatch('action postback error');
                 });
@@ -881,7 +880,7 @@ describe('Conversation service', () => {
                     }]
                 }
             }));
-            return mockedStore.dispatch(conversationService.fetchMoreMessages()).then(() => {
+            return mockedStore.dispatch(conversationActions.fetchMoreMessages()).then(() => {
                 coreMock.appUsers.getMessages.should.have.been.calledWithMatch('1', {
                     before: 123
                 });
@@ -896,7 +895,7 @@ describe('Conversation service', () => {
                     messages: []
                 }
             }));
-            return mockedStore.dispatch(conversationService.fetchMoreMessages()).then(() => {
+            return mockedStore.dispatch(conversationActions.fetchMoreMessages()).then(() => {
                 coreMock.appUsers.getMessages.should.not.have.been.called;
             });
         });
@@ -909,7 +908,7 @@ describe('Conversation service', () => {
                     messages: []
                 }
             }));
-            return mockedStore.dispatch(conversationService.fetchMoreMessages()).then(() => {
+            return mockedStore.dispatch(conversationActions.fetchMoreMessages()).then(() => {
                 coreMock.appUsers.getMessages.should.not.have.been.called;
             });
         });

@@ -1,10 +1,10 @@
 import isMobile from 'ismobilejs';
 
-import { fetchTransferRequestCode } from '../services/integrations';
+import { fetchTransferRequestCode } from '../actions/integrations';
 
 import { integrations as integrationsAssets } from '../constants/assets';
 
-import { fetchViberQRCode, fetchWeChatQRCode, fetchTwilioAttributes, fetchMessageBirdAttributes } from '../services/integrations';
+import { fetchViberQRCode, fetchWeChatQRCode, fetchTwilioAttributes, fetchMessageBirdAttributes } from '../actions/integrations';
 
 import MessengerChannelContent from '../components/channels/MessengerChannelContent';
 import EmailChannelContent from '../components/channels/EmailChannelContent';
