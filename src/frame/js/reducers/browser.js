@@ -1,5 +1,5 @@
-import { SET_HAS_FOCUS, SET_CURRENT_LOCATION } from '../actions/browser-actions';
-import { RESET } from '../actions/common-actions';
+import { SET_HAS_FOCUS, SET_CURRENT_LOCATION } from '../actions/browser';
+import { RESET } from '../actions/common';
 
 const INITIAL_STATE = {
     hasFocus: false,

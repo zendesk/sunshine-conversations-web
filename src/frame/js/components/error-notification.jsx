@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { createMarkup } from '../utils/html';
 import { preventDefault } from '../utils/events';
 
-import { hideErrorNotification } from '../actions/app-state-actions';
+import { hideErrorNotification } from '../actions/app-state';
 
 export class ErrorNotificationComponent extends Component {
     render() {

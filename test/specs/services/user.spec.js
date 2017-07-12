@@ -5,7 +5,7 @@ import { createMockedStore } from '../../utils/redux';
 
 import * as userService from '../../../src/frame/js/services/user';
 import { __Rewire__ as UserRewire } from '../../../src/frame/js/services/user';
-import { setUser } from '../../../src/frame/js/actions/user-actions';
+import { setUser } from '../../../src/frame/js/actions/user';
 
 describe('User service', () => {
     let sandbox;

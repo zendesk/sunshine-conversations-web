@@ -1,5 +1,5 @@
-import { SET_STRIPE_INFO, RESET_APP, SET_APP } from '../actions/app-actions';
-import { RESET } from '../actions/common-actions';
+import { SET_STRIPE_INFO, RESET_APP, SET_APP } from '../actions/app';
+import { RESET } from '../actions/common';
 import { isDark } from '../utils/colors';
 import { capitalizeFirstLetter } from '../utils/strings';
 

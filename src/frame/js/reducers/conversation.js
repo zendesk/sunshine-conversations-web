@@ -1,5 +1,5 @@
-import * as ConversationActions from '../actions/conversation-actions';
-import { RESET } from '../actions/common-actions';
+import * as ConversationActions from '../actions/conversation';
+import { RESET } from '../actions/common';
 import { SEND_STATUS, GLOBAL_ACTION_TYPES } from '../constants/message';
 
 const INITIAL_STATE = {
