@@ -1,9 +1,9 @@
 import { batchActions } from 'redux-batched-actions';
 
-import { addMessage as addMessageAction, addMessages, removeMessage as removeMessageAction, replaceMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages, setFetchingMoreMessagesFromServer } from '../actions/conversation-actions';
-import { updateUser } from '../actions/user-actions';
-import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi, showConnectNotification } from '../actions/app-state-actions';
-import { unsetFayeSubscriptions } from '../actions/faye-actions';
+import { addMessage as addMessageAction, addMessages, removeMessage as removeMessageAction, replaceMessage, setConversation, resetUnreadCount as resetUnreadCountAction, setMessages, setFetchingMoreMessagesFromServer } from '../actions/conversation';
+import { updateUser } from '../actions/user';
+import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi, showConnectNotification } from '../actions/app-state';
+import { unsetFayeSubscriptions } from '../actions/faye';
 import { core } from './core';
 import { immediateUpdate } from './user';
 import { disconnectClient, subscribeConversation, subscribeUser, subscribeConversationActivity } from './faye';

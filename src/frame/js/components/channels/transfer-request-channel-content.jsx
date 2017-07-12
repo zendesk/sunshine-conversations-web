@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { batchActions } from 'redux-batched-actions';
 
-import { hideChannelPage } from '../../actions/app-state-actions';
+import { hideChannelPage } from '../../actions/app-state';
 import { Loading } from '../../components/loading';
-import { resetTransferRequestCode, unsetError } from '../../actions/integrations-actions';
+import { resetTransferRequestCode, unsetError } from '../../actions/integrations';
 import { fetchTransferRequestCode } from '../../services/integrations';
 
 export class TransferRequestChannelContentComponent extends Component {

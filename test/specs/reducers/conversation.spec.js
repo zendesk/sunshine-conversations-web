@@ -1,5 +1,5 @@
-import { ConversationReducer } from '../../../src/frame/js/reducers/conversation-reducer';
-import { ADD_MESSAGE, REPLACE_MESSAGE, RESET_CONVERSATION, REMOVE_MESSAGE, SET_CONVERSATION, RESET_UNREAD_COUNT, INCREMENT_UNREAD_COUNT, ADD_MESSAGES, SET_MESSAGES } from '../../../src/frame/js/actions/conversation-actions';
+import { ConversationReducer } from '../../../src/frame/js/reducers/conversation';
+import { ADD_MESSAGE, REPLACE_MESSAGE, RESET_CONVERSATION, REMOVE_MESSAGE, SET_CONVERSATION, RESET_UNREAD_COUNT, INCREMENT_UNREAD_COUNT, ADD_MESSAGES, SET_MESSAGES } from '../../../src/frame/js/actions/conversation';
 import { SEND_STATUS } from '../../../src/frame/js/constants/message';
 
 const INITIAL_STATE = ConversationReducer(undefined, {});

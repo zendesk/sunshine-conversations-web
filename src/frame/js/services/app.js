@@ -1,4 +1,4 @@
-import * as AppStateActions from '../actions/app-state-actions';
+import * as AppStateActions from '../actions/app-state';
 import { resetUnreadCount, connectFayeUser } from './conversation';
 import { observable } from '../utils/events';
 import { hasLinkableChannels, isChannelLinked } from '../utils/user';

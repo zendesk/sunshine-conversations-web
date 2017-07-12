@@ -7,7 +7,7 @@ import { findDOMNode } from 'react-dom';
 import { AlternateChannels } from './alternate-channels';
 import { DefaultAppIcon } from './default-app-icon';
 
-import { setIntroHeight } from '../actions/app-state-actions';
+import { setIntroHeight } from '../actions/app-state';
 
 import { createMarkup } from '../utils/html';
 import { getAppChannelDetails } from '../utils/app';
