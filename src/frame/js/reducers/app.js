@@ -48,7 +48,7 @@ function computeColorsMetadata(settings) {
     return metadata;
 }
 
-export function AppReducer(state = INITIAL_STATE, action) {
+export default function AppReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case RESET:
         case RESET_APP:

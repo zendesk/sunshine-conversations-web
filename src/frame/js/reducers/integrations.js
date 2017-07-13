@@ -33,7 +33,7 @@ const INITIAL_STATE = {
     }
 };
 
-export function IntegrationsReducer(state = INITIAL_STATE, action) {
+export default function IntegrationsReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case RESET:
         case RESET_APP:

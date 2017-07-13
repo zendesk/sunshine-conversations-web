@@ -18,6 +18,7 @@ import { sendMessage as _sendMessage, disconnectFaye, handleConversationUpdated,
 import { resetIntegrations } from './actions/integrations';
 import * as appStateActions from './actions/app-state';
 import { getAccount } from './actions/stripe';
+import { setConfig, fetchConfig } from './actions/config';
 
 import { core } from './utils/core';
 import { observable, observeStore } from './utils/events';
@@ -31,7 +32,6 @@ import { WIDGET_STATE } from './constants/app';
 
 import Widget from './components/Widget';
 
-let appToken;
 let lastTriggeredMessageTimestamp = 0;
 let initialStoreChange = true;
 let isInitialized = false;
@@ -109,30 +109,20 @@ export function init(props) {
         ...props
     };
 
-    appToken = props.appToken;
-
-    const actions = [];
-
-    if (props.soundNotificationEnabled && isAudioSupported()) {
-        actions.push(appStateActions.enableSoundNotification());
-    } else {
-        actions.push(appStateActions.disableSoundNotification());
+    if (!props.appId) {
+        return Promise.reject(new Error('Must provide an appId'));
     }
 
-    if (props.imageUploadEnabled && isImageUploadSupported()) {
-        actions.push(appStateActions.enableImageUpload());
-    } else {
-        actions.push(appStateActions.disableImageUpload());
-    }
-
-    actions.push(appStateActions.setEmbedded(!!props.embedded));
+    const actions = [
+        setConfig('appId', props.appId),
+        setConfig('soundNotificationEnabled', props.soundNotificationEnabled && isAudioSupported()),
+        setConfig('imageUploadEnabled', props.imageUploadEnabled && isImageUploadSupported()),
+        appStateActions.setEmbedded(!!props.embedded),
+        setConfig('configBaseUrl', props.configBaseUrl || `https://${props.appId}.config.smooch.io`)
+    ];
 
     if (props.customText) {
         actions.push(updateText(props.customText));
-    }
-
-    if (props.serviceUrl) {
-        actions.push(appStateActions.setServerURL(props.serviceUrl));
     }
 
     store.dispatch(batchActions(actions));
@@ -146,8 +136,13 @@ export function init(props) {
     }, onStoreChange);
 
     monitorBrowserState(store.dispatch.bind(store));
-    return login(props.userId, props.jwt, pick(props, userActions.EDITABLE_PROPERTIES));
+
+    return store.dispatch(fetchConfig())
+        .then(() => {
+
+        });
 }
+// return login(props.userId, props.jwt, pick(props, userActions.EDITABLE_PROPERTIES));
 
 export function login(userId = '', jwt, attributes) {
     if (arguments.length === 2 && typeof jwt === 'object') {
@@ -189,6 +184,7 @@ export function login(userId = '', jwt, attributes) {
     initialStoreChange = true;
 
 
+    const {appId} = store.getState().config;
     return store.dispatch(authActions.login({
         userId: userId,
         device: {
@@ -210,7 +206,7 @@ export function login(userId = '', jwt, attributes) {
         });
 
         Raven.setExtraContext({
-            appToken
+            appId
         });
 
         const actions = [];

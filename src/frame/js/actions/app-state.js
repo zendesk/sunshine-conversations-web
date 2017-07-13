@@ -17,7 +17,6 @@ export const SHOW_CONNECT_NOTIFICATION = 'SHOW_CONNECT_NOTIFICATION';
 export const HIDE_CONNECT_NOTIFICATION = 'HIDE_CONNECT_NOTIFICATION';
 export const SHOW_ERROR_NOTIFICATION = 'SHOW_ERROR_NOTIFICATION';
 export const HIDE_ERROR_NOTIFICATION = 'HIDE_ERROR_NOTIFICATION';
-export const SET_SERVER_URL = 'SET_SERVER_URL';
 export const SET_EMAIL_READONLY = 'SET_EMAIL_READONLY';
 export const UNSET_EMAIL_READONLY = 'UNSET_EMAIL_READONLY';
 export const SET_EMBEDDED = 'SET_EMBEDDED';
@@ -144,13 +143,6 @@ export function showConnectNotification(timestamp = Date.now() / 1000.0) {
 export function hideConnectNotification() {
     return {
         type: HIDE_CONNECT_NOTIFICATION
-    };
-}
-
-export function setServerURL(url) {
-    return {
-        type: SET_SERVER_URL,
-        url: url
     };
 }
 
