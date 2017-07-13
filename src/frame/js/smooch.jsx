@@ -34,7 +34,7 @@ import { getIntegration } from './utils/app';
 
 import { WIDGET_STATE } from './constants/app';
 
-import { Widget } from './components/widget';
+import Widget from './components/Widget';
 
 let appToken;
 let lastTriggeredMessageTimestamp = 0;
