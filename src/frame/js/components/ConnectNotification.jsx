@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { findDOMNode } from 'react-dom';
 
 import { getAppChannelDetails, hasChannels } from '../utils/app';
-import { showChannelPage, showSettings } from '../actions/app';
+import { showChannelPage, showSettings } from '../actions/app-state';
 
 export class ConnectNotificationComponent extends Component {
     static propTypes = {

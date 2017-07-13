@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { openWidget } from '../actions/app';
+import { openWidget } from '../actions/app-state';
 import { bindAll } from '../utils/functions';
 import DefaultButtonIcon from './DefaultButtonIcon';
 
