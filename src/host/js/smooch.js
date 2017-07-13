@@ -23,7 +23,6 @@ const LIB_FUNCS = [
     'on',
     'off',
     'logout',
-    'track',
     'sendMessage',
     'updateUser',
     'getConversation',
@@ -141,7 +140,7 @@ function injectFrame() {
         iframe.frameBorder = 0;
         iframe.allowFullscreen = true;
         iframe.allowTransparency = true;
-        
+
         iframe.className = hostStyles.ref().locals.iframe;
         iframe.onload = () => {
             if (!loaded) {

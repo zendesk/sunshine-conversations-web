@@ -278,13 +278,6 @@ Returns promise that resolves to conversation object, or rejects if none exists
 Smooch.getConversation().then(conversation => ...);
 ```
 
-#### track(eventName)
-Tracks an event for the current user.
-
-```javascript
-Smooch.track('item-in-cart');
-```
-
 #### getCore()
 Returns an instance of [smooch-core](https://github.com/smooch/smooch-core-js) to allow access to APIs the Web Messenger doesn't expose. For more information on how to use Smooch-Core, please visit the [documentation](http://docs.smooch.io/rest/?javascript).
 
