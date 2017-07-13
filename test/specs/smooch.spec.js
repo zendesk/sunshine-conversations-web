@@ -2,9 +2,9 @@ import sinon from 'sinon';
 
 import { createMockedStore } from '../utils/redux';
 
-import * as userService from '../../src/frame/js/actions/user';
-import * as authService from '../../src/frame/js/actions/auth';
-import { openWidget, closeWidget } from '../../src/frame/js/actions/app-state';
+import * as userActions from '../../src/frame/js/actions/user';
+import * as authActions from '../../src/frame/js/actions/auth';
+import * as appStateActions from '../../src/frame/js/actions/app-state';
 import * as Smooch from '../../src/frame/js/smooch';
 import { __Rewire__ as SmoochRewire } from '../../src/frame/js/smooch';
 
@@ -85,8 +85,8 @@ describe('Smooch', () => {
         updateUserStub = sandbox.stub();
         getUserIdStub = sandbox.stub().returns('1234');
 
-        SmoochRewire('userService', {
-            ...userService,
+        SmoochRewire('userActions', {
+            ...userActions,
             update: updateUserStub,
             immediateUpdate: immediateUpdateStub,
             getUserId: getUserIdStub
@@ -108,8 +108,8 @@ describe('Smooch', () => {
             }
         });
 
-        SmoochRewire('authService', {
-            ...authService,
+        SmoochRewire('authActions', {
+            ...authActions,
             login: loginStub
         });
 
@@ -117,10 +117,13 @@ describe('Smooch', () => {
         SmoochRewire('getIntegration', sandbox.stub().returns({}));
 
 
-        openWidgetStub = sandbox.spy(openWidget);
-        SmoochRewire('openWidget', openWidgetStub);
-        closeWidgetStub = sandbox.spy(closeWidget);
-        SmoochRewire('closeWidget', closeWidgetStub);
+        openWidgetStub = sandbox.stub().returnsSyncThunk();
+        closeWidgetStub = sandbox.stub().returnsSyncThunk();
+        SmoochRewire('appStateActions', {
+            ...appStateActions,
+            openWidget: openWidgetStub,
+            closeWidget: closeWidgetStub
+        });
 
         coreStub = sandbox.spy();
         SmoochRewire('core', coreStub);
@@ -203,7 +206,7 @@ describe('Smooch', () => {
                 mockedStore = mockAppStore(sandbox, state);
             });
 
-            it('should call the auth service, update the user, and handle the conversation update', () => {
+            it('should call the login action, update the user, and handle the conversation update', () => {
                 const props = {
                     userId: 'some-id',
                     appToken: 'some-token',
@@ -233,7 +236,7 @@ describe('Smooch', () => {
             SmoochRewire('_sendMessage', sendMessageStub);
         });
 
-        it('should call the conversation service', () => {
+        it('should call the conversation action', () => {
             return Smooch.sendMessage('here is my message').then(() => {
                 sendMessageStub.should.have.been.calledWith('here is my message');
             });
@@ -379,13 +382,13 @@ describe('Smooch', () => {
     });
 
     describe('Get User Id', () => {
-        it('should call the conversation service', () => {
+        it('should call the conversation action', () => {
             return Smooch.getUserId(mockedStore.getState()).should.eq('1234');
         });
     });
 
     describe('Get Core', () => {
-        it('should call the core service', () => {
+        it('should call the core utils', () => {
             Smooch.getCore();
             coreStub.should.have.been.calledOnce;
         });

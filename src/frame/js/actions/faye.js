@@ -3,9 +3,8 @@ import urljoin from 'urljoin';
 import { batchActions } from 'redux-batched-actions';
 
 import { setUser } from './user';
-import { hideChannelPage, hideConnectNotification } from './app-state';
+import { showSettings, showTypingIndicator, hideTypingIndicator, hideChannelPage, hideConnectNotification } from './app-state';
 import { addMessage, incrementUnreadCount, resetUnreadCount, getMessages, disconnectFaye, handleConversationUpdated } from './conversation';
-import { showSettings, showTypingIndicator, hideTypingIndicator } from './app';
 import { cancelSMSLink, failSMSLink } from './integrations';
 import { getDeviceId } from '../utils/device';
 import { ANIMATION_TIMINGS } from '../constants/styles';

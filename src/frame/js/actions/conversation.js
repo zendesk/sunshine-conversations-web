@@ -1,9 +1,9 @@
 import { batchActions } from 'redux-batched-actions';
 
 import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi, showConnectNotification } from './app-state';
-import { unsetFayeSubscriptions } from './faye';
 import { getUserId, updateUser, immediateUpdate } from './user';
-import { disconnectClient, subscribeConversation, subscribeUser, subscribeConversationActivity } from './faye';
+import { disconnectClient, subscribeConversation, subscribeUser, subscribeConversationActivity, unsetFayeSubscriptions } from './faye';
+
 import { core } from '../utils/core';
 import { observable } from '../utils/events';
 import { Throttle } from '../utils/throttle';

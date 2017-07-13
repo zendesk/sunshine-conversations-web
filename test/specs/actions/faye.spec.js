@@ -3,7 +3,7 @@ import { Client } from 'faye';
 
 import { createMockedStore } from '../../utils/redux';
 import { hideChannelPage, hideConnectNotification } from '../../../src/frame/js/actions/app-state';
-import { addMessage, incrementUnreadCount, resetUnreadCount } from '../../../src/frame/js/actions/conversation';
+import { incrementUnreadCount, resetUnreadCount } from '../../../src/frame/js/actions/conversation';
 import { setUser } from '../../../src/frame/js/actions/user';
 import * as fayeActions from '../../../src/frame/js/actions/faye';
 import { __Rewire__ as FayeRewire } from '../../../src/frame/js/actions/faye';
@@ -36,7 +36,7 @@ describe('Faye Actions', () => {
     let showSettingsStub;
     let hideChannelPageSpy;
     let hideConnectNotificationSpy;
-    let addMessageSpy;
+    let addMessageStub;
     let incrementUnreadCountSpy;
     let resetUnreadCountSpy;
     let setUserSpy;
@@ -66,8 +66,8 @@ describe('Faye Actions', () => {
         hideConnectNotificationSpy = sandbox.spy(hideConnectNotification);
         FayeRewire('hideConnectNotification', hideConnectNotificationSpy);
 
-        addMessageSpy = sandbox.spy(addMessage);
-        FayeRewire('addMessage', addMessageSpy);
+        addMessageStub = sandbox.stub().returnsAsyncThunk();
+        FayeRewire('addMessage', addMessageStub);
 
         incrementUnreadCountSpy = sandbox.spy(incrementUnreadCount);
         FayeRewire('incrementUnreadCount', incrementUnreadCountSpy);
@@ -132,7 +132,7 @@ describe('Faye Actions', () => {
                     }
                 };
                 mockedStore.dispatch(fayeActions.handleConversationSubscription(message));
-                addMessageSpy.should.have.been.calledWithMatch(message);
+                addMessageStub.should.have.been.calledWithMatch(message);
             });
 
             [true, false].forEach((appUser) => {

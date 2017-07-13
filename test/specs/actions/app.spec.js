@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 
-import { openWidget, closeWidget, toggleWidget } from '../../../src/frame/js/actions/app';
+import { openWidget, closeWidget, toggleWidget } from '../../../src/frame/js/actions/app-state';
 import { createMockedStore } from '../../utils/redux';
 import { observable } from '../../../src/frame/js/utils/events';
 import { WIDGET_STATE } from '../../../src/frame/js/constants/app';

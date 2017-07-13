@@ -2,8 +2,7 @@ import sinon from 'sinon';
 import { findDOMNode } from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
-import ImageUpload, { ImageUploadComponent } from '../../../src/frame/js/components/ImageUpload';
-import conversationService from '../../../src/frame/js/actions/conversation';
+import ImageUpload, { ImageUploadComponent, __Rewire__ as ImageUploadRewire } from '../../../src/frame/js/components/ImageUpload';
 
 import { wrapComponentWithStore } from '../../utils/react';
 import { createMockedStore } from '../../utils/redux';
@@ -18,8 +17,7 @@ describe('Image Upload Component', () => {
     beforeEach(() => {
         mockedStore = createMockedStore(sandbox);
         onImageChangeSpy = sandbox.spy(ImageUploadComponent.prototype, 'onImageChange');
-
-        sandbox.stub(conversationService, 'uploadImage').resolves();
+        ImageUploadRewire('uploadImage', sandbox.stub().returnsAsyncThunk());
         component = wrapComponentWithStore(ImageUpload, {}, mockedStore).getWrappedInstance();
     });
 
