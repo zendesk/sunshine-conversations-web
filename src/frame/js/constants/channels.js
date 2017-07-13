@@ -6,13 +6,13 @@ import { integrations as integrationsAssets } from '../constants/assets';
 
 import { fetchViberQRCode, fetchWeChatQRCode, fetchTwilioAttributes, fetchMessageBirdAttributes } from '../services/integrations';
 
-import { MessengerChannelContent } from '../components/channels/messenger-channel-content';
-import { EmailChannelContent } from '../components/channels/email-channel-content';
-import { SMSChannelContent } from '../components/channels/sms-channel-content';
-import { TelegramChannelContent } from '../components/channels/telegram-channel-content';
-import { WeChatChannelContent } from '../components/channels/wechat-channel-content';
-import { ViberChannelContent } from '../components/channels/viber-channel-content';
-import { LineChannelContent } from '../components/channels/line-channel-content';
+import MessengerChannelContent from '../components/channels/MessengerChannelContent';
+import EmailChannelContent from '../components/channels/EmailChannelContent';
+import SMSChannelContent from '../components/channels/SMSChannelContent';
+import TelegramChannelContent from '../components/channels/TelegramChannelContent';
+import WeChatChannelContent from '../components/channels/WeChatChannelContent';
+import ViberChannelContent from '../components/channels/ViberChannelContent';
+import LineChannelContent from '../components/channels/LineChannelContent';
 
 export const CHANNEL_DETAILS = {
     messenger: {
