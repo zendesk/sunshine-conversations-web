@@ -265,10 +265,6 @@ export function logout() {
     return login();
 }
 
-export function track(eventName, userProps) {
-    return store.dispatch(userService.trackEvent(eventName, userProps));
-}
-
 export function sendMessage(props) {
     return store.dispatch(_sendMessage(props));
 }

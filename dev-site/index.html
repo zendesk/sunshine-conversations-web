@@ -88,22 +88,6 @@
                 </form>
           </div>
           <div class="col-sm-6">
-                <form class="form-horizontal" id="formTrack">
-                    <legend>Track</legend>
-                    <div class="form-group">
-                        <label for="track" class="col-sm-3 control-label">Event name</label>
-                        <div class="col-sm-6">
-                            <input type="text" class="form-control" id="trackEvent">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            <button type="submit" class="btn btn-default" id="track">Track</button>
-                        </div>
-                    </div>
-                </form>
-          </div>
-          <div class="col-sm-6">
               <form class="form-horizontal" id="formUser">
                     <legend>Update user</legend>
                     <div class="form-group">
@@ -135,7 +119,7 @@
                 <form class="form-horizontal" id="formMessage">
                     <legend>Send Message</legend>
                     <div class="form-group">
-                        <label for="track" class="col-sm-3 control-label">Text</label>
+                        <label for="message" class="col-sm-3 control-label">Text</label>
                         <div class="col-sm-6">
                             <input type="text" class="form-control" id="message">
                         </div>
@@ -153,13 +137,11 @@
     <script>
         window.addEventListener('load', function() {
             var formMain = document.getElementById('formMain');
-            var formTrack = document.getElementById('formTrack');
             var formUser = document.getElementById('formUser');
             var formMessage = document.getElementById('formMessage');
 
             var userIdInput = document.getElementById('userId');
             var jwtInput = document.getElementById('jwt');
-            var trackEventInput = document.getElementById('trackEvent');
             var updateUserInput = document.getElementById('updateUser');
             var messageInput = document.getElementById('message');
 
@@ -178,18 +160,9 @@
                 jwtInput.value = window.SmoochOptions.jwt;
             }
 
-
-
             formMain.addEventListener('submit', function(e) {
                 e.preventDefault();
                 Smooch.login(userIdInput.value, jwtInput.value);
-            });
-
-            formTrack.addEventListener('submit', function(e) {
-                e.preventDefault();
-                if(trackEventInput.value) {
-                    Smooch.track(trackEventInput.value);
-                }
             });
 
             formUser.addEventListener('submit', function(e) {

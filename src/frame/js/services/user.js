@@ -87,21 +87,6 @@ export function update(props) {
     };
 }
 
-export function trackEvent(eventName, userProps) {
-    return (dispatch, getState) => {
-        return core(getState()).appUsers.trackEvent(getUserId(getState()), eventName, userProps).then((response) => {
-            if (response.conversationUpdated) {
-                return dispatch(handleConversationUpdated())
-                    .then(() => {
-                        return response;
-                    });
-            }
-
-            return response;
-        });
-    };
-}
-
 export function updateNowViewing(deviceId) {
     return (dispatch) => {
         if (!deviceUpdateThrottle) {
