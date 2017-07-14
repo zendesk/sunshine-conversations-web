@@ -25,6 +25,7 @@ import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowse
 import { isImageUploadSupported } from './utils/media';
 import { playNotificationSound, isAudioSupported } from './utils/sound';
 import { getDeviceId } from './utils/device';
+import storage from './utils/storage';
 import { getIntegration } from './utils/app';
 
 import { WIDGET_STATE } from './constants/app';
@@ -156,36 +157,20 @@ export function init(props) {
             observable.trigger('ready');
         });
 }
-// return login(props.userId, props.jwt, pick(props, userActions.EDITABLE_PROPERTIES));
 
-export function login(userId = '', jwt, attributes) {
-    if (arguments.length === 2 && typeof jwt === 'object') {
-        attributes = jwt;
-        jwt = undefined;
-    } else if (arguments.length < 3) {
-        attributes = {};
+export function login(userId, jwt) {
+    if (!userId || !jwt) {
+        throw new Error('Must provide a userId and a jwt to log in.');
     }
 
-    const actions = [];
-    // in case those are opened;
-    actions.push(appStateActions.hideSettings());
-    actions.push(appStateActions.hideChannelPage());
+    const sessionToken = storage.getItem('sessionToken');
 
-    // in case it comes from a previous authenticated state
-    actions.push(authActions.resetAuth());
-    actions.push(userActions.resetUser());
-    actions.push(resetConversation());
-    actions.push(resetIntegrations());
+    store.dispatch(authActions.setAuth({
+        jwt,
+        userId,
+        sessionToken
+    }));
 
-
-    attributes = pick(attributes, userActions.EDITABLE_PROPERTIES);
-
-    // actions.push(authActions.setAuth({
-    //     jwt: jwt,
-    //     appToken
-    // }));
-
-    store.dispatch(batchActions(actions));
     store.dispatch(disconnectFaye());
 
     lastTriggeredMessageTimestamp = 0;
@@ -193,6 +178,7 @@ export function login(userId = '', jwt, attributes) {
 
     return store.dispatch(authActions.login({
         userId: userId,
+        sessionToken,
         device: {
             platform: 'web',
             id: getDeviceId(),
@@ -207,6 +193,7 @@ export function login(userId = '', jwt, attributes) {
             }
         }
     })).then((loginResponse) => {
+        console.log(loginResponse);
         Raven.setUserContext({
             id: loginResponse.appUser.userId || loginResponse.appUser._id
         });
@@ -227,13 +214,13 @@ export function login(userId = '', jwt, attributes) {
 
         store.dispatch(batchActions(actions));
 
-        // if (getIntegration(loginResponse.app.integrations, 'stripeConnect')) {
-        //     return store.dispatch(getAccount()).then((r) => {
-        //         // store.dispatch(setStripeInfo(r.account));
-        //     }).catch(() => {
-        //         // do nothing about it and let the flow continue
-        //     });
-        // }
+    // if (getIntegration(loginResponse.app.integrations, 'stripeConnect')) {
+    //     return store.dispatch(getAccount()).then((r) => {
+    //         // store.dispatch(setStripeInfo(r.account));
+    //     }).catch(() => {
+    //         // do nothing about it and let the flow continue
+    //     });
+    // }
     }).then(() => {
         return store.dispatch(userActions.immediateUpdate(attributes)).then(() => {
             const user = store.getState().user;

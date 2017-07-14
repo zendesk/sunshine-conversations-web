@@ -1,3 +1,5 @@
+import urljoin from 'urljoin';
+
 /**
  * Stringifies query parameters and append them to the url
  * @param  {string} url  - an url
@@ -49,33 +51,47 @@ export function handleResponse(response) {
     }
 }
 
-export default function http(method, url, data, headers = {}) {
-    method = method.toUpperCase();
+export default function http(method, url, data, extraHeaders = {}, baseUrl) {
+    return (dispatch, getState) => {
+        method = method.toUpperCase();
+        const {auth, config} = getState();
 
-    const fetchOptions = {
-        method: method,
-        headers: Object.assign({
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }, headers)
-    };
+        const headers = {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'x-smooch-sdk': `web/${VERSION}`,
+            ...extraHeaders
+        };
 
-    if (data) {
-        if (data instanceof FormData) {
-            fetchOptions.body = data;
-            // Remove the Content-Type header, `fetch` will
-            // generate one to add the form boundary.
-            delete fetchOptions.headers['Content-Type'];
-        } else {
-            data = Object.assign({}, data);
-            if (method === 'GET') {
-                url = stringifyGETParams(url, data);
-            } else if (method === 'POST' || method === 'PUT') {
-                fetchOptions.body = JSON.stringify(data);
+        if (auth.jwt) {
+            headers.Authorization = `Bearer ${auth.jwt}`;
+        } else if (auth.sessionToken) {
+            headers.Authorization = `Basic ${btoa(`${auth.userId}:${auth.sessionToken}`)}`;
+        }
+
+        const fetchOptions = {
+            method: method,
+            headers
+        };
+
+        if (data) {
+            if (data instanceof FormData) {
+                fetchOptions.body = data;
+                // Remove the Content-Type header, `fetch` will
+                // generate one to add the form boundary.
+                delete fetchOptions.headers['Content-Type'];
+            } else {
+                data = Object.assign({}, data);
+                if (method === 'GET') {
+                    url = stringifyGETParams(url, data);
+                } else if (method === 'POST' || method === 'PUT') {
+                    fetchOptions.body = JSON.stringify(data);
+                }
             }
         }
-    }
 
-    return fetch(url, fetchOptions)
-        .then(handleResponse);
+        const fullUrl = urljoin(baseUrl || config.apiBaseUrl, url);
+        return fetch(fullUrl, fetchOptions)
+            .then(handleResponse);
+    };
 }

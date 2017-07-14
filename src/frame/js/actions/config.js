@@ -1,7 +1,6 @@
-import urljoin from 'urljoin';
 import { batchActions } from 'redux-batched-actions';
 
-import http from '../utils/http';
+import http from './http';
 import { computeColorsMetadata } from '../utils/config';
 
 
@@ -26,9 +25,7 @@ export function fetchConfig() {
     return (dispatch, getState) => {
         const {configBaseUrl, appId} = getState().config;
 
-        const configUrl = urljoin(configBaseUrl, `/client/apps/${appId}/config`);
-
-        return http('GET', configUrl)
+        return dispatch(http('GET', `/client/apps/${appId}/config`, {}, {}, configBaseUrl))
             .then(({config}) => {
                 const actions = Object.keys(config).map((key) => {
                     if (key === 'style') {
