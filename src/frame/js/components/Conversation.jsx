@@ -32,7 +32,7 @@ export class ConversationComponent extends Component {
         introHeight: PropTypes.number,
         connectNotificationTimestamp: PropTypes.number,
         errorNotificationMessage: PropTypes.string,
-        settings: PropTypes.object.isRequired,
+        config: PropTypes.object.isRequired,
         text: PropTypes.object.isRequired,
         typingIndicatorShown: PropTypes.bool.isRequired,
         replyActions: PropTypes.array.isRequired
@@ -189,9 +189,9 @@ export class ConversationComponent extends Component {
     }
 
     render() {
-        const {connectNotificationTimestamp, introHeight, messages, replyActions, errorNotificationMessage, isFetchingMoreMessages, hasMoreMessages, text, settings, typingIndicatorShown, typingIndicatorName} = this.props;
+        const {connectNotificationTimestamp, introHeight, messages, replyActions, errorNotificationMessage, isFetchingMoreMessages, hasMoreMessages, text, config, typingIndicatorShown, typingIndicatorName} = this.props;
         const {fetchingHistory, fetchHistory} = text;
-        const {accentColor, linkColor} = settings;
+        const {accentColor, linkColor} = config.style;
 
         let messageItems = messages.map((message, index) => {
             const refCallback = (c) => {
@@ -216,12 +216,12 @@ export class ConversationComponent extends Component {
             }
 
             return <Message key={ message._clientId || message._id }
-                                     ref={ refCallback }
-                                     accentColor={ accentColor }
-                                     linkColor={ linkColor }
-                                     onLoad={ this.scrollToBottom }
-                                     {...message}
-                                     lastInGroup={ lastInGroup } />;
+                            ref={ refCallback }
+                            accentColor={ accentColor }
+                            linkColor={ linkColor }
+                            onLoad={ this.scrollToBottom }
+                            {...message}
+                            lastInGroup={ lastInGroup } />;
         });
 
         if (typingIndicatorShown) {
@@ -333,7 +333,7 @@ export class ConversationComponent extends Component {
     }
 }
 
-export default connect(({appState, conversation, ui: {text}, app}) => {
+export default connect(({appState, conversation, ui: {text}, config}) => {
     return {
         messages: conversation.messages,
         replyActions: conversation.replyActions,
@@ -344,7 +344,7 @@ export default connect(({appState, conversation, ui: {text}, app}) => {
         introHeight: appState.introHeight,
         connectNotificationTimestamp: appState.connectNotificationTimestamp,
         errorNotificationMessage: appState.errorNotificationMessage,
-        settings: app.settings.web,
+        config,
         text: {
             fetchingHistory: text.fetchingHistory,
             fetchHistory: text.fetchHistory

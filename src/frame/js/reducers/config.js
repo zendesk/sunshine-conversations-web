@@ -5,7 +5,9 @@ const INITIAL_STATE = {
     configBaseUrl: null,
     apiBaseUrl: null,
     soundNotificationEnabled: true,
-    imageUploadEnabled: true
+    imageUploadEnabled: true,
+    integrations: [],
+    app: {}
 };
 
 export default function ConfigReducer(state = INITIAL_STATE, action) {

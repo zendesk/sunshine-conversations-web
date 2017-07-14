@@ -9,6 +9,7 @@ import { ReactTelephoneInput } from '../../lib/react-telephone-input';
 export class SMSChannelContentComponent extends Component {
 
     static propTypes = {
+        dispatch: PropTypes.func.isRequired,
         linkColor: PropTypes.string,
         phoneNumber: PropTypes.string,
         originator: PropTypes.string,
@@ -157,9 +158,9 @@ export class SMSChannelContentComponent extends Component {
     }
 }
 
-export default connect(({app, ui: {text}}) => {
+export default connect(({config, ui: {text}}) => {
     return {
-        linkColor: app.settings.web.linkColor,
+        linkColor: config.style.linkColor,
         text: {
             smsInvalidNumberError: text.smsInvalidNumberError,
             smsLinkPending: text.smsLinkPending,

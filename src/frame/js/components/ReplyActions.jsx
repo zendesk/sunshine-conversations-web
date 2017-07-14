@@ -97,10 +97,10 @@ export class ReplyActionsComponent extends Component {
     }
 }
 
-export default connect(({app, ui}) => {
+export default connect(({config, ui}) => {
     return {
-        accentColor: app.settings.web.accentColor,
-        isAccentColorDark: app.settings.web.isAccentColorDark,
+        accentColor: config.style.accentColor,
+        isAccentColorDark: config.style.isAccentColorDark,
         locationNotSupportedText: ui.text.locationNotSupported
     };
 }, null, null, {

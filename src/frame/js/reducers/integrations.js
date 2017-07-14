@@ -1,4 +1,4 @@
-import { RESET_APP } from '../actions/app';
+import { RESET_CONFIG } from '../actions/config';
 import { RESET } from '../actions/common';
 
 import { SET_ERROR, UNSET_ERROR, SET_WECHAT_QR_CODE, SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE, SET_MESSAGEBIRD_INTEGRATION_STATE, RESET_MESSAGEBIRD_INTEGRATION_STATE, RESET_INTEGRATIONS, SET_VIBER_QR_CODE, SET_TRANSFER_REQUEST_CODE, RESET_TRANSFER_REQUEST_CODE } from '../actions/integrations';
@@ -36,7 +36,7 @@ const INITIAL_STATE = {
 export default function IntegrationsReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case RESET:
-        case RESET_APP:
+        case RESET_CONFIG:
         case RESET_INTEGRATIONS:
             return {
                 ...INITIAL_STATE

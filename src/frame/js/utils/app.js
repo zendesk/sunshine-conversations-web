@@ -9,8 +9,8 @@ export function getIntegration(appChannels, type) {
     return appChannelsOfType.length > 0 ? appChannelsOfType[0] : undefined;
 }
 
-export function hasChannels({channels}) {
-    return Object.keys(channels).some((key) => channels[key]);
+export function hasChannels({integrations}) {
+    return integrations.some(({type}) => CHANNEL_DETAILS[type]);
 }
 
 export function getAppChannelDetails(appChannels) {

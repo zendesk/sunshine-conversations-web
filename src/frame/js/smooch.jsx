@@ -11,7 +11,6 @@ import { store } from './store';
 
 import * as authActions from './actions/auth';
 import * as userActions from './actions/user';
-import { setStripeInfo, setApp } from './actions/app';
 import { updateText } from './actions/ui';
 import { setCurrentLocation } from './actions/browser';
 import { sendMessage as _sendMessage, disconnectFaye, handleConversationUpdated, resetConversation } from './actions/conversation';
@@ -89,7 +88,9 @@ function onStoreChange({conversation: {messages, unreadCount}, widgetState, disp
         observable.trigger('unreadCount', unreadCount);
     }
 
-    updateHostClassNames(widgetState, displayStyle);
+    if (displayStyle) {
+        updateHostClassNames(widgetState, displayStyle);
+    }
 }
 
 export function on(...args) {
@@ -113,6 +114,10 @@ export function init(props) {
         return Promise.reject(new Error('Must provide an appId'));
     }
 
+    Raven.setExtraContext({
+        appId: props.appId
+    });
+
     const actions = [
         setConfig('appId', props.appId),
         setConfig('soundNotificationEnabled', props.soundNotificationEnabled && isAudioSupported()),
@@ -127,11 +132,11 @@ export function init(props) {
 
     store.dispatch(batchActions(actions));
 
-    unsubscribeFromStore = observeStore(store, ({conversation, appState: {widgetState}, app: {settings: {web: {displayStyle}}}}) => {
+    unsubscribeFromStore = observeStore(store, ({conversation, appState: {widgetState}, config: {style}}) => {
         return {
             conversation,
             widgetState,
-            displayStyle
+            displayStyle: style && style.displayStyle
         };
     }, onStoreChange);
 
@@ -139,7 +144,16 @@ export function init(props) {
 
     return store.dispatch(fetchConfig())
         .then(() => {
+            if (props.userId && props.jwt) {
+                return login(props.userId, props.jwt);
+            }
+        })
+        .then(() => {
+            if (!props.embedded) {
+                render();
+            }
 
+            observable.trigger('ready');
         });
 }
 // return login(props.userId, props.jwt, pick(props, userActions.EDITABLE_PROPERTIES));
@@ -166,16 +180,10 @@ export function login(userId = '', jwt, attributes) {
 
     attributes = pick(attributes, userActions.EDITABLE_PROPERTIES);
 
-    if (store.getState().appState.emailCaptureEnabled && attributes.email) {
-        actions.push(appStateActions.setEmailReadonly());
-    } else {
-        actions.push(appStateActions.unsetEmailReadonly());
-    }
-
-    actions.push(authActions.setAuth({
-        jwt: jwt,
-        appToken
-    }));
+    // actions.push(authActions.setAuth({
+    //     jwt: jwt,
+    //     appToken
+    // }));
 
     store.dispatch(batchActions(actions));
     store.dispatch(disconnectFaye());
@@ -183,8 +191,6 @@ export function login(userId = '', jwt, attributes) {
     lastTriggeredMessageTimestamp = 0;
     initialStoreChange = true;
 
-
-    const {appId} = store.getState().config;
     return store.dispatch(authActions.login({
         userId: userId,
         device: {
@@ -205,13 +211,9 @@ export function login(userId = '', jwt, attributes) {
             id: loginResponse.appUser.userId || loginResponse.appUser._id
         });
 
-        Raven.setExtraContext({
-            appId
-        });
-
         const actions = [];
         actions.push(userActions.setUser(loginResponse.appUser));
-        actions.push(setApp(loginResponse.app));
+        // actions.push(setApp(loginResponse.app));
 
         actions.push(setCurrentLocation(parent.document.location));
         monitorUrlChanges(() => {
@@ -225,13 +227,13 @@ export function login(userId = '', jwt, attributes) {
 
         store.dispatch(batchActions(actions));
 
-        if (getIntegration(loginResponse.app.integrations, 'stripeConnect')) {
-            return store.dispatch(getAccount()).then((r) => {
-                store.dispatch(setStripeInfo(r.account));
-            }).catch(() => {
-                // do nothing about it and let the flow continue
-            });
-        }
+        // if (getIntegration(loginResponse.app.integrations, 'stripeConnect')) {
+        //     return store.dispatch(getAccount()).then((r) => {
+        //         // store.dispatch(setStripeInfo(r.account));
+        //     }).catch(() => {
+        //         // do nothing about it and let the flow continue
+        //     });
+        // }
     }).then(() => {
         return store.dispatch(userActions.immediateUpdate(attributes)).then(() => {
             const user = store.getState().user;
@@ -239,16 +241,6 @@ export function login(userId = '', jwt, attributes) {
                 return store.dispatch(handleConversationUpdated());
             }
         });
-    }).then(() => {
-        if (!store.getState().appState.embedded) {
-            render();
-        }
-
-        const user = store.getState().user;
-
-        observable.trigger('ready', user);
-
-        return user;
     });
 }
 

@@ -2,6 +2,7 @@ import urljoin from 'urljoin';
 import { batchActions } from 'redux-batched-actions';
 
 import http from '../utils/http';
+import { computeColorsMetadata } from '../utils/config';
 
 
 export const SET_CONFIG = 'SET_CONFIG';
@@ -30,6 +31,10 @@ export function fetchConfig() {
         return http('GET', configUrl)
             .then(({config}) => {
                 const actions = Object.keys(config).map((key) => {
+                    if (key === 'style') {
+                        return setConfig(key, computeColorsMetadata(config[key]));
+                    }
+
                     return setConfig(key, config[key]);
                 });
 
