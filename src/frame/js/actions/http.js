@@ -54,7 +54,7 @@ export function handleResponse(response) {
 export default function http(method, url, data, extraHeaders = {}, baseUrl) {
     return (dispatch, getState) => {
         method = method.toUpperCase();
-        const {auth, config} = getState();
+        const {auth, config, user} = getState();
 
         const headers = {
             Accept: 'application/json',
@@ -66,7 +66,7 @@ export default function http(method, url, data, extraHeaders = {}, baseUrl) {
         if (auth.jwt) {
             headers.Authorization = `Bearer ${auth.jwt}`;
         } else if (auth.sessionToken) {
-            headers.Authorization = `Basic ${btoa(`${auth.userId}:${auth.sessionToken}`)}`;
+            headers.Authorization = `Basic ${btoa(`${user._id}:${auth.sessionToken}`)}`;
         }
 
         const fetchOptions = {

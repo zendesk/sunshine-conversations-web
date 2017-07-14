@@ -13,7 +13,7 @@ import * as authActions from './actions/auth';
 import * as userActions from './actions/user';
 import { updateText } from './actions/ui';
 import { setCurrentLocation } from './actions/browser';
-import { sendMessage as _sendMessage, disconnectFaye, handleConversationUpdated, resetConversation } from './actions/conversation';
+import { sendMessage as _sendMessage, disconnectFaye, handleConversationUpdated, resetConversation, startConversation } from './actions/conversation';
 import { resetIntegrations } from './actions/integrations';
 import * as appStateActions from './actions/app-state';
 import { getAccount } from './actions/stripe';
@@ -155,6 +155,9 @@ export function init(props) {
             }
 
             observable.trigger('ready');
+        })
+        .then(() => {
+            store.dispatch(startConversation());
         });
 }
 
@@ -164,13 +167,21 @@ export function login(userId, jwt) {
     }
 
     const sessionToken = storage.getItem('sessionToken');
+    const smoochId = storage.getItem('smoochId');
 
-    store.dispatch(authActions.setAuth({
-        jwt,
-        userId,
-        sessionToken
-    }));
+    const actions = [
+        authActions.setAuth({
+            jwt,
+            userId,
+            sessionToken
+        }),
+        userActions.setUser({
+            _id: smoochId,
+            userId
+        })
+    ];
 
+    store.dispatch(batchActions(actions));
     store.dispatch(disconnectFaye());
 
     lastTriggeredMessageTimestamp = 0;

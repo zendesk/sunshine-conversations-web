@@ -1,8 +1,10 @@
 import { batchActions } from 'redux-batched-actions';
 
 import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi, showConnectNotification } from './app-state';
-import { getUserId, updateUser, immediateUpdate } from './user';
+import { getUserId, updateUser, immediateUpdate, setUser } from './user';
 import { disconnectClient, subscribeConversation, subscribeUser, subscribeConversationActivity, unsetFayeSubscriptions } from './faye';
+
+import http from './http';
 import { core } from '../utils/core';
 import { observable } from '../utils/events';
 import { Throttle } from '../utils/throttle';
@@ -513,5 +515,49 @@ export function disconnectFaye() {
 
         disconnectClient();
         dispatch(unsetFayeSubscriptions());
+    };
+}
+
+function handleUserConversationResponse({appUser, conversation}) {
+    return (dispatch) => {
+        const actions = [
+            setUser(appUser),
+            setConversation(conversation),
+            setMessages(conversation.messages)
+        ];
+
+        dispatch(batchActions(actions));
+    };
+}
+
+export function startConversation() {
+    return (dispatch, getState) => {
+        const {user: {_id, pendingAttributes}, config: {appId}} = getState();
+
+        return dispatch(http('POST', _id ? `/appusers/${_id}/conversations` : `/apps/${appId}/appusers`, {
+            ...pendingAttributes,
+            client: {
+                platform: 'web',
+                id: getDeviceId(),
+                info: {
+                    sdkVersion: VERSION,
+                    URL: parent.document.location.host,
+                    userAgent: navigator.userAgent,
+                    referrer: parent.document.referrer,
+                    browserLanguage: navigator.language,
+                    currentUrl: parent.document.location.href,
+                    currentTitle: parent.document.title
+                }
+            }
+        })).then((response) => dispatch(handleUserConversationResponse(response)));
+    };
+}
+
+export function fetchUserConversation() {
+    return (dispatch, getState) => {
+        const {user: {_id}, config: {appId}} = getState();
+
+        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}`))
+            .then((response) => dispatch(handleUserConversationResponse(response)));
     };
 }
