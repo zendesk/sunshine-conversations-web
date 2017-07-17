@@ -1,7 +1,7 @@
 import { batchActions } from 'redux-batched-actions';
 
 import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi, showConnectNotification } from './app-state';
-import { getUserId, updateUser, immediateUpdate, setUser } from './user';
+import { getUserId, setUser } from './user';
 import { disconnectClient, subscribeConversation, subscribeUser, subscribeConversationActivity, unsetFayeSubscriptions } from './faye';
 
 import http from './http';
@@ -89,33 +89,36 @@ const throttlePerUser = (userId) => {
 
 function postSendMessage(message) {
     return (dispatch, getState) => {
-        return core(getState()).appUsers.sendMessage(getUserId(getState()), message);
+        const {user: {_id}} = getState();
+        return dispatch(http('POST', `/appusers/${_id}/messages`, {
+            ...message,
+            role: 'appUser',
+            deviceId: getDeviceId()
+        }));
     };
 }
 
 function postUploadImage(message) {
     return (dispatch, getState) => {
+        const {user: {_id}} = getState();
         const blob = getBlobFromDataUrl(message.mediaUrl);
 
-        return core(getState()).appUsers.uploadImage(getUserId(getState()), blob, {
-            role: 'appUser',
-            deviceId: getDeviceId()
+        const data = new FormData();
+        data.append('role', 'appUser');
+        data.append('deviceId', getDeviceId());
+        data.append('source', blob);
+
+        Object.keys(message).forEach((key) => {
+            data.append(key, message[key]);
         });
+
+        return dispatch(http('POST', `/appusers/${_id}/images`, data));
     };
 }
 
 function onMessageSendSuccess(message, response) {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         const actions = [];
-        const {user} = getState();
-
-        if (!user.conversationStarted) {
-            // use setConversation to set the conversation id in the store
-            actions.push(setConversation(response.conversation));
-            actions.push(updateUser({
-                conversationStarted: true
-            }));
-        }
 
         actions.push(setShouldScrollToBottom(true));
         actions.push(replaceMessage({
@@ -213,13 +216,12 @@ function _getMessages(dispatch, getState) {
 }
 
 function sendChain(sendFn, message) {
-    return (dispatch, getState) => {
-        const promise = dispatch(immediateUpdate(getState().user));
+    return (dispatch) => {
+        const promise = dispatch(startConversation());
 
         const postSendHandler = (response) => {
             return Promise.resolve(dispatch(onMessageSendSuccess(message, response)))
                 .then(() => dispatch(handleConnectNotification(response)))
-                .then(() => dispatch(connectFayeConversation()))
                 .catch(); // swallow errors to avoid uncaught promises bubbling up
         };
 
@@ -475,9 +477,10 @@ export function getMessages() {
 
 export function connectFayeConversation() {
     return (dispatch, getState) => {
+        const {user: {conversationStarted}, conversation: {_id:conversationId}} = getState();
         const {faye: {conversationSubscription}} = getState();
 
-        if (!conversationSubscription) {
+        if (conversationStarted && conversationId && !conversationSubscription) {
             return Promise.all([
                 dispatch(subscribeConversation()),
                 dispatch(subscribeConversationActivity())
@@ -518,12 +521,15 @@ export function disconnectFaye() {
     };
 }
 
-function handleUserConversationResponse({appUser, conversation}) {
+function handleUserConversationResponse({appUser, conversation, sessionToken}) {
     return (dispatch) => {
         const actions = [
             setUser(appUser),
             setConversation(conversation),
-            setMessages(conversation.messages)
+            setMessages(conversation.messages),
+            setAuth({
+                sessionToken
+            })
         ];
 
         dispatch(batchActions(actions));
@@ -532,9 +538,13 @@ function handleUserConversationResponse({appUser, conversation}) {
 
 export function startConversation() {
     return (dispatch, getState) => {
-        const {user: {_id, pendingAttributes}, config: {appId}} = getState();
+        const {user: {_id: userId, pendingAttributes}, config: {appId}, conversation: {_id: conversationId}} = getState();
 
-        return dispatch(http('POST', _id ? `/appusers/${_id}/conversations` : `/apps/${appId}/appusers`, {
+        if (conversationId) {
+            return Promise.resolve();
+        }
+
+        return dispatch(http('POST', userId ? `/appusers/${userId}/conversations` : `/apps/${appId}/appusers`, {
             ...pendingAttributes,
             client: {
                 platform: 'web',
@@ -549,7 +559,9 @@ export function startConversation() {
                     currentTitle: parent.document.title
                 }
             }
-        })).then((response) => dispatch(handleUserConversationResponse(response)));
+        }))
+            .then((response) => dispatch(handleUserConversationResponse(response)))
+            .then(() => dispatch(connectFayeConversation()));
     };
 }
 

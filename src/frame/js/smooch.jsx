@@ -155,9 +155,6 @@ export function init(props) {
             }
 
             observable.trigger('ready');
-        })
-        .then(() => {
-            store.dispatch(startConversation());
         });
 }
 
@@ -204,7 +201,6 @@ export function login(userId, jwt) {
             }
         }
     })).then((loginResponse) => {
-        console.log(loginResponse);
         Raven.setUserContext({
             id: loginResponse.appUser.userId || loginResponse.appUser._id
         });

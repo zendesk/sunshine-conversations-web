@@ -24,6 +24,7 @@ const LOAD_MORE_LINK_HEIGHT = 47;
 export class ConversationComponent extends Component {
 
     static propTypes = {
+        dispatch: PropTypes.func.isRequired,
         messages: PropTypes.array.isRequired,
         embedded: PropTypes.bool.isRequired,
         shouldScrollToBottom: PropTypes.bool.isRequired,
@@ -35,6 +36,7 @@ export class ConversationComponent extends Component {
         config: PropTypes.object.isRequired,
         text: PropTypes.object.isRequired,
         typingIndicatorShown: PropTypes.bool.isRequired,
+        typingIndicatorName: PropTypes.string,
         replyActions: PropTypes.array.isRequired
     };
 
@@ -60,8 +62,8 @@ export class ConversationComponent extends Component {
                 node.scrollTop = top - 1;
             }
 
-            const containerNode = findDOMNode(this.refs.messagesContainer);
-            const messagesNode = findDOMNode(this.refs.messages);
+            const containerNode = findDOMNode(this._messagesContainer);
+            const messagesNode = findDOMNode(this._messages);
             // On iOS devices, when the messages container is not scrollable,
             // selecting it will cause the background page to scroll.
             // In order to fix, prevent default scroll behavior.
@@ -109,7 +111,7 @@ export class ConversationComponent extends Component {
         if (!this._isScrolling && (shouldScrollToBottom || this._forceScrollToBottom)) {
             this._isScrolling = true;
             const container = findDOMNode(this);
-            const logo = this.refs.logo;
+            const logo = this._logo;
             let scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight - INTRO_BOTTOM_SPACER;
 
             if (replyActions.length > 0 || typingIndicatorShown) {
@@ -307,20 +309,20 @@ export class ConversationComponent extends Component {
 
         return <div id='sk-conversation'
                     className={ errorNotificationMessage && 'notification-shown' }
-                    ref='container'
+                    ref={ (c) => this._container = c }
                     onTouchMove={ this.onTouchMove }
                     onScroll={ isMobile.any ? this.onScroll : this.debounceOnScroll }>
                    { introduction }
-                   <div ref='messagesContainer'
+                   <div ref={ (c) => this._messagesContainer = c }
                         className='sk-messages-container'
                         style={ messagesContainerStyle }>
                        { retrieveHistory }
-                       <div ref='messages'
+                       <div ref={ (c) => this._messages = c }
                             className='sk-messages'>
                            { messageItems }
                        </div>
                        <div className='sk-logo'
-                            ref='logo'
+                            ref={ (c) => this._logo = c }
                             style={ logoStyle }>
                            <a href='https://smooch.io/live-web-chat/?utm_source=widget'
                               target='_blank'><span>Messaging by</span> <img className='sk-image'

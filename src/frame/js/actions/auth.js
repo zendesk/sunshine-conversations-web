@@ -14,7 +14,7 @@ export function login(props) {
 export function setAuth(props) {
     return {
         type: SET_AUTH,
-        props: props
+        ...props
     };
 }
 
