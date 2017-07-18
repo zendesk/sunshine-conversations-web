@@ -18,6 +18,7 @@ import { resetIntegrations } from './actions/integrations';
 import * as appStateActions from './actions/app-state';
 import { getAccount } from './actions/stripe';
 import { setConfig, fetchConfig } from './actions/config';
+import { reset } from './actions/common';
 
 import { core } from './utils/core';
 import { observable, observeStore } from './utils/events';
@@ -93,6 +94,14 @@ function onStoreChange({conversation: {messages, unreadCount}, widgetState, disp
     }
 }
 
+function cleanUp() {
+    store.dispatch(disconnectFaye());
+    stopMonitoringBrowserState();
+    stopMonitoringUrlChanges();
+    unsubscribeFromStore();
+    store.dispatch(reset());
+}
+
 export function on(...args) {
     return observable.on(...args);
 }
@@ -101,10 +110,14 @@ export function off(...args) {
     return observable.off(...args);
 }
 
-export function init(props) {
+export function init(props = {}) {
     const {appState: {isInitialized}} = store.getState();
     if (isInitialized) {
         throw new Error('Web Messenger is already initialized. Call `destroy()` first before calling `init()` again.');
+    }
+
+    if (!props.appId) {
+        throw new Error('Must provide an appId');
     }
 
     props = {
@@ -113,20 +126,16 @@ export function init(props) {
         ...props
     };
 
-    if (!props.appId) {
-        return Promise.reject(new Error('Must provide an appId'));
-    }
-
     Raven.setExtraContext({
         appId: props.appId
     });
 
     const actions = [
         appStateActions.setInitializationState(true),
+        appStateActions.setEmbedded(!!props.embedded),
         setConfig('appId', props.appId),
         setConfig('soundNotificationEnabled', props.soundNotificationEnabled && isAudioSupported()),
         setConfig('imageUploadEnabled', props.imageUploadEnabled && isImageUploadSupported()),
-        appStateActions.setEmbedded(!!props.embedded),
         setConfig('configBaseUrl', props.configBaseUrl || `https://${props.appId}.config.smooch.io`)
     ];
 
@@ -160,7 +169,7 @@ export function init(props) {
             observable.trigger('ready');
         })
         .catch(() => {
-            store.dispatch(appStateActions.setInitializationState(false));
+            cleanUp();
         });
 }
 
@@ -279,10 +288,6 @@ export function getUserId() {
     return userActions.getUserId(store.getState());
 }
 
-export function getCore() {
-    return core(store.getState());
-}
-
 export function destroy() {
     // `destroy()` only need to clean up handlers
     // the rest will be cleaned up with the iframe removal
@@ -290,12 +295,8 @@ export function destroy() {
     if (!isInitialized) {
         return;
     }
-    store.dispatch(appStateActions.setInitializationState(false));
-    stopMonitoringBrowserState();
-    stopMonitoringUrlChanges();
-    unsubscribeFromStore();
 
-    store.dispatch(disconnectFaye());
+    cleanUp();
     observable.trigger('destroy');
     observable.off();
 }
