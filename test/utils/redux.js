@@ -1,20 +1,35 @@
 import thunkMiddleware from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 
-export function generateBaseStoreProps() {
+export function generateBaseStoreProps(extraProps = {}) {
     return {
+        ...extraProps,
         ui: {
-            text: {}
+            text: {},
+            ...extraProps.ui
         },
-        app: {
-            integrations: []
+        conversation: {
+            messages: [],
+            ...extraProps.conversation
         },
-        integrations: {},
+        auth: {
+            ...extraProps.auth
+        },
+        integrations: {
+            ...extraProps.integrations
+        },
         user: {
-            _id: '1234'
+            ...extraProps.user
         },
         appState: {
-            visibleChannelType: null
+            isInitialized: false,
+            visibleChannelType: null,
+            ...extraProps.appState
+        },
+        config: {
+            configBaseUrl: 'http://localhost',
+            style: {},
+            ...extraProps.config
         }
     };
 }

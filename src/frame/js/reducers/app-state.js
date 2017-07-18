@@ -4,6 +4,7 @@ import { RESET_CONVERSATION, ADD_MESSAGE } from '../actions/conversation';
 import { WIDGET_STATE } from '../constants/app';
 
 const INITIAL_STATE = {
+    isInitialized: false,
     settingsVisible: false,
     visibleChannelType: null,
     widgetState: WIDGET_STATE.INIT,
@@ -34,6 +35,11 @@ export default function AppStateReducer(state = INITIAL_STATE, action) {
                 connectNotificationTimestamp: null
             };
 
+        case AppStateActions.SET_INITIALIZATION_STATE:
+            return {
+                ...state,
+                isInitialized: action.value
+            };
         case AppStateActions.ENABLE_IMAGE_UPLOAD:
             return {
                 ...state,

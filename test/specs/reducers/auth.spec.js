@@ -1,4 +1,4 @@
-import { AuthReducer } from '../../../src/frame/js/reducers/auth';
+import AuthReducer from '../../../src/frame/js/reducers/auth';
 import { SET_AUTH, RESET_AUTH } from '../../../src/frame/js/actions/auth';
 
 describe('Auth reducer', () => {

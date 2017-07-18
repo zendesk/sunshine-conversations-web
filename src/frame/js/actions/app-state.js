@@ -31,6 +31,7 @@ export const SET_SHOULD_SCROLL_TO_BOTTOM = 'SET_SHOULD_SCROLL_TO_BOTTOM';
 export const SHOW_TYPING_INDICATOR = 'SHOW_TYPING_INDICATOR';
 export const HIDE_TYPING_INDICATOR = 'HIDE_TYPING_INDICATOR';
 export const UPDATE_WIDGET_SIZE = 'UPDATE_WIDGET_SIZE';
+export const SET_INITIALIZATION_STATE = 'SET_INITIALIZATION_STATE';
 
 function connectToFayeUser() {
     return (dispatch, getState) => {
@@ -91,6 +92,12 @@ export function showSettings() {
     };
 }
 
+export function setInitializationState(value) {
+    return {
+        type: SET_INITIALIZATION_STATE,
+        value
+    };
+}
 export function hideSettings() {
     return {
         type: HIDE_SETTINGS

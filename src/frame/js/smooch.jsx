@@ -34,7 +34,6 @@ import Widget from './components/Widget';
 
 let lastTriggeredMessageTimestamp = 0;
 let initialStoreChange = true;
-let isInitialized = false;
 let unsubscribeFromStore;
 
 // Listen for media query changes from the host page.
@@ -103,7 +102,10 @@ export function off(...args) {
 }
 
 export function init(props) {
-    isInitialized = true;
+    const {appState: {isInitialized}} = store.getState();
+    if (isInitialized) {
+        throw new Error('Web Messenger is already initialized. Call `destroy()` first before calling `init()` again.');
+    }
 
     props = {
         imageUploadEnabled: true,
@@ -120,6 +122,7 @@ export function init(props) {
     });
 
     const actions = [
+        appStateActions.setInitializationState(true),
         setConfig('appId', props.appId),
         setConfig('soundNotificationEnabled', props.soundNotificationEnabled && isAudioSupported()),
         setConfig('imageUploadEnabled', props.imageUploadEnabled && isImageUploadSupported()),
@@ -155,6 +158,9 @@ export function init(props) {
             }
 
             observable.trigger('ready');
+        })
+        .catch(() => {
+            store.dispatch(appStateActions.setInitializationState(false));
         });
 }
 
@@ -228,13 +234,13 @@ export function login(userId, jwt) {
     //         // do nothing about it and let the flow continue
     //     });
     // }
-    }).then(() => {
-        return store.dispatch(userActions.immediateUpdate(attributes)).then(() => {
-            const user = store.getState().user;
-            if (user.conversationStarted) {
-                return store.dispatch(handleConversationUpdated());
-            }
-        });
+    // }).then(() => {
+    //     return store.dispatch(userActions.immediateUpdate(attributes)).then(() => {
+    //         const user = store.getState().user;
+    //         if (user.conversationStarted) {
+    //             return store.dispatch(handleConversationUpdated());
+    //         }
+    //     });
     });
 }
 
@@ -280,11 +286,11 @@ export function getCore() {
 export function destroy() {
     // `destroy()` only need to clean up handlers
     // the rest will be cleaned up with the iframe removal
-
+    const {appState: {isInitialized}} = store.getState();
     if (!isInitialized) {
         return;
     }
-
+    store.dispatch(appStateActions.setInitializationState(false));
     stopMonitoringBrowserState();
     stopMonitoringUrlChanges();
     unsubscribeFromStore();

@@ -325,10 +325,11 @@ export class ConversationComponent extends Component {
                             ref={ (c) => this._logo = c }
                             style={ logoStyle }>
                            <a href='https://smooch.io/live-web-chat/?utm_source=widget'
+                              rel='noopener noreferrer'
                               target='_blank'><span>Messaging by</span> <img className='sk-image'
-                                                                                                                                       src={ logo }
-                                                                                                                                       srcSet={ `${logo} 1x, ${logo2x} 2x` }
-                                                                                                                                       alt='smooch.io' /></a>
+                                                                                                                                                                 src={ logo }
+                                                                                                                                                                 srcSet={ `${logo} 1x, ${logo2x} 2x` }
+                                                                                                                                                                 alt='smooch.io' /></a>
                        </div>
                    </div>
                </div>;

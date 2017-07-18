@@ -4,7 +4,7 @@ import { batchActions } from 'redux-batched-actions';
 
 import { setUser } from './user';
 import { showSettings, showTypingIndicator, hideTypingIndicator, hideChannelPage, hideConnectNotification } from './app-state';
-import { addMessage, incrementUnreadCount, resetUnreadCount, getMessages, disconnectFaye, handleConversationUpdated } from './conversation';
+import { addMessage, incrementUnreadCount, resetUnreadCount, getMessages, disconnectFaye } from './conversation';
 import { cancelSMSLink, failSMSLink } from './integrations';
 import { getDeviceId } from '../utils/device';
 import { ANIMATION_TIMINGS } from '../constants/styles';
@@ -45,7 +45,7 @@ export function unsetFayeSubscriptions() {
 
 let client;
 
-const getScheduler = ({retryInterval, maxConnectionAttempts, connectionDelay}) => {
+const getScheduler = ({retryInterval, maxConnectionAttempts}) => {
     return class Scheduler extends FayeScheduler {
         getInterval() {
             return retryInterval;
@@ -61,7 +61,7 @@ const getScheduler = ({retryInterval, maxConnectionAttempts, connectionDelay}) =
 
             // target only setup messages
             if (['/meta/handshake', '/meta/connect', '/meta/subscribe'].includes(channel)) {
-                return this.attempts <= maxConnectionAttempts;
+                return this.attempts < maxConnectionAttempts;
             }
 
             return true;

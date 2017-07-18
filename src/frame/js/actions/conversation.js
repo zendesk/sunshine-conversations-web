@@ -221,8 +221,7 @@ function sendChain(sendFn, message) {
 
         const postSendHandler = (response) => {
             return Promise.resolve(dispatch(onMessageSendSuccess(message, response)))
-                .then(() => dispatch(handleConnectNotification(response)))
-                .catch(); // swallow errors to avoid uncaught promises bubbling up
+                .then(() => dispatch(handleConnectNotification(response)));
         };
 
         return promise
@@ -324,24 +323,6 @@ export function resetUnreadCount() {
             return core(getState()).conversations.resetUnreadCount(getUserId(getState())).then((response) => {
                 return response;
             });
-        }
-
-        return Promise.resolve();
-    };
-}
-
-export function handleConversationUpdated() {
-    return (dispatch, getState) => {
-        const {faye: {conversationSubscription}} = getState();
-
-        if (!conversationSubscription) {
-            return dispatch(getMessages())
-                .then((response) => {
-                    return dispatch(connectFayeConversation())
-                        .then(() => {
-                            return response;
-                        });
-                });
         }
 
         return Promise.resolve();
