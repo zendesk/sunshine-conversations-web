@@ -3,11 +3,10 @@ import { Client } from 'faye';
 
 import { createMockedStore } from '../../utils/redux';
 import { hideChannelPage, hideConnectNotification } from '../../../src/frame/js/actions/app-state';
-import { addMessage, incrementUnreadCount, resetUnreadCount } from '../../../src/frame/js/actions/conversation';
-import { setFayeUserSubscription, setFayeConversationSubscription } from '../../../src/frame/js/actions/faye';
+import { incrementUnreadCount, resetUnreadCount } from '../../../src/frame/js/actions/conversation';
 import { setUser } from '../../../src/frame/js/actions/user';
-import * as fayeService from '../../../src/frame/js/services/faye';
-import { __Rewire__ as FayeRewire } from '../../../src/frame/js/services/faye';
+import * as fayeActions from '../../../src/frame/js/actions/faye';
+import { __Rewire__ as FayeRewire } from '../../../src/frame/js/actions/faye';
 
 function getProps(props = {}) {
     const state = {
@@ -29,7 +28,7 @@ function getProps(props = {}) {
 
 const sandbox = sinon.sandbox.create();
 
-describe('Faye service', () => {
+describe('Faye Actions', () => {
     let mockedStore;
     let getMessagesStub;
     let disconnectFayeStub;
@@ -37,7 +36,7 @@ describe('Faye service', () => {
     let showSettingsStub;
     let hideChannelPageSpy;
     let hideConnectNotificationSpy;
-    let addMessageSpy;
+    let addMessageStub;
     let incrementUnreadCountSpy;
     let resetUnreadCountSpy;
     let setUserSpy;
@@ -67,8 +66,8 @@ describe('Faye service', () => {
         hideConnectNotificationSpy = sandbox.spy(hideConnectNotification);
         FayeRewire('hideConnectNotification', hideConnectNotificationSpy);
 
-        addMessageSpy = sandbox.spy(addMessage);
-        FayeRewire('addMessage', addMessageSpy);
+        addMessageStub = sandbox.stub().returnsAsyncThunk();
+        FayeRewire('addMessage', addMessageStub);
 
         incrementUnreadCountSpy = sandbox.spy(incrementUnreadCount);
         FayeRewire('incrementUnreadCount', incrementUnreadCountSpy);
@@ -79,17 +78,17 @@ describe('Faye service', () => {
         setUserSpy = sandbox.spy(setUser);
         FayeRewire('setUser', setUserSpy);
 
-        setFayeConversationSubscriptionSpy = sandbox.spy(setFayeConversationSubscription);
+        setFayeConversationSubscriptionSpy = sandbox.spy(fayeActions.setFayeConversationSubscription);
         FayeRewire('setFayeConversationSubscription', setFayeConversationSubscriptionSpy);
 
-        setFayeUserSubscriptionSpy = sandbox.spy(setFayeUserSubscription);
+        setFayeUserSubscriptionSpy = sandbox.spy(fayeActions.setFayeUserSubscription);
         FayeRewire('setFayeUserSubscription', setFayeUserSubscriptionSpy);
 
         FayeRewire('getDeviceId', sandbox.stub().returns(123));
     });
 
     afterEach(() => {
-        fayeService.disconnectClient();
+        fayeActions.disconnectClient();
         sandbox.restore();
     });
 
@@ -101,7 +100,7 @@ describe('Faye service', () => {
         });
         describe('when conversation is started', () => {
             it('should call getMessages when transport:up event is emitted', () => {
-                const client = mockedStore.dispatch(fayeService.getClient());
+                const client = mockedStore.dispatch(fayeActions.getClient());
                 client.subscribe();
                 getMessagesStub.should.have.been.calledOnce;
             });
@@ -117,7 +116,7 @@ describe('Faye service', () => {
             });
 
             it('should not call getMessages when transport:up event is emitted', () => {
-                const client = mockedStore.dispatch(fayeService.getClient());
+                const client = mockedStore.dispatch(fayeActions.getClient());
                 client.subscribe();
                 getMessagesStub.should.not.have.been.called;
             });
@@ -132,8 +131,8 @@ describe('Faye service', () => {
                         id: 1
                     }
                 };
-                mockedStore.dispatch(fayeService.handleConversationSubscription(message));
-                addMessageSpy.should.have.been.calledWithMatch(message);
+                mockedStore.dispatch(fayeActions.handleConversationSubscription(message));
+                addMessageStub.should.have.been.calledWithMatch(message);
             });
 
             [true, false].forEach((appUser) => {
@@ -145,7 +144,7 @@ describe('Faye service', () => {
                             },
                             role: appUser ? 'appUser' : 'appMaker'
                         };
-                        mockedStore.dispatch(fayeService.handleConversationSubscription(message));
+                        mockedStore.dispatch(fayeActions.handleConversationSubscription(message));
                         appUser ? resetUnreadCountSpy.should.have.been.calledOnce : resetUnreadCountSpy.should.not.have.been.called;
                     });
                 });
@@ -161,7 +160,7 @@ describe('Faye service', () => {
                         },
                         role: appUser ? 'appUser' : 'appMaker'
                     };
-                    mockedStore.dispatch(fayeService.handleConversationSubscription(message));
+                    mockedStore.dispatch(fayeActions.handleConversationSubscription(message));
                     appUser ? incrementUnreadCountSpy.should.not.have.been.called : incrementUnreadCountSpy.should.have.been.calledOnce;
                 });
             });
@@ -175,7 +174,7 @@ describe('Faye service', () => {
                     _id: 123
                 }
             }));
-            mockedStore.dispatch(fayeService.subscribeConversation()).then(() => {
+            mockedStore.dispatch(fayeActions.subscribeConversation()).then(() => {
                 setFayeConversationSubscriptionSpy.should.have.been.calledOnce;
             });
         });
@@ -195,7 +194,7 @@ describe('Faye service', () => {
             });
 
             it('should subscribe new user', () => {
-                mockedStore.dispatch(fayeService.updateUser(currentAppUser, nextAppUser));
+                mockedStore.dispatch(fayeActions.updateUser(currentAppUser, nextAppUser));
                 hideChannelPageSpy.should.have.been.calledOnce;
                 disconnectFayeStub.should.have.been.calledOnce;
                 setUserSpy.should.have.been.calledWithMatch(nextAppUser);
@@ -214,14 +213,14 @@ describe('Faye service', () => {
             describe('current appUser started conversation', () => {
                 it('should fetch conversation', () => {
                     currentAppUser.conversationStarted = true;
-                    mockedStore.dispatch(fayeService.updateUser(currentAppUser, nextAppUser));
+                    mockedStore.dispatch(fayeActions.updateUser(currentAppUser, nextAppUser));
                     getMessagesStub.should.have.been.calledOnce;
                 });
             });
             describe('next appUser started conversation', () => {
                 it('should connect faye and fetch covnersation', () => {
                     nextAppUser.conversationStarted = true;
-                    mockedStore.dispatch(fayeService.updateUser(currentAppUser, nextAppUser));
+                    mockedStore.dispatch(fayeActions.updateUser(currentAppUser, nextAppUser));
                     handleConversationUpdatedStub.should.have.been.calledOnce;
                 });
             });
@@ -261,7 +260,7 @@ describe('Faye service', () => {
                             event: event
                         };
 
-                        mockedStore.dispatch(fayeService.handleUserSubscription(req));
+                        mockedStore.dispatch(fayeActions.handleUserSubscription(req));
                         hideConnectNotificationSpy.should.have.been.calledOnce;
                         platform ? showSettingsStub.should.have.been.calledOnce : showSettingsStub.should.not.have.been.called;
                     });
@@ -273,7 +272,7 @@ describe('Faye service', () => {
     describe('subscribeUser', () => {
         it('should call setFayeUserSubscription', () => {
             mockedStore = createMockedStore(sandbox, getProps());
-            mockedStore.dispatch(fayeService.subscribeUser()).then(() => {
+            mockedStore.dispatch(fayeActions.subscribeUser()).then(() => {
                 setFayeUserSubscriptionSpy.should.have.been.calledOnce;
             });
         });
@@ -282,8 +281,8 @@ describe('Faye service', () => {
     describe('disconnectClient', () => {
         it('should disconnect', () => {
             sandbox.stub(Client.prototype, 'disconnect');
-            mockedStore.dispatch(fayeService.getClient());
-            fayeService.disconnectClient();
+            mockedStore.dispatch(fayeActions.getClient());
+            fayeActions.disconnectClient();
             Client.prototype.disconnect.should.have.been.calledOnce;
         });
     });

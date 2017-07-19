@@ -14,7 +14,7 @@ import ErrorNotification from './ErrorNotification';
 import ChatInput from './ChatInput';
 import MessageIndicator from './MessageIndicator';
 
-import { resetUnreadCount } from '../services/conversation';
+import { resetUnreadCount } from '../actions/conversation';
 import { hasChannels } from '../utils/app';
 import { DISPLAY_STYLE } from '../constants/styles';
 import { WIDGET_STATE } from '../constants/app';

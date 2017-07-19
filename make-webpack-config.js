@@ -301,7 +301,7 @@ module.exports = function(options) {
     }));
 
     plugins.push(new webpack.SourceMapDevToolPlugin({
-        filename: '[file].map'
+        filename: buildType !== 'test' && '[file].map'
     }));
 
     return {
