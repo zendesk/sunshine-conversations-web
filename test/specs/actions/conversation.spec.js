@@ -1,8 +1,7 @@
 import sinon from 'sinon';
 
-import { createMock as createCoreMock } from '../../mocks/core';
 import { createMock as createThrottleMock } from '../../mocks/throttle';
-import { createMockedStore, findActionsByType } from '../../utils/redux';
+import { createMockedStore, findActionsByType, generateBaseStoreProps } from '../../utils/redux';
 
 import * as conversationActions from '../../../src/frame/js/actions/conversation';
 import { __Rewire__ as RewireConversationActions } from '../../../src/frame/js/actions/conversation';
@@ -25,25 +24,10 @@ function getProps(props = {}) {
                     type: 'telegram',
                     username: 'chloebot'
                 }
-            ],
-            settings: {
-                web: {
-                    channels: {
-                        telegram: true,
-                        messenger: false,
-                        line: false,
-                        twilio: false,
-                        wechat: false
-                    }
-                }
-            }
+            ]
         },
         conversation: {
             messages: []
-        },
-        faye: {
-            userSubscription: null,
-            conversationSubscription: null
         },
         ui: {
             text: {
@@ -57,17 +41,14 @@ function getProps(props = {}) {
 
 describe('Conversation Actions', () => {
     let sandbox;
-    let coreMock;
     let mockedStore;
     let conversationSubscriptionMock;
     let userSubscriptionMock;
 
+    let replaceMessageSpy;
+    let httpStub;
     let getWindowLocationStub;
     let immediateUpdateStub;
-    let setConversationSpy;
-    let replaceMessageSpy;
-    let addMessagesSpy;
-    let resetUnreadCountActionSpy;
     let updateUserSpy;
     let showErrorNotificationSpy;
     let unsetFayeSubscriptionsSpy;
@@ -85,16 +66,6 @@ describe('Conversation Actions', () => {
     beforeEach(() => {
         // Disable throttling for unit tests
         RewireConversationActions('Throttle', createThrottleMock(sandbox));
-
-        coreMock = createCoreMock(sandbox);
-        coreMock.appUsers.getMessages.resolves({
-            conversation: {
-            },
-            messages: []
-        });
-
-        RewireConversationActions('core', () => coreMock);
-
         conversationSubscriptionMock = {
             cancel: sandbox.stub().resolves()
         };
@@ -102,6 +73,15 @@ describe('Conversation Actions', () => {
         userSubscriptionMock = {
             cancel: sandbox.stub().resolves()
         };
+
+        // Conversation actions
+
+        replaceMessageSpy = sandbox.spy(conversationActions.replaceMessage);
+        RewireConversationActions('replaceMessage', replaceMessageSpy);
+
+        // Http actions
+        httpStub = sandbox.stub().returnsAsyncThunk();
+        RewireConversationActions('http', httpStub);
 
         // Media Utils
         RewireConversationActions('isImageUploadSupported', sandbox.stub().returns(true));
@@ -121,16 +101,6 @@ describe('Conversation Actions', () => {
         // DOM utils
         getWindowLocationStub = sandbox.stub();
         RewireConversationActions('getWindowLocation', getWindowLocationStub);
-
-        // Conversation actions
-        setConversationSpy = sandbox.spy(conversationActions.setConversation);
-        RewireConversationActions('setConversation', setConversationSpy);
-        replaceMessageSpy = sandbox.spy(conversationActions.replaceMessage);
-        RewireConversationActions('replaceMessage', replaceMessageSpy);
-        addMessagesSpy = sandbox.spy(conversationActions.addMessages);
-        RewireConversationActions('addMessages', addMessagesSpy);
-        resetUnreadCountActionSpy = sandbox.spy(conversationActions.resetUnreadCount);
-        RewireConversationActions('resetUnreadCountAction', resetUnreadCountActionSpy);
 
         // User actions
         updateUserSpy = sandbox.spy(updateUser);
@@ -161,45 +131,17 @@ describe('Conversation Actions', () => {
     });
 
     const conversationStartedSuite = (action, extraProps = {}) => {
-        describe('conversation started', () => {
-            beforeEach(() => {
-                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
-                    user: {
-                        _id: '1',
-                        conversationStarted: true
-                    }
-                }, extraProps)));
-            });
+        let startConversationStub;
 
-            it('should replace message', () => {
-                return mockedStore.dispatch(action).then(() => {
-                    immediateUpdateStub.should.have.been.calledOnce;
-
-                    setConversationSpy.should.not.have.been.called;
-                    replaceMessageSpy.should.have.been.called;
-                    updateUserSpy.should.not.have.been.called;
-                });
-            });
+        beforeEach(() => {
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps(extraProps));
+            startConversationStub = sandbox.stub().returnsAsyncThunk();
+            RewireConversationActions('startConversation', startConversationStub);
         });
 
-        describe('conversation not started', () => {
-            beforeEach(() => {
-                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
-                    user: {
-                        _id: '1',
-                        conversationStarted: false
-                    }
-                }, extraProps)));
-            });
-
-            it('should set conversation to started', () => {
-                return mockedStore.dispatch(action).then(() => {
-                    immediateUpdateStub.should.have.been.calledOnce;
-
-                    setConversationSpy.should.have.been.called;
-                    replaceMessageSpy.should.have.been.called;
-                    updateUserSpy.should.have.been.called;
-                });
+        it('should call startConversation', () => {
+            return mockedStore.dispatch(action).then(() => {
+                startConversationStub.should.have.been.calledOnce;
             });
         });
     };
@@ -264,6 +206,8 @@ describe('Conversation Actions', () => {
     });
 
     describe('sendMessage', () => {
+        let postSendMessageStub;
+        let startConversationStub;
         const message = {
             conversation: 'conversation',
             _clientId: 2,
@@ -271,24 +215,31 @@ describe('Conversation Actions', () => {
         };
 
         beforeEach(() => {
-            coreMock.appUsers.sendMessage.resolves(message);
+            postSendMessageStub = sandbox.stub().returnsAsyncThunk({
+                value: message
+            });
+            startConversationStub = sandbox.stub().returnsAsyncThunk();
+            RewireConversationActions('postSendMessage', postSendMessageStub);
+            RewireConversationActions('startConversation', startConversationStub);
         });
 
         conversationStartedSuite(conversationActions.sendMessage('message'));
 
         it('should add message and send message', () => {
-            mockedStore = createMockedStore(sandbox, getProps());
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
 
             return mockedStore.dispatch(conversationActions.sendMessage('message')).then(() => {
                 const actions = findActionsByType(mockedStore.getActions(), conversationActions.ADD_MESSAGE);
                 actions.length.should.eq(1);
                 actions[0].message.text.should.eq('message');
-                coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                postSendMessageStub.should.have.been.calledWithMatch({
+                    text: 'message'
+                });
             });
         });
 
         it('should accept string or message properties', () => {
-            mockedStore = createMockedStore(sandbox, getProps());
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
 
             return mockedStore.dispatch(conversationActions.sendMessage('message'))
                 .then(() => mockedStore.dispatch(conversationActions.sendMessage({
@@ -296,28 +247,29 @@ describe('Conversation Actions', () => {
                     text: 'message'
                 })))
                 .then(() => {
-                    coreMock.appUsers.sendMessage.should.have.been.calledTwice;
-
-                    coreMock.appUsers.sendMessage.firstCall.args[1].type.should.eql('text');
-                    coreMock.appUsers.sendMessage.firstCall.args[1].text.should.eql('message');
-                    coreMock.appUsers.sendMessage.secondCall.args[1].type.should.eql('text');
-                    coreMock.appUsers.sendMessage.secondCall.args[1].text.should.eql('message');
+                    postSendMessageStub.should.have.been.calledTwice;
+                    postSendMessageStub.firstCall.args[0].type.should.eql('text');
+                    postSendMessageStub.firstCall.args[0].text.should.eql('message');
+                    postSendMessageStub.secondCall.args[0].type.should.eql('text');
+                    postSendMessageStub.secondCall.args[0].text.should.eql('message');
                 });
         });
 
         describe('errors', () => {
             beforeEach(() => {
-                coreMock.appUsers.sendMessage.rejects();
+                postSendMessageStub = sandbox.stub().returnsAsyncThunk({
+                    rejects: true
+                });
+                RewireConversationActions('postSendMessage', postSendMessageStub);
             });
 
             it('should update message send status', () => {
-                mockedStore = createMockedStore(sandbox, getProps());
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
                 return mockedStore.dispatch(conversationActions.sendMessage(message))
                     .then(() => {
                         replaceMessageSpy.should.have.been.calledWith({
                             _clientId: message._clientId
                         });
-
                         replaceMessageSpy.args[0][1].sendStatus.should.eql(SEND_STATUS.FAILED);
                     });
             });

@@ -202,17 +202,19 @@ function removeMessage(_clientId) {
 }
 
 function _getMessages(dispatch, getState) {
-    const userId = getUserId(getState());
-    return core(getState()).appUsers.getMessages(userId).then((response) => {
-        dispatch(batchActions([
-            setConversation({
-                ...response.conversation,
-                hasMoreMessages: !!response.previous
-            }),
-            setMessages(response.messages)
-        ]));
-        return response;
-    });
+    const {user: {_id}, config: {appId}} = getState();
+
+    return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/messages`))
+        .then((response) => {
+            dispatch(batchActions([
+                setConversation({
+                    ...response.conversation,
+                    hasMoreMessages: !!response.previous
+                }),
+                setMessages(response.messages)
+            ]));
+            return response;
+        });
 }
 
 function sendChain(sendFn, message) {
@@ -242,16 +244,19 @@ export function sendMessage(props) {
 
 export function postPostback(actionId) {
     return (dispatch, getState) => {
-        return core(getState()).conversations.postPostback(getUserId(getState()), actionId)
-            .catch(() => {
-                dispatch(showErrorNotification(getState().ui.text.actionPostbackError));
-            });
+        const {user: {_id}, config: {appId}} = getState();
+
+        return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/conversation/postback`, {
+            actionId
+        })).catch(() => {
+            dispatch(showErrorNotification(getState().ui.text.actionPostbackError));
+        });
     };
 }
 
 export function fetchMoreMessages() {
     return (dispatch, getState) => {
-        const {conversation: {hasMoreMessages, messages, isFetchingMoreMessagesFromServer}} = getState();
+        const {conversation: {hasMoreMessages, messages, isFetchingMoreMessagesFromServer}, user: {_id}, config: {appId}} = getState();
 
         if (!hasMoreMessages || isFetchingMoreMessagesFromServer) {
             return Promise.resolve();
@@ -259,9 +264,10 @@ export function fetchMoreMessages() {
 
         const timestamp = messages[0].received;
         dispatch(setFetchingMoreMessagesFromServer(true));
-        return core(getState()).appUsers.getMessages(getUserId(getState()), {
+
+        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/messages`, {
             before: timestamp
-        }).then((response) => {
+        })).then((response) => {
             dispatch(batchActions([
                 setConversation({
                     ...response.conversation,
@@ -315,12 +321,13 @@ export function handleConnectNotification(response) {
 
 export function resetUnreadCount() {
     return (dispatch, getState) => {
-        const {conversation} = getState();
+        const {user: {_id}, config: {appId}, conversation} = getState();
         if (conversation.unreadCount > 0) {
             dispatch({
                 type: RESET_UNREAD_COUNT
             });
-            return core(getState()).conversations.resetUnreadCount(getUserId(getState())).then((response) => {
+
+            return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/conversation/read`)).then((response) => {
                 return response;
             });
         }

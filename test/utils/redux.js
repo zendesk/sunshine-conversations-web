@@ -27,9 +27,15 @@ export function generateBaseStoreProps(extraProps = {}) {
             ...extraProps.appState
         },
         config: {
+            appId: 'some-app-id',
+            apiBaseUrl: 'http://localhost',
             configBaseUrl: 'http://localhost',
             style: {},
             ...extraProps.config
+        },
+        faye: {
+            userSubscription: null,
+            conversationSubscription: null
         }
     };
 }
