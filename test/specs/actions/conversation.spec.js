@@ -631,21 +631,29 @@ describe('Conversation Actions', () => {
     });
 
     describe('connectFayeConversation', () => {
-        [true, false].forEach((active) => {
-            describe(`with${active ? '' : 'out'} subscription active`, () => {
-                it(`should ${active ? 'not' : ''} subscribe to conversation`, () => {
-                    mockedStore = active ? createMockedStore(sandbox, generateBaseStoreProps({
-                        faye: {
-                            conversationSubscription: conversationSubscriptionMock
-                        }
-                    })) : createMockedStore(sandbox, generateBaseStoreProps());
+        [true, false].forEach((conversationStarted) => {
+            [true, false].forEach((active) => {
+                describe(`with${active ? '' : 'out'} subscription active and with${conversationStarted ? '' : 'out'} conversation started`, () => {
+                    it(`should ${!active && conversationStarted ? '' : 'not'} subscribe to conversation`, () => {
+                        mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
+                            user: {
+                                conversationStarted
+                            },
+                            conversation: {
+                                _id: conversationStarted ? 'some-conversation-id' : null
+                            },
+                            faye: {
+                                conversationSubscription: active ? conversationSubscriptionMock : null
+                            }
+                        }));
 
-                    return mockedStore.dispatch(conversationActions.connectFayeConversation()).then(() => {
-                        if (active) {
-                            subscribeConversationStub.should.not.have.been.called;
-                        } else {
-                            subscribeConversationStub.should.have.been.calledOnce;
-                        }
+                        return mockedStore.dispatch(conversationActions.connectFayeConversation()).then(() => {
+                            if (conversationStarted && !active) {
+                                subscribeConversationStub.should.have.been.calledOnce;
+                            } else {
+                                subscribeConversationStub.should.not.have.been.called;
+                            }
+                        });
                     });
                 });
             });

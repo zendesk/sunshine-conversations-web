@@ -36,7 +36,8 @@ export function generateBaseStoreProps(extraProps = {}) {
         },
         faye: {
             userSubscription: null,
-            conversationSubscription: null
+            conversationSubscription: null,
+            ...extraProps.faye
         }
     };
 }

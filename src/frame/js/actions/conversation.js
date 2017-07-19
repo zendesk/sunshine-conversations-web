@@ -471,8 +471,7 @@ export function getMessages() {
 
 export function connectFayeConversation() {
     return (dispatch, getState) => {
-        const {user: {conversationStarted}, conversation: {_id:conversationId}} = getState();
-        const {faye: {conversationSubscription}} = getState();
+        const {user: {conversationStarted}, conversation: {_id:conversationId}, faye: {conversationSubscription}} = getState();
 
         if (conversationStarted && conversationId && !conversationSubscription) {
             return Promise.all([
