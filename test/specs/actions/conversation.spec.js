@@ -686,11 +686,11 @@ describe('Conversation Actions', () => {
         [true, false].forEach((active) => {
             describe(`with${active ? '' : 'out'} subscription active`, () => {
                 it(`should ${active ? '' : 'not'} cancel subscription`, () => {
-                    mockedStore = active ? createMockedStore(sandbox, generateBaseStoreProps({
+                    mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                         faye: {
-                            conversationSubscription: conversationSubscriptionMock
+                            conversationSubscription: active ? conversationSubscriptionMock : null
                         }
-                    })) : createMockedStore(sandbox, generateBaseStoreProps());
+                    }));
                     mockedStore.dispatch(conversationActions.disconnectFaye());
 
                     userSubscriptionMock.cancel.should.not.have.been.called;
