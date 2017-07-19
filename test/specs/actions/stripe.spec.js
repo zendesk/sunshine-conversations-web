@@ -3,9 +3,9 @@ import sinon from 'sinon';
 import { createMock } from '../../mocks/core';
 import { createMockedStore } from '../../utils/redux';
 
-import { createTransaction, getAccount, __Rewire__ as StripeRewire } from '../../../src/frame/js/services/stripe';
+import { createTransaction, getAccount, __Rewire__ as StripeRewire } from '../../../src/frame/js/actions/stripe';
 
-describe('Stripe service', () => {
+describe('Stripe Actions', () => {
     let sandbox;
     let coreMock;
     let mockedStore;

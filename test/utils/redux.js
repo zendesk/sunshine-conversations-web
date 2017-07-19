@@ -30,3 +30,21 @@ export function createMockedStore(sinon, mockedState = {}) {
     });
     return store;
 }
+
+export function findActionsByType(actions, type) {
+    const foundActions = [];
+
+    for (const action of actions) {
+        if (action.type === type) {
+            foundActions.push(action);
+        } else if (action.type === 'BATCHING_REDUCER.BATCH') {
+            for (const batchedAction of action.payload) {
+                if (batchedAction.type === type) {
+                    foundActions.push(batchedAction);
+                }
+            }
+        }
+    }
+
+    return foundActions;
+}

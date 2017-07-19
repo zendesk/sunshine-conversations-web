@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import isMobile from 'ismobilejs';
 
-import { updateSMSAttributes, resetSMSAttributes, linkSMSChannel, unlinkSMSChannel, pingSMSChannel } from '../../services/integrations';
+import { updateSMSAttributes, resetSMSAttributes, linkSMSChannel, unlinkSMSChannel, pingSMSChannel } from '../../actions/integrations';
 import { ReactTelephoneInput } from '../../lib/react-telephone-input';
 
 export class SMSChannelContentComponent extends Component {
