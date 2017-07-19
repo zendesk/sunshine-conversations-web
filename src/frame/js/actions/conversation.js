@@ -278,11 +278,11 @@ export function fetchMoreMessages() {
 
 export function handleConnectNotification(response) {
     return (dispatch, getState) => {
-        const {user: {clients}, app: {integrations, settings}, conversation: {messages}} = getState();
+        const {user: {clients}, config: {integrations}, conversation: {messages}} = getState();
         const appUserMessages = messages.filter((message) => message.role === 'appUser');
 
-        const channelsAvailable = hasLinkableChannels(integrations, clients, settings.web);
-        const hasSomeChannelLinked = getLinkableChannels(integrations, settings.web).some((channelType) => {
+        const channelsAvailable = hasLinkableChannels(integrations, clients);
+        const hasSomeChannelLinked = getLinkableChannels(integrations).some((channelType) => {
             return isChannelLinked(clients, channelType);
         });
 

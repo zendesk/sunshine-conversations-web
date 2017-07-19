@@ -31,6 +31,7 @@ export function generateBaseStoreProps(extraProps = {}) {
             apiBaseUrl: 'http://localhost',
             configBaseUrl: 'http://localhost',
             style: {},
+            integrations: [],
             ...extraProps.config
         },
         faye: {

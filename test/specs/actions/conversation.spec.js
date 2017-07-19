@@ -11,33 +11,6 @@ import { unsetFayeSubscriptions } from '../../../src/frame/js/actions/faye';
 
 import { SEND_STATUS, LOCATION_ERRORS } from '../../../src/frame/js/constants/message';
 
-function getProps(props = {}) {
-    const defaultProps = {
-        user: {
-            clients: {},
-            email: 'hello@smooch.io'
-        },
-        app: {
-            integrations: [
-                {
-                    _id: '12241',
-                    type: 'telegram',
-                    username: 'chloebot'
-                }
-            ]
-        },
-        conversation: {
-            messages: []
-        },
-        ui: {
-            text: {
-                locationServicesDenied: 'location services denied'
-            }
-        }
-    };
-
-    return Object.assign({}, defaultProps, props);
-}
 
 describe('Conversation Actions', () => {
     let sandbox;
@@ -162,12 +135,19 @@ describe('Conversation Actions', () => {
 
     describe('handleConnectNotification', () => {
         it('should show connect notification on first appuser message', () => {
-            mockedStore = createMockedStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 conversation: {
                     messages: [
                         {
                             received: 1,
                             role: 'appUser'
+                        }
+                    ]
+                },
+                config: {
+                    integrations: [
+                        {
+                            type: 'messenger'
                         }
                     ]
                 }
@@ -178,7 +158,7 @@ describe('Conversation Actions', () => {
         });
 
         it('should show connect notification 24 hours later', () => {
-            mockedStore = createMockedStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 conversation: {
                     messages: [
                         {
@@ -190,6 +170,13 @@ describe('Conversation Actions', () => {
                             role: 'appUser'
                         }
                     ]
+                },
+                config: {
+                    integrations: [
+                        {
+                            type: 'messenger'
+                        }
+                    ]
                 }
             }));
 
@@ -199,7 +186,7 @@ describe('Conversation Actions', () => {
         });
 
         it('should not show connect notification if it\'s been less than 24 hours', () => {
-            mockedStore = createMockedStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 conversation: {
                     messages: [
                         {
@@ -209,6 +196,13 @@ describe('Conversation Actions', () => {
                         {
                             received: Date.now() + 2,
                             role: 'appUser'
+                        }
+                    ]
+                },
+                config: {
+                    integrations: [
+                        {
+                            type: 'messenger'
                         }
                     ]
                 }
@@ -429,7 +423,7 @@ describe('Conversation Actions', () => {
             });
 
             it('should postSendMessage', () => {
-                mockedStore = createMockedStore(sandbox, getProps());
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
 
                 return mockedStore.dispatch(conversationActions.sendLocation(locationMessage)).then(() => {
                     postSendMessageStub.should.have.been.calledOnce;
@@ -439,7 +433,7 @@ describe('Conversation Actions', () => {
 
         describe('message exists without coordinates', () => {
             it('should addMessage', () => {
-                mockedStore = createMockedStore(sandbox, getProps());
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
 
                 return mockedStore.dispatch(conversationActions.sendLocation(locationMessage)).then(() => {
                     navigator.geolocation.getCurrentPosition.should.have.been.calledOnce;
@@ -453,7 +447,7 @@ describe('Conversation Actions', () => {
 
         describe('message does not yet exist', () => {
             it('should addMessage', () => {
-                mockedStore = createMockedStore(sandbox, getProps());
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
 
                 return mockedStore.dispatch(conversationActions.sendLocation()).then(() => {
                     navigator.geolocation.getCurrentPosition.should.have.been.calledOnce;
@@ -481,7 +475,7 @@ describe('Conversation Actions', () => {
                     type: 'image'
                 });
 
-                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps(Object.assign({
                     user: {
                         _id: '1',
                         conversationStarted: true
@@ -514,7 +508,7 @@ describe('Conversation Actions', () => {
                     type: 'text'
                 });
 
-                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps(Object.assign({
                     user: {
                         _id: '1',
                         conversationStarted: true
@@ -622,7 +616,7 @@ describe('Conversation Actions', () => {
             }));
         });
 
-        it('should call smooch-core conversation api and dispatch conversation', () => {
+        it('should call _getMessages and dispatch conversation', () => {
             return mockedStore.dispatch(conversationActions.getMessages()).then((response) => {
                 getMessagesStub.should.have.been.calledOnce;
 
@@ -750,14 +744,14 @@ describe('Conversation Actions', () => {
         [true, false].forEach((active) => {
             describe(`with${active ? '' : 'out'} subscription active`, () => {
                 it(`should ${active ? 'not' : ''} get conversation`, () => {
-                    mockedStore = active ? createMockedStore(sandbox, getProps({
+                    mockedStore = active ? createMockedStore(sandbox, generateBaseStoreProps({
                         user: {
                             _id: '1'
                         },
                         faye: {
                             conversationSubscription: conversationSubscriptionMock
                         }
-                    })) : createMockedStore(sandbox, getProps());
+                    })) : createMockedStore(sandbox, generateBaseStoreProps());
 
                     return mockedStore.dispatch(conversationActions.handleConversationUpdated()).then(() => {
                         if (active) {
