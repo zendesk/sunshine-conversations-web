@@ -46,6 +46,7 @@ describe('Conversation Actions', () => {
     let userSubscriptionMock;
 
     let replaceMessageSpy;
+    let startConversationStub;
     let httpStub;
     let getWindowLocationStub;
     let immediateUpdateStub;
@@ -78,6 +79,8 @@ describe('Conversation Actions', () => {
 
         replaceMessageSpy = sandbox.spy(conversationActions.replaceMessage);
         RewireConversationActions('replaceMessage', replaceMessageSpy);
+        startConversationStub = sandbox.stub().returnsAsyncThunk();
+        RewireConversationActions('startConversation', startConversationStub);
 
         // Http actions
         httpStub = sandbox.stub().returnsAsyncThunk();
@@ -131,17 +134,15 @@ describe('Conversation Actions', () => {
     });
 
     const conversationStartedSuite = (action, extraProps = {}) => {
-        let startConversationStub;
+        describe('start conversation', () => {
+            beforeEach(() => {
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps(extraProps));
+            });
 
-        beforeEach(() => {
-            mockedStore = createMockedStore(sandbox, generateBaseStoreProps(extraProps));
-            startConversationStub = sandbox.stub().returnsAsyncThunk();
-            RewireConversationActions('startConversation', startConversationStub);
-        });
-
-        it('should call startConversation', () => {
-            return mockedStore.dispatch(action).then(() => {
-                startConversationStub.should.have.been.calledOnce;
+            it('should call startConversation', () => {
+                return mockedStore.dispatch(action).then(() => {
+                    startConversationStub.should.have.been.calledOnce;
+                });
             });
         });
     };
@@ -207,7 +208,6 @@ describe('Conversation Actions', () => {
 
     describe('sendMessage', () => {
         let postSendMessageStub;
-        let startConversationStub;
         const message = {
             conversation: 'conversation',
             _clientId: 2,
@@ -218,9 +218,7 @@ describe('Conversation Actions', () => {
             postSendMessageStub = sandbox.stub().returnsAsyncThunk({
                 value: message
             });
-            startConversationStub = sandbox.stub().returnsAsyncThunk();
             RewireConversationActions('postSendMessage', postSendMessageStub);
-            RewireConversationActions('startConversation', startConversationStub);
         });
 
         conversationStartedSuite(conversationActions.sendMessage('message'));
@@ -277,6 +275,7 @@ describe('Conversation Actions', () => {
     });
 
     describe('sendLocation', () => {
+        let postSendMessageStub;
         const message = {
             conversation: 'conversation',
             _clientId: 2,
@@ -286,7 +285,10 @@ describe('Conversation Actions', () => {
         let locationMessage;
 
         beforeEach(() => {
-            coreMock.appUsers.sendMessage.resolves(message);
+            postSendMessageStub = sandbox.stub().returnsAsyncThunk({
+                value: message
+            });
+            RewireConversationActions('postSendMessage', postSendMessageStub);
             locationMessage = {
                 type: 'location',
                 _clientSent: Date.now() / 1000
@@ -314,9 +316,9 @@ describe('Conversation Actions', () => {
 
             describe('getting the current position', () => {
                 beforeEach(() => {
-                    mockedStore = createMockedStore(sandbox, getProps());
+                    mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
                     sandbox.stub(window, 'alert');
-                    clock = sinon.useFakeTimers();
+                    clock = sandbox.useFakeTimers();
                     getWindowLocationStub.returns({
                         protocol: 'https:'
                     });
@@ -329,7 +331,7 @@ describe('Conversation Actions', () => {
                 const stubGeolocationFailure = (args, tick = 100) => {
                     // reset stub defined above
                     navigator.geolocation.getCurrentPosition.restore();
-                    sandbox.stub(navigator.geolocation, 'getCurrentPosition', (success, failure) => {
+                    sandbox.stub(navigator.geolocation, 'getCurrentPosition').callsFake((success, failure) => {
                         failure(args);
                         clock.tick(tick);
                     });
@@ -417,7 +419,7 @@ describe('Conversation Actions', () => {
                 mockedStore = createMockedStore(sandbox, getProps());
 
                 return mockedStore.dispatch(conversationActions.sendLocation(locationMessage)).then(() => {
-                    coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                    postSendMessageStub.should.have.been.calledOnce;
                 });
             });
         });
@@ -429,7 +431,7 @@ describe('Conversation Actions', () => {
                 return mockedStore.dispatch(conversationActions.sendLocation(locationMessage)).then(() => {
                     navigator.geolocation.getCurrentPosition.should.have.been.calledOnce;
                     replaceMessageSpy.should.have.been.called;
-                    coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                    postSendMessageStub.should.have.been.calledOnce;
                 });
             });
 
@@ -443,7 +445,7 @@ describe('Conversation Actions', () => {
                 return mockedStore.dispatch(conversationActions.sendLocation()).then(() => {
                     navigator.geolocation.getCurrentPosition.should.have.been.calledOnce;
                     replaceMessageSpy.should.have.been.called;
-                    coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                    postSendMessageStub.should.have.been.calledOnce;
                 });
             });
 
