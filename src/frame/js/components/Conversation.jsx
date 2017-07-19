@@ -12,7 +12,7 @@ import ReplyActions from './ReplyActions';
 import TypingIndicator from './TypingIndicator';
 
 import { setShouldScrollToBottom, setFetchingMoreMessages } from '../actions/app-state';
-import { fetchMoreMessages } from '../services/conversation';
+import { fetchMoreMessages } from '../actions/conversation';
 import { getTop, getBoundingRect } from '../utils/dom';
 import { WIDGET_STATE } from '../constants/app';
 import { logo, logo2x } from '../constants/assets';

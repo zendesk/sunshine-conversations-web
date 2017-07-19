@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import Loading from '../Loading';
-import { fetchWeChatQRCode } from '../../services/integrations';
+import { fetchWeChatQRCode } from '../../actions/integrations';
 
 export class WeChatChannelContentComponent extends Component {
 

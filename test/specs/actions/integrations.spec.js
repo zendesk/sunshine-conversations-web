@@ -4,13 +4,13 @@ import { createMock as createCoreMock } from '../../mocks/core';
 import { createMock as createThrottleMock } from '../../mocks/throttle';
 import { createMockedStore } from '../../utils/redux';
 
-import * as integrationsService from '../../../src/frame/js/services/integrations';
-import { __Rewire__ as IntegrationsRewire } from '../../../src/frame/js/services/integrations';
+import * as integrationsActions from '../../../src/frame/js/actions/integrations';
+import { __Rewire__ as IntegrationsRewire } from '../../../src/frame/js/actions/integrations';
 import { updateUser } from '../../../src/frame/js/actions/user';
 
 const sandbox = sinon.sandbox.create();
 
-describe('Integrations service', () => {
+describe('Integrations Actions', () => {
     let coreMock;
     let mockedStore;
     let pendingAppUser;
@@ -83,7 +83,7 @@ describe('Integrations service', () => {
 
     describe('linkSMSChannel', () => {
         it('should set the twilio integration to pending state', () => {
-            return mockedStore.dispatch(integrationsService.linkSMSChannel('1', {
+            return mockedStore.dispatch(integrationsActions.linkSMSChannel('1', {
                 type: 'twilio',
                 phoneNumber: '+0123456789'
             })).then(() => {
@@ -97,7 +97,7 @@ describe('Integrations service', () => {
         it('should start faye if user returns with conversationStarted', () => {
             pendingAppUser.conversationStarted = true;
 
-            return mockedStore.dispatch(integrationsService.linkSMSChannel('1', {
+            return mockedStore.dispatch(integrationsActions.linkSMSChannel('1', {
                 type: 'twilio',
                 phoneNumber: '+0123456789'
             })).then(() => {
@@ -108,7 +108,7 @@ describe('Integrations service', () => {
 
     describe('unlinkSMSChannel', () => {
         it('should set the sms integration state to unlinked', () => {
-            return mockedStore.dispatch(integrationsService.unlinkSMSChannel('1', 'twilio')).then(() => {
+            return mockedStore.dispatch(integrationsActions.unlinkSMSChannel('1', 'twilio')).then(() => {
                 coreMock.appUsers.unlinkChannel.should.have.been.calledWith('1', 'twilio');
             });
         });
@@ -116,7 +116,7 @@ describe('Integrations service', () => {
 
     describe('pingSMSChannel', () => {
         it('should call the ping channel API', () => {
-            return mockedStore.dispatch(integrationsService.pingSMSChannel('1', 'twilio')).then(() => {
+            return mockedStore.dispatch(integrationsActions.pingSMSChannel('1', 'twilio')).then(() => {
                 coreMock.appUsers.pingChannel.should.have.been.calledWith('1', 'twilio');
             });
         });
@@ -125,7 +125,7 @@ describe('Integrations service', () => {
     describe('fetchTransferRequestCode', () => {
         it('should call the transferrequest API', () => {
             const channel = 'messenger';
-            return mockedStore.dispatch(integrationsService.fetchTransferRequestCode(channel)).then(() => {
+            return mockedStore.dispatch(integrationsActions.fetchTransferRequestCode(channel)).then(() => {
                 coreMock.appUsers.transferRequest.should.have.been.calledWith('1', {
                     type: channel
                 });

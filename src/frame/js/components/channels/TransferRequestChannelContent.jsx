@@ -6,7 +6,7 @@ import { batchActions } from 'redux-batched-actions';
 import Loading from '../Loading';
 import { resetTransferRequestCode, unsetError } from '../../actions/integrations';
 import { hideChannelPage } from '../../actions/app-state';
-import { fetchTransferRequestCode } from '../../services/integrations';
+import { fetchTransferRequestCode } from '../../actions/integrations';
 
 export class TransferRequestChannelContentComponent extends Component {
 
