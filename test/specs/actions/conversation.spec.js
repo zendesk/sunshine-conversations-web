@@ -664,11 +664,11 @@ describe('Conversation Actions', () => {
         [true, false].forEach((subscribed) => {
             describe(`user ${subscribed ? '' : 'not'} subscribed`, () => {
                 it(`should ${subscribed ? 'not' : ''} subscribe user`, () => {
-                    mockedStore = subscribed ? createMockedStore(sandbox, generateBaseStoreProps({
+                    mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                         faye: {
-                            userSubscription: userSubscriptionMock
+                            userSubscription: subscribed ? userSubscriptionMock : null
                         }
-                    })) : createMockedStore(sandbox, generateBaseStoreProps());
+                    }));
 
                     return mockedStore.dispatch(conversationActions.connectFayeUser()).then(() => {
                         if (subscribed) {
