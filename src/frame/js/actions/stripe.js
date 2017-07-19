@@ -1,5 +1,5 @@
-import { showErrorNotification } from '../actions/app-state';
-import { core } from './core';
+import { showErrorNotification } from './app-state';
+import { core } from '../utils/core';
 import { getUserId } from './user';
 
 export function createTransaction(actionId, token) {

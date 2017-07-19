@@ -1,4 +1,10 @@
-export const TOGGLE_WIDGET = 'TOGGLE_WIDGET';
+import { resetUnreadCount, connectFayeUser } from './conversation';
+import { observable } from '../utils/events';
+import { hasLinkableChannels, isChannelLinked } from '../utils/user';
+import { getIntegration } from '../utils/app';
+import { CHANNEL_DETAILS } from '../constants/channels';
+import { WIDGET_STATE } from '../constants/app';
+
 export const OPEN_WIDGET = 'OPEN_WIDGET';
 export const CLOSE_WIDGET = 'CLOSE_WIDGET';
 export const ENABLE_SETTINGS = 'ENABLE_SETTINGS';
@@ -27,27 +33,62 @@ export const SHOW_TYPING_INDICATOR = 'SHOW_TYPING_INDICATOR';
 export const HIDE_TYPING_INDICATOR = 'HIDE_TYPING_INDICATOR';
 export const UPDATE_WIDGET_SIZE = 'UPDATE_WIDGET_SIZE';
 
+function connectToFayeUser() {
+    return (dispatch, getState) => {
+        const {app: {integrations: appChannels, settings}, user: {clients}} = getState();
+
+        if (hasLinkableChannels(appChannels, clients, settings.web)) {
+            return dispatch(connectFayeUser());
+        }
+
+        return Promise.resolve();
+    };
+}
+
 export function toggleWidget() {
-    return {
-        type: TOGGLE_WIDGET
+    return (dispatch, getState) => {
+        const {widgetState} = getState().appState;
+        if (widgetState !== WIDGET_STATE.EMBEDDED) {
+            if (widgetState === WIDGET_STATE.OPENED) {
+                return dispatch(closeWidget());
+            }
+            return dispatch(openWidget());
+        }
     };
 }
 
 export function openWidget() {
-    return {
-        type: OPEN_WIDGET
+    return (dispatch, getState) => {
+        const {widgetState} = getState().appState;
+        if (widgetState !== WIDGET_STATE.EMBEDDED) {
+            dispatch({
+                type: OPEN_WIDGET
+            });
+            observable.trigger('widget:opened');
+            dispatch(resetUnreadCount());
+        }
     };
 }
 
 export function closeWidget() {
-    return {
-        type: CLOSE_WIDGET
+    return (dispatch, getState) => {
+        const {widgetState} = getState().appState;
+        if (widgetState !== WIDGET_STATE.EMBEDDED) {
+            dispatch({
+                type: CLOSE_WIDGET
+            });
+            observable.trigger('widget:closed');
+            dispatch(resetUnreadCount());
+        }
     };
 }
 
 export function showSettings() {
-    return {
-        type: SHOW_SETTINGS
+    return (dispatch) => {
+        dispatch({
+            type: SHOW_SETTINGS
+        });
+        return dispatch(connectToFayeUser());
     };
 }
 
@@ -140,9 +181,28 @@ export function setEmbedded(value) {
 }
 
 export function showChannelPage(channelType) {
-    return {
-        type: SHOW_CHANNEL_PAGE,
-        channelType
+    return (dispatch, getState) => {
+        const {user, app: {integrations}} = getState();
+        const channelDetails = CHANNEL_DETAILS[channelType];
+        const isLinked = isChannelLinked(user.clients, channelType);
+        const appChannel = getIntegration(integrations, channelType);
+        const url = channelDetails.getURL(appChannel);
+        const openLink = url && (!channelDetails.Component || isLinked);
+
+        if (openLink) {
+            window.open(url);
+            if (!isLinked && channelDetails.isLinkable) {
+                return dispatch(connectToFayeUser());
+            }
+        } else {
+            dispatch({
+                type: SHOW_CHANNEL_PAGE,
+                channelType
+            });
+
+            return dispatch(connectToFayeUser())
+                .then(() => dispatch(channelDetails.onChannelPage()));
+        }
     };
 }
 
@@ -179,18 +239,39 @@ export function setShouldScrollToBottom(value) {
     };
 }
 
-export function showTypingIndicator({avatarUrl, name, timeoutId}) {
-    return {
-        type: SHOW_TYPING_INDICATOR,
-        avatarUrl,
-        name,
-        timeoutId
+
+export function showTypingIndicator({avatarUrl, name}) {
+    return (dispatch, getState) => {
+        const {typingIndicatorTimeoutId} = getState().appState;
+
+        if (typingIndicatorTimeoutId) {
+            clearTimeout(typingIndicatorTimeoutId);
+        }
+
+        const timeoutId = setTimeout(() => {
+            dispatch(hideTypingIndicator());
+        }, 10 * 1000);
+
+        dispatch({
+            type: SHOW_TYPING_INDICATOR,
+            avatarUrl,
+            name,
+            timeoutId
+        });
     };
 }
 
 export function hideTypingIndicator() {
-    return {
-        type: HIDE_TYPING_INDICATOR
+    return (dispatch, getState) => {
+        const {typingIndicatorTimeoutId} = getState().appState;
+
+        if (typingIndicatorTimeoutId) {
+            clearTimeout(typingIndicatorTimeoutId);
+        }
+
+        dispatch({
+            type: HIDE_TYPING_INDICATOR
+        });
     };
 }
 

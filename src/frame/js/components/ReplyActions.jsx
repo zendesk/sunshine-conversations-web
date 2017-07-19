@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { sendMessage, sendLocation } from '../services/conversation';
+import { sendMessage, sendLocation } from '../actions/conversation';
 import { getRGB, rgbToHsl } from '../utils/colors';
 import { hasGeolocationSupport } from '../utils/dom';
 import { bindAll } from '../utils/functions';

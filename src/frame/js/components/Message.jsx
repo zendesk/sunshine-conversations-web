@@ -10,7 +10,7 @@ import Action from './Action';
 import Loading from './Loading';
 
 import { getElementProperties } from '../utils/dom';
-import { resendMessage } from '../services/conversation';
+import { resendMessage } from '../actions/conversation';
 import { SEND_STATUS, GLOBAL_ACTION_TYPES } from '../constants/message';
 
 class MessageComponent extends Component {
