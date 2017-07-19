@@ -526,31 +526,23 @@ describe('Conversation Actions', () => {
     });
 
     describe('uploadImage', () => {
+        let postUploadImageStub;
         const image = {
             conversation: 'conversation'
         };
 
         beforeEach(() => {
-            coreMock.appUsers.uploadImage.resolves(image);
             isFileTypeSupportedStub.returns(true);
             resizeImageStub.resolves({});
+            postUploadImageStub = sandbox.stub().returnsAsyncThunk();
+            RewireConversationActions('postUploadImage', postUploadImageStub);
         });
 
         conversationStartedSuite(conversationActions.uploadImage({}));
 
         describe('errors', () => {
             beforeEach(() => {
-                mockedStore = createMockedStore(sandbox, getProps({
-                    user: {
-                        _id: '1',
-                        conversationStarted: true
-                    },
-                    ui: {
-                        text: {
-                            invalidFileError: 'invalidFileError'
-                        }
-                    }
-                }));
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
             });
 
             describe('unsupported file type', () => {
@@ -586,14 +578,17 @@ describe('Conversation Actions', () => {
                 beforeEach(() => {
                     isFileTypeSupportedStub.returns(true);
                     resizeImageStub.resolves({});
-                    coreMock.appUsers.uploadImage.rejects();
+                    postUploadImageStub = sandbox.stub().returnsAsyncThunk({
+                        rejects: true
+                    });
+                    RewireConversationActions('postUploadImage', postUploadImageStub);
                 });
 
                 it('should update message send status', () => {
                     return mockedStore.dispatch(conversationActions.uploadImage({})).then(() => {
                         isFileTypeSupportedStub.should.have.been.called;
                         resizeImageStub.should.have.been.called;
-                        coreMock.appUsers.uploadImage.should.have.been.called;
+                        postUploadImageStub.should.have.been.called;
 
                         replaceMessageSpy.should.have.been.calledOnce;
                         replaceMessageSpy.args[0][1].sendStatus.should.eql(SEND_STATUS.FAILED);
