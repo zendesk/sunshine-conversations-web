@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 import ReactDOM from 'react-dom';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 import deepAssign from 'deep-assign';
 
 import { WIDGET_STATE } from '../../../src/frame/js/constants/app';

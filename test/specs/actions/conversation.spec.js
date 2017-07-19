@@ -46,7 +46,9 @@ describe('Conversation Actions', () => {
     let userSubscriptionMock;
 
     let replaceMessageSpy;
+    let setConversationSpy;
     let startConversationStub;
+    let getMessagesStub;
     let httpStub;
     let getWindowLocationStub;
     let immediateUpdateStub;
@@ -79,8 +81,19 @@ describe('Conversation Actions', () => {
 
         replaceMessageSpy = sandbox.spy(conversationActions.replaceMessage);
         RewireConversationActions('replaceMessage', replaceMessageSpy);
+        setConversationSpy = sandbox.spy(conversationActions.setConversation);
+        RewireConversationActions('setConversation', setConversationSpy);
+
+
         startConversationStub = sandbox.stub().returnsAsyncThunk();
         RewireConversationActions('startConversation', startConversationStub);
+        getMessagesStub = sandbox.stub().returnsAsyncThunk({
+            value: {
+                conversation: {},
+                messages: []
+            }
+        });
+        RewireConversationActions('_getMessages', getMessagesStub);
 
         // Http actions
         httpStub = sandbox.stub().returnsAsyncThunk();
@@ -453,7 +466,7 @@ describe('Conversation Actions', () => {
         });
     });
 
-    describe('resendMessage', () => {
+    describe.skip('resendMessage', () => {
         const message = {
             conversation: 'conversation',
             _clientId: 2,
@@ -600,22 +613,21 @@ describe('Conversation Actions', () => {
         });
     });
 
-    describe.skip('getMessages', () => {
+    describe('getMessages', () => {
         beforeEach(() => {
-            mockedStore = createMockedStore(sandbox, {
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 user: {
                     _id: '1'
                 }
-            });
+            }));
         });
 
         it('should call smooch-core conversation api and dispatch conversation', () => {
             return mockedStore.dispatch(conversationActions.getMessages()).then((response) => {
-                coreMock.appUsers.getMessages.should.have.been.calledWith('1');
+                getMessagesStub.should.have.been.calledOnce;
 
                 response.should.deep.eq({
-                    conversation: {
-                    },
+                    conversation: {},
                     messages: []
                 });
 
@@ -804,14 +816,16 @@ describe('Conversation Actions', () => {
 
     describe('fetchMoreMessages', () => {
         beforeEach(() => {
-            coreMock.appUsers.getMessages.resolves({
-                conversation: {},
-                previous: '23'
+            getMessagesStub.returnsAsyncThunk({
+                value: {
+                    conversation: {},
+                    previous: '23'
+                }
             });
         });
 
         it('should use timestamp of first message as before parameter', () => {
-            mockedStore = createMockedStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 user: {
                     _id: '1'
                 },
@@ -824,14 +838,14 @@ describe('Conversation Actions', () => {
                 }
             }));
             return mockedStore.dispatch(conversationActions.fetchMoreMessages()).then(() => {
-                coreMock.appUsers.getMessages.should.have.been.calledWithMatch('1', {
+                getMessagesStub.should.have.been.calledWithMatch({
                     before: 123
                 });
             });
         });
 
         it('should not fetch if there are no more messages', () => {
-            mockedStore = createMockedStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 conversation: {
                     hasMoreMessages: false,
                     isFetchingMoreMessagesFromServer: false,
@@ -839,12 +853,12 @@ describe('Conversation Actions', () => {
                 }
             }));
             return mockedStore.dispatch(conversationActions.fetchMoreMessages()).then(() => {
-                coreMock.appUsers.getMessages.should.not.have.been.called;
+                getMessagesStub.should.not.have.been.called;
             });
         });
 
         it('should not fetch if already fetching from server', () => {
-            mockedStore = createMockedStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 conversation: {
                     hasMoreMessages: true,
                     isFetchingMoreMessagesFromServer: true,
@@ -852,7 +866,7 @@ describe('Conversation Actions', () => {
                 }
             }));
             return mockedStore.dispatch(conversationActions.fetchMoreMessages()).then(() => {
-                coreMock.appUsers.getMessages.should.not.have.been.called;
+                getMessagesStub.should.not.have.been.called;
             });
         });
     });

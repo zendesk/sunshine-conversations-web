@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 import isMobile from 'ismobilejs';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 
 import ViberChannelContent from '../../../../src/frame/js/components/channels/ViberChannelContent';
 import Loading from '../../../../src/frame/js/components/Loading';

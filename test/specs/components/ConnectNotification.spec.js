@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 
 import ConnectNotification, { __Rewire__ as ConnectNotificationRewire } from '../../../src/frame/js/components/ConnectNotification';
 import { CHANNEL_DETAILS } from '../../../src/frame/js/constants/channels';

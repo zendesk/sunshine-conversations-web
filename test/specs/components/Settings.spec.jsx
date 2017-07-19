@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 import ReactDOM from 'react-dom';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 
 import NotificationChannelItem from '../../../src/frame/js/components/NotificationChannelItem';
 import Settings, {__Rewire__ as RewireSettings } from '../../../src/frame/js/components/Settings';

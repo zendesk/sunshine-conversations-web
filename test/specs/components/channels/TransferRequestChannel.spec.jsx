@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 
 import TransferRequestChannelContent from '../../../../src/frame/js/components/channels/TransferRequestChannelContent';
 import Loading from '../../../../src/frame/js/components/Loading';

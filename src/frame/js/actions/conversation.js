@@ -201,20 +201,14 @@ function removeMessage(_clientId) {
     };
 }
 
-function _getMessages(dispatch, getState) {
-    const {user: {_id}, config: {appId}} = getState();
+function _getMessages({before} = {}) {
+    return (dispatch, getState) => {
+        const {user: {_id}, config: {appId}} = getState();
 
-    return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/messages`))
-        .then((response) => {
-            dispatch(batchActions([
-                setConversation({
-                    ...response.conversation,
-                    hasMoreMessages: !!response.previous
-                }),
-                setMessages(response.messages)
-            ]));
-            return response;
-        });
+        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/messages`, {
+            before
+        }));
+    };
 }
 
 function sendChain(sendFn, message) {
@@ -265,7 +259,7 @@ export function fetchMoreMessages() {
         const timestamp = messages[0].received;
         dispatch(setFetchingMoreMessagesFromServer(true));
 
-        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/messages`, {
+        return dispatch(_getMessages({
             before: timestamp
         })).then((response) => {
             dispatch(batchActions([
@@ -458,8 +452,20 @@ export function uploadImage(file) {
 
 export function getMessages() {
     return (dispatch, getState) => {
-        const userId = getUserId(getState());
-        return throttlePerUser(userId).exec(() => _getMessages(dispatch, getState));
+        const {user: {_id}} = getState();
+        return throttlePerUser(_id).exec(() => {
+            return dispatch(_getMessages())
+                .then((response) => {
+                    dispatch(batchActions([
+                        setConversation({
+                            ...response.conversation,
+                            hasMoreMessages: !!response.previous
+                        }),
+                        setMessages(response.messages)
+                    ]));
+                    return response;
+                });
+        });
     };
 }
 

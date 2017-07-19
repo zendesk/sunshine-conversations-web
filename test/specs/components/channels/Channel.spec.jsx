@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 
 import ChannelPage from '../../../../src/frame/js/components/channels/ChannelPage';
 import Channel, { __Rewire__ as ChannelRewire } from '../../../../src/frame/js/components/channels/Channel';
