@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import TestUtils from 'react-dom/test-utils';
 
-import { createMockedStore } from '../../utils/redux';
+import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
 import ChatInput, { ChatInputComponent, __Rewire__ as ChatInputRewire } from '../../../src/frame/js/components/ChatInput';
@@ -10,27 +10,23 @@ import ImageUpload from '../../../src/frame/js/components/ImageUpload';
 const sandbox = sinon.sandbox.create();
 
 function getStoreState(state = {}) {
-    const defaultState = {
-        app: {
-            settings: {
-                web: {}
-            }
-        },
-        appState: {
-            imageUploadEnabled: true
+    return generateBaseStoreProps({
+        config: {
+            imageUploadEnabled: true,
+            ...state.config
         },
         conversation: {
-            unreadCount: 0
+            unreadCount: 0,
+            ...state.conversation
         },
         ui: {
+            ...state.ui,
             text: {
                 inputPlaceholder: 'Placeholder',
                 sendButtonText: 'Button'
             }
         }
-    };
-
-    return Object.assign(defaultState, state);
+    });
 }
 
 describe('ChatInput Component', () => {
@@ -217,7 +213,7 @@ describe('ChatInput Component', () => {
         [true, false].forEach((imageUploadEnabled) => {
             it(`should${imageUploadEnabled ? '' : ' not'} display the image upload button`, () => {
                 mockedStore = createMockedStore(sandbox, getStoreState({
-                    appState: {
+                    config: {
                         imageUploadEnabled
                     }
                 }));
