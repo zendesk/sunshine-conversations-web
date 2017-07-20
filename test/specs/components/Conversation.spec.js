@@ -1,6 +1,5 @@
 import sinon from 'sinon';
 import TestUtils from 'react-dom/test-utils';
-import deepAssign from 'deep-assign';
 
 import Conversation from '../../../src/frame/js/components/Conversation';
 import Message from '../../../src/frame/js/components/Message';
@@ -10,20 +9,12 @@ import ReplyActions from '../../../src/frame/js/components/ReplyActions';
 import TypingIndicator from '../../../src/frame/js/components/TypingIndicator';
 
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
-import { createMockedStore } from '../../utils/redux';
+import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
 
 function getStoreState(state = {}) {
-    const defaultState = {
-        app: {
-            settings: {
-                web: {
-                    channels: {}
-                }
-            },
-            integrations: []
-        },
+    return generateBaseStoreProps({
         ui: {
             text: {
                 fetchingHistory: 'fetching-history',
@@ -34,8 +25,8 @@ function getStoreState(state = {}) {
             shouldScrollToBottom: true,
             isFetchingMoreMessages: false,
             introHeight: 100,
-            embedded: false,
-            typingIndicatorShown: false
+            typingIndicatorShown: false,
+            ...state.appState
         },
         conversation: {
             messages: [
@@ -61,11 +52,10 @@ function getStoreState(state = {}) {
                 }
             ],
             replyActions: [],
-            hasMoreMessages: false
+            hasMoreMessages: false,
+            ...state.conversation
         }
-    };
-
-    return deepAssign(defaultState, state);
+    });
 }
 
 describe('Conversation Component', () => {
