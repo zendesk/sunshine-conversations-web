@@ -1,34 +1,35 @@
 import sinon from 'sinon';
 import TestUtils from 'react-dom/test-utils';
-import deepAssign from 'deep-assign';
 
 import MessengerButton from '../../../src/frame/js/components/MessengerButton';
 import DefaultButtonIcon from '../../../src/frame/js/components/DefaultButtonIcon';
 
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
-import { createMockedStore } from '../../utils/redux';
+import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
 
 function getStoreState(state = {}) {
-    const defaultState = {
-        app: {
-            settings: {
-                web: {
-                    channels: {},
-                    isBrandColorDark: true
-                }
+    if (!state.config) {
+        state.config = {};
+    }
+
+    return generateBaseStoreProps({
+        config: {
+            ...state.config,
+            style: {
+                isBrandColorDark: true,
+                ...state.config.style
             }
         },
         conversation: {
-            unreadCount: 0
+            unreadCount: 0,
+            ...state.conversation
         },
         browser: {
             currentLocation: {}
         }
-    };
-
-    return deepAssign(defaultState, state);
+    });
 }
 
 describe('Messenger Button Component', () => {
@@ -61,11 +62,9 @@ describe('Messenger Button Component', () => {
         };
 
         mockedStore = createMockedStore(sandbox, getStoreState({
-            app: {
-                settings: {
-                    web: {
-                        buttonIconUrl: 'http://some-url.com'
-                    }
+            config: {
+                style: {
+                    buttonIconUrl: 'http://some-url.com'
                 }
             }
         }));
