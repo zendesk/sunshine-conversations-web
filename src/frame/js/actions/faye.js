@@ -184,9 +184,10 @@ export function updateUser(currentAppUser, nextAppUser) {
             disconnectFaye();
 
             return dispatch(subscribeUser()).then(() => {
-                if (nextAppUser.conversationStarted) {
-                    return dispatch(handleConversationUpdated());
-                }
+                // TODO : figure out if still relevant
+                // if (nextAppUser.conversationStarted) {
+                //     return dispatch(handleConversationUpdated());
+                // }
             });
         } else {
             dispatch(setUser(nextAppUser));
@@ -196,9 +197,10 @@ export function updateUser(currentAppUser, nextAppUser) {
                 // fetch the conversation for merged messages
                 return dispatch(getMessages());
             } else if (nextAppUser.conversationStarted) {
+                // TODO : figure out if still relevant
                 // if the conversation wasn't already started,
                 // `handleConversationUpdated` will connect faye and fetch it
-                return dispatch(handleConversationUpdated());
+                // return dispatch(handleConversationUpdated());
             }
         }
     };
