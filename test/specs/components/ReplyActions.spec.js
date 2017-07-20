@@ -1,9 +1,9 @@
 import sinon from 'sinon';
 import TestUtils from 'react-dom/test-utils';
 
-import { createMockedStore } from '../../utils/redux';
+import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 import { wrapComponentWithStore } from '../../utils/react';
-import ReplyActions, {__Rewire__ as ReplyActionsRewire } from '../../../src/frame/js/components/ReplyActions';
+import ReplyActions, { __Rewire__ as ReplyActionsRewire } from '../../../src/frame/js/components/ReplyActions';
 
 
 describe('ReplyActions Component', () => {
@@ -13,13 +13,11 @@ describe('ReplyActions Component', () => {
     let sendLocationStub;
 
     const sandbox = sinon.sandbox.create();
-    const mockedStore = createMockedStore(sandbox, {
-        app: {
-            settings: {
-                web: {
-                    accentColor: '',
-                    isAccentColorDark: true
-                }
+    const mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
+        config: {
+            style: {
+                accentColor: '',
+                isAccentColorDark: true
             }
         },
         ui: {
@@ -27,7 +25,7 @@ describe('ReplyActions Component', () => {
                 locationNotSupported: 'Location not supported'
             }
         }
-    });
+    }));
 
     const CHOICES = [
         {
