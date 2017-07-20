@@ -1,26 +1,17 @@
 import sinon from 'sinon';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-dom/test-utils';
-import deepAssign from 'deep-assign';
 
 import { WIDGET_STATE } from '../../../src/frame/js/constants/app';
 import Header, { HeaderComponent, __Rewire__ as HeaderRewire } from '../../../src/frame/js/components/Header';
 
-import { createMockedStore } from '../../utils/redux';
+import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 import { scryRenderedDOMComponentsWithId, findRenderedDOMComponentsWithId, wrapComponentWithStore } from '../../utils/react';
 
 const sandbox = sinon.sandbox.create();
 
 function getStoreState(state = {}) {
-    const defaultState = {
-        app: {
-            settings: {
-                web: {
-                    channels: {}
-                }
-            },
-            integrations: []
-        },
+    return generateBaseStoreProps({
         ui: {
             text: {
                 headerText: 'headerText',
@@ -30,21 +21,14 @@ function getStoreState(state = {}) {
         appState: {
             settingsVisible: true,
             widgetState: WIDGET_STATE.OPENED,
-            visibleChannelType: false
+            visibleChannelType: false,
+            ...state.appState
         },
         conversation: {
-            unreadCount: 0
+            unreadCount: 0,
+            ...state.conversation
         }
-    };
-
-    const newState = deepAssign(defaultState, state);
-
-    if (state.appState && state.appState.widgetState) {
-        // deep-assign is messing with the Symbol value otherwise
-        newState.appState.widgetState = state.appState.widgetState;
-    }
-
-    return newState;
+    });
 }
 
 describe('Header Component', () => {
