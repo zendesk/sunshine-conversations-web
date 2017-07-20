@@ -756,36 +756,6 @@ describe('Conversation Actions', () => {
         });
     });
 
-    describe.skip('handleConversationUpdated', () => {
-        beforeEach(() => {
-            RewireConversationActions('connectFayeConversation', sandbox.stub().returnsAsyncThunk());
-        });
-
-        [true, false].forEach((active) => {
-            describe(`with${active ? '' : 'out'} subscription active`, () => {
-                it(`should ${active ? 'not' : ''} get conversation`, () => {
-                    mockedStore = active ? createMockedStore(sandbox, generateBaseStoreProps({
-                        user: {
-                            _id: '1'
-                        },
-                        faye: {
-                            conversationSubscription: conversationSubscriptionMock
-                        }
-                    })) : createMockedStore(sandbox, generateBaseStoreProps());
-
-                    return mockedStore.dispatch(conversationActions.handleConversationUpdated()).then(() => {
-                        if (active) {
-                            coreMock.appUsers.getMessages.should.not.have.been.called;
-                        } else {
-                            coreMock.appUsers.getMessages.should.have.been.calledOnce;
-                        }
-                    });
-                });
-            });
-        });
-
-    });
-
     describe('postPostbacks', () => {
         const actionId = '1234';
         let storeProps;
