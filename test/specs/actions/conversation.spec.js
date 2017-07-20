@@ -555,7 +555,9 @@ describe('Conversation Actions', () => {
         beforeEach(() => {
             isFileTypeSupportedStub.returns(true);
             resizeImageStub.resolves({});
-            postUploadImageStub = sandbox.stub().returnsAsyncThunk();
+            postUploadImageStub = sandbox.stub().returnsAsyncThunk({
+                value: image
+            });
             RewireConversationActions('postUploadImage', postUploadImageStub);
         });
 
