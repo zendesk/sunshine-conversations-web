@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 
 import { createMock } from '../../mocks/core';
-import { createMockedStore } from '../../utils/redux';
+import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 
 import { createTransaction, getAccount, __Rewire__ as StripeRewire } from '../../../src/frame/js/actions/stripe';
 
@@ -15,11 +15,11 @@ describe('Stripe Actions', () => {
     });
 
     beforeEach(() => {
-        mockedStore = createMockedStore(sandbox, {
+        mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
             user: {
                 _id: '1'
             }
-        });
+        }));
 
         coreMock = createMock(sandbox);
         StripeRewire('core', () => coreMock);
