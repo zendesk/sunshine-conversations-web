@@ -1,9 +1,8 @@
 import sinon from 'sinon';
 import TestUtils from 'react-dom/test-utils';
-import deepAssign from 'deep-assign';
 
 import { mockComponent, findRenderedDOMComponentsWithId, wrapComponentWithStore } from '../../utils/react';
-import { createMockedStore } from '../../utils/redux';
+import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 
 import Header from '../../../src/frame/js/components/Header';
 import Settings from '../../../src/frame/js/components/Settings';
@@ -18,52 +17,38 @@ import MessageIndicator from '../../../src/frame/js/components/MessageIndicator'
 import { WIDGET_STATE } from '../../../src/frame/js/constants/app';
 
 function getStoreState(state = {}) {
-    const defaultState = {
+    if (!state.config) {
+        state.config = {
+            style: {}
+        };
+    }
+    return generateBaseStoreProps({
         user: {
             _id: '12345',
-            email: 'some@email.com'
+            email: 'some@email.com',
+            ...state.user
         },
         appState: {
             widgetState: WIDGET_STATE.CLOSED,
             widgetSize: 'lg',
             settingsVisible: false,
             showAnimation: false,
-            typingIndicatorShown: false
+            typingIndicatorShown: false,
+            ...state.appState
         },
-        app: {
-            settings: {
-                web: {
-                    displayStyle: 'button',
-                    accentColor: '#009933'
-                }
+        config: {
+            ...state.config,
+            style: {
+                displayStyle: 'button',
+                accentColor: '#009933',
+                ...state.config.style
             }
         },
         conversation: {
-            unreadCount: 0
-        },
-        ui: {
-            text: {
-                messageIndicatorTitle: ''
-            }
+            unreadCount: 0,
+            ...state.conversation
         }
-    };
-
-    // appState is cloned on its own because `widgetState` is a Symbol
-    // and `deep-assign` has trouble dealing with it.
-    const newAppState = {
-        ...defaultState.appState,
-        ...state.appState
-    };
-
-    delete defaultState.appState;
-    delete state.appState;
-
-    const newState = deepAssign(defaultState, state);
-
-    return {
-        ...newState,
-        appState: newAppState
-    };
+    });
 }
 
 const sandbox = sinon.sandbox.create();
@@ -230,11 +215,9 @@ describe('Widget Component', () => {
 
         it('should not render the button in tab mode', () => {
             mockedStore = createMockedStore(sandbox, getStoreState({
-                app: {
-                    settings: {
-                        web: {
-                            displayStyle: 'tab'
-                        }
+                config: {
+                    style: {
+                        displayStyle: 'tab'
                     }
                 }
             }));
@@ -248,11 +231,9 @@ describe('Widget Component', () => {
                 appState: {
                     widgetState: WIDGET_STATE.EMBEDDED
                 },
-                app: {
-                    settings: {
-                        web: {
-                            displayStyle: 'button'
-                        }
+                config: {
+                    style: {
+                        displayStyle: 'button'
                     }
                 }
             }));
@@ -263,11 +244,9 @@ describe('Widget Component', () => {
 
         it('should render the button in button mode', () => {
             mockedStore = createMockedStore(sandbox, getStoreState({
-                app: {
-                    settings: {
-                        web: {
-                            displayStyle: 'button'
-                        }
+                config: {
+                    style: {
+                        displayStyle: 'button'
                     }
                 }
             }));
