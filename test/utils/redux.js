@@ -43,7 +43,7 @@ export function generateBaseStoreProps(extraProps = {}) {
     };
 }
 
-export function createMockedStore(sinon, mockedState = {}) {
+export function createMockedStore(sinon, mockedState = generateBaseStoreProps()) {
     const middlewares = [thunkMiddleware];
     const mockStore = configureStore(middlewares);
     const store = mockStore(mockedState);
