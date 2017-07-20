@@ -4,14 +4,9 @@ import TestUtils from 'react-dom/test-utils';
 import MessengerChannelContent from '../../../../src/frame/js/components/channels/MessengerChannelContent';
 
 import { wrapComponentWithStore } from '../../../utils/react';
-import { createMockedStore, generateBaseStoreProps } from '../../../utils/redux';
+import { createMockedStore } from '../../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
-const baseStoreProps = generateBaseStoreProps();
-baseStoreProps.integrations.messenger = {
-    hasError: false,
-    transferRequestCode: ''
-};
 
 describe('Messenger Channel Component', () => {
     afterEach(() => {
@@ -19,9 +14,7 @@ describe('Messenger Channel Component', () => {
     });
 
     it('should render', () => {
-        const store = createMockedStore(sandbox, {
-            ...baseStoreProps
-        });
+        const store = createMockedStore(sandbox);
         const component = wrapComponentWithStore(MessengerChannelContent, {
             pageId: 'foo',
             channelState: {

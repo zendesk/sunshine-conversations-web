@@ -52,10 +52,10 @@ export class ChannelComponent extends Component {
     }
 }
 
-export default connect(({appState, app, user, integrations}) => {
+export default connect(({appState, config, user, integrations}) => {
     return {
         visibleChannelType: appState.visibleChannelType,
-        appChannels: app.integrations,
+        appChannels: config.integrations,
         channelStates: integrations,
         smoochId: user._id,
         clients: user.clients,

@@ -19,6 +19,7 @@ export function generateBaseStoreProps(extraProps = {}) {
             ...extraProps.integrations
         },
         user: {
+            pendingClients: [],
             ...extraProps.user
         },
         appState: {
@@ -49,7 +50,7 @@ export function createMockedStore(sinon, mockedState = generateBaseStoreProps())
     const store = mockStore(mockedState);
 
     sinon.spy(store, 'dispatch');
-    store.subscribe = sinon.spy(() => {
+    store.subscribe = sinon.stub().callsFake(() => {
         return function() {};
     });
     return store;

@@ -9,7 +9,6 @@ import { mockComponent, wrapComponentWithStore } from '../../../utils/react';
 import { generateBaseStoreProps, createMockedStore } from '../../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
-const baseStoreProps = generateBaseStoreProps();
 
 describe('Channel Component', () => {
     let getAppChannelDetailsStub;
@@ -36,25 +35,27 @@ describe('Channel Component', () => {
     });
 
     it('should render nothing if no smoochId', () => {
-        const store = createMockedStore(sandbox, {
-            ...baseStoreProps,
+        const store = createMockedStore(sandbox, generateBaseStoreProps({
             user: {}
-        });
+        }));
         const component = wrapComponentWithStore(Channel, null, store);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-pages-container').length.should.be.eq(0);
     });
 
     it('should render container without children if no channels', () => {
-        const store = createMockedStore(sandbox, baseStoreProps);
+        const store = createMockedStore(sandbox, generateBaseStoreProps({
+            user: {
+                _id: 'some-user-id'
+            }
+        }));
         const component = wrapComponentWithStore(Channel, null, store);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-pages-container').length.should.be.eq(1);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-page').length.should.be.eq(0);
     });
 
     it('should render page if channel is not linked and has component', () => {
-        const storeProps = {
-            ...baseStoreProps,
-            app: {
+        const storeProps = generateBaseStoreProps({
+            config: {
                 integrations: [
                     {
                         type: 'frontendEmail',
@@ -72,10 +73,9 @@ describe('Channel Component', () => {
                     {
                         platform: 'web'
                     }
-                ],
-                pendingClients: []
+                ]
             }
-        };
+        });
         const store = createMockedStore(sandbox, storeProps);
 
         getAppChannelDetailsStub.returns([
@@ -96,9 +96,8 @@ describe('Channel Component', () => {
     });
 
     it('should not render page if channel is linked and has component', () => {
-        const storeProps = {
-            ...baseStoreProps,
-            app: {
+        const storeProps = generateBaseStoreProps({
+            config: {
                 integrations: [
                     {
                         type: 'frontendEmail',
@@ -119,10 +118,9 @@ describe('Channel Component', () => {
                     {
                         platform: 'frontendEmail'
                     }
-                ],
-                pendingClients: []
+                ]
             }
-        };
+        });
 
         const store = createMockedStore(sandbox, storeProps);
 
@@ -143,9 +141,8 @@ describe('Channel Component', () => {
     });
 
     it('should render page if channel is linked, has component, and is marked as render when linked', () => {
-        const storeProps = {
-            ...baseStoreProps,
-            app: {
+        const storeProps = generateBaseStoreProps({
+            config: {
                 integrations: [
                     {
                         type: 'wechat'
@@ -167,10 +164,9 @@ describe('Channel Component', () => {
                     {
                         platform: 'wechat'
                     }
-                ],
-                pendingClients: []
+                ]
             }
-        };
+        });
 
         const store = createMockedStore(sandbox, storeProps);
 

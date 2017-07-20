@@ -6,14 +6,9 @@ import ViberChannelContent from '../../../../src/frame/js/components/channels/Vi
 import Loading from '../../../../src/frame/js/components/Loading';
 
 import { wrapComponentWithStore } from '../../../utils/react';
-import { createMockedStore, generateBaseStoreProps } from '../../../utils/redux';
+import { createMockedStore } from '../../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
-const baseStoreProps = generateBaseStoreProps();
-baseStoreProps.integrations.viber = {
-    hasError: false,
-    transferRequestCode: ''
-};
 
 describe('Viber Channel Component', () => {
     afterEach(() => {
@@ -21,11 +16,9 @@ describe('Viber Channel Component', () => {
     });
 
     it('should render qr code for desktop', () => {
-        sandbox.stub(isMobile, 'any', false);
-        const store = createMockedStore(sandbox, {
-            ...baseStoreProps
-        });
-        const component = wrapComponentWithStore(ViberChannelContent , {
+        sandbox.stub(isMobile, 'any').value(false);
+        const store = createMockedStore(sandbox);
+        const component = wrapComponentWithStore(ViberChannelContent, {
             channelState: {
                 qrCode: 'foo',
                 transferRequestCode: 'bar'
@@ -36,11 +29,9 @@ describe('Viber Channel Component', () => {
     });
 
     it('should render connect link on mobile', () => {
-        sandbox.stub(isMobile, 'any', true);
-        const store = createMockedStore(sandbox, {
-            ...baseStoreProps
-        });
-        const component = wrapComponentWithStore(ViberChannelContent , {
+        sandbox.stub(isMobile, 'any').value(true);
+        const store = createMockedStore(sandbox);
+        const component = wrapComponentWithStore(ViberChannelContent, {
             channelState: {
                 qrCode: 'foo',
                 transferRequestCode: 'bar'
@@ -51,10 +42,8 @@ describe('Viber Channel Component', () => {
     });
 
     it('should render error', () => {
-        const store = createMockedStore(sandbox, {
-            ...baseStoreProps
-        });
-        const component = wrapComponentWithStore(ViberChannelContent , {
+        const store = createMockedStore(sandbox);
+        const component = wrapComponentWithStore(ViberChannelContent, {
             channelState: {
                 hasError: true
             }
@@ -63,10 +52,8 @@ describe('Viber Channel Component', () => {
     });
 
     it('should render loading spinner', () => {
-        const store = createMockedStore(sandbox, {
-            ...baseStoreProps
-        });
-        const component = wrapComponentWithStore(ViberChannelContent , {
+        const store = createMockedStore(sandbox);
+        const component = wrapComponentWithStore(ViberChannelContent, {
             channelState: {}
         }, store);
         TestUtils.findRenderedComponentWithType(component, Loading);
