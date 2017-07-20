@@ -460,22 +460,32 @@ describe('Conversation Actions', () => {
         });
     });
 
-    describe.skip('resendMessage', () => {
+    describe('resendMessage', () => {
+        let postSendMessageStub;
+        let postUploadImageStub;
         const message = {
             conversation: 'conversation',
             _clientId: 2,
             text: 'message'
         };
 
+        beforeEach(() => {
+            postSendMessageStub = sandbox.stub();
+            postUploadImageStub = sandbox.stub();
+            RewireConversationActions('postSendMessage', postSendMessageStub);
+            RewireConversationActions('postUploadImage', postUploadImageStub);
+        });
+
+
         describe('message is an image', () => {
             beforeEach(() => {
-                coreMock.appUsers.uploadImage.resolves(message);
+                postUploadImageStub.returnsAsyncThunk();
                 Object.assign(message, {
                     sendStatus: SEND_STATUS.FAILED,
                     type: 'image'
                 });
 
-                mockedStore = createMockedStore(sandbox, generateBaseStoreProps(Object.assign({
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                     user: {
                         _id: '1',
                         conversationStarted: true
@@ -483,7 +493,7 @@ describe('Conversation Actions', () => {
                     conversation: {
                         messages: [message]
                     }
-                })));
+                }));
             });
 
             conversationStartedSuite(conversationActions.resendMessage(message._clientId), {
@@ -494,7 +504,7 @@ describe('Conversation Actions', () => {
 
             it('should update send status and post upload image', () => {
                 return mockedStore.dispatch(conversationActions.resendMessage(message._clientId)).then(() => {
-                    coreMock.appUsers.uploadImage.should.have.been.calledOnce;
+                    postUploadImageStub.should.have.been.calledOnce;
                     replaceMessageSpy.should.have.been.calledTwice;
                 });
             });
@@ -502,13 +512,15 @@ describe('Conversation Actions', () => {
 
         describe('message is text', () => {
             beforeEach(() => {
-                coreMock.appUsers.sendMessage.resolves(message);
                 Object.assign(message, {
                     sendStatus: SEND_STATUS.FAILED,
                     type: 'text'
                 });
+                postSendMessageStub.returnsAsyncThunk({
+                    value: message
+                });
 
-                mockedStore = createMockedStore(sandbox, generateBaseStoreProps(Object.assign({
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                     user: {
                         _id: '1',
                         conversationStarted: true
@@ -516,7 +528,7 @@ describe('Conversation Actions', () => {
                     conversation: {
                         messages: [message]
                     }
-                })));
+                }));
             });
 
             conversationStartedSuite(conversationActions.resendMessage(message._clientId), {
@@ -527,7 +539,7 @@ describe('Conversation Actions', () => {
 
             it('should update send status and send message', () => {
                 return mockedStore.dispatch(conversationActions.resendMessage(message._clientId)).then(() => {
-                    coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                    postSendMessageStub.should.have.been.calledOnce;
                     replaceMessageSpy.should.have.been.calledTwice;
                 });
             });
