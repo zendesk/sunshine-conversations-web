@@ -1,9 +1,8 @@
 import sinon from 'sinon';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-dom/test-utils';
-import deepAssign from 'deep-assign';
 
-import { createMockedStore } from '../../utils/redux';
+import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 import { mockComponent, wrapComponentWithStore } from '../../utils/react';
 
 import StripeCheckout from '../../../src/frame/js/lib/react-stripe-checkout';
@@ -48,21 +47,19 @@ function getPostbackProps(props = {}) {
 }
 
 function getStoreState(state = {}) {
-    const defaultState = {
-        app: {
-            integrations: []
-        },
+    return generateBaseStoreProps({
+        ...state,
         user: {
-            email: 'test'
+            email: 'test',
+            ...state.user
         },
         ui: {
             text: {
                 actionPaymentCompleted: 'payment completed text'
-            }
+            },
+            ...state.ui
         }
-    };
-
-    return deepAssign(defaultState, state);
+    });
 }
 
 describe('Action Component', () => {
@@ -143,7 +140,7 @@ describe('Action Component', () => {
 
     describe('Stripe', () => {
         const storeState = getStoreState({
-            app: {
+            config: {
                 integrations: [
                     {
                         type: 'stripeConnect'
@@ -161,7 +158,7 @@ describe('Action Component', () => {
         });
 
         afterEach(() => {
-            getIntegrationStub.should.have.been.calledWithMatch(storeState.app.integrations, 'stripeConnect');
+            getIntegrationStub.should.have.been.calledWithMatch(storeState.config.integrations, 'stripeConnect');
         });
 
         describe('buy action with stripe keys and offered state', () => {
@@ -224,7 +221,7 @@ describe('Action Component', () => {
 
                 beforeEach(() => {
                     mockedStore = createMockedStore(sandbox, getStoreState({
-                        app: {
+                        config: {
                             integrations: [
                                 {
                                     type: 'stripeConnect'
