@@ -1,7 +1,7 @@
 import { batchActions } from 'redux-batched-actions';
 
 import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi, showConnectNotification } from './app-state';
-import { getUserId, setUser } from './user';
+import { setUser } from './user';
 import { disconnectClient, subscribeConversation, subscribeUser, subscribeConversationActivity, unsetFayeSubscriptions } from './faye';
 
 import http from './http';
@@ -250,7 +250,7 @@ export function postPostback(actionId) {
 
 export function fetchMoreMessages() {
     return (dispatch, getState) => {
-        const {conversation: {hasMoreMessages, messages, isFetchingMoreMessagesFromServer}, user: {_id}, config: {appId}} = getState();
+        const {conversation: {hasMoreMessages, messages, isFetchingMoreMessagesFromServer}} = getState();
 
         if (!hasMoreMessages || isFetchingMoreMessagesFromServer) {
             return Promise.resolve();

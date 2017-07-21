@@ -133,9 +133,9 @@ export default function ConversationReducer(state = INITIAL_STATE, action) {
             };
         case ConversationActions.SET_CONVERSATION:
             return {
+                unreadCount: state.unreadCount,
+                hasMoreMessages: state.hasMoreMessages,
                 ...action.conversation,
-                unreadCount: action.conversation.unreadCount || 0,
-                hasMoreMessages: action.hasMoreMessages || false,
                 messages: state.messages,
                 replyActions: state.replyActions
             };
