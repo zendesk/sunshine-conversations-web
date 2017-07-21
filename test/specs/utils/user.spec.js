@@ -77,7 +77,7 @@ describe('User utils', () => {
     describe('getLinkableChannels', () => {
         [
             {
-                name: 'should return all channels that are linkable and enabled',
+                name: 'should return all channels that are linkable',
                 appChannels: [{
                     type: 'messenger'
                 }, {
@@ -85,36 +85,22 @@ describe('User utils', () => {
                 }, {
                     type: 'frontendEmail'
                 }],
-                settings: {
-                    channels: {
-                        messenger: true,
-                        telegram: true,
-                        frontendEmail: true
-                    }
-                },
                 outcome: ['messenger', 'telegram']
             },
             {
-                name: 'should not return non-linkable or disabled channels',
+                name: 'should not return non-linkable',
                 appChannels: [{
                     type: 'messenger'
                 }, {
-                    type: 'telegram'
+                    type: 'stripeConnect'
                 }, {
                     type: 'frontendEmail'
                 }],
-                settings: {
-                    channels: {
-                        messenger: true,
-                        telegram: false,
-                        frontendEmail: true
-                    }
-                },
                 outcome: ['messenger']
             }
-        ].forEach(({appChannels, settings, name, outcome}) => {
+        ].forEach(({appChannels, name, outcome}) => {
             it(name, () => {
-                getLinkableChannels(appChannels, settings).should.deep.eq(outcome);
+                getLinkableChannels(appChannels).should.deep.eq(outcome);
             });
         });
     });
@@ -131,13 +117,6 @@ describe('User utils', () => {
                     type: 'frontendEmail'
                 }],
                 clients: [],
-                settings: {
-                    channels: {
-                        messenger: true,
-                        telegram: true,
-                        frontendEmail: true
-                    }
-                },
                 outcome: true
             },
             {
@@ -146,30 +125,6 @@ describe('User utils', () => {
                     type: 'frontendEmail'
                 }],
                 clients: [],
-                settings: {
-                    channels: {
-                        frontendEmail: true
-                    }
-                },
-                outcome: false
-            },
-            {
-                name: 'should return false if user has disabled linkable channels',
-                appChannels: [{
-                    type: 'messenger'
-                }, {
-                    type: 'telegram'
-                }, {
-                    type: 'frontendEmail'
-                }],
-                clients: [],
-                settings: {
-                    channels: {
-                        messenger: false,
-                        telegram: false,
-                        frontendEmail: true
-                    }
-                },
                 outcome: false
             },
             {
@@ -189,13 +144,6 @@ describe('User utils', () => {
                         platform: 'telegram'
                     }
                 ],
-                settings: {
-                    channels: {
-                        messenger: true,
-                        telegram: true,
-                        frontendEmail: true
-                    }
-                },
                 outcome: false
             },
             {
@@ -212,13 +160,6 @@ describe('User utils', () => {
                         platform: 'messenger'
                     }
                 ],
-                settings: {
-                    channels: {
-                        messenger: true,
-                        telegram: true,
-                        frontendEmail: true
-                    }
-                },
                 outcome: true
             }
         ].forEach(({appChannels, clients, settings, name, outcome}) => {
