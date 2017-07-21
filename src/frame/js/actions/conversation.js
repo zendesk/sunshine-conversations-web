@@ -5,7 +5,8 @@ import { setUser } from './user';
 import { disconnectClient, subscribeConversation, subscribeUser, subscribeConversationActivity, unsetFayeSubscriptions } from './faye';
 
 import http from './http';
-import { core } from '../utils/core';
+import { setAuth } from './auth';
+
 import { observable } from '../utils/events';
 import { Throttle } from '../utils/throttle';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
