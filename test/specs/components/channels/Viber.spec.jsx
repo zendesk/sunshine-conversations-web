@@ -22,7 +22,8 @@ describe('Viber Channel Component', () => {
             channelState: {
                 qrCode: 'foo',
                 transferRequestCode: 'bar'
-            }
+            },
+            uri: 'some-uri'
         }, store);
         TestUtils.scryRenderedDOMComponentsWithTag(component, 'img').length.should.eq(1);
         TestUtils.scryRenderedDOMComponentsWithTag(component, 'a').length.should.eq(0);
@@ -35,7 +36,8 @@ describe('Viber Channel Component', () => {
             channelState: {
                 qrCode: 'foo',
                 transferRequestCode: 'bar'
-            }
+            },
+            uri: 'some-uri'
         }, store);
         TestUtils.scryRenderedDOMComponentsWithTag(component, 'img').length.should.eq(0);
         TestUtils.scryRenderedDOMComponentsWithTag(component, 'a').length.should.eq(1);
@@ -46,7 +48,8 @@ describe('Viber Channel Component', () => {
         const component = wrapComponentWithStore(ViberChannelContent, {
             channelState: {
                 hasError: true
-            }
+            },
+            uri: 'some-uri'
         }, store);
         TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-error-link').length.should.eql(1);
     });
@@ -54,7 +57,8 @@ describe('Viber Channel Component', () => {
     it('should render loading spinner', () => {
         const store = createMockedStore(sandbox);
         const component = wrapComponentWithStore(ViberChannelContent, {
-            channelState: {}
+            channelState: {},
+            uri: 'some-uri'
         }, store);
         TestUtils.findRenderedComponentWithType(component, Loading);
     });
