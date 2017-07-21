@@ -1,11 +1,9 @@
 import React from 'react';
 import { render as reactRender } from 'react-dom';
-import pick from 'lodash.pick';
 import { batchActions } from 'redux-batched-actions';
 import { Provider } from 'react-redux';
-import Raven from 'raven-js';
-
 import '../stylesheets/main.less';
+import Raven from 'raven-js';
 
 import { store } from './store';
 
@@ -20,7 +18,6 @@ import { getAccount } from './actions/stripe';
 import { setConfig, fetchConfig } from './actions/config';
 import { reset } from './actions/common';
 
-import { core } from './utils/core';
 import { observable, observeStore } from './utils/events';
 import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState, updateHostClassNames } from './utils/dom';
 import { isImageUploadSupported } from './utils/media';
@@ -70,9 +67,9 @@ function handleNotificationSound() {
     }
 }
 
-function onStoreChange({conversation: {messages, unreadCount}, widgetState, displayStyle}) {
+function onStoreChange({conversation: {messages, unreadCount}, widgetState, displayStyle, currentLocation}, {conversation: {unreadCount:previousUnreadCount}, widgetState: previousWidgetState, displayStyle: previousDisplayStyle, currentLocation: previousLocation}) {
     if (messages.length > 0) {
-        if (unreadCount > 0) {
+        if (unreadCount > 0 && unreadCount !== previousUnreadCount) {
             // only handle non-user messages
             const filteredMessages = messages.filter((message) => message.role !== 'appUser');
             filteredMessages.slice(-unreadCount).filter((message) => message.received > lastTriggeredMessageTimestamp).forEach((message) => {
@@ -89,8 +86,12 @@ function onStoreChange({conversation: {messages, unreadCount}, widgetState, disp
         observable.trigger('unreadCount', unreadCount);
     }
 
-    if (displayStyle) {
+    if (widgetState !== previousWidgetState || displayStyle !== previousDisplayStyle) {
         updateHostClassNames(widgetState, displayStyle);
+    }
+
+    if (currentLocation !== previousLocation) {
+        store.dispatch(userActions.updateNowViewing(getDeviceId()));
     }
 }
 
@@ -112,6 +113,7 @@ export function off(...args) {
 
 export function init(props = {}) {
     const {appState: {isInitialized}} = store.getState();
+
     if (isInitialized) {
         throw new Error('Web Messenger is already initialized. Call `destroy()` first before calling `init()` again.');
     }
@@ -119,6 +121,9 @@ export function init(props = {}) {
     if (!props.appId) {
         throw new Error('Must provide an appId');
     }
+
+    lastTriggeredMessageTimestamp = 0;
+    initialStoreChange = true;
 
     props = {
         imageUploadEnabled: true,
@@ -130,9 +135,19 @@ export function init(props = {}) {
         appId: props.appId
     });
 
+    const sessionToken = storage.getItem(`${props.appId}.sessionToken`);
+    const smoochId = storage.getItem(`${props.appId}.smoochId`);
+
     const actions = [
         appStateActions.setInitializationState(true),
         appStateActions.setEmbedded(!!props.embedded),
+        authActions.setAuth({
+            sessionToken
+        }),
+        userActions.setUser({
+            _id: smoochId
+        }),
+        setCurrentLocation(parent.document.location),
         setConfig('appId', props.appId),
         setConfig('soundNotificationEnabled', props.soundNotificationEnabled && isAudioSupported()),
         setConfig('imageUploadEnabled', props.imageUploadEnabled && isImageUploadSupported()),
@@ -145,15 +160,18 @@ export function init(props = {}) {
 
     store.dispatch(batchActions(actions));
 
-    unsubscribeFromStore = observeStore(store, ({conversation, appState: {widgetState}, config: {style}}) => {
+    unsubscribeFromStore = observeStore(store, ({conversation, appState: {widgetState}, config: {style}, browser: {currentLocation}}) => {
         return {
             conversation,
             widgetState,
-            displayStyle: style && style.displayStyle
+            displayStyle: style && style.displayStyle,
+            currentLocation
         };
     }, onStoreChange);
 
     monitorBrowserState(store.dispatch.bind(store));
+
+    monitorUrlChanges(() => store.dispatch(setCurrentLocation(parent.document.location)));
 
     return store.dispatch(fetchConfig())
         .then(() => {
@@ -178,79 +196,18 @@ export function login(userId, jwt) {
         throw new Error('Must provide a userId and a jwt to log in.');
     }
 
-    const sessionToken = storage.getItem('sessionToken');
-    const smoochId = storage.getItem('smoochId');
-
     const actions = [
         authActions.setAuth({
-            jwt,
-            userId,
-            sessionToken
+            jwt
         }),
         userActions.setUser({
-            _id: smoochId,
             userId
         })
     ];
 
     store.dispatch(batchActions(actions));
-    store.dispatch(disconnectFaye());
 
-    lastTriggeredMessageTimestamp = 0;
-    initialStoreChange = true;
-
-    return store.dispatch(authActions.login({
-        userId: userId,
-        sessionToken,
-        device: {
-            platform: 'web',
-            id: getDeviceId(),
-            info: {
-                sdkVersion: VERSION,
-                URL: parent.document.location.host,
-                userAgent: navigator.userAgent,
-                referrer: parent.document.referrer,
-                browserLanguage: navigator.language,
-                currentUrl: parent.document.location.href,
-                currentTitle: parent.document.title
-            }
-        }
-    })).then((loginResponse) => {
-        Raven.setUserContext({
-            id: loginResponse.appUser.userId || loginResponse.appUser._id
-        });
-
-        const actions = [];
-        actions.push(userActions.setUser(loginResponse.appUser));
-        // actions.push(setApp(loginResponse.app));
-
-        actions.push(setCurrentLocation(parent.document.location));
-        monitorUrlChanges(() => {
-            const actions = [
-                setCurrentLocation(parent.document.location),
-                userActions.updateNowViewing(getDeviceId())
-            ];
-
-            store.dispatch(batchActions(actions));
-        });
-
-        store.dispatch(batchActions(actions));
-
-    // if (getIntegration(loginResponse.app.integrations, 'stripeConnect')) {
-    //     return store.dispatch(getAccount()).then((r) => {
-    //         // store.dispatch(setStripeInfo(r.account));
-    //     }).catch(() => {
-    //         // do nothing about it and let the flow continue
-    //     });
-    // }
-    // }).then(() => {
-    //     return store.dispatch(userActions.immediateUpdate(attributes)).then(() => {
-    //         const user = store.getState().user;
-    //         if (user.conversationStarted) {
-    //             return store.dispatch(handleConversationUpdated());
-    //         }
-    //     });
-    });
+    return store.dispatch(authActions.login());
 }
 
 export function logout() {

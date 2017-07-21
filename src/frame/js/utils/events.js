@@ -42,13 +42,13 @@ export class Observable {
 export const observable = new Observable();
 
 export function observeStore(store, select, onChange) {
-    let currentState;
+    let currentState = store.getState();
 
     function handleChange() {
         const nextState = select(store.getState());
         if (nextState !== currentState) {
+            onChange(nextState, currentState);
             currentState = nextState;
-            onChange(currentState);
         }
     }
 

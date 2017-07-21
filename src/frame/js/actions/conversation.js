@@ -1,3 +1,4 @@
+import Raven from 'raven-js';
 import { batchActions } from 'redux-batched-actions';
 
 import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi, showConnectNotification } from './app-state';
@@ -515,18 +516,31 @@ export function disconnectFaye() {
     };
 }
 
-function handleUserConversationResponse({appUser, conversation, sessionToken}) {
+export function handleUserConversationResponse({appUser, conversation, sessionToken}) {
     return (dispatch) => {
+        Raven.setUserContext({
+            id: appUser._id
+        });
+
         const actions = [
             setUser(appUser),
             setConversation(conversation),
-            setMessages(conversation.messages),
-            setAuth({
-                sessionToken
-            })
+            setMessages(conversation.messages)
         ];
 
+        if (sessionToken) {
+            actions.push(setAuth({
+                sessionToken
+            }));
+        }
+
         dispatch(batchActions(actions));
+
+        if (appUser.conversationStarted) {
+            return dispatch(connectFayeConversation());
+        }
+
+        return Promise.resolve();
     };
 }
 
@@ -561,8 +575,7 @@ export function startConversation() {
         }
 
         return promise
-            .then((response) => dispatch(handleUserConversationResponse(response)))
-            .then(() => dispatch(connectFayeConversation()));
+            .then((response) => dispatch(handleUserConversationResponse(response)));
     };
 }
 
