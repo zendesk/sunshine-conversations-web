@@ -2,6 +2,7 @@ import http from './http';
 import { handleUserConversationResponse } from './conversation';
 
 import { getDeviceId } from '../utils/device';
+import { removeItem } from '../utils/storage';
 
 export const SET_AUTH = 'SET_AUTH';
 export const RESET_AUTH = 'RESET_AUTH';
@@ -12,8 +13,14 @@ export function login() {
         return dispatch(http('POST', `/apps/${appId}/login`, {
             userId,
             sessionToken,
-            clientId: getDeviceId()
+            clientId: getDeviceId(appId)
         })).then(({response, ...props}) => {
+            // get rid of session token
+            removeItem(`${appId}.sessionToken`);
+            dispatch(setAuth({
+                sessionToken: null
+            }));
+
             if (response.status === 200) {
                 return dispatch(handleUserConversationResponse(props));
             }

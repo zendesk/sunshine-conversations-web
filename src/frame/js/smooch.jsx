@@ -23,7 +23,7 @@ import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowse
 import { isImageUploadSupported } from './utils/media';
 import { playNotificationSound, isAudioSupported } from './utils/sound';
 import { getDeviceId } from './utils/device';
-import storage from './utils/storage';
+import * as storage from './utils/storage';
 import { getIntegration } from './utils/app';
 
 import { WIDGET_STATE } from './constants/app';
@@ -67,7 +67,7 @@ function handleNotificationSound() {
     }
 }
 
-function onStoreChange({conversation: {messages, unreadCount}, widgetState, displayStyle, currentLocation}, {conversation: {unreadCount:previousUnreadCount}, widgetState: previousWidgetState, displayStyle: previousDisplayStyle, currentLocation: previousLocation}) {
+function onStoreChange({appId, conversation: {messages, unreadCount}, widgetState, displayStyle, currentLocation}, {conversation: {unreadCount:previousUnreadCount}, widgetState: previousWidgetState, displayStyle: previousDisplayStyle, currentLocation: previousLocation}) {
     if (messages.length > 0) {
         if (unreadCount > 0 && unreadCount !== previousUnreadCount) {
             // only handle non-user messages
@@ -91,7 +91,7 @@ function onStoreChange({conversation: {messages, unreadCount}, widgetState, disp
     }
 
     if (currentLocation !== previousLocation) {
-        store.dispatch(userActions.updateNowViewing(getDeviceId()));
+        store.dispatch(userActions.updateNowViewing(getDeviceId(appId)));
     }
 }
 
@@ -160,12 +160,13 @@ export function init(props = {}) {
 
     store.dispatch(batchActions(actions));
 
-    unsubscribeFromStore = observeStore(store, ({conversation, appState: {widgetState}, config: {style}, browser: {currentLocation}}) => {
+    unsubscribeFromStore = observeStore(store, ({config: {appId}, conversation, appState: {widgetState}, config: {style}, browser: {currentLocation}}) => {
         return {
             conversation,
             widgetState,
             displayStyle: style && style.displayStyle,
-            currentLocation
+            currentLocation,
+            appId
         };
     }, onStoreChange);
 

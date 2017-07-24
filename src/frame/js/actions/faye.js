@@ -113,8 +113,9 @@ export function getClient() {
 }
 
 export function handleConversationSubscription(message) {
-    return (dispatch) => {
-        if (message.source.id !== getDeviceId()) {
+    return (dispatch, getState) => {
+        const {config: {appId}} = getState();
+        if (message.source.id !== getDeviceId(appId)) {
             dispatch(addMessage(message));
 
             if (message.role === 'appUser') {

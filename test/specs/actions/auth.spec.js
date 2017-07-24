@@ -9,6 +9,7 @@ describe('Auth Actions', () => {
     let httpStub;
     let getDeviceIdStub;
     let handleUserConversationResponseStub;
+    let removeItemStub;
 
     before(() => {
         sandbox = sinon.sandbox.create();
@@ -24,9 +25,11 @@ describe('Auth Actions', () => {
         });
         handleUserConversationResponseStub = sandbox.stub().returnsAsyncThunk();
         getDeviceIdStub = sandbox.stub().returns('some-client-id');
+        removeItemStub = sandbox.stub();
         AuthRewire('http', httpStub);
         AuthRewire('handleUserConversationResponse', handleUserConversationResponseStub);
         AuthRewire('getDeviceId', getDeviceIdStub);
+        AuthRewire('removeItem', removeItemStub);
         mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
             user: {
                 userId: 'some-user-id'
@@ -43,14 +46,16 @@ describe('Auth Actions', () => {
 
     describe('login', () => {
         describe('user is known', () => {
-            it('should call login api and continue the flow', () => {
+            it('should call login api, remove the session token, and continue the flow', () => {
                 return mockedStore.dispatch(login()).then(() => {
+                    const {config: {appId}} = mockedStore.getState();
                     httpStub.should.have.been.calledWith('POST', `/apps/${mockedStore.getState().config.appId}/login`, {
                         userId: 'some-user-id',
                         clientId: 'some-client-id',
                         sessionToken: 'some-session-token'
                     });
                     handleUserConversationResponseStub.should.have.been.calledOnce;
+                    removeItemStub.should.have.been.calledWith(`${appId}.sessionToken`);
                 });
             });
         });
@@ -65,14 +70,16 @@ describe('Auth Actions', () => {
                     }
                 });
             });
-            it('should call login api and stop', () => {
+            it('should call login api, remove the session token, and stop', () => {
                 return mockedStore.dispatch(login()).then(() => {
+                    const {config: {appId}} = mockedStore.getState();
                     httpStub.should.have.been.calledWith('POST', `/apps/${mockedStore.getState().config.appId}/login`, {
                         userId: 'some-user-id',
                         clientId: 'some-client-id',
                         sessionToken: 'some-session-token'
                     });
                     handleUserConversationResponseStub.should.not.have.been.called;
+                    removeItemStub.should.have.been.calledWith(`${appId}.sessionToken`);
                 });
             });
         });

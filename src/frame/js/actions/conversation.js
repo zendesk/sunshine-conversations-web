@@ -91,23 +91,23 @@ const throttlePerUser = (userId) => {
 
 function postSendMessage(message) {
     return (dispatch, getState) => {
-        const {user: {_id}} = getState();
+        const {config: {appId}, user: {_id}} = getState();
         return dispatch(http('POST', `/appusers/${_id}/messages`, {
             ...message,
             role: 'appUser',
-            deviceId: getDeviceId()
+            deviceId: getDeviceId(appId)
         }));
     };
 }
 
 function postUploadImage(message) {
     return (dispatch, getState) => {
-        const {user: {_id}} = getState();
+        const {config: {appId}, user: {_id}} = getState();
         const blob = getBlobFromDataUrl(message.mediaUrl);
 
         const data = new FormData();
         data.append('role', 'appUser');
-        data.append('deviceId', getDeviceId());
+        data.append('deviceId', getDeviceId(appId));
         data.append('source', blob);
 
         Object.keys(message).forEach((key) => {
@@ -150,6 +150,7 @@ function onMessageSendFailure(message) {
 
 function addMessage(props) {
     return (dispatch, getState) => {
+        const {config: {appId}} = getState();
         if (props._clientId) {
             const oldMessage = getState().conversation.messages.find((message) => message._clientId === props._clientId);
             const newMessage = Object.assign({}, oldMessage, props);
@@ -166,7 +167,7 @@ function addMessage(props) {
             role: 'appUser',
             _clientId: Math.random(),
             _clientSent: Date.now() / 1000,
-            deviceId: getDeviceId(),
+            deviceId: getDeviceId(appId),
             sendStatus: SEND_STATUS.SENDING
         };
 
@@ -560,7 +561,7 @@ export function startConversation() {
                 ...pendingAttributes,
                 client: {
                     platform: 'web',
-                    id: getDeviceId(),
+                    id: getDeviceId(appId),
                     info: {
                         sdkVersion: VERSION,
                         URL: parent.document.location.host,
