@@ -856,4 +856,29 @@ describe('Conversation Actions', () => {
             });
         });
     });
+
+    describe('fetchUserConversation', () => {
+        let handleUserConversationResponseStub;
+        let mockedStore;
+        beforeEach(() => {
+            handleUserConversationResponseStub = sandbox.stub().returnsAsyncThunk();
+            RewireConversationActions('handleUserConversationResponse', handleUserConversationResponseStub);
+
+            const props = generateBaseStoreProps({
+                user: {
+                    _id: '1'
+                }
+            });
+            mockedStore = createMockedStore(sandbox, props);
+        });
+
+        it('should call handleUserConversationResponse', () => {
+            const {config: {appId}, user: {_id}} = mockedStore.getState();
+            mockedStore.dispatch(conversationActions.fetchUserConversation())
+                .then(() => {
+                    httpStub.should.have.been.calledWith('GET', `/apps/${appId}/appusers/${_id}`);
+                    handleUserConversationResponseStub.should.have.been.calledOnce;
+                });
+        });
+    });
 });
