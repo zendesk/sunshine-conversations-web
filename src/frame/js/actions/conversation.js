@@ -241,7 +241,7 @@ export function postPostback(actionId) {
     return (dispatch, getState) => {
         const {user: {_id}, config: {appId}} = getState();
 
-        return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/conversation/postback`, {
+        return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/postback`, {
             actionId
         })).catch(() => {
             dispatch(showErrorNotification(getState().ui.text.actionPostbackError));
@@ -537,23 +537,30 @@ export function startConversation() {
         if (conversationId) {
             return Promise.resolve();
         }
+        let promise;
 
-        return dispatch(http('POST', userId ? `/appusers/${userId}/conversations` : `/apps/${appId}/appusers`, {
-            ...pendingAttributes,
-            client: {
-                platform: 'web',
-                id: getDeviceId(),
-                info: {
-                    sdkVersion: VERSION,
-                    URL: parent.document.location.host,
-                    userAgent: navigator.userAgent,
-                    referrer: parent.document.referrer,
-                    browserLanguage: navigator.language,
-                    currentUrl: parent.document.location.href,
-                    currentTitle: parent.document.title
+        if (userId) {
+            promise = dispatch(http('POST', `/appusers/${userId}/conversations`));
+        } else {
+            promise = dispatch(http('POST', `/apps/${appId}/appusers`, {
+                ...pendingAttributes,
+                client: {
+                    platform: 'web',
+                    id: getDeviceId(),
+                    info: {
+                        sdkVersion: VERSION,
+                        URL: parent.document.location.host,
+                        userAgent: navigator.userAgent,
+                        referrer: parent.document.referrer,
+                        browserLanguage: navigator.language,
+                        currentUrl: parent.document.location.href,
+                        currentTitle: parent.document.title
+                    }
                 }
-            }
-        }))
+            }));
+        }
+
+        return promise
             .then((response) => dispatch(handleUserConversationResponse(response)))
             .then(() => dispatch(connectFayeConversation()));
     };

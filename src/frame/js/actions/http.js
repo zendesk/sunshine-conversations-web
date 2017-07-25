@@ -30,24 +30,22 @@ export function handleResponse(response) {
 
     if (response.status >= 200 && response.status < 300) {
         return isJson ? response.json() : Promise.resolve();
+    } else if (isJson) {
+        return response.json().then(function(json) {
+            const {error={}} = json;
+
+            const err = new Error(error.description || response.statusText);
+            err.response = response;
+            err.code = error.code;
+            err.description = error.description;
+
+            throw err;
+        });
     } else {
-        if (isJson) {
-            return response.json().then(function(json) {
-                const {error={}} = json;
+        const error = new Error(response.statusText);
+        error.response = response;
 
-                const err = new Error(error.description || response.statusText);
-                err.response = response;
-                err.code = error.code;
-                err.description = error.description;
-
-                throw err;
-            });
-        } else {
-            const error = new Error(response.statusText);
-            error.response = response;
-
-            return Promise.reject(error);
-        }
+        return Promise.reject(error);
     }
 }
 
