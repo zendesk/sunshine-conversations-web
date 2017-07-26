@@ -140,9 +140,7 @@ describe('HTTP', () => {
                         });
 
                         it('should transform the options correctly', () => {
-                            const {config: {apiBaseUrl}, auth} = mockedStore.getState();
-
-                            console.log('ASDASDASDADSASDASASDDASADSADSADSDSA', auth)
+                            const {config: {apiBaseUrl}} = mockedStore.getState();
 
                             const expection = generateExpectation(options.method, `${apiBaseUrl}${options.url}`, options.data, options.headers, useJwt, useSessionToken);
 

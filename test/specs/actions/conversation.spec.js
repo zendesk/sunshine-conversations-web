@@ -777,7 +777,7 @@ describe('Conversation Actions', () => {
 
         it('should post postback', () => {
             mockedStore.dispatch(conversationActions.postPostback(actionId));
-            httpStub.should.have.been.calledWithMatch('POST', `/apps/${storeProps.config.appId}/appusers/${storeProps.user._id}/conversation/postback`, {
+            httpStub.should.have.been.calledWithMatch('POST', `/apps/${storeProps.config.appId}/appusers/${storeProps.user._id}/postback`, {
                 actionId
             });
         });
@@ -791,7 +791,7 @@ describe('Conversation Actions', () => {
 
             it('should show an error notification', () => {
                 return mockedStore.dispatch(conversationActions.postPostback(actionId)).then(() => {
-                    httpStub.should.have.been.calledWithMatch('POST', `/apps/${storeProps.config.appId}/appusers/${storeProps.user._id}/conversation/postback`, {
+                    httpStub.should.have.been.calledWithMatch('POST', `/apps/${storeProps.config.appId}/appusers/${storeProps.user._id}/postback`, {
                         actionId
                     });
                     showErrorNotificationSpy.should.have.been.calledWithMatch('action postback error');
