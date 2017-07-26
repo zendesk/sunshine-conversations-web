@@ -69,7 +69,13 @@ describe('Conversation Actions', () => {
         RewireConversationActions('_getMessages', getMessagesStub);
 
         // Http actions
-        httpStub = sandbox.stub().returnsAsyncThunk();
+        httpStub = sandbox.stub().returnsAsyncThunk({
+            value: {
+                response: {
+                    status: 200
+                }
+            }
+        });
         RewireConversationActions('http', httpStub);
 
         // Media Utils
