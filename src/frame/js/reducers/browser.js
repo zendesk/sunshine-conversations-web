@@ -6,7 +6,7 @@ const INITIAL_STATE = {
     currentLocation: document.location
 };
 
-export function BrowserReducer(state = INITIAL_STATE, action) {
+export default function BrowserReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case RESET:
             return Object.assign({}, INITIAL_STATE);

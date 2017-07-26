@@ -2,7 +2,7 @@ import sinon from 'sinon';
 
 import { createMock as createCoreMock } from '../../mocks/core';
 import { createMock as createThrottleMock } from '../../mocks/throttle';
-import { createMockedStore } from '../../utils/redux';
+import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 
 import * as integrationsActions from '../../../src/frame/js/actions/integrations';
 import { __Rewire__ as IntegrationsRewire } from '../../../src/frame/js/actions/integrations';
@@ -57,22 +57,13 @@ describe('Integrations Actions', () => {
         handleConversationUpdatedStub = sandbox.stub().returnsAsyncThunk();
         IntegrationsRewire('handleConversationUpdated', handleConversationUpdatedStub);
 
-        mockedStore = createMockedStore(sandbox, {
+        mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
             user: {
                 _id: '1',
                 clients: [],
                 pendingClients: []
-            },
-            integrations: {
-                twilio: {}
-            },
-            faye: {
-                conversationSubscription: false
-            },
-            ui: {
-                text: {}
             }
-        });
+        }));
 
     });
 

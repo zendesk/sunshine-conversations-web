@@ -1,8 +1,8 @@
 import sinon from 'sinon';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 
 import { mockComponent, wrapComponentWithStore } from '../../../utils/react';
-import { createMockedStore } from '../../../utils/redux';
+import { createMockedStore, generateBaseStoreProps } from '../../../utils/redux';
 import { ReactTelephoneInput } from '../../../../src/frame/js/lib/react-telephone-input';
 
 import SMSChannelContent from '../../../../src/frame/js/components/channels/SMSChannelContent';
@@ -13,12 +13,7 @@ describe('SMS Channel Content Component', () => {
     let component;
     let mockedStore;
 
-    const storeState = {
-        app: {
-            settings: {
-                web: {}
-            }
-        },
+    const storeState = generateBaseStoreProps({
         ui: {
             text: {
                 smsInvalidNumberError: 'Your phone number isn\'t valid. Please try again.',
@@ -30,7 +25,7 @@ describe('SMS Channel Content Component', () => {
                 smsContinue: 'Continue'
             }
         }
-    };
+    });
 
     beforeEach(() => {
         mockedStore = createMockedStore(sandbox, storeState);

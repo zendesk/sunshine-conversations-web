@@ -1,14 +1,13 @@
 import sinon from 'sinon';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 
 import TransferRequestChannelContent from '../../../../src/frame/js/components/channels/TransferRequestChannelContent';
 import Loading from '../../../../src/frame/js/components/Loading';
 
 import { wrapComponentWithStore } from '../../../utils/react';
-import { createMockedStore, generateBaseStoreProps } from '../../../utils/redux';
+import { createMockedStore } from '../../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
-const baseStoreProps = generateBaseStoreProps();
 const url = 'http://foo/';
 
 describe('TransferRequestChannelContent', () => {
@@ -17,9 +16,7 @@ describe('TransferRequestChannelContent', () => {
     });
 
     it('should render connect link', () => {
-        const store = createMockedStore(sandbox, {
-            ...baseStoreProps
-        });
+        const store = createMockedStore(sandbox);
         const component = wrapComponentWithStore(TransferRequestChannelContent , {
             url,
             channelState: {
@@ -33,9 +30,7 @@ describe('TransferRequestChannelContent', () => {
     });
 
     it('should show loader without code', () => {
-        const store = createMockedStore(sandbox, {
-            ...baseStoreProps
-        });
+        const store = createMockedStore(sandbox);
         const component = wrapComponentWithStore(TransferRequestChannelContent , {
             url,
             channelState: {
@@ -48,9 +43,7 @@ describe('TransferRequestChannelContent', () => {
     });
 
     it('should render error retry link', () => {
-        const store = createMockedStore(sandbox, {
-            ...baseStoreProps
-        });
+        const store = createMockedStore(sandbox);
         const component = wrapComponentWithStore(TransferRequestChannelContent , {
             url,
             channelState: {

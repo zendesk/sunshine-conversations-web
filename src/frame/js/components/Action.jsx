@@ -195,12 +195,12 @@ export class ActionComponent extends Component {
     }
 }
 
-export default connect(({app, ui: {text}, user}) => {
+export default connect(({ui: {text}, user, config}) => {
     return {
         user,
         actionPaymentCompletedText: text.actionPaymentCompleted,
-        integrations: app.integrations,
-        stripe: app.stripe
+        integrations: config.integrations,
+        stripe: config.stripe
     };
 }, null, null, {
     withRef: true

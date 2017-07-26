@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 
 import AlternateChannels, { __Rewire__ as AlternateChannelsRewire } from '../../../src/frame/js/components/AlternateChannels';
 import { getAppChannelDetails } from '../../../src/frame/js/utils/app';

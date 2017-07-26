@@ -3,7 +3,7 @@ import { RESET } from '../actions/common';
 
 const INITIAL_STATE = {};
 
-export function UserReducer(state = INITIAL_STATE, action) {
+export default function UserReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case RESET:
             return Object.assign({}, INITIAL_STATE);

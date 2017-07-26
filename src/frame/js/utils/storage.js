@@ -35,7 +35,7 @@ function removeItem(key) {
     delete memoryStorage[key];
 }
 
-export const storage = {
+export default {
     setItem,
     getItem,
     removeItem
