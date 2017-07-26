@@ -1,10 +1,12 @@
 import { batchActions } from 'redux-batched-actions';
 
 import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi, showConnectNotification } from './app-state';
-import { getUserId, updateUser, immediateUpdate } from './user';
+import { setUser } from './user';
 import { disconnectClient, subscribeConversation, subscribeUser, subscribeConversationActivity, unsetFayeSubscriptions } from './faye';
 
-import { core } from '../utils/core';
+import http from './http';
+import { setAuth } from './auth';
+
 import { observable } from '../utils/events';
 import { Throttle } from '../utils/throttle';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
@@ -88,33 +90,36 @@ const throttlePerUser = (userId) => {
 
 function postSendMessage(message) {
     return (dispatch, getState) => {
-        return core(getState()).appUsers.sendMessage(getUserId(getState()), message);
+        const {user: {_id}} = getState();
+        return dispatch(http('POST', `/appusers/${_id}/messages`, {
+            ...message,
+            role: 'appUser',
+            deviceId: getDeviceId()
+        }));
     };
 }
 
 function postUploadImage(message) {
     return (dispatch, getState) => {
+        const {user: {_id}} = getState();
         const blob = getBlobFromDataUrl(message.mediaUrl);
 
-        return core(getState()).appUsers.uploadImage(getUserId(getState()), blob, {
-            role: 'appUser',
-            deviceId: getDeviceId()
+        const data = new FormData();
+        data.append('role', 'appUser');
+        data.append('deviceId', getDeviceId());
+        data.append('source', blob);
+
+        Object.keys(message).forEach((key) => {
+            data.append(key, message[key]);
         });
+
+        return dispatch(http('POST', `/appusers/${_id}/images`, data));
     };
 }
 
 function onMessageSendSuccess(message, response) {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         const actions = [];
-        const {user} = getState();
-
-        if (!user.conversationStarted) {
-            // use setConversation to set the conversation id in the store
-            actions.push(setConversation(response.conversation));
-            actions.push(updateUser({
-                conversationStarted: true
-            }));
-        }
 
         actions.push(setShouldScrollToBottom(true));
         actions.push(replaceMessage({
@@ -197,29 +202,23 @@ function removeMessage(_clientId) {
     };
 }
 
-function _getMessages(dispatch, getState) {
-    const userId = getUserId(getState());
-    return core(getState()).appUsers.getMessages(userId).then((response) => {
-        dispatch(batchActions([
-            setConversation({
-                ...response.conversation,
-                hasMoreMessages: !!response.previous
-            }),
-            setMessages(response.messages)
-        ]));
-        return response;
-    });
+function _getMessages({before} = {}) {
+    return (dispatch, getState) => {
+        const {user: {_id}, config: {appId}} = getState();
+
+        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/messages`, {
+            before
+        }));
+    };
 }
 
 function sendChain(sendFn, message) {
-    return (dispatch, getState) => {
-        const promise = dispatch(immediateUpdate(getState().user));
+    return (dispatch) => {
+        const promise = dispatch(startConversation());
 
         const postSendHandler = (response) => {
             return Promise.resolve(dispatch(onMessageSendSuccess(message, response)))
-                .then(() => dispatch(handleConnectNotification(response)))
-                .then(() => dispatch(connectFayeConversation()))
-                .catch(); // swallow errors to avoid uncaught promises bubbling up
+                .then(() => dispatch(handleConnectNotification(response)));
         };
 
         return promise
@@ -240,10 +239,13 @@ export function sendMessage(props) {
 
 export function postPostback(actionId) {
     return (dispatch, getState) => {
-        return core(getState()).conversations.postPostback(getUserId(getState()), actionId)
-            .catch(() => {
-                dispatch(showErrorNotification(getState().ui.text.actionPostbackError));
-            });
+        const {user: {_id}, config: {appId}} = getState();
+
+        return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/postback`, {
+            actionId
+        })).catch(() => {
+            dispatch(showErrorNotification(getState().ui.text.actionPostbackError));
+        });
     };
 }
 
@@ -257,9 +259,10 @@ export function fetchMoreMessages() {
 
         const timestamp = messages[0].received;
         dispatch(setFetchingMoreMessagesFromServer(true));
-        return core(getState()).appUsers.getMessages(getUserId(getState()), {
+
+        return dispatch(_getMessages({
             before: timestamp
-        }).then((response) => {
+        })).then((response) => {
             dispatch(batchActions([
                 setConversation({
                     ...response.conversation,
@@ -276,11 +279,11 @@ export function fetchMoreMessages() {
 
 export function handleConnectNotification(response) {
     return (dispatch, getState) => {
-        const {user: {clients}, app: {integrations, settings}, conversation: {messages}} = getState();
+        const {user: {clients}, config: {integrations}, conversation: {messages}} = getState();
         const appUserMessages = messages.filter((message) => message.role === 'appUser');
 
-        const channelsAvailable = hasLinkableChannels(integrations, clients, settings.web);
-        const hasSomeChannelLinked = getLinkableChannels(integrations, settings.web).some((channelType) => {
+        const channelsAvailable = hasLinkableChannels(integrations, clients);
+        const hasSomeChannelLinked = getLinkableChannels(integrations).some((channelType) => {
             return isChannelLinked(clients, channelType);
         });
 
@@ -313,32 +316,15 @@ export function handleConnectNotification(response) {
 
 export function resetUnreadCount() {
     return (dispatch, getState) => {
-        const {conversation} = getState();
+        const {user: {_id}, config: {appId}, conversation} = getState();
         if (conversation.unreadCount > 0) {
             dispatch({
                 type: RESET_UNREAD_COUNT
             });
-            return core(getState()).conversations.resetUnreadCount(getUserId(getState())).then((response) => {
+
+            return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/conversation/read`)).then((response) => {
                 return response;
             });
-        }
-
-        return Promise.resolve();
-    };
-}
-
-export function handleConversationUpdated() {
-    return (dispatch, getState) => {
-        const {faye: {conversationSubscription}} = getState();
-
-        if (!conversationSubscription) {
-            return dispatch(getMessages())
-                .then((response) => {
-                    return dispatch(connectFayeConversation())
-                        .then(() => {
-                            return response;
-                        });
-                });
         }
 
         return Promise.resolve();
@@ -467,16 +453,28 @@ export function uploadImage(file) {
 
 export function getMessages() {
     return (dispatch, getState) => {
-        const userId = getUserId(getState());
-        return throttlePerUser(userId).exec(() => _getMessages(dispatch, getState));
+        const {user: {_id}} = getState();
+        return throttlePerUser(_id).exec(() => {
+            return dispatch(_getMessages())
+                .then((response) => {
+                    dispatch(batchActions([
+                        setConversation({
+                            ...response.conversation,
+                            hasMoreMessages: !!response.previous
+                        }),
+                        setMessages(response.messages)
+                    ]));
+                    return response;
+                });
+        });
     };
 }
 
 export function connectFayeConversation() {
     return (dispatch, getState) => {
-        const {faye: {conversationSubscription}} = getState();
+        const {user: {conversationStarted}, conversation: {_id:conversationId}, faye: {conversationSubscription}} = getState();
 
-        if (!conversationSubscription) {
+        if (conversationStarted && conversationId && !conversationSubscription) {
             return Promise.all([
                 dispatch(subscribeConversation()),
                 dispatch(subscribeConversationActivity())
@@ -514,5 +512,65 @@ export function disconnectFaye() {
 
         disconnectClient();
         dispatch(unsetFayeSubscriptions());
+    };
+}
+
+function handleUserConversationResponse({appUser, conversation, sessionToken}) {
+    return (dispatch) => {
+        const actions = [
+            setUser(appUser),
+            setConversation(conversation),
+            setMessages(conversation.messages),
+            setAuth({
+                sessionToken
+            })
+        ];
+
+        dispatch(batchActions(actions));
+    };
+}
+
+export function startConversation() {
+    return (dispatch, getState) => {
+        const {user: {_id: userId, pendingAttributes}, config: {appId}, conversation: {_id: conversationId}} = getState();
+
+        if (conversationId) {
+            return Promise.resolve();
+        }
+        let promise;
+
+        if (userId) {
+            promise = dispatch(http('POST', `/appusers/${userId}/conversations`));
+        } else {
+            promise = dispatch(http('POST', `/apps/${appId}/appusers`, {
+                ...pendingAttributes,
+                client: {
+                    platform: 'web',
+                    id: getDeviceId(),
+                    info: {
+                        sdkVersion: VERSION,
+                        URL: parent.document.location.host,
+                        userAgent: navigator.userAgent,
+                        referrer: parent.document.referrer,
+                        browserLanguage: navigator.language,
+                        currentUrl: parent.document.location.href,
+                        currentTitle: parent.document.title
+                    }
+                }
+            }));
+        }
+
+        return promise
+            .then((response) => dispatch(handleUserConversationResponse(response)))
+            .then(() => dispatch(connectFayeConversation()));
+    };
+}
+
+export function fetchUserConversation() {
+    return (dispatch, getState) => {
+        const {user: {_id}, config: {appId}} = getState();
+
+        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}`))
+            .then((response) => dispatch(handleUserConversationResponse(response)));
     };
 }

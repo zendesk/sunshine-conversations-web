@@ -1,4 +1,4 @@
-import { IntegrationsReducer } from '../../../src/frame/js/reducers/integrations';
+import IntegrationsReducer from '../../../src/frame/js/reducers/integrations';
 
 import { SET_WECHAT_QR_CODE, SET_ERROR, UNSET_ERROR, RESET_INTEGRATIONS, SET_TWILIO_INTEGRATION_STATE, RESET_TWILIO_INTEGRATION_STATE } from '../../../src/frame/js/actions/integrations';
 
@@ -28,7 +28,7 @@ describe('Integrations reducer', () => {
     it('should unset the hasError flag on UNSET_ERROR', () => {
         IntegrationsReducer({
             wechat: {
-                hasError: true 
+                hasError: true
             }
         }, {
             type: UNSET_ERROR,

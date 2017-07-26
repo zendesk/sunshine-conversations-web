@@ -4,15 +4,11 @@ import { RESET_CONVERSATION, ADD_MESSAGE } from '../actions/conversation';
 import { WIDGET_STATE } from '../constants/app';
 
 const INITIAL_STATE = {
+    isInitialized: false,
     settingsVisible: false,
     visibleChannelType: null,
     widgetState: WIDGET_STATE.INIT,
     widgetSize: 'md',
-    settingsEnabled: true,
-    soundNotificationEnabled: true,
-    imageUploadEnabled: true,
-    readOnlyEmail: false,
-    serverURL: 'https://api.smooch.io/',
     connectNotificationTimestamp: null,
     errorNotificationMessage: null,
     introHeight: 158,
@@ -25,7 +21,7 @@ const INITIAL_STATE = {
     typingIndicatorTimeoutId: null
 };
 
-export function AppStateReducer(state = INITIAL_STATE, action) {
+export default function AppStateReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case RESET:
             // keep widget state even on a reset
@@ -39,6 +35,11 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
                 connectNotificationTimestamp: null
             };
 
+        case AppStateActions.SET_INITIALIZATION_STATE:
+            return {
+                ...state,
+                isInitialized: action.value
+            };
         case AppStateActions.ENABLE_IMAGE_UPLOAD:
             return {
                 ...state,
@@ -134,12 +135,6 @@ export function AppStateReducer(state = INITIAL_STATE, action) {
             return {
                 ...state,
                 connectNotificationTimestamp: null
-            };
-
-        case AppStateActions.SET_SERVER_URL:
-            return {
-                ...state,
-                serverURL: action.url
             };
 
         case AppStateActions.SHOW_ERROR_NOTIFICATION:

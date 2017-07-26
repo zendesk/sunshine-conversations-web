@@ -6,17 +6,18 @@ import { SK_DARK_CONTRAST } from '../constants/styles';
 
 export class DefaultAppIconComponent extends Component {
     static propTypes = {
-        settings: PropTypes.object.isRequired
+        brandColor: PropTypes.string.isRequired,
+        isBrandColorDark: PropTypes.bool.isRequired
     };
 
     render() {
-        const {settings: {brandColor, isBrandColorDark}} = this.props;
+        const {brandColor, isBrandColorDark} = this.props;
         const backgroundFill = `#${brandColor}`;
         const businessPathFill = isBrandColorDark ? 'transparent' : SK_DARK_CONTRAST;
 
         return <svg className='app-icon'
                     viewBox='0 0 80 80'
-                    style={ {    enableBackground: 'new 0 0 80 80',    shapeRendering: 'geometricPrecision'} }>
+                    style={ { enableBackground: 'new 0 0 80 80', shapeRendering: 'geometricPrecision' } }>
                    <rect fill={ backgroundFill }
                          x='31.3'
                          y='39.5'
@@ -71,8 +72,8 @@ export class DefaultAppIconComponent extends Component {
     }
 }
 
-export default connect(({app}) => {
+export default connect(({config: {style}}) => {
     return {
-        settings: app.settings.web
+        ...style
     };
 })(DefaultAppIconComponent);

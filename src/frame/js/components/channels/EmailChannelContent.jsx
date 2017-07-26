@@ -25,8 +25,8 @@ export class EmailChannelContentComponent extends Component {
     }
 }
 
-export default connect(({app}) => {
+export default connect(({config}) => {
     return {
-        linkColor: app.settings.web.linkColor
+        linkColor: config.style.linkColor
     };
 })(EmailChannelContentComponent);

@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 
 import TelegramChannelContent from '../../../../src/frame/js/components/channels/TelegramChannelContent';
 
@@ -7,11 +7,6 @@ import { wrapComponentWithStore } from '../../../utils/react';
 import { createMockedStore, generateBaseStoreProps } from '../../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
-const baseStoreProps = generateBaseStoreProps();
-baseStoreProps.integrations.telegram = {
-    hasError: false,
-    transferRequestCode: ''
-};
 
 describe('Telegram Channel Component', () => {
     afterEach(() => {
@@ -19,10 +14,15 @@ describe('Telegram Channel Component', () => {
     });
 
     it('should render', () => {
-        const store = createMockedStore(sandbox, {
-            ...baseStoreProps
-        });
-        const component = wrapComponentWithStore(TelegramChannelContent , {
+        const store = createMockedStore(sandbox, generateBaseStoreProps({
+            integrations: {
+                telegram: {
+                    hasError: false,
+                    transferRequestCode: ''
+                }
+            }
+        }));
+        const component = wrapComponentWithStore(TelegramChannelContent, {
             username: 'foo',
             channelState: {
                 transferRequestCode: 'foo'

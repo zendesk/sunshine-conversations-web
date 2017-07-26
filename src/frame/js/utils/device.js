@@ -1,6 +1,6 @@
 import uuid from 'uuid';
 
-import { storage } from './storage';
+import storage from './storage';
 
 export function getDeviceId() {
     const SK_STORAGE = 'sk_deviceid';

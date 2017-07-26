@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 
 import { createMock } from '../../mocks/core';
-import { createMockedStore } from '../../utils/redux';
+import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 
 import * as userActions from '../../../src/frame/js/actions/user';
 import { __Rewire__ as UserRewire } from '../../../src/frame/js/actions/user';
@@ -11,7 +11,6 @@ describe('User Actions', () => {
     let coreMock;
     let mockedStore;
     let setUserSpy;
-    let handleConversationUpdatedStub;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -41,15 +40,12 @@ describe('User Actions', () => {
         setUserSpy = sandbox.spy(userActions.setUser);
         UserRewire('setUser', setUserSpy);
 
-        handleConversationUpdatedStub = sandbox.stub();
-        UserRewire('handleConversationUpdated', handleConversationUpdatedStub);
-
-        mockedStore = createMockedStore(sandbox, {
+        mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
             user: {
                 _id: '1',
                 email: 'some@email.com'
             }
-        });
+        }));
     });
 
     afterEach(() => {

@@ -64,19 +64,25 @@ describe('App utils', () => {
     });
 
     describe('hasChannels', () => {
-        it('should return true if has channels', () => {
+        it('should return true if has linkable channels', () => {
             hasChannels({
-                channels: {
-                    stripe: {
-                        some: 'prop'
-                    }
-                }
+                integrations: [{
+                    type: 'messenger'
+                }]
             }).should.be.true;
+        });
+
+        it('should return false if has no linkable channels', () => {
+            hasChannels({
+                integrations: [{
+                    type: 'stripeConnect'
+                }]
+            }).should.be.false;
         });
 
         it('should return false if has no channels', () => {
             hasChannels({
-                channels: {}
+                integrations: []
             }).should.be.false;
         });
     });

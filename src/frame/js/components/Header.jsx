@@ -12,7 +12,7 @@ export class HeaderComponent extends Component {
 
     static propTypes = {
         appState: PropTypes.object.isRequired,
-        settings: PropTypes.object.isRequired,
+        config: PropTypes.object.isRequired,
         text: PropTypes.object.isRequired,
         unreadCount: PropTypes.number.isRequired
     };
@@ -51,12 +51,12 @@ export class HeaderComponent extends Component {
     }
 
     render() {
-        const {appState: {settingsVisible, widgetState, visibleChannelType}, unreadCount, settings, text} = this.props;
+        const {appState: {settingsVisible, widgetState, visibleChannelType}, unreadCount, config, text} = this.props;
         const {settingsHeaderText, headerText} = text;
-        const {brandColor} = settings;
+        const {brandColor} = config.style;
 
         const settingsMode = !!(settingsVisible || visibleChannelType);
-        const showSettingsButton = hasChannels(settings)&& !settingsMode;
+        const showSettingsButton = hasChannels(config) && !settingsMode;
         const widgetOpened = widgetState === WIDGET_STATE.OPENED;
 
         const unreadBadge = !settingsMode && unreadCount > 0 ? (
@@ -79,8 +79,8 @@ export class HeaderComponent extends Component {
             </div>
             ) : null;
         const closeHandle = widgetOpened && <div className='sk-close-handle sk-close-hidden'>
-                                              <i className='fa fa-times'></i>
-                                          </div>;
+                                                <i className='fa fa-times'></i>
+                                            </div>;
 
         const settingsTextStyle = {
             display: 'inline-block',
@@ -115,7 +115,7 @@ export class HeaderComponent extends Component {
     }
 }
 
-function mapStateToProps({app, ui: {text}, appState: {settingsVisible, widgetState, visibleChannelType}, conversation}) {
+function mapStateToProps({config, ui: {text}, appState: {settingsVisible, widgetState, visibleChannelType}, conversation}) {
     return {
         appState: {
             settingsVisible,
@@ -123,7 +123,7 @@ function mapStateToProps({app, ui: {text}, appState: {settingsVisible, widgetSta
             visibleChannelType
         },
         unreadCount: conversation.unreadCount,
-        settings: app.settings.web,
+        config,
         text
     };
 }

@@ -58,7 +58,7 @@ const INITIAL_STATE = {
     }
 };
 
-export function UIReducer(state = INITIAL_STATE, action) {
+export default function UIReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case RESET_UI:
         case RESET:
