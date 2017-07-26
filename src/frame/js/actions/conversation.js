@@ -12,6 +12,7 @@ import { observable } from '../utils/events';
 import { Throttle } from '../utils/throttle';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
 import { getClientId, getClientInfo } from '../utils/client';
+import * as storage from '../utils/storage';
 import { hasLinkableChannels, getLinkableChannels, isChannelLinked } from '../utils/user';
 import { getWindowLocation } from '../utils/dom';
 import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
@@ -518,7 +519,8 @@ export function disconnectFaye() {
 }
 
 export function handleUserConversationResponse({appUser, conversation, sessionToken}) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
+        const {config: {appId}} = getState();
         Raven.setUserContext({
             id: appUser._id
         });
@@ -529,7 +531,10 @@ export function handleUserConversationResponse({appUser, conversation, sessionTo
             setMessages(conversation.messages)
         ];
 
+        storage.setItem(`${appId}.appUserId`, appUser._id);
+
         if (sessionToken) {
+            storage.setItem(`${appId}.sessionToken`, sessionToken);
             actions.push(setAuth({
                 sessionToken
             }));

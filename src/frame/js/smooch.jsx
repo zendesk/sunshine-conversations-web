@@ -132,7 +132,7 @@ export function init(props = {}) {
     });
 
     const sessionToken = storage.getItem(`${props.appId}.sessionToken`);
-    const smoochId = storage.getItem(`${props.appId}.appUserId`);
+    const appUserId = storage.getItem(`${props.appId}.appUserId`);
 
     const actions = [
         appStateActions.setInitializationState(true),
@@ -144,9 +144,9 @@ export function init(props = {}) {
         setConfig('configBaseUrl', props.configBaseUrl || `https://${props.appId}.config.smooch.io`)
     ];
 
-    if (smoochId) {
+    if (appUserId) {
         actions.push(userActions.setUser({
-            _id: smoochId
+            _id: appUserId
         }));
     }
 
@@ -182,7 +182,7 @@ export function init(props = {}) {
                 return login(props.userId, props.jwt);
             }
 
-            if (smoochId && sessionToken) {
+            if (appUserId && sessionToken) {
                 return store.dispatch(fetchUserConversation());
             }
         })
