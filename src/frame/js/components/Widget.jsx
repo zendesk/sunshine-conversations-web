@@ -22,9 +22,9 @@ import { disableAnimation } from '../actions/app-state';
 
 export class WidgetComponent extends Component {
     static propTypes = {
+        dispatch: PropTypes.func.isRequired,
         smoochId: PropTypes.string,
-        app: PropTypes.object.isRequired,
-        settings: PropTypes.object.isRequired,
+        config: PropTypes.object.isRequired,
         widgetSize: PropTypes.string.isRequired,
         appState: PropTypes.object.isRequired
     };
@@ -32,8 +32,8 @@ export class WidgetComponent extends Component {
     onTouchStart = (e) => {
         resetUnreadCount();
         // the behavior is problematic only on iOS devices
-        if (this.refs.input && isMobile.apple.device) {
-            const component = this.refs.input.getWrappedInstance();
+        if (this._input && isMobile.apple.device) {
+            const component = this._input.getWrappedInstance();
             const node = findDOMNode(component);
 
             // only blur if touching outside of the footer
@@ -60,16 +60,16 @@ export class WidgetComponent extends Component {
     };
 
     render() {
-        const {appState, settings, smoochId, widgetSize} = this.props;
-        const {displayStyle, isBrandColorDark, isAccentColorDark, isLinkColorDark} = settings;
+        const {appState, config, smoochId, widgetSize} = this.props;
+        const {displayStyle, isBrandColorDark, isAccentColorDark, isLinkColorDark} = config.style;
 
         const settingsComponent = appState.settingsVisible ? <Settings /> : null;
 
         // if no user set in store or the app has no channels,
         // no need to render the channel page manager
-        const channelsComponent = smoochId && hasChannels(settings) ? <Channel /> : null;
+        const channelsComponent = smoochId && hasChannels(config) ? <Channel /> : null;
 
-        const footer = appState.settingsVisible ? null : <ChatInput ref='input' />;
+        const footer = appState.settingsVisible ? null : <ChatInput ref={ (c) => this._input = c } />;
 
         const classNames = [
             `sk-${displayStyle}-display`
@@ -145,7 +145,7 @@ export class WidgetComponent extends Component {
     }
 }
 
-export default connect(({appState: {settingsVisible, widgetState, errorNotificationMessage, showAnimation, widgetSize}, app, user}) => {
+export default connect(({appState: {settingsVisible, widgetState, errorNotificationMessage, showAnimation, widgetSize}, user, config}) => {
     // only extract what is needed from appState as this is something that might
     // mutate a lot
     return {
@@ -155,8 +155,7 @@ export default connect(({appState: {settingsVisible, widgetState, errorNotificat
             errorNotificationMessage,
             showAnimation
         },
-        app,
-        settings: app.settings.web,
+        config,
         widgetSize,
         smoochId: user._id
     };

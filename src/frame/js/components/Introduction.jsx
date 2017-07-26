@@ -16,7 +16,7 @@ export class IntroductionComponent extends Component {
     static propTypes = {
         dispatch: PropTypes.func.isRequired,
         appState: PropTypes.object.isRequired,
-        app: PropTypes.object.isRequired,
+        config: PropTypes.object.isRequired,
         introAppText: PropTypes.string.isRequired,
         introductionText: PropTypes.string.isRequired
     };
@@ -54,20 +54,20 @@ export class IntroductionComponent extends Component {
     }
 
     render() {
-        const {app, introductionText, introAppText} = this.props;
-        const channelDetailsList = getAppChannelDetails(app.integrations);
+        const {config, introductionText, introAppText} = this.props;
+        const channelDetailsList = getAppChannelDetails(config.integrations);
 
         const channelsAvailable = channelDetailsList.length > 0;
         const introText = channelsAvailable ? `${introductionText} ${introAppText}` : introductionText;
 
         return <div className='sk-intro-section'
                     ref='introductionContainer'>
-                   { app.iconUrl ? <img className='app-icon'
-                                        alt='App icon'
-                                        src={ app.iconUrl } />
+                   { config.app.iconUrl ? <img className='app-icon'
+                                               alt='App icon'
+                                               src={ config.app.iconUrl } />
                          : <DefaultAppIcon /> }
                    <div className='app-name'>
-                       { app.name }
+                       { config.app.name }
                    </div>
                    <div className='intro-text'
                         dangerouslySetInnerHTML={ createMarkup(introText) } />
@@ -78,9 +78,9 @@ export class IntroductionComponent extends Component {
     }
 }
 
-export default connect(({app, appState: {introHeight, widgetState}, ui: {text}}) => {
+export default connect(({config, appState: {introHeight, widgetState}, ui: {text}}) => {
     return {
-        app,
+        config,
         appState: {
             introHeight,
             widgetState

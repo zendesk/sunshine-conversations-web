@@ -1,16 +1,17 @@
 import sinon from 'sinon';
 
-import { openWidget, closeWidget, toggleWidget } from '../../../src/frame/js/actions/app-state';
-import { createMockedStore } from '../../utils/redux';
+import { openWidget, closeWidget, toggleWidget, __Rewire__ as RewireAppStateActions } from '../../../src/frame/js/actions/app-state';
+import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 import { observable } from '../../../src/frame/js/utils/events';
 import { WIDGET_STATE } from '../../../src/frame/js/constants/app';
 
-describe('App Actions', () => {
+describe('App State Actions', () => {
     let mockedStore;
     let sandbox;
     let clock;
     let openSpy;
     let closeSpy;
+    let resetUnreadCountStub;
 
     before(() => {
         sandbox = sinon.sandbox.create();
@@ -20,6 +21,9 @@ describe('App Actions', () => {
         clock = sandbox.useFakeTimers();
         openSpy = sandbox.spy();
         closeSpy = sandbox.spy();
+
+        resetUnreadCountStub = sandbox.stub().returnsAsyncThunk();
+        RewireAppStateActions('resetUnreadCount', resetUnreadCountStub);
 
         observable.on('widget:opened', openSpy);
         observable.on('widget:closed', closeSpy);
@@ -34,12 +38,12 @@ describe('App Actions', () => {
     [true, false].forEach((isEmbedded) => {
         describe(isEmbedded ? 'is embedded' : 'is not embedded', () => {
             beforeEach(() => {
-                mockedStore = createMockedStore(sandbox, {
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                     appState: {
                         widgetState: isEmbedded ? WIDGET_STATE.EMBEDDED : WIDGET_STATE.INIT
                     },
                     conversation: {}
-                });
+                }));
             });
 
             describe('open widget', () => {
@@ -49,6 +53,7 @@ describe('App Actions', () => {
                         clock.tick(20);
                         openSpy.should.not.have.been.called;
                         closeSpy.should.not.have.been.called;
+                        resetUnreadCountStub.should.not.have.been.called;
                     });
                 } else {
                     it('should call dispatch with open action', () => {
@@ -56,6 +61,7 @@ describe('App Actions', () => {
                         clock.tick(20);
                         openSpy.should.have.been.calledOnce;
                         closeSpy.should.not.have.been.called;
+                        resetUnreadCountStub.should.have.been.calledOnce;
                     });
                 }
             });
@@ -67,6 +73,7 @@ describe('App Actions', () => {
                         clock.tick(20);
                         openSpy.should.not.have.been.called;
                         closeSpy.should.not.have.been.called;
+                        resetUnreadCountStub.should.not.have.been.called;
                     });
                 } else {
                     it('should call dispatch with close action', () => {
@@ -74,17 +81,28 @@ describe('App Actions', () => {
                         clock.tick(20);
                         openSpy.should.not.have.been.called;
                         closeSpy.should.have.been.calledOnce;
+                        resetUnreadCountStub.should.have.been.calledOnce;
                     });
                 }
             });
 
             describe('toggle widget', () => {
+                let openWidgetStub;
+                let closeWidgetStub;
+
+                beforeEach(() => {
+                    openWidgetStub = sandbox.stub().returnsSyncThunk();
+                    closeWidgetStub = sandbox.stub().returnsSyncThunk();
+
+                    RewireAppStateActions('openWidget', openWidgetStub);
+                    RewireAppStateActions('closeWidget', closeWidgetStub);
+                });
+
                 if (isEmbedded) {
                     it('should do nothing', () => {
                         mockedStore.dispatch(toggleWidget());
-                        clock.tick(20);
-                        openSpy.should.not.have.been.called;
-                        closeSpy.should.not.have.been.called;
+                        openWidgetStub.should.not.have.been.called;
+                        closeWidgetStub.should.not.have.been.called;
                     });
                 } else {
                     [true, false].forEach((isOpened) => {
@@ -100,13 +118,12 @@ describe('App Actions', () => {
 
                             it(`should call dispatch with ${isOpened ? 'closed' : 'opened'} action`, () => {
                                 mockedStore.dispatch(toggleWidget());
-                                clock.tick(20);
                                 if (isOpened) {
-                                    openSpy.should.not.have.been.called;
-                                    closeSpy.should.have.been.calledOnce;
+                                    openWidgetStub.should.not.have.been.called;
+                                    closeWidgetStub.should.have.been.calledOnce;
                                 } else {
-                                    openSpy.should.have.been.calledOnce;
-                                    closeSpy.should.not.have.been.called;
+                                    openWidgetStub.should.have.been.calledOnce;
+                                    closeWidgetStub.should.not.have.been.called;
                                 }
                             });
                         });

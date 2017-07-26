@@ -1,10 +1,10 @@
-import { AppStateReducer } from '../../../src/frame/js/reducers/app-state';
-import { TOGGLE_WIDGET, OPEN_WIDGET, CLOSE_WIDGET, DISABLE_ANIMATION, SET_FETCHING_MORE_MESSAGES, SET_SHOULD_SCROLL_TO_BOTTOM } from '../../../src/frame/js/actions/app-state';
+import AppStateReducer from '../../../src/frame/js/reducers/app-state';
+import { OPEN_WIDGET, CLOSE_WIDGET, DISABLE_ANIMATION, SET_FETCHING_MORE_MESSAGES, SET_SHOULD_SCROLL_TO_BOTTOM } from '../../../src/frame/js/actions/app-state';
 
 const INITIAL_STATE = AppStateReducer(undefined, {});
 
 describe('App State reducer', () => {
-    [TOGGLE_WIDGET, OPEN_WIDGET, CLOSE_WIDGET].forEach((action) => {
+    [OPEN_WIDGET, CLOSE_WIDGET].forEach((action) => {
         describe(`${action} action`, () => {
             it('should set the showAnimation flag to true', () => {
                 const beforeState = {

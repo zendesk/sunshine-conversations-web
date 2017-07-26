@@ -1,4 +1,4 @@
-import { UserReducer } from '../../../src/frame/js/reducers/user';
+import UserReducer from '../../../src/frame/js/reducers/user';
 import { SET_USER, RESET_USER, UPDATE_USER } from '../../../src/frame/js/actions/user';
 
 describe('User reducer', () => {

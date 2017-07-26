@@ -11,7 +11,8 @@ import TransferRequestChannelContent from './TransferRequestChannelContent';
 class ViberChannelContentComponent extends Component {
     static propTypes = {
         channelState: PropTypes.object.isRequired,
-        ui: PropTypes.object.isRequired
+        ui: PropTypes.object.isRequired,
+        uri: PropTypes.string.isRequired
     };
 
     render() {

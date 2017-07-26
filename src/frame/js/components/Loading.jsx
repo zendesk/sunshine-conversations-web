@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 export default class Loading extends Component {
+    static propTypes = {
+        color: PropTypes.string,
+        dark: PropTypes.bool,
+        style: PropTypes.object
+    };
+
     render() {
         const classNames = ['sk-fading-circle'];
         const {color, dark, style} = this.props;

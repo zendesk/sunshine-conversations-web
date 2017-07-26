@@ -17,7 +17,6 @@ export const SHOW_CONNECT_NOTIFICATION = 'SHOW_CONNECT_NOTIFICATION';
 export const HIDE_CONNECT_NOTIFICATION = 'HIDE_CONNECT_NOTIFICATION';
 export const SHOW_ERROR_NOTIFICATION = 'SHOW_ERROR_NOTIFICATION';
 export const HIDE_ERROR_NOTIFICATION = 'HIDE_ERROR_NOTIFICATION';
-export const SET_SERVER_URL = 'SET_SERVER_URL';
 export const SET_EMAIL_READONLY = 'SET_EMAIL_READONLY';
 export const UNSET_EMAIL_READONLY = 'UNSET_EMAIL_READONLY';
 export const SET_EMBEDDED = 'SET_EMBEDDED';
@@ -32,6 +31,7 @@ export const SET_SHOULD_SCROLL_TO_BOTTOM = 'SET_SHOULD_SCROLL_TO_BOTTOM';
 export const SHOW_TYPING_INDICATOR = 'SHOW_TYPING_INDICATOR';
 export const HIDE_TYPING_INDICATOR = 'HIDE_TYPING_INDICATOR';
 export const UPDATE_WIDGET_SIZE = 'UPDATE_WIDGET_SIZE';
+export const SET_INITIALIZATION_STATE = 'SET_INITIALIZATION_STATE';
 
 function connectToFayeUser() {
     return (dispatch, getState) => {
@@ -92,6 +92,12 @@ export function showSettings() {
     };
 }
 
+export function setInitializationState(value) {
+    return {
+        type: SET_INITIALIZATION_STATE,
+        value
+    };
+}
 export function hideSettings() {
     return {
         type: HIDE_SETTINGS
@@ -144,13 +150,6 @@ export function showConnectNotification(timestamp = Date.now() / 1000.0) {
 export function hideConnectNotification() {
     return {
         type: HIDE_CONNECT_NOTIFICATION
-    };
-}
-
-export function setServerURL(url) {
-    return {
-        type: SET_SERVER_URL,
-        url: url
     };
 }
 

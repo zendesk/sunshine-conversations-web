@@ -124,7 +124,7 @@ const assignGroups = (messages) => {
     return messages;
 };
 
-export function ConversationReducer(state = INITIAL_STATE, action) {
+export default function ConversationReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case RESET:
         case ConversationActions.RESET_CONVERSATION:
@@ -133,6 +133,8 @@ export function ConversationReducer(state = INITIAL_STATE, action) {
             };
         case ConversationActions.SET_CONVERSATION:
             return {
+                unreadCount: state.unreadCount,
+                hasMoreMessages: state.hasMoreMessages,
                 ...action.conversation,
                 messages: state.messages,
                 replyActions: state.replyActions

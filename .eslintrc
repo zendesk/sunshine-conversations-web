@@ -47,8 +47,10 @@
         "react",
         "mocha"
     ],
-    "ecmaFeatures": {
-        "jsx": true
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        }
     },
-    "extends": "eslint:recommended"
+    "extends": ["eslint:recommended", "plugin:react/recommended"]
 }

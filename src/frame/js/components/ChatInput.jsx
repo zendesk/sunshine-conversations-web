@@ -132,10 +132,10 @@ export class ChatInputComponent extends Component {
     }
 }
 
-export default connect(({appState, app, ui, conversation: {unreadCount}}) => {
+export default connect(({ui, conversation: {unreadCount}, config}) => {
     return {
-        imageUploadEnabled: appState.imageUploadEnabled,
-        accentColor: app.settings.web.accentColor,
+        imageUploadEnabled: config.imageUploadEnabled,
+        accentColor: config.style.accentColor,
         sendButtonText: ui.text.sendButtonText,
         inputPlaceholderText: ui.text.inputPlaceholder,
         unreadCount
