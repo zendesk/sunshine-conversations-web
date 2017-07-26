@@ -20,7 +20,6 @@ import { observable, observeStore } from './utils/events';
 import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState, updateHostClassNames } from './utils/dom';
 import { isImageUploadSupported } from './utils/media';
 import { playNotificationSound, isAudioSupported } from './utils/sound';
-import { getClientId } from './utils/client';
 import * as storage from './utils/storage';
 
 import { WIDGET_STATE } from './constants/app';
@@ -64,7 +63,10 @@ function handleNotificationSound() {
     }
 }
 
-function onStoreChange({appId, conversation: {messages, unreadCount}, widgetState, displayStyle, currentLocation}, {conversation: {unreadCount:previousUnreadCount}, widgetState: previousWidgetState, displayStyle: previousDisplayStyle, currentLocation: previousLocation}) {
+function onStoreChange(props, previousProps) {
+    const {conversation: {messages, unreadCount}, widgetState, displayStyle} = props;
+    const {conversation: {unreadCount:previousUnreadCount}, widgetState: previousWidgetState, displayStyle: previousDisplayStyle} = previousProps;
+
     if (messages.length > 0) {
         if (unreadCount > 0 && unreadCount !== previousUnreadCount) {
             // only handle non-user messages
@@ -73,9 +75,7 @@ function onStoreChange({appId, conversation: {messages, unreadCount}, widgetStat
                 observable.trigger('message:received', message);
                 lastTriggeredMessageTimestamp = message.received;
 
-                if (initialStoreChange) {
-                    initialStoreChange = false;
-                } else {
+                if (!initialStoreChange) {
                     handleNotificationSound();
                 }
             });
@@ -87,9 +87,8 @@ function onStoreChange({appId, conversation: {messages, unreadCount}, widgetStat
         updateHostClassNames(widgetState, displayStyle);
     }
 
-    if (currentLocation !== previousLocation) {
-        store.dispatch(userActions.updateNowViewing(getClientId(appId)));
-    }
+    initialStoreChange = false;
+
 }
 
 function cleanUp() {

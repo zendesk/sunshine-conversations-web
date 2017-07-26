@@ -92,7 +92,7 @@ const throttlePerUser = (userId) => {
 function postSendMessage(message) {
     return (dispatch, getState) => {
         const {config: {appId}, user: {_id}} = getState();
-        return dispatch(http('POST', `/appusers/${_id}/messages`, {
+        return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/messages`, {
             ...message,
             role: 'appUser',
             deviceId: getClientId(appId)
@@ -114,7 +114,7 @@ function postUploadImage(message) {
             data.append(key, message[key]);
         });
 
-        return dispatch(http('POST', `/appusers/${_id}/images`, data));
+        return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/images`, data));
     };
 }
 
@@ -478,8 +478,8 @@ export function connectFayeConversation() {
 
         if (conversationStarted && conversationId && !conversationSubscription) {
             return Promise.all([
-                dispatch(subscribeConversation()),
-                dispatch(subscribeConversationActivity())
+                // dispatch(subscribeConversation()),
+                // dispatch(subscribeConversationActivity())
             ]);
         }
 
@@ -552,8 +552,8 @@ export function startConversation() {
         if (conversationId) {
             return Promise.resolve();
         }
-        let promise;
 
+        let promise;
         if (userId) {
             promise = dispatch(http('POST', `/appusers/${userId}/conversations`));
         } else {
