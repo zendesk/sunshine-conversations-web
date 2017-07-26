@@ -1,8 +1,7 @@
 import sinon from 'sinon';
 
-import { createMock as createCoreMock } from '../../mocks/core';
 import { createMock as createThrottleMock } from '../../mocks/throttle';
-import { createMockedStore, findActionsByType } from '../../utils/redux';
+import { createMockedStore, findActionsByType, generateBaseStoreProps } from '../../utils/redux';
 
 import * as conversationActions from '../../../src/frame/js/actions/conversation';
 import { __Rewire__ as RewireConversationActions } from '../../../src/frame/js/actions/conversation';
@@ -12,62 +11,20 @@ import { unsetFayeSubscriptions } from '../../../src/frame/js/actions/faye';
 
 import { SEND_STATUS, LOCATION_ERRORS } from '../../../src/frame/js/constants/message';
 
-function getProps(props = {}) {
-    const defaultProps = {
-        user: {
-            clients: {},
-            email: 'hello@smooch.io'
-        },
-        app: {
-            integrations: [
-                {
-                    _id: '12241',
-                    type: 'telegram',
-                    username: 'chloebot'
-                }
-            ],
-            settings: {
-                web: {
-                    channels: {
-                        telegram: true,
-                        messenger: false,
-                        line: false,
-                        twilio: false,
-                        wechat: false
-                    }
-                }
-            }
-        },
-        conversation: {
-            messages: []
-        },
-        faye: {
-            userSubscription: null,
-            conversationSubscription: null
-        },
-        ui: {
-            text: {
-                locationServicesDenied: 'location services denied'
-            }
-        }
-    };
-
-    return Object.assign({}, defaultProps, props);
-}
 
 describe('Conversation Actions', () => {
     let sandbox;
-    let coreMock;
     let mockedStore;
     let conversationSubscriptionMock;
     let userSubscriptionMock;
 
+    let replaceMessageSpy;
+    let setConversationSpy;
+    let startConversationStub;
+    let getMessagesStub;
+    let httpStub;
     let getWindowLocationStub;
     let immediateUpdateStub;
-    let setConversationSpy;
-    let replaceMessageSpy;
-    let addMessagesSpy;
-    let resetUnreadCountActionSpy;
     let updateUserSpy;
     let showErrorNotificationSpy;
     let unsetFayeSubscriptionsSpy;
@@ -85,16 +42,6 @@ describe('Conversation Actions', () => {
     beforeEach(() => {
         // Disable throttling for unit tests
         RewireConversationActions('Throttle', createThrottleMock(sandbox));
-
-        coreMock = createCoreMock(sandbox);
-        coreMock.appUsers.getMessages.resolves({
-            conversation: {
-            },
-            messages: []
-        });
-
-        RewireConversationActions('core', () => coreMock);
-
         conversationSubscriptionMock = {
             cancel: sandbox.stub().resolves()
         };
@@ -102,6 +49,28 @@ describe('Conversation Actions', () => {
         userSubscriptionMock = {
             cancel: sandbox.stub().resolves()
         };
+
+        // Conversation actions
+
+        replaceMessageSpy = sandbox.spy(conversationActions.replaceMessage);
+        RewireConversationActions('replaceMessage', replaceMessageSpy);
+        setConversationSpy = sandbox.spy(conversationActions.setConversation);
+        RewireConversationActions('setConversation', setConversationSpy);
+
+
+        startConversationStub = sandbox.stub().returnsAsyncThunk();
+        RewireConversationActions('startConversation', startConversationStub);
+        getMessagesStub = sandbox.stub().returnsAsyncThunk({
+            value: {
+                conversation: {},
+                messages: []
+            }
+        });
+        RewireConversationActions('_getMessages', getMessagesStub);
+
+        // Http actions
+        httpStub = sandbox.stub().returnsAsyncThunk();
+        RewireConversationActions('http', httpStub);
 
         // Media Utils
         RewireConversationActions('isImageUploadSupported', sandbox.stub().returns(true));
@@ -121,16 +90,6 @@ describe('Conversation Actions', () => {
         // DOM utils
         getWindowLocationStub = sandbox.stub();
         RewireConversationActions('getWindowLocation', getWindowLocationStub);
-
-        // Conversation actions
-        setConversationSpy = sandbox.spy(conversationActions.setConversation);
-        RewireConversationActions('setConversation', setConversationSpy);
-        replaceMessageSpy = sandbox.spy(conversationActions.replaceMessage);
-        RewireConversationActions('replaceMessage', replaceMessageSpy);
-        addMessagesSpy = sandbox.spy(conversationActions.addMessages);
-        RewireConversationActions('addMessages', addMessagesSpy);
-        resetUnreadCountActionSpy = sandbox.spy(conversationActions.resetUnreadCount);
-        RewireConversationActions('resetUnreadCountAction', resetUnreadCountActionSpy);
 
         // User actions
         updateUserSpy = sandbox.spy(updateUser);
@@ -161,44 +120,14 @@ describe('Conversation Actions', () => {
     });
 
     const conversationStartedSuite = (action, extraProps = {}) => {
-        describe('conversation started', () => {
+        describe('start conversation', () => {
             beforeEach(() => {
-                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
-                    user: {
-                        _id: '1',
-                        conversationStarted: true
-                    }
-                }, extraProps)));
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps(extraProps));
             });
 
-            it('should replace message', () => {
+            it('should call startConversation', () => {
                 return mockedStore.dispatch(action).then(() => {
-                    immediateUpdateStub.should.have.been.calledOnce;
-
-                    setConversationSpy.should.not.have.been.called;
-                    replaceMessageSpy.should.have.been.called;
-                    updateUserSpy.should.not.have.been.called;
-                });
-            });
-        });
-
-        describe('conversation not started', () => {
-            beforeEach(() => {
-                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
-                    user: {
-                        _id: '1',
-                        conversationStarted: false
-                    }
-                }, extraProps)));
-            });
-
-            it('should set conversation to started', () => {
-                return mockedStore.dispatch(action).then(() => {
-                    immediateUpdateStub.should.have.been.calledOnce;
-
-                    setConversationSpy.should.have.been.called;
-                    replaceMessageSpy.should.have.been.called;
-                    updateUserSpy.should.have.been.called;
+                    startConversationStub.should.have.been.calledOnce;
                 });
             });
         });
@@ -206,12 +135,19 @@ describe('Conversation Actions', () => {
 
     describe('handleConnectNotification', () => {
         it('should show connect notification on first appuser message', () => {
-            mockedStore = createMockedStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 conversation: {
                     messages: [
                         {
                             received: 1,
                             role: 'appUser'
+                        }
+                    ]
+                },
+                config: {
+                    integrations: [
+                        {
+                            type: 'messenger'
                         }
                     ]
                 }
@@ -222,7 +158,7 @@ describe('Conversation Actions', () => {
         });
 
         it('should show connect notification 24 hours later', () => {
-            mockedStore = createMockedStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 conversation: {
                     messages: [
                         {
@@ -234,6 +170,13 @@ describe('Conversation Actions', () => {
                             role: 'appUser'
                         }
                     ]
+                },
+                config: {
+                    integrations: [
+                        {
+                            type: 'messenger'
+                        }
+                    ]
                 }
             }));
 
@@ -243,7 +186,7 @@ describe('Conversation Actions', () => {
         });
 
         it('should not show connect notification if it\'s been less than 24 hours', () => {
-            mockedStore = createMockedStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 conversation: {
                     messages: [
                         {
@@ -255,6 +198,13 @@ describe('Conversation Actions', () => {
                             role: 'appUser'
                         }
                     ]
+                },
+                config: {
+                    integrations: [
+                        {
+                            type: 'messenger'
+                        }
+                    ]
                 }
             }));
 
@@ -264,6 +214,7 @@ describe('Conversation Actions', () => {
     });
 
     describe('sendMessage', () => {
+        let postSendMessageStub;
         const message = {
             conversation: 'conversation',
             _clientId: 2,
@@ -271,24 +222,29 @@ describe('Conversation Actions', () => {
         };
 
         beforeEach(() => {
-            coreMock.appUsers.sendMessage.resolves(message);
+            postSendMessageStub = sandbox.stub().returnsAsyncThunk({
+                value: message
+            });
+            RewireConversationActions('postSendMessage', postSendMessageStub);
         });
 
         conversationStartedSuite(conversationActions.sendMessage('message'));
 
         it('should add message and send message', () => {
-            mockedStore = createMockedStore(sandbox, getProps());
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
 
             return mockedStore.dispatch(conversationActions.sendMessage('message')).then(() => {
                 const actions = findActionsByType(mockedStore.getActions(), conversationActions.ADD_MESSAGE);
                 actions.length.should.eq(1);
                 actions[0].message.text.should.eq('message');
-                coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                postSendMessageStub.should.have.been.calledWithMatch({
+                    text: 'message'
+                });
             });
         });
 
         it('should accept string or message properties', () => {
-            mockedStore = createMockedStore(sandbox, getProps());
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
 
             return mockedStore.dispatch(conversationActions.sendMessage('message'))
                 .then(() => mockedStore.dispatch(conversationActions.sendMessage({
@@ -296,28 +252,29 @@ describe('Conversation Actions', () => {
                     text: 'message'
                 })))
                 .then(() => {
-                    coreMock.appUsers.sendMessage.should.have.been.calledTwice;
-
-                    coreMock.appUsers.sendMessage.firstCall.args[1].type.should.eql('text');
-                    coreMock.appUsers.sendMessage.firstCall.args[1].text.should.eql('message');
-                    coreMock.appUsers.sendMessage.secondCall.args[1].type.should.eql('text');
-                    coreMock.appUsers.sendMessage.secondCall.args[1].text.should.eql('message');
+                    postSendMessageStub.should.have.been.calledTwice;
+                    postSendMessageStub.firstCall.args[0].type.should.eql('text');
+                    postSendMessageStub.firstCall.args[0].text.should.eql('message');
+                    postSendMessageStub.secondCall.args[0].type.should.eql('text');
+                    postSendMessageStub.secondCall.args[0].text.should.eql('message');
                 });
         });
 
         describe('errors', () => {
             beforeEach(() => {
-                coreMock.appUsers.sendMessage.rejects();
+                postSendMessageStub = sandbox.stub().returnsAsyncThunk({
+                    rejects: true
+                });
+                RewireConversationActions('postSendMessage', postSendMessageStub);
             });
 
             it('should update message send status', () => {
-                mockedStore = createMockedStore(sandbox, getProps());
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
                 return mockedStore.dispatch(conversationActions.sendMessage(message))
                     .then(() => {
                         replaceMessageSpy.should.have.been.calledWith({
                             _clientId: message._clientId
                         });
-
                         replaceMessageSpy.args[0][1].sendStatus.should.eql(SEND_STATUS.FAILED);
                     });
             });
@@ -325,6 +282,7 @@ describe('Conversation Actions', () => {
     });
 
     describe('sendLocation', () => {
+        let postSendMessageStub;
         const message = {
             conversation: 'conversation',
             _clientId: 2,
@@ -334,7 +292,10 @@ describe('Conversation Actions', () => {
         let locationMessage;
 
         beforeEach(() => {
-            coreMock.appUsers.sendMessage.resolves(message);
+            postSendMessageStub = sandbox.stub().returnsAsyncThunk({
+                value: message
+            });
+            RewireConversationActions('postSendMessage', postSendMessageStub);
             locationMessage = {
                 type: 'location',
                 _clientSent: Date.now() / 1000
@@ -362,9 +323,9 @@ describe('Conversation Actions', () => {
 
             describe('getting the current position', () => {
                 beforeEach(() => {
-                    mockedStore = createMockedStore(sandbox, getProps());
+                    mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
                     sandbox.stub(window, 'alert');
-                    clock = sinon.useFakeTimers();
+                    clock = sandbox.useFakeTimers();
                     getWindowLocationStub.returns({
                         protocol: 'https:'
                     });
@@ -377,7 +338,7 @@ describe('Conversation Actions', () => {
                 const stubGeolocationFailure = (args, tick = 100) => {
                     // reset stub defined above
                     navigator.geolocation.getCurrentPosition.restore();
-                    sandbox.stub(navigator.geolocation, 'getCurrentPosition', (success, failure) => {
+                    sandbox.stub(navigator.geolocation, 'getCurrentPosition').callsFake((success, failure) => {
                         failure(args);
                         clock.tick(tick);
                     });
@@ -462,22 +423,22 @@ describe('Conversation Actions', () => {
             });
 
             it('should postSendMessage', () => {
-                mockedStore = createMockedStore(sandbox, getProps());
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
 
                 return mockedStore.dispatch(conversationActions.sendLocation(locationMessage)).then(() => {
-                    coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                    postSendMessageStub.should.have.been.calledOnce;
                 });
             });
         });
 
         describe('message exists without coordinates', () => {
             it('should addMessage', () => {
-                mockedStore = createMockedStore(sandbox, getProps());
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
 
                 return mockedStore.dispatch(conversationActions.sendLocation(locationMessage)).then(() => {
                     navigator.geolocation.getCurrentPosition.should.have.been.calledOnce;
                     replaceMessageSpy.should.have.been.called;
-                    coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                    postSendMessageStub.should.have.been.calledOnce;
                 });
             });
 
@@ -486,12 +447,12 @@ describe('Conversation Actions', () => {
 
         describe('message does not yet exist', () => {
             it('should addMessage', () => {
-                mockedStore = createMockedStore(sandbox, getProps());
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
 
                 return mockedStore.dispatch(conversationActions.sendLocation()).then(() => {
                     navigator.geolocation.getCurrentPosition.should.have.been.calledOnce;
                     replaceMessageSpy.should.have.been.called;
-                    coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                    postSendMessageStub.should.have.been.calledOnce;
                 });
             });
 
@@ -500,21 +461,31 @@ describe('Conversation Actions', () => {
     });
 
     describe('resendMessage', () => {
+        let postSendMessageStub;
+        let postUploadImageStub;
         const message = {
             conversation: 'conversation',
             _clientId: 2,
             text: 'message'
         };
 
+        beforeEach(() => {
+            postSendMessageStub = sandbox.stub();
+            postUploadImageStub = sandbox.stub();
+            RewireConversationActions('postSendMessage', postSendMessageStub);
+            RewireConversationActions('postUploadImage', postUploadImageStub);
+        });
+
+
         describe('message is an image', () => {
             beforeEach(() => {
-                coreMock.appUsers.uploadImage.resolves(message);
+                postUploadImageStub.returnsAsyncThunk();
                 Object.assign(message, {
                     sendStatus: SEND_STATUS.FAILED,
                     type: 'image'
                 });
 
-                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                     user: {
                         _id: '1',
                         conversationStarted: true
@@ -522,7 +493,7 @@ describe('Conversation Actions', () => {
                     conversation: {
                         messages: [message]
                     }
-                })));
+                }));
             });
 
             conversationStartedSuite(conversationActions.resendMessage(message._clientId), {
@@ -533,7 +504,7 @@ describe('Conversation Actions', () => {
 
             it('should update send status and post upload image', () => {
                 return mockedStore.dispatch(conversationActions.resendMessage(message._clientId)).then(() => {
-                    coreMock.appUsers.uploadImage.should.have.been.calledOnce;
+                    postUploadImageStub.should.have.been.calledOnce;
                     replaceMessageSpy.should.have.been.calledTwice;
                 });
             });
@@ -541,13 +512,15 @@ describe('Conversation Actions', () => {
 
         describe('message is text', () => {
             beforeEach(() => {
-                coreMock.appUsers.sendMessage.resolves(message);
                 Object.assign(message, {
                     sendStatus: SEND_STATUS.FAILED,
                     type: 'text'
                 });
+                postSendMessageStub.returnsAsyncThunk({
+                    value: message
+                });
 
-                mockedStore = createMockedStore(sandbox, getProps(Object.assign({
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                     user: {
                         _id: '1',
                         conversationStarted: true
@@ -555,7 +528,7 @@ describe('Conversation Actions', () => {
                     conversation: {
                         messages: [message]
                     }
-                })));
+                }));
             });
 
             conversationStartedSuite(conversationActions.resendMessage(message._clientId), {
@@ -566,7 +539,7 @@ describe('Conversation Actions', () => {
 
             it('should update send status and send message', () => {
                 return mockedStore.dispatch(conversationActions.resendMessage(message._clientId)).then(() => {
-                    coreMock.appUsers.sendMessage.should.have.been.calledOnce;
+                    postSendMessageStub.should.have.been.calledOnce;
                     replaceMessageSpy.should.have.been.calledTwice;
                 });
             });
@@ -574,31 +547,25 @@ describe('Conversation Actions', () => {
     });
 
     describe('uploadImage', () => {
+        let postUploadImageStub;
         const image = {
             conversation: 'conversation'
         };
 
         beforeEach(() => {
-            coreMock.appUsers.uploadImage.resolves(image);
             isFileTypeSupportedStub.returns(true);
             resizeImageStub.resolves({});
+            postUploadImageStub = sandbox.stub().returnsAsyncThunk({
+                value: image
+            });
+            RewireConversationActions('postUploadImage', postUploadImageStub);
         });
 
         conversationStartedSuite(conversationActions.uploadImage({}));
 
         describe('errors', () => {
             beforeEach(() => {
-                mockedStore = createMockedStore(sandbox, getProps({
-                    user: {
-                        _id: '1',
-                        conversationStarted: true
-                    },
-                    ui: {
-                        text: {
-                            invalidFileError: 'invalidFileError'
-                        }
-                    }
-                }));
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
             });
 
             describe('unsupported file type', () => {
@@ -634,14 +601,17 @@ describe('Conversation Actions', () => {
                 beforeEach(() => {
                     isFileTypeSupportedStub.returns(true);
                     resizeImageStub.resolves({});
-                    coreMock.appUsers.uploadImage.rejects();
+                    postUploadImageStub = sandbox.stub().returnsAsyncThunk({
+                        rejects: true
+                    });
+                    RewireConversationActions('postUploadImage', postUploadImageStub);
                 });
 
                 it('should update message send status', () => {
                     return mockedStore.dispatch(conversationActions.uploadImage({})).then(() => {
                         isFileTypeSupportedStub.should.have.been.called;
                         resizeImageStub.should.have.been.called;
-                        coreMock.appUsers.uploadImage.should.have.been.called;
+                        postUploadImageStub.should.have.been.called;
 
                         replaceMessageSpy.should.have.been.calledOnce;
                         replaceMessageSpy.args[0][1].sendStatus.should.eql(SEND_STATUS.FAILED);
@@ -653,20 +623,19 @@ describe('Conversation Actions', () => {
 
     describe('getMessages', () => {
         beforeEach(() => {
-            mockedStore = createMockedStore(sandbox, {
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 user: {
                     _id: '1'
                 }
-            });
+            }));
         });
 
-        it('should call smooch-core conversation api and dispatch conversation', () => {
+        it('should call _getMessages and dispatch conversation', () => {
             return mockedStore.dispatch(conversationActions.getMessages()).then((response) => {
-                coreMock.appUsers.getMessages.should.have.been.calledWith('1');
+                getMessagesStub.should.have.been.calledOnce;
 
                 response.should.deep.eq({
-                    conversation: {
-                    },
+                    conversation: {},
                     messages: []
                 });
 
@@ -676,21 +645,29 @@ describe('Conversation Actions', () => {
     });
 
     describe('connectFayeConversation', () => {
-        [true, false].forEach((active) => {
-            describe(`with${active ? '' : 'out'} subscription active`, () => {
-                it(`should ${active ? 'not' : ''} subscribe to conversation`, () => {
-                    mockedStore = active ? createMockedStore(sandbox, getProps({
-                        faye: {
-                            conversationSubscription: conversationSubscriptionMock
-                        }
-                    })) : createMockedStore(sandbox, getProps());
+        [true, false].forEach((conversationStarted) => {
+            [true, false].forEach((active) => {
+                describe(`with${active ? '' : 'out'} subscription active and with${conversationStarted ? '' : 'out'} conversation started`, () => {
+                    it(`should ${!active && conversationStarted ? '' : 'not'} subscribe to conversation`, () => {
+                        mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
+                            user: {
+                                conversationStarted
+                            },
+                            conversation: {
+                                _id: conversationStarted ? 'some-conversation-id' : null
+                            },
+                            faye: {
+                                conversationSubscription: active ? conversationSubscriptionMock : null
+                            }
+                        }));
 
-                    return mockedStore.dispatch(conversationActions.connectFayeConversation()).then(() => {
-                        if (active) {
-                            subscribeConversationStub.should.not.have.been.called;
-                        } else {
-                            subscribeConversationStub.should.have.been.calledOnce;
-                        }
+                        return mockedStore.dispatch(conversationActions.connectFayeConversation()).then(() => {
+                            if (conversationStarted && !active) {
+                                subscribeConversationStub.should.have.been.calledOnce;
+                            } else {
+                                subscribeConversationStub.should.not.have.been.called;
+                            }
+                        });
                     });
                 });
             });
@@ -701,11 +678,11 @@ describe('Conversation Actions', () => {
         [true, false].forEach((subscribed) => {
             describe(`user ${subscribed ? '' : 'not'} subscribed`, () => {
                 it(`should ${subscribed ? 'not' : ''} subscribe user`, () => {
-                    mockedStore = subscribed ? createMockedStore(sandbox, getProps({
+                    mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                         faye: {
-                            userSubscription: userSubscriptionMock
+                            userSubscription: subscribed ? userSubscriptionMock : null
                         }
-                    })) : createMockedStore(sandbox, getProps());
+                    }));
 
                     return mockedStore.dispatch(conversationActions.connectFayeUser()).then(() => {
                         if (subscribed) {
@@ -723,11 +700,11 @@ describe('Conversation Actions', () => {
         [true, false].forEach((active) => {
             describe(`with${active ? '' : 'out'} subscription active`, () => {
                 it(`should ${active ? '' : 'not'} cancel subscription`, () => {
-                    mockedStore = active ? createMockedStore(sandbox, getProps({
+                    mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                         faye: {
-                            conversationSubscription: conversationSubscriptionMock
+                            conversationSubscription: active ? conversationSubscriptionMock : null
                         }
-                    })) : createMockedStore(sandbox, getProps());
+                    }));
                     mockedStore.dispatch(conversationActions.disconnectFaye());
 
                     userSubscriptionMock.cancel.should.not.have.been.called;
@@ -745,11 +722,11 @@ describe('Conversation Actions', () => {
         [true, false].forEach((subscribed) => {
             describe(`user ${subscribed ? '' : 'not'} subscribed`, () => {
                 it(`should ${subscribed ? '' : 'not'} cancel their subscription`, () => {
-                    mockedStore = subscribed ? createMockedStore(sandbox, getProps({
+                    mockedStore = subscribed ? createMockedStore(sandbox, generateBaseStoreProps({
                         faye: {
                             userSubscription: userSubscriptionMock
                         }
-                    })) : createMockedStore(sandbox, getProps());
+                    })) : createMockedStore(sandbox, generateBaseStoreProps());
                     mockedStore.dispatch(conversationActions.disconnectFaye());
 
                     conversationSubscriptionMock.cancel.should.not.have.been.called;
@@ -767,56 +744,25 @@ describe('Conversation Actions', () => {
 
     describe('resetUnreadCount', () => {
         it('should reset unread count to 0', () => {
-            coreMock.conversations.resetUnreadCount.resolves();
-            mockedStore = createMockedStore(sandbox, getProps({
+            const props = generateBaseStoreProps({
                 user: {
                     _id: '1'
                 },
                 conversation: {
                     unreadCount: 20
                 }
-            }));
-            mockedStore.dispatch(conversationActions.resetUnreadCount());
-            coreMock.conversations.resetUnreadCount.should.have.been.calledWithMatch('1');
-        });
-    });
-
-    describe('handleConversationUpdated', () => {
-        beforeEach(() => {
-            RewireConversationActions('connectFayeConversation', sandbox.stub().returnsAsyncThunk());
-        });
-
-        [true, false].forEach((active) => {
-            describe(`with${active ? '' : 'out'} subscription active`, () => {
-                it(`should ${active ? 'not' : ''} get conversation`, () => {
-                    mockedStore = active ? createMockedStore(sandbox, getProps({
-                        user: {
-                            _id: '1'
-                        },
-                        faye: {
-                            conversationSubscription: conversationSubscriptionMock
-                        }
-                    })) : createMockedStore(sandbox, getProps());
-
-                    return mockedStore.dispatch(conversationActions.handleConversationUpdated()).then(() => {
-                        if (active) {
-                            coreMock.appUsers.getMessages.should.not.have.been.called;
-                        } else {
-                            coreMock.appUsers.getMessages.should.have.been.calledOnce;
-                        }
-                    });
-                });
             });
+            mockedStore = createMockedStore(sandbox, props);
+            mockedStore.dispatch(conversationActions.resetUnreadCount());
+            httpStub.should.have.been.calledWith('POST', `/apps/${props.config.appId}/appusers/${props.user._id}/conversation/read`);
         });
-
     });
 
     describe('postPostbacks', () => {
         const actionId = '1234';
-
+        let storeProps;
         beforeEach(() => {
-            coreMock.conversations.postPostback.resolves();
-            mockedStore = createMockedStore(sandbox, getProps({
+            storeProps = generateBaseStoreProps({
                 user: {
                     _id: '1'
                 },
@@ -825,22 +771,29 @@ describe('Conversation Actions', () => {
                         actionPostbackError: 'action postback error'
                     }
                 }
-            }));
+            });
+            mockedStore = createMockedStore(sandbox, storeProps);
         });
 
         it('should post postback', () => {
             mockedStore.dispatch(conversationActions.postPostback(actionId));
-            coreMock.conversations.postPostback.should.have.been.calledWithMatch('1', actionId);
+            httpStub.should.have.been.calledWithMatch('POST', `/apps/${storeProps.config.appId}/appusers/${storeProps.user._id}/postback`, {
+                actionId
+            });
         });
 
         describe('errors', () => {
             beforeEach(() => {
-                coreMock.conversations.postPostback.rejects();
+                httpStub.returnsAsyncThunk({
+                    rejects: true
+                });
             });
 
             it('should show an error notification', () => {
                 return mockedStore.dispatch(conversationActions.postPostback(actionId)).then(() => {
-                    coreMock.conversations.postPostback.should.have.been.calledWithMatch('1', actionId);
+                    httpStub.should.have.been.calledWithMatch('POST', `/apps/${storeProps.config.appId}/appusers/${storeProps.user._id}/postback`, {
+                        actionId
+                    });
                     showErrorNotificationSpy.should.have.been.calledWithMatch('action postback error');
                 });
             });
@@ -849,14 +802,16 @@ describe('Conversation Actions', () => {
 
     describe('fetchMoreMessages', () => {
         beforeEach(() => {
-            coreMock.appUsers.getMessages.resolves({
-                conversation: {},
-                previous: '23'
+            getMessagesStub.returnsAsyncThunk({
+                value: {
+                    conversation: {},
+                    previous: '23'
+                }
             });
         });
 
         it('should use timestamp of first message as before parameter', () => {
-            mockedStore = createMockedStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 user: {
                     _id: '1'
                 },
@@ -869,14 +824,14 @@ describe('Conversation Actions', () => {
                 }
             }));
             return mockedStore.dispatch(conversationActions.fetchMoreMessages()).then(() => {
-                coreMock.appUsers.getMessages.should.have.been.calledWithMatch('1', {
+                getMessagesStub.should.have.been.calledWithMatch({
                     before: 123
                 });
             });
         });
 
         it('should not fetch if there are no more messages', () => {
-            mockedStore = createMockedStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 conversation: {
                     hasMoreMessages: false,
                     isFetchingMoreMessagesFromServer: false,
@@ -884,12 +839,12 @@ describe('Conversation Actions', () => {
                 }
             }));
             return mockedStore.dispatch(conversationActions.fetchMoreMessages()).then(() => {
-                coreMock.appUsers.getMessages.should.not.have.been.called;
+                getMessagesStub.should.not.have.been.called;
             });
         });
 
         it('should not fetch if already fetching from server', () => {
-            mockedStore = createMockedStore(sandbox, getProps({
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 conversation: {
                     hasMoreMessages: true,
                     isFetchingMoreMessagesFromServer: true,
@@ -897,7 +852,7 @@ describe('Conversation Actions', () => {
                 }
             }));
             return mockedStore.dispatch(conversationActions.fetchMoreMessages()).then(() => {
-                coreMock.appUsers.getMessages.should.not.have.been.called;
+                getMessagesStub.should.not.have.been.called;
             });
         });
     });

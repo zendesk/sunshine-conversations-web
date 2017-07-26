@@ -1,10 +1,10 @@
-import { Client } from 'faye';
+import { Client, Scheduler as FayeScheduler } from 'faye';
 import urljoin from 'urljoin';
 import { batchActions } from 'redux-batched-actions';
 
 import { setUser } from './user';
 import { showSettings, showTypingIndicator, hideTypingIndicator, hideChannelPage, hideConnectNotification } from './app-state';
-import { addMessage, incrementUnreadCount, resetUnreadCount, getMessages, disconnectFaye, handleConversationUpdated } from './conversation';
+import { addMessage, incrementUnreadCount, resetUnreadCount, getMessages, disconnectFaye } from './conversation';
 import { cancelSMSLink, failSMSLink } from './integrations';
 import { getDeviceId } from '../utils/device';
 import { ANIMATION_TIMINGS } from '../constants/styles';
@@ -44,25 +44,54 @@ export function unsetFayeSubscriptions() {
 }
 
 let client;
+
+const getScheduler = ({retryInterval, maxConnectionAttempts}) => {
+    return class Scheduler extends FayeScheduler {
+        getInterval() {
+            return retryInterval;
+        }
+
+        isDeliverable() {
+            const isDeliverable = super.isDeliverable();
+            if (!isDeliverable) {
+                return false;
+            }
+
+            const {channel} = this.message;
+
+            // target only setup messages
+            if (['/meta/handshake', '/meta/connect', '/meta/subscribe'].includes(channel)) {
+                return this.attempts < maxConnectionAttempts;
+            }
+
+            return true;
+        }
+    };
+};
+
 export function getClient() {
     return (dispatch, getState) => {
         if (!client) {
-            const {appState, auth, user} = getState();
-            client = new Client(urljoin(appState.serverURL, 'faye'));
+            const {config: {realtime, appId}, auth, user} = getState();
+
+            const Scheduler = getScheduler(realtime);
+
+            client = new Client(urljoin(realtime.baseUrl, 'faye'), {
+                scheduler: Scheduler
+            });
 
             client.addExtension({
                 outgoing: (message, callback) => {
                     if (message.channel === '/meta/subscribe') {
                         message.ext = {
-                            appUserId: user._id
+                            appUserId: user._id,
+                            appId
                         };
-
-                        if (auth.appToken) {
-                            message.ext.appToken = auth.appToken;
-                        }
 
                         if (auth.jwt) {
                             message.ext.jwt = auth.jwt;
+                        } else if (auth.sessionToken) {
+                            message.ext.sessionToken = auth.sessionToken;
                         }
                     }
 
@@ -155,9 +184,10 @@ export function updateUser(currentAppUser, nextAppUser) {
             disconnectFaye();
 
             return dispatch(subscribeUser()).then(() => {
-                if (nextAppUser.conversationStarted) {
-                    return dispatch(handleConversationUpdated());
-                }
+                // TODO : figure out if still relevant
+                // if (nextAppUser.conversationStarted) {
+                //     return dispatch(handleConversationUpdated());
+                // }
             });
         } else {
             dispatch(setUser(nextAppUser));
@@ -167,9 +197,10 @@ export function updateUser(currentAppUser, nextAppUser) {
                 // fetch the conversation for merged messages
                 return dispatch(getMessages());
             } else if (nextAppUser.conversationStarted) {
+                // TODO : figure out if still relevant
                 // if the conversation wasn't already started,
                 // `handleConversationUpdated` will connect faye and fetch it
-                return dispatch(handleConversationUpdated());
+                // return dispatch(handleConversationUpdated());
             }
         }
     };

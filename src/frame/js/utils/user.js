@@ -10,10 +10,10 @@ export function getDisplayName(clients, channelType) {
     return client && client.displayName;
 }
 
-export function getLinkableChannels(appChannels, settings) {
+export function getLinkableChannels(appChannels) {
     return Object.keys(CHANNEL_DETAILS)
         .filter((channelType) => {
-            if (!CHANNEL_DETAILS[channelType].isLinkable || !settings.channels[channelType]) {
+            if (!CHANNEL_DETAILS[channelType].isLinkable) {
                 return false;
             }
 
@@ -22,8 +22,8 @@ export function getLinkableChannels(appChannels, settings) {
         });
 }
 
-export function hasLinkableChannels(appChannels, clients, settings) {
-    return getLinkableChannels(appChannels, settings)
+export function hasLinkableChannels(appChannels, clients) {
+    return getLinkableChannels(appChannels)
         .some((channelType) => {
             // a channel is not considered as linkable if it's already linked
             return !isChannelLinked(clients, channelType);
