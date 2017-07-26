@@ -880,7 +880,7 @@ describe('Conversation Actions', () => {
 
         it('should call handleUserConversationResponse', () => {
             const {config: {appId}, user: {_id}} = mockedStore.getState();
-            mockedStore.dispatch(conversationActions.fetchUserConversation())
+            return mockedStore.dispatch(conversationActions.fetchUserConversation())
                 .then(() => {
                     httpStub.should.have.been.calledWith('GET', `/apps/${appId}/appusers/${_id}`);
                     handleUserConversationResponseStub.should.have.been.calledOnce;
