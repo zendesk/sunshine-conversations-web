@@ -1,3 +1,4 @@
+import Raven from 'raven-js';
 import { batchActions } from 'redux-batched-actions';
 
 import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi, showConnectNotification } from './app-state';
@@ -10,7 +11,7 @@ import { setAuth } from './auth';
 import { observable } from '../utils/events';
 import { Throttle } from '../utils/throttle';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
-import { getDeviceId } from '../utils/device';
+import { getClientId, getClientInfo } from '../utils/client';
 import { hasLinkableChannels, getLinkableChannels, isChannelLinked } from '../utils/user';
 import { getWindowLocation } from '../utils/dom';
 import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
@@ -90,23 +91,23 @@ const throttlePerUser = (userId) => {
 
 function postSendMessage(message) {
     return (dispatch, getState) => {
-        const {user: {_id}} = getState();
+        const {config: {appId}, user: {_id}} = getState();
         return dispatch(http('POST', `/appusers/${_id}/messages`, {
             ...message,
             role: 'appUser',
-            deviceId: getDeviceId()
+            deviceId: getClientId(appId)
         }));
     };
 }
 
 function postUploadImage(message) {
     return (dispatch, getState) => {
-        const {user: {_id}} = getState();
+        const {config: {appId}, user: {_id}} = getState();
         const blob = getBlobFromDataUrl(message.mediaUrl);
 
         const data = new FormData();
         data.append('role', 'appUser');
-        data.append('deviceId', getDeviceId());
+        data.append('deviceId', getClientId(appId));
         data.append('source', blob);
 
         Object.keys(message).forEach((key) => {
@@ -149,6 +150,7 @@ function onMessageSendFailure(message) {
 
 function addMessage(props) {
     return (dispatch, getState) => {
+        const {config: {appId}} = getState();
         if (props._clientId) {
             const oldMessage = getState().conversation.messages.find((message) => message._clientId === props._clientId);
             const newMessage = Object.assign({}, oldMessage, props);
@@ -165,7 +167,7 @@ function addMessage(props) {
             role: 'appUser',
             _clientId: Math.random(),
             _clientSent: Date.now() / 1000,
-            deviceId: getDeviceId(),
+            deviceId: getClientId(appId),
             sendStatus: SEND_STATUS.SENDING
         };
 
@@ -515,18 +517,31 @@ export function disconnectFaye() {
     };
 }
 
-function handleUserConversationResponse({appUser, conversation, sessionToken}) {
+export function handleUserConversationResponse({appUser, conversation, sessionToken}) {
     return (dispatch) => {
+        Raven.setUserContext({
+            id: appUser._id
+        });
+
         const actions = [
             setUser(appUser),
             setConversation(conversation),
-            setMessages(conversation.messages),
-            setAuth({
-                sessionToken
-            })
+            setMessages(conversation.messages)
         ];
 
+        if (sessionToken) {
+            actions.push(setAuth({
+                sessionToken
+            }));
+        }
+
         dispatch(batchActions(actions));
+
+        if (appUser.conversationStarted) {
+            return dispatch(connectFayeConversation());
+        }
+
+        return Promise.resolve();
     };
 }
 
@@ -544,25 +559,12 @@ export function startConversation() {
         } else {
             promise = dispatch(http('POST', `/apps/${appId}/appusers`, {
                 ...pendingAttributes,
-                client: {
-                    platform: 'web',
-                    id: getDeviceId(),
-                    info: {
-                        sdkVersion: VERSION,
-                        URL: parent.document.location.host,
-                        userAgent: navigator.userAgent,
-                        referrer: parent.document.referrer,
-                        browserLanguage: navigator.language,
-                        currentUrl: parent.document.location.href,
-                        currentTitle: parent.document.title
-                    }
-                }
+                client: getClientInfo(appId)
             }));
         }
 
         return promise
-            .then((response) => dispatch(handleUserConversationResponse(response)))
-            .then(() => dispatch(connectFayeConversation()));
+            .then((response) => dispatch(handleUserConversationResponse(response)));
     };
 }
 

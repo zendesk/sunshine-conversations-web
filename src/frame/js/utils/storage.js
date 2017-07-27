@@ -1,6 +1,6 @@
 const memoryStorage = {};
 
-function setItem(key, value) {
+export function setItem(key, value) {
     try {
         if (localStorage) {
             // Safari with privacy options will have localStorage
@@ -17,7 +17,7 @@ function setItem(key, value) {
     }
 }
 
-function getItem(key) {
+export function getItem(key) {
     let value;
 
     if (localStorage) {
@@ -30,13 +30,7 @@ function getItem(key) {
     return value || null;
 }
 
-function removeItem(key) {
+export function removeItem(key) {
     localStorage && localStorage.removeItem(key);
     delete memoryStorage[key];
 }
-
-export default {
-    setItem,
-    getItem,
-    removeItem
-};

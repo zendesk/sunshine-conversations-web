@@ -62,7 +62,7 @@ describe('Faye Actions', () => {
         setFayeUserSubscriptionSpy = sandbox.spy(fayeActions.setFayeUserSubscription);
         FayeRewire('setFayeUserSubscription', setFayeUserSubscriptionSpy);
 
-        FayeRewire('getDeviceId', sandbox.stub().returns(123));
+        FayeRewire('getClientId', sandbox.stub().returns(123));
     });
 
     afterEach(() => {

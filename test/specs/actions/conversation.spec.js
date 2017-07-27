@@ -81,7 +81,7 @@ describe('Conversation Actions', () => {
         RewireConversationActions('getBlobFromDataUrl', sandbox.stub().returns('this-is-a-blob'));
 
         // Device utils
-        RewireConversationActions('getDeviceId', sandbox.stub().returns('1234'));
+        RewireConversationActions('getClientId', sandbox.stub().returns('1234'));
 
         // User utils
         RewireConversationActions('hasLinkableChannels', sandbox.stub().returns(true));
