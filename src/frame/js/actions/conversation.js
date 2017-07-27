@@ -94,9 +94,11 @@ function postSendMessage(message) {
     return (dispatch, getState) => {
         const {config: {appId}, user: {_id}} = getState();
         return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/messages`, {
-            ...message,
-            role: 'appUser',
-            deviceId: getClientId(appId)
+            message,
+            sender: {
+                type: 'appUser',
+                client: getClientInfo(appId)
+            }
         }));
     };
 }
@@ -107,9 +109,11 @@ function postUploadImage(message) {
         const blob = getBlobFromDataUrl(message.mediaUrl);
 
         const data = new FormData();
-        data.append('role', 'appUser');
-        data.append('deviceId', getClientId(appId));
         data.append('source', blob);
+        data.append('sender', {
+            type: 'appUser',
+            client: getClientInfo(appId)
+        });
 
         Object.keys(message).forEach((key) => {
             data.append(key, message[key]);
@@ -168,8 +172,10 @@ function addMessage(props) {
             role: 'appUser',
             _clientId: Math.random(),
             _clientSent: Date.now() / 1000,
-            deviceId: getClientId(appId),
-            sendStatus: SEND_STATUS.SENDING
+            sendStatus: SEND_STATUS.SENDING,
+            source: {
+                id: getClientId(appId)
+            }
         };
 
         if (typeof props === 'string') {
@@ -245,7 +251,13 @@ export function postPostback(actionId) {
         const {user: {_id}, config: {appId}} = getState();
 
         return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/postback`, {
-            actionId
+            postback: {
+                actionId
+            },
+            sender: {
+                type: 'appUser',
+                client: getClientInfo(appId)
+            }
         })).catch(() => {
             dispatch(showErrorNotification(getState().ui.text.actionPostbackError));
         });
