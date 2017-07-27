@@ -4,6 +4,7 @@ import { createMockedStore, generateBaseStoreProps } from '../utils/redux';
 
 import * as userActions from '../../src/frame/js/actions/user';
 import * as authActions from '../../src/frame/js/actions/auth';
+import * as storage from '../../src/frame/js/utils/storage';
 import * as appStateActions from '../../src/frame/js/actions/app-state';
 import * as Smooch from '../../src/frame/js/smooch';
 import { __Rewire__ as SmoochRewire } from '../../src/frame/js/smooch';
@@ -37,62 +38,51 @@ describe('Smooch', () => {
     const sandbox = sinon.sandbox.create();
 
     let loginStub;
-    let coreStub;
+    let setUserStub;
+    let setAuthStub;
     let immediateUpdateStub;
-    let handleConversationUpdatedStub;
     let sendMessageStub;
     let disconnectFayeStub;
     let updateUserStub;
     let getUserIdStub;
     let openWidgetStub;
     let closeWidgetStub;
+    let fetchUserConversationStub;
     let cleanUpStub;
+    let getItemStub;
     let mockedStore;
 
     beforeEach(() => {
         SmoochRewire('renderWidget', sandbox.stub().returns({}));
 
-        handleConversationUpdatedStub = sandbox.stub().returnsAsyncThunk();
-        SmoochRewire('handleConversationUpdated', handleConversationUpdatedStub);
-
         disconnectFayeStub = sandbox.stub().returnsAsyncThunk();
         SmoochRewire('disconnectFaye', disconnectFayeStub);
+        fetchUserConversationStub = sandbox.stub().returnsAsyncThunk();
+        SmoochRewire('fetchUserConversation', fetchUserConversationStub);
 
         immediateUpdateStub = sandbox.stub().returnsAsyncThunk();
         updateUserStub = sandbox.stub();
         getUserIdStub = sandbox.stub().returns('1234');
         cleanUpStub = sandbox.stub();
+        setUserStub = sandbox.stub();
+        setAuthStub = sandbox.stub();
 
         SmoochRewire('userActions', {
             ...userActions,
             update: updateUserStub,
             immediateUpdate: immediateUpdateStub,
-            getUserId: getUserIdStub
+            getUserId: getUserIdStub,
+            setUser: setUserStub
         });
 
-        loginStub = sandbox.stub().returnsAsyncThunk({
-            value: {
-                appUser: {
-                    _id: 1
-                },
-                app: {
-                    settings: {
-                        web: {
-                            channels: {}
-                        }
-                    },
-                    integrations: []
-                }
-            }
-        });
+        loginStub = sandbox.stub().returnsAsyncThunk();
 
         SmoochRewire('authActions', {
             ...authActions,
-            login: loginStub
+            login: loginStub,
+            setAuth: setAuthStub
         });
 
-        SmoochRewire('hasChannels', sandbox.stub().returns(false));
-        SmoochRewire('getIntegration', sandbox.stub().returns({}));
         SmoochRewire('cleanUp', cleanUpStub);
 
         openWidgetStub = sandbox.stub().returnsSyncThunk();
@@ -103,8 +93,11 @@ describe('Smooch', () => {
             closeWidget: closeWidgetStub
         });
 
-        coreStub = sandbox.spy();
-        SmoochRewire('core', coreStub);
+        getItemStub = sandbox.stub();
+        SmoochRewire('storage', {
+            ...storage,
+            getItem: getItemStub
+        });
 
         sandbox.stub(document.body, 'appendChild');
         sandbox.stub(document.body, 'removeChild');
@@ -136,111 +129,122 @@ describe('Smooch', () => {
             SmoochRewire('render', renderStub);
         });
 
-        describe('anonymous user', () => {
-            it('should fetch config, not call login, and render', () => {
-                const props = {
-                    appId: 'some-app-id'
-                };
+        [true, false].forEach((hasAppUserId) => {
+            [true, false].forEach((hasSessionToken) => {
+                describe(`with${hasAppUserId ? '' : 'out'} appUserId and with${hasSessionToken? '':'out'} sessionToken`, () => {
+                    beforeEach(() => {
+                        getItemStub.callsFake((key) => {
+                            if (hasAppUserId && key.endsWith('appUserId')) {
+                                return 'some-user-id';
+                            }
 
-                return Smooch.init(props).then(() => {
-                    fetchConfigStub.should.have.been.calledOnce;
-                    loginStub.should.not.have.been.called;
-                    renderStub.should.have.been.calledOnce;
-                });
-            });
-        });
+                            if (hasSessionToken && key.endsWith('sessionToken')) {
+                                return 'some-session-token';
+                            }
 
-        describe('auth user with jwt', () => {
-            it('should fetch config, call login, and render', () => {
-                const props = {
-                    appId: 'some-app-id',
-                    userId: 'some-id',
-                    jwt: 'some-jwt'
-                };
+                            return null;
+                        });
+                    });
 
-                return Smooch.init(props).then(() => {
-                    fetchConfigStub.should.have.been.calledOnce;
-                    loginStub.should.have.been.calledOnce;
-                    renderStub.should.have.been.calledOnce;
-                });
-            });
-        });
+                    describe('anonymous user', () => {
+                        it('should fetch config, not call login, and render', () => {
+                            const props = {
+                                appId: 'some-app-id'
+                            };
 
-        describe('already initialized', () => {
-            const props = {
-                appId: 'some-app-id'
-            };
+                            return Smooch.init(props).then(() => {
+                                fetchConfigStub.should.have.been.calledOnce;
+                                loginStub.should.not.have.been.called;
+                                renderStub.should.have.been.calledOnce;
 
-            beforeEach(() => {
-                mockedStore = mockAppStore(sandbox, generateBaseStoreProps({
-                    appState: {
-                        isInitialized: true
-                    }
-                }));
-            });
+                                if (hasSessionToken) {
+                                    setAuthStub.should.have.been.calledOnce;
+                                } else {
+                                    setAuthStub.should.not.have.been.called;
+                                }
 
-            it('should throw', () => {
-                (function() {
-                    Smooch.init(props);
-                }).should.throw(/already initialized/);
-            });
-        });
+                                if (hasAppUserId) {
+                                    setUserStub.should.have.been.calledOnce;
+                                } else {
+                                    setUserStub.should.not.have.been.called;
+                                }
 
-        describe('without appId', () => {
-            it('should throw', () => {
-                Smooch.init.should.throw(/provide an appId/);
-            });
-        });
+                                if (hasSessionToken && hasAppUserId) {
+                                    fetchUserConversationStub.should.have.been.calledOnce;
+                                }
+                            });
+                        });
+                    });
 
-        describe('fetch config fails', () => {
-            beforeEach(() => {
-                fetchConfigStub = sandbox.stub().returnsAsyncThunk({
-                    rejects: true
-                });
-                SmoochRewire('fetchConfig', fetchConfigStub);
-            });
+                    describe('auth user with jwt', () => {
+                        it('should fetch config, call login, and render', () => {
+                            const props = {
+                                appId: 'some-app-id',
+                                userId: 'some-id',
+                                jwt: 'some-jwt'
+                            };
 
-            it('should reset the store state', () => {
-                const props = {
-                    appId: 'some-app-id'
-                };
+                            return Smooch.init(props).then(() => {
+                                fetchConfigStub.should.have.been.calledOnce;
+                                loginStub.should.have.been.calledOnce;
+                                renderStub.should.have.been.calledOnce;
+                                fetchUserConversationStub.should.not.have.been.called;
+                            });
+                        });
+                    });
 
-                return Smooch.init(props).then(() => {
-                    cleanUpStub.should.have.been.calledOnce;
+                    describe('already initialized', () => {
+                        const props = {
+                            appId: 'some-app-id'
+                        };
+
+                        beforeEach(() => {
+                            mockedStore = mockAppStore(sandbox, generateBaseStoreProps({
+                                appState: {
+                                    isInitialized: true
+                                }
+                            }));
+                        });
+
+                        it('should throw', () => {
+                            (function() {
+                                Smooch.init(props);
+                            }).should.throw(/already initialized/);
+                        });
+                    });
+
+                    describe('without appId', () => {
+                        it('should throw', () => {
+                            Smooch.init.should.throw(/provide an appId/);
+                        });
+                    });
+
+                    describe('fetch config fails', () => {
+                        beforeEach(() => {
+                            fetchConfigStub = sandbox.stub().returnsAsyncThunk({
+                                rejects: true
+                            });
+                            SmoochRewire('fetchConfig', fetchConfigStub);
+                        });
+
+                        it('should reset the store state', () => {
+                            const props = {
+                                appId: 'some-app-id'
+                            };
+
+                            return Smooch.init(props).then(() => {
+                                cleanUpStub.should.have.been.calledOnce;
+                            });
+                        });
+                    });
                 });
             });
         });
     });
 
-    describe.skip('Login', () => {
+    describe('Login', () => {
         afterEach(() => {
             sandbox.restore();
-        });
-
-        it.skip('should reset the user', () => {
-            const props = {
-                userId: 'some-id',
-                appToken: 'some-token',
-                jwt: 'some-jwt',
-                email: 'some@email.com'
-            };
-
-            return Smooch.login(props.userId, props.jwt).then(() => {
-                mockedStore.dispatch.firstCall.should.have.been.calledWith({
-                    type: 'RESET_AUTH'
-                });
-
-                mockedStore.dispatch.secondCall.should.have.been.calledWith({
-                    type: 'RESET_USER'
-                });
-
-
-                mockedStore.dispatch.thirdCall.should.have.been.calledWith({
-                    type: 'RESET_CONVERSATION'
-                });
-
-                disconnectFayeStub.should.have.been.calledOnce;
-            });
         });
 
         describe('conversation started', () => {
@@ -249,22 +253,16 @@ describe('Smooch', () => {
                 mockedStore = mockAppStore(sandbox, state);
             });
 
-            it('should call the login action, update the user, and handle the conversation update', () => {
-                const props = {
-                    userId: 'some-id',
-                    appToken: 'some-token',
-                    jwt: 'some-jwt',
-                    email: 'some@email.com'
-                };
-
-                return Smooch.login(props.userId, props.jwt).then(() => {
-                    const callArgs = loginStub.args[0][0];
-                    callArgs.userId.should.eq(props.userId);
-                    immediateUpdateStub.should.have.been.calledWith, {
-                        email: 'some@email.com'
-                    };
-                    handleConversationUpdatedStub.should.have.been.calledOnce;
+            it('should call the login action', () => {
+                return Smooch.login('some-id', 'some-jwt').then(() => {
+                    loginStub.should.have.been.calledOnce;
                 });
+            });
+
+            it('should throw if missing props', () => {
+                expect(() => Smooch.login('some-id')).to.throw;
+                expect(() => Smooch.login(undefined, 'some-jwt')).to.throw;
+                expect(() => Smooch.login()).to.throw;
             });
         });
     });
@@ -287,7 +285,7 @@ describe('Smooch', () => {
 
     });
 
-    describe.skip('Get conversation', () => {
+    describe('Get conversation', () => {
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, defaultState);
         });
@@ -295,54 +293,9 @@ describe('Smooch', () => {
         describe('conversation exists', () => {
 
             it('should call handleConversationUpdated', () => {
-                return Smooch.getConversation().then(() => {
-                    handleConversationUpdatedStub.should.have.been.calledOnce;
-                });
-            });
-
-            it('should resolve conversation object', () => {
-                return Smooch.getConversation().then((conversation) => {
-                    if (!conversation.messages) {
-                        return Promise.reject(new Error('Conversation not found'));
-                    }
-                });
-            });
-
-            it('should update conversationStarted to true ', () => {
-                return Smooch.getConversation().then(() => {
-                    mockedStore.dispatch.should.have.been.calledWith({
-                        type: 'UPDATE_USER',
-                        properties: {
-                            conversationStarted: true
-                        }
-                    });
-                });
+                Smooch.getConversation().should.eq(mockedStore.getState().conversation);
             });
         });
-
-        describe('conversation does not exist', () => {
-            beforeEach(() => {
-                handleConversationUpdatedStub.returns(() => Promise.reject());
-            });
-
-            it('should reject', (done) => {
-                return Smooch.getConversation()
-                    .then(() => done(new Error('Promise should not have resolved')))
-                    .catch(() => done());
-            });
-
-            it('should not update conversationStarted to true ', () => {
-                return Smooch.getConversation().catch(() => {
-                    mockedStore.dispatch.should.not.have.been.calledWith({
-                        type: 'UPDATE_USER',
-                        properties: {
-                            conversationStarted: true
-                        }
-                    });
-                });
-            });
-        });
-
     });
 
     describe.skip('Update user', () => {
@@ -364,8 +317,6 @@ describe('Smooch', () => {
                     updateUserStub.should.have.been.calledWith({
                         email: 'update@me.com'
                     });
-
-                    handleConversationUpdatedStub.should.have.been.calledOnce;
                 });
             });
         });
@@ -388,8 +339,6 @@ describe('Smooch', () => {
                     updateUserStub.should.have.been.calledWith({
                         email: 'update@me.com'
                     });
-
-                    handleConversationUpdatedStub.should.not.have.been.calledOnce;
                 });
             });
         });
