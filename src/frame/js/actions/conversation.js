@@ -11,7 +11,7 @@ import { setAuth } from './auth';
 import { observable } from '../utils/events';
 import { Throttle } from '../utils/throttle';
 import { resizeImage, getBlobFromDataUrl, isFileTypeSupported } from '../utils/media';
-import { getDeviceId } from '../utils/device';
+import { getClientId, getClientInfo } from '../utils/client';
 import { hasLinkableChannels, getLinkableChannels, isChannelLinked } from '../utils/user';
 import { getWindowLocation } from '../utils/dom';
 import { CONNECT_NOTIFICATION_DELAY_IN_SECONDS } from '../constants/notifications';
@@ -95,7 +95,7 @@ function postSendMessage(message) {
         return dispatch(http('POST', `/appusers/${_id}/messages`, {
             ...message,
             role: 'appUser',
-            deviceId: getDeviceId(appId)
+            deviceId: getClientId(appId)
         }));
     };
 }
@@ -107,7 +107,7 @@ function postUploadImage(message) {
 
         const data = new FormData();
         data.append('role', 'appUser');
-        data.append('deviceId', getDeviceId(appId));
+        data.append('deviceId', getClientId(appId));
         data.append('source', blob);
 
         Object.keys(message).forEach((key) => {
@@ -167,7 +167,7 @@ function addMessage(props) {
             role: 'appUser',
             _clientId: Math.random(),
             _clientSent: Date.now() / 1000,
-            deviceId: getDeviceId(appId),
+            deviceId: getClientId(appId),
             sendStatus: SEND_STATUS.SENDING
         };
 
@@ -559,19 +559,7 @@ export function startConversation() {
         } else {
             promise = dispatch(http('POST', `/apps/${appId}/appusers`, {
                 ...pendingAttributes,
-                client: {
-                    platform: 'web',
-                    id: getDeviceId(appId),
-                    info: {
-                        sdkVersion: VERSION,
-                        URL: parent.document.location.host,
-                        userAgent: navigator.userAgent,
-                        referrer: parent.document.referrer,
-                        browserLanguage: navigator.language,
-                        currentUrl: parent.document.location.href,
-                        currentTitle: parent.document.title
-                    }
-                }
+                client: getClientInfo(appId)
             }));
         }
 

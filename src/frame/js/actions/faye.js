@@ -6,7 +6,7 @@ import { setUser } from './user';
 import { showSettings, showTypingIndicator, hideTypingIndicator, hideChannelPage, hideConnectNotification } from './app-state';
 import { addMessage, incrementUnreadCount, resetUnreadCount, getMessages, disconnectFaye } from './conversation';
 import { cancelSMSLink, failSMSLink } from './integrations';
-import { getDeviceId } from '../utils/device';
+import { getClientId } from '../utils/client';
 import { ANIMATION_TIMINGS } from '../constants/styles';
 
 
@@ -115,7 +115,7 @@ export function getClient() {
 export function handleConversationSubscription(message) {
     return (dispatch, getState) => {
         const {config: {appId}} = getState();
-        if (message.source.id !== getDeviceId(appId)) {
+        if (message.source.id !== getClientId(appId)) {
             dispatch(addMessage(message));
 
             if (message.role === 'appUser') {

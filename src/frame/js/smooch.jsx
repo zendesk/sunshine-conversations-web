@@ -22,7 +22,7 @@ import { observable, observeStore } from './utils/events';
 import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState, updateHostClassNames } from './utils/dom';
 import { isImageUploadSupported } from './utils/media';
 import { playNotificationSound, isAudioSupported } from './utils/sound';
-import { getDeviceId } from './utils/device';
+import { getClientId } from './utils/client';
 import * as storage from './utils/storage';
 import { getIntegration } from './utils/app';
 
@@ -91,7 +91,7 @@ function onStoreChange({appId, conversation: {messages, unreadCount}, widgetStat
     }
 
     if (currentLocation !== previousLocation) {
-        store.dispatch(userActions.updateNowViewing(getDeviceId(appId)));
+        store.dispatch(userActions.updateNowViewing(getClientId(appId)));
     }
 }
 

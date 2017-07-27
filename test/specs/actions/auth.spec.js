@@ -7,7 +7,7 @@ describe('Auth Actions', () => {
     let mockedStore;
     let sandbox;
     let httpStub;
-    let getDeviceIdStub;
+    let getClientIdStub;
     let handleUserConversationResponseStub;
     let removeItemStub;
 
@@ -24,11 +24,11 @@ describe('Auth Actions', () => {
             }
         });
         handleUserConversationResponseStub = sandbox.stub().returnsAsyncThunk();
-        getDeviceIdStub = sandbox.stub().returns('some-client-id');
+        getClientIdStub = sandbox.stub().returns('some-client-id');
         removeItemStub = sandbox.stub();
         AuthRewire('http', httpStub);
         AuthRewire('handleUserConversationResponse', handleUserConversationResponseStub);
-        AuthRewire('getDeviceId', getDeviceIdStub);
+        AuthRewire('getClientId', getClientIdStub);
         AuthRewire('removeItem', removeItemStub);
         mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
             user: {
