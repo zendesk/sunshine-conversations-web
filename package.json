@@ -21,7 +21,7 @@
     "Danny Tran <danny@smooch.io>"
   ],
   "scripts": {
-    "test": "karma start karma.conf.js --no-single-run --reporters spec --browsers PhantomJS,Chrome",
+    "test": "karma start karma.conf.js --no-single-run --reporters spec --browsers Chrome",
     "test:phantom": "karma start karma.conf.js --no-single-run --reporters spec --browsers PhantomJS",
     "karma": "karma start karma.conf.js --reporters spec --browsers Chrome --singleRun false",
     "test:ci": "karma start karma.conf.js --single-run --reporters junit --browsers Chrome",
@@ -98,12 +98,12 @@
     "karma": "0.13.22",
     "karma-chai": "0.1.0",
     "karma-chrome-launcher": "0.1.12",
-    "karma-junit-reporter": "0.2.2",
+    "karma-junit-reporter": "1.2.0",
     "karma-mocha": "0.1.10",
     "karma-phantomjs-launcher": "1.0.0",
     "karma-sinon-chai": "0.3.0",
     "karma-sourcemap-loader": "0.3.7",
-    "karma-spec-reporter": "0.0.23",
+    "karma-spec-reporter": "0.0.31",
     "karma-webpack": "2.0.3",
     "less": "2.5.3",
     "less-loader": "4.0.3",
