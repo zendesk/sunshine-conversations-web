@@ -69,7 +69,13 @@ describe('Conversation Actions', () => {
         RewireConversationActions('_getMessages', getMessagesStub);
 
         // Http actions
-        httpStub = sandbox.stub().returnsAsyncThunk();
+        httpStub = sandbox.stub().returnsAsyncThunk({
+            value: {
+                response: {
+                    status: 200
+                }
+            }
+        });
         RewireConversationActions('http', httpStub);
 
         // Media Utils
@@ -854,6 +860,31 @@ describe('Conversation Actions', () => {
             return mockedStore.dispatch(conversationActions.fetchMoreMessages()).then(() => {
                 getMessagesStub.should.not.have.been.called;
             });
+        });
+    });
+
+    describe('fetchUserConversation', () => {
+        let handleUserConversationResponseStub;
+        let mockedStore;
+        beforeEach(() => {
+            handleUserConversationResponseStub = sandbox.stub().returnsAsyncThunk();
+            RewireConversationActions('handleUserConversationResponse', handleUserConversationResponseStub);
+
+            const props = generateBaseStoreProps({
+                user: {
+                    _id: '1'
+                }
+            });
+            mockedStore = createMockedStore(sandbox, props);
+        });
+
+        it('should call handleUserConversationResponse', () => {
+            const {config: {appId}, user: {_id}} = mockedStore.getState();
+            return mockedStore.dispatch(conversationActions.fetchUserConversation())
+                .then(() => {
+                    httpStub.should.have.been.calledWith('GET', `/apps/${appId}/appusers/${_id}`);
+                    handleUserConversationResponseStub.should.have.been.calledOnce;
+                });
         });
     });
 });
