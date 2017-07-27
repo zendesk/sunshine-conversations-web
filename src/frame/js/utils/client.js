@@ -1,6 +1,6 @@
 import uuid from 'uuid';
 
-import storage from './storage';
+import * as storage from './storage';
 
 export function getClientId(appId) {
     const SK_STORAGE = `${appId}.clientId`;

@@ -7,7 +7,7 @@ describe('Auth Actions', () => {
     let mockedStore;
     let sandbox;
     let httpStub;
-    let getClientIdStub;
+    let getClientInfoStub;
     let handleUserConversationResponseStub;
     let removeItemStub;
 
@@ -24,11 +24,13 @@ describe('Auth Actions', () => {
             }
         });
         handleUserConversationResponseStub = sandbox.stub().returnsAsyncThunk();
-        getClientIdStub = sandbox.stub().returns('some-client-id');
+        getClientInfoStub = sandbox.stub().returns({
+            id: 'some-client-id'
+        });
         removeItemStub = sandbox.stub();
         AuthRewire('http', httpStub);
         AuthRewire('handleUserConversationResponse', handleUserConversationResponseStub);
-        AuthRewire('getClientId', getClientIdStub);
+        AuthRewire('getClientInfo', getClientInfoStub);
         AuthRewire('removeItem', removeItemStub);
         mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
             user: {
@@ -51,7 +53,9 @@ describe('Auth Actions', () => {
                     const {config: {appId}} = mockedStore.getState();
                     httpStub.should.have.been.calledWith('POST', `/apps/${mockedStore.getState().config.appId}/login`, {
                         userId: 'some-user-id',
-                        clientId: 'some-client-id',
+                        client: {
+                            id: 'some-client-id'
+                        },
                         sessionToken: 'some-session-token'
                     });
                     handleUserConversationResponseStub.should.have.been.calledOnce;
@@ -75,7 +79,9 @@ describe('Auth Actions', () => {
                     const {config: {appId}} = mockedStore.getState();
                     httpStub.should.have.been.calledWith('POST', `/apps/${mockedStore.getState().config.appId}/login`, {
                         userId: 'some-user-id',
-                        clientId: 'some-client-id',
+                        client: {
+                            id: 'some-client-id'
+                        },
                         sessionToken: 'some-session-token'
                     });
                     handleUserConversationResponseStub.should.not.have.been.called;
