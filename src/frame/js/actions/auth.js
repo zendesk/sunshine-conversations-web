@@ -1,13 +1,30 @@
 import http from './http';
+import { handleUserConversationResponse } from './conversation';
 
+import { getClientInfo } from '../utils/client';
+import { removeItem } from '../utils/storage';
 
 export const SET_AUTH = 'SET_AUTH';
 export const RESET_AUTH = 'RESET_AUTH';
 
-export function login(props) {
+export function login() {
     return (dispatch, getState) => {
-        const {config: {appId}} = getState();
-        return dispatch(http('POST', `/apps/${appId}/login`, props));
+        const {config: {appId}, user: {userId}, auth: {sessionToken}} = getState();
+        return dispatch(http('POST', `/apps/${appId}/login`, {
+            userId,
+            sessionToken,
+            client: getClientInfo(appId)
+        })).then(({response, ...props}) => {
+            // get rid of session token
+            removeItem(`${appId}.sessionToken`);
+            dispatch(setAuth({
+                sessionToken: null
+            }));
+
+            if (response.status === 200) {
+                return dispatch(handleUserConversationResponse(props));
+            }
+        });
     };
 }
 
