@@ -4,12 +4,12 @@ import storage from './storage';
 
 export function getClientId(appId) {
     const SK_STORAGE = `${appId}.clientId`;
-    const deviceId = storage.getItem(SK_STORAGE) ||
+    const clientId = storage.getItem(SK_STORAGE) ||
     uuid.v4().replace(/-/g, '');
 
-    storage.setItem(SK_STORAGE, deviceId);
+    storage.setItem(SK_STORAGE, clientId);
 
-    return deviceId;
+    return clientId;
 }
 
 

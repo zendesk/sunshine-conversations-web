@@ -1,7 +1,7 @@
 import http from './http';
 import { handleUserConversationResponse } from './conversation';
 
-import { getClientId } from '../utils/client';
+import { getClientInfo } from '../utils/client';
 import { removeItem } from '../utils/storage';
 
 export const SET_AUTH = 'SET_AUTH';
@@ -13,7 +13,7 @@ export function login() {
         return dispatch(http('POST', `/apps/${appId}/login`, {
             userId,
             sessionToken,
-            clientId: getClientId(appId)
+            client: getClientInfo(appId)
         })).then(({response, ...props}) => {
             // get rid of session token
             removeItem(`${appId}.sessionToken`);
