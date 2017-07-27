@@ -3,7 +3,7 @@ import { RESET } from '../actions/common';
 
 const INITIAL_STATE = {
     hasFocus: false,
-    currentLocation: document.location
+    currentLocation: parent.document.location
 };
 
 export default function BrowserReducer(state = INITIAL_STATE, action) {

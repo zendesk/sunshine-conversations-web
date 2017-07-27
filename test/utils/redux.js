@@ -40,7 +40,8 @@ export function generateBaseStoreProps(extraProps = {}) {
             userSubscription: null,
             conversationSubscription: null,
             ...extraProps.faye
-        }
+        },
+        browser: {}
     };
 }
 
