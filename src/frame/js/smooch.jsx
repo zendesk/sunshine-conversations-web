@@ -11,10 +11,8 @@ import * as authActions from './actions/auth';
 import * as userActions from './actions/user';
 import { updateText } from './actions/ui';
 import { setCurrentLocation } from './actions/browser';
-import { sendMessage as _sendMessage, disconnectFaye, handleConversationUpdated, resetConversation, startConversation } from './actions/conversation';
-import { resetIntegrations } from './actions/integrations';
+import { sendMessage as _sendMessage, disconnectFaye, fetchUserConversation } from './actions/conversation';
 import * as appStateActions from './actions/app-state';
-import { getAccount } from './actions/stripe';
 import { setConfig, fetchConfig } from './actions/config';
 import { reset } from './actions/common';
 
@@ -24,7 +22,6 @@ import { isImageUploadSupported } from './utils/media';
 import { playNotificationSound, isAudioSupported } from './utils/sound';
 import { getClientId } from './utils/client';
 import * as storage from './utils/storage';
-import { getIntegration } from './utils/app';
 
 import { WIDGET_STATE } from './constants/app';
 
@@ -136,23 +133,29 @@ export function init(props = {}) {
     });
 
     const sessionToken = storage.getItem(`${props.appId}.sessionToken`);
-    const smoochId = storage.getItem(`${props.appId}.smoochId`);
+    const smoochId = storage.getItem(`${props.appId}.appUserId`);
 
     const actions = [
         appStateActions.setInitializationState(true),
         appStateActions.setEmbedded(!!props.embedded),
-        authActions.setAuth({
-            sessionToken
-        }),
-        userActions.setUser({
-            _id: smoochId
-        }),
         setCurrentLocation(parent.document.location),
         setConfig('appId', props.appId),
         setConfig('soundNotificationEnabled', props.soundNotificationEnabled && isAudioSupported()),
         setConfig('imageUploadEnabled', props.imageUploadEnabled && isImageUploadSupported()),
         setConfig('configBaseUrl', props.configBaseUrl || `https://${props.appId}.config.smooch.io`)
     ];
+
+    if (smoochId) {
+        actions.push(userActions.setUser({
+            _id: smoochId
+        }));
+    }
+
+    if (sessionToken) {
+        actions.push(authActions.setAuth({
+            sessionToken
+        }));
+    }
 
     if (props.customText) {
         actions.push(updateText(props.customText));
@@ -178,6 +181,10 @@ export function init(props = {}) {
         .then(() => {
             if (props.userId && props.jwt) {
                 return login(props.userId, props.jwt);
+            }
+
+            if (smoochId && sessionToken) {
+                return store.dispatch(fetchUserConversation());
             }
         })
         .then(() => {
@@ -220,26 +227,11 @@ export function sendMessage(props) {
 }
 
 export function updateUser(props) {
-    return store.dispatch(userActions.update(props)).then((response) => {
-        if (response.appUser.conversationStarted) {
-            return store.dispatch(handleConversationUpdated())
-                .then(() => {
-                    return response;
-                });
-        }
-
-        return response;
-    });
+    return store.dispatch(userActions.update(props));
 }
 
 export function getConversation() {
-    return store.dispatch(handleConversationUpdated())
-        .then(() => {
-            store.dispatch(userActions.updateUser({
-                conversationStarted: true
-            }));
-            return store.getState().conversation;
-        });
+    return store.getState().conversation;
 }
 
 export function getUserId() {
