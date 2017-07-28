@@ -21,8 +21,7 @@ describe('Faye Actions', () => {
     let incrementUnreadCountSpy;
     let resetUnreadCountSpy;
     let setUserSpy;
-    let setFayeConversationSubscriptionSpy;
-    let setFayeUserSubscriptionSpy;
+    let setFayeSubscriptionSpy;
 
     beforeEach(() => {
         mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
@@ -56,11 +55,8 @@ describe('Faye Actions', () => {
         setUserSpy = sandbox.spy(setUser);
         FayeRewire('setUser', setUserSpy);
 
-        setFayeConversationSubscriptionSpy = sandbox.spy(fayeActions.setFayeConversationSubscription);
-        FayeRewire('setFayeConversationSubscription', setFayeConversationSubscriptionSpy);
-
-        setFayeUserSubscriptionSpy = sandbox.spy(fayeActions.setFayeUserSubscription);
-        FayeRewire('setFayeUserSubscription', setFayeUserSubscriptionSpy);
+        setFayeSubscriptionSpy = sandbox.spy(fayeActions.setFayeSubscription);
+        FayeRewire('setFayeSubscription', setFayeSubscriptionSpy);
 
         FayeRewire('getClientId', sandbox.stub().returns(123));
     });
@@ -155,15 +151,11 @@ describe('Faye Actions', () => {
         });
     });
 
-    describe('subscribeConversation', () => {
-        it('should call setFayeConversationSubcription', () => {
-            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
-                conversation: {
-                    _id: 123
-                }
-            }));
-            mockedStore.dispatch(fayeActions.subscribeConversation()).then(() => {
-                setFayeConversationSubscriptionSpy.should.have.been.calledOnce;
+    describe('subscribe', () => {
+        it('should call setFayeSubcription', () => {
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
+            mockedStore.dispatch(fayeActions.subscribe()).then(() => {
+                setFayeSubscriptionSpy.should.have.been.calledOnce;
             });
         });
     });
@@ -253,15 +245,6 @@ describe('Faye Actions', () => {
                         platform ? showSettingsStub.should.have.been.calledOnce : showSettingsStub.should.not.have.been.called;
                     });
                 });
-            });
-        });
-    });
-
-    describe('subscribeUser', () => {
-        it('should call setFayeUserSubscription', () => {
-            mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
-            mockedStore.dispatch(fayeActions.subscribeUser()).then(() => {
-                setFayeUserSubscriptionSpy.should.have.been.calledOnce;
             });
         });
     });
