@@ -8,8 +8,9 @@ import { showChannelPage, showSettings } from '../actions/app-state';
 
 export class ConnectNotificationComponent extends Component {
     static propTypes = {
+        dispatch: PropTypes.func.isRequired,
         appChannels: PropTypes.array.isRequired,
-        settings: PropTypes.object.isRequired,
+        config: PropTypes.object.isRequired,
         connectNotificationText: PropTypes.string.isRequired
     };
 
@@ -18,7 +19,7 @@ export class ConnectNotificationComponent extends Component {
         const node = findDOMNode(this);
         if (node) {
             const linkNode = node.querySelector('[data-ui-settings-link]');
-            const {settings: {linkColor}} = this.props;
+            const {config: {style: {linkColor}}} = this.props;
             if (linkNode) {
                 linkNode.onclick = (e) => {
                     e.preventDefault();
@@ -41,19 +42,20 @@ export class ConnectNotificationComponent extends Component {
     }
 
     render() {
-        const {appChannels, connectNotificationText, settings, dispatch} = this.props;
+        const {appChannels, connectNotificationText, config, dispatch} = this.props;
+        const {style} = config;
 
-        const isConnectNotification = hasChannels(settings);
+        const isConnectNotification = hasChannels(config);
 
         if (isConnectNotification) {
-            const linkStyle = settings.linkColor ? {
-                color: `#${settings.linkColor}`
+            const linkStyle = style.linkColor ? {
+                color: `#${style.linkColor}`
             } : null;
 
 
             const channels = getAppChannelDetails(appChannels)
                 .filter(({details}) => details.isLinkable)
-                .map(({channel, details} , index, array) => {
+                .map(({channel, details}, index, array) => {
                     const onClick = (e) => {
                         e.preventDefault();
                         dispatch(showChannelPage(channel.type));
@@ -88,10 +90,10 @@ export class ConnectNotificationComponent extends Component {
     }
 }
 
-export default connect(({app, ui: {text}}) => {
+export default connect(({config, ui: {text}}) => {
     return {
-        appChannels: app.integrations,
+        appChannels: config.integrations,
         connectNotificationText: text.connectNotificationText,
-        settings: app.settings.web
+        config
     };
 })(ConnectNotificationComponent);
