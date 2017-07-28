@@ -1,7 +1,6 @@
 import deepEqual from 'deep-equal';
 
-import { core } from '../utils/core';
-import { handleConversationUpdated } from './conversation';
+import http from './http';
 
 
 export const SET_USER = 'SET_USER';
@@ -12,8 +11,6 @@ const waitDelay = 5000; // ms
 let pendingUserProps = {};
 let pendingUpdatePromise;
 let pendingResolve;
-let deviceUpdateThrottle;
-let deviceUpdatePending = false;
 let pendingTimeout;
 let lastUpdateAttempt;
 
@@ -27,7 +24,7 @@ export const EDITABLE_PROPERTIES = [
 
 export function immediateUpdate(props) {
     return (dispatch, getState) => {
-        const {user} = getState();
+        const {config: {appId}, user} = getState();
 
         const updateToResolve = pendingResolve;
         if (pendingTimeout) {
@@ -46,13 +43,14 @@ export function immediateUpdate(props) {
         }, false);
 
         if (isDirty) {
-            return core(getState()).appUsers.update(getUserId(getState()), props).then((response) => {
-                dispatch(setUser(response.appUser));
-                if (updateToResolve) {
-                    updateToResolve(response);
-                }
-                return response;
-            });
+            return dispatch(http('PUT', `/apps/${appId}/appusers/${user._id}`, props))
+                .then((response) => {
+                    dispatch(setUser(response.appUser));
+                    if (updateToResolve) {
+                        updateToResolve(response);
+                    }
+                    return response;
+                });
         } else if (updateToResolve) {
             updateToResolve(user);
             return pendingUpdatePromise;
@@ -90,51 +88,6 @@ export function update(props) {
         }
     };
 }
-
-export function updateNowViewing(deviceId) {
-    return (dispatch) => {
-        if (!deviceUpdateThrottle) {
-            deviceUpdateThrottle = setTimeout(() => {
-                deviceUpdateThrottle = null;
-
-                if (deviceUpdatePending) {
-                    dispatch(updateNowViewing(deviceId));
-                    deviceUpdatePending = false;
-                }
-            }, waitDelay);
-
-            return dispatch(immediateUpdateDevice(deviceId, {
-                info: {
-                    currentUrl: document.location.href,
-                    currentTitle: document.title
-                }
-            }));
-        } else {
-            deviceUpdatePending = true;
-            return Promise.resolve();
-        }
-    };
-}
-
-function immediateUpdateDevice(deviceId, device) {
-    return (dispatch, getState) => {
-        return core(getState()).appUsers.updateDevice(getUserId(getState()), deviceId, device).then((response) => {
-            if (response.conversationUpdated) {
-                return dispatch(handleConversationUpdated())
-                    .then(() => {
-                        return response;
-                    });
-            }
-
-            return response;
-        });
-    };
-}
-
-export function getUserId({user: {_id, userId}}) {
-    return userId || _id;
-}
-
 
 export function setUser(props) {
     return {

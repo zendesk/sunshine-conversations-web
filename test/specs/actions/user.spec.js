@@ -1,6 +1,5 @@
 import sinon from 'sinon';
 
-import { createMock } from '../../mocks/core';
 import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 
 import * as userActions from '../../../src/frame/js/actions/user';
@@ -8,34 +7,24 @@ import { __Rewire__ as UserRewire } from '../../../src/frame/js/actions/user';
 
 describe('User Actions', () => {
     let sandbox;
-    let coreMock;
     let mockedStore;
     let setUserSpy;
+    let httpStub;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        coreMock = createMock(sandbox);
-        UserRewire('core', () => coreMock);
-
-        coreMock.appUsers.update.resolves({
-            appUser: {
-                _id: '1',
-                email: 'mocked@email.com'
+        httpStub = sandbox.stub().returnsAsyncThunk({
+            value: {
+                response: {
+                    status: 200
+                },
+                appUser: {
+                    _id: '1',
+                    email: 'mocked@email.com'
+                }
             }
         });
-
-        coreMock.appUsers.update.resolves({
-            appUser: {
-                _id: '1',
-                email: 'mocked@email.com'
-            }
-        });
-
-        coreMock.appUsers.updateDevice.resolves({
-            info: {
-                test: true
-            }
-        });
+        UserRewire('http', httpStub);
 
         setUserSpy = sandbox.spy(userActions.setUser);
         UserRewire('setUser', setUserSpy);
@@ -52,19 +41,6 @@ describe('User Actions', () => {
         sandbox.restore();
     });
 
-    describe('updateNowViewing', () => {
-        it('should call smooch-core update device api and return the device on server response', () => {
-            return mockedStore.dispatch(userActions.updateNowViewing('blap')).then(() => {
-                coreMock.appUsers.updateDevice.should.have.been.calledWith('1', 'blap', {
-                    info: {
-                        currentUrl: document.location.href,
-                        currentTitle: document.title
-                    }
-                });
-            });
-        });
-    });
-
     describe('immediateUpdate', () => {
         describe('is not dirty', () => {
             it('should do nothing', () => {
@@ -73,7 +49,7 @@ describe('User Actions', () => {
                 };
 
                 return mockedStore.dispatch(userActions.immediateUpdate(props)).then(() => {
-                    coreMock.appUsers.update.should.not.have.been.called;
+                    httpStub.should.not.have.been.called;
                 });
             });
         });
@@ -83,19 +59,17 @@ describe('User Actions', () => {
                 const props = {
                     email: 'other@email.com'
                 };
-
+                const {config: {appId}, user: {_id}} = mockedStore.getState();
                 return mockedStore.dispatch(userActions.immediateUpdate(props)).then((response) => {
-                    coreMock.appUsers.update.should.have.been.calledWith('1', {
+                    httpStub.should.have.been.calledWith('PUT', `/apps/${appId}/appusers/${_id}`, {
                         email: 'other@email.com'
                     });
 
                     // the values here are different because these are values
                     // returned by the server and mocked in the beforeEach
-                    response.should.deep.eq({
-                        appUser: {
-                            _id: '1',
-                            email: 'mocked@email.com'
-                        }
+                    response.appUser.should.deep.eq({
+                        _id: '1',
+                        email: 'mocked@email.com'
                     });
 
 
@@ -110,8 +84,11 @@ describe('User Actions', () => {
 
     // skip these untils fake timers weirdness is resolved.
     describe.skip('update', () => {
+        let immediateUpdateStub;
         beforeEach(() => {
             sandbox.useFakeTimers();
+            immediateUpdateStub = sandbox.stub().returnsAsyncThunk();
+            UserRewire('immediateUpdate', immediateUpdateStub);
         });
 
         it('should call immediateUpdate', () => {
@@ -122,7 +99,7 @@ describe('User Actions', () => {
             const promise = mockedStore.dispatch(userActions.update(props));
             sandbox.clock.tick(1);
             return promise.then(() => {
-                coreMock.appUsers.update.should.have.been.calledWith('1', props);
+                immediateUpdateStub.should.have.been.calledWith(props);
             });
         });
 
@@ -134,19 +111,19 @@ describe('User Actions', () => {
             const promise = mockedStore.dispatch(userActions.update(props));
             sandbox.clock.tick(1);
             return promise.then(() => {
-                coreMock.appUsers.update.should.have.been.calledWith('1', props);
-                coreMock.appUsers.update.reset();
+                immediateUpdateStub.should.have.been.calledWith(props);
+                immediateUpdateStub.reset();
             }).then(() => {
                 const throttledPromise = mockedStore.dispatch(userActions.update(props));
                 sandbox.clock.tick(4998);
                 return throttledPromise.then(() => {
-                    coreMock.appUsers.update.should.not.have.been.called;
+                    immediateUpdateStub.should.not.have.been.called;
                 });
             }).then(() => {
                 const unthrottledPromise = mockedStore.dispatch(userActions.update(props));
                 sandbox.clock.tick(1);
                 return unthrottledPromise.then(() => {
-                    coreMock.appUsers.update.should.have.been.calledWith('1', props);
+                    immediateUpdateStub.should.have.been.calledWith(props);
                 });
             });
 
@@ -161,7 +138,7 @@ describe('User Actions', () => {
             // needs to tick one for the internal promise mechanism to work
             sandbox.clock.tick(1);
             return promise.then(() => {
-                coreMock.appUsers.update.should.have.been.calledWith('1', {
+                immediateUpdateStub.should.have.been.calledWith({
                     email: 'this@email.com'
                 });
             }).then(() => {
@@ -173,7 +150,7 @@ describe('User Actions', () => {
                 sandbox.clock.tick(4998);
 
                 return throttledPromise.then(() => {
-                    coreMock.appUsers.update.should.not.have.been.called;
+                    immediateUpdateStub.should.not.have.been.called;
                 });
             }).then(() => {
                 const unthrottledPromise = mockedStore.dispatch(userActions.update({
@@ -184,7 +161,7 @@ describe('User Actions', () => {
                 sandbox.clock.tick(1);
 
                 return unthrottledPromise.then(() => {
-                    coreMock.appUsers.update.should.have.been.calledWith('1', {
+                    immediateUpdateStub.should.have.been.calledWith({
                         givenName: 'Example',
                         email: 'another@email.com'
                     });
@@ -198,7 +175,7 @@ describe('User Actions', () => {
                 }));
                 sandbox.clock.tick(1);
                 return unthrottledPromise.then(() => {
-                    coreMock.appUsers.update.should.have.been.calledWith('1', {
+                    immediateUpdateStub.should.have.been.calledWith({
                         email: 'yetanother@email.com'
                     });
                 });

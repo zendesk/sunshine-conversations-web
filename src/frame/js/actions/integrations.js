@@ -1,10 +1,7 @@
 import { batchActions } from 'redux-batched-actions';
 
-import { core } from '../utils/core';
-
-import { handleConversationUpdated } from './conversation';
-import { updateUser, getUserId } from './user';
-
+import { updateUser } from './user';
+import http from './http';
 
 export const SET_ERROR = 'SET_ERROR';
 export const UNSET_ERROR = 'UNSET_ERROR';
@@ -125,15 +122,21 @@ export function resetTransferRequestCode(channel) {
 
 export function fetchWeChatQRCode() {
     return (dispatch, getState) => {
-        const {integrations: {wechat}} = getState();
+        const {config: {appId, integrations}, user: {_id}, integrations: {wechat}} = getState();
 
         if (wechat.qrCode || fetchingWeChat) {
             return Promise.resolve();
         }
 
+        const wechatIntegration = integrations.find(({type}) => type === 'wechat');
+        if (!wechatIntegration) {
+            return Promise.resolve();
+        }
+
         dispatch(unsetError('wechat'));
         fetchingWeChat = true;
-        return core(getState()).appUsers.wechat.getQRCode(getUserId(getState()))
+
+        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/integrations/${wechatIntegration._id}/qrcode`))
             .then(({url}) => {
                 dispatch(setWeChatQRCode(url));
             })
@@ -142,6 +145,35 @@ export function fetchWeChatQRCode() {
             })
             .then(() => {
                 fetchingWeChat = false;
+            });
+    };
+}
+
+export function fetchViberQRCode() {
+    return (dispatch, getState) => {
+        const {config: {appId, integrations}, user: {_id}, integrations: {viber}} = getState();
+
+        if (viber.qrCode || fetchingViber) {
+            return Promise.resolve();
+        }
+
+        const viberIntegration = integrations.find(({type}) => type === 'viber');
+        if (!viberIntegration) {
+            return Promise.resolve();
+        }
+
+        dispatch(unsetError('viber'));
+        fetchingViber = true;
+
+        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/integrations/${viberIntegration._id}/qrcode`))
+            .then(({url}) => {
+                dispatch(setViberQRCode(url));
+            })
+            .catch(() => {
+                dispatch(setError('viber'));
+            })
+            .then(() => {
+                fetchingViber = false;
             });
     };
 }
@@ -229,17 +261,14 @@ export function fetchMessageBirdAttributes() {
     };
 }
 
-export function linkSMSChannel(userId, data) {
+export function linkSMSChannel(data) {
     return (dispatch, getState) => {
-        return core(getState()).appUsers.linkChannel(userId, data)
-            .then(({appUser}) => {
-                dispatch(updateUser(appUser));
-
-                if (appUser.conversationStarted) {
-                    return dispatch(handleConversationUpdated());
-                }
-            })
-            .then(() => {
+        const {config: {appId}, user: {_id, pendingClients}} = getState();
+        return dispatch(http('POST', `/client/apps/${appId}/appusers/${_id}/clients`, data))
+            .then(({client}) => {
+                dispatch(updateUser({
+                    pendingClients: [...pendingClients, client]
+                }));
                 dispatch(updateSMSAttributes({
                     linkState: 'pending'
                 }, data.type));
@@ -250,11 +279,17 @@ export function linkSMSChannel(userId, data) {
     };
 }
 
-export function unlinkSMSChannel(userId, type) {
+export function unlinkSMSChannel(type) {
     return (dispatch, getState) => {
-        return core(getState()).appUsers.unlinkChannel(userId, type)
+        const {config: {appId}, user: {_id, clients, pendingClients}} = getState();
+        const client = clients.find((client) => client.platform === type);
+
+        if (!client) {
+            return Promise.resolve();
+        }
+
+        return dispatch(http('DELETE', `/client/apps/${appId}/appusers/${_id}/clients/${client._id}`))
             .then(() => {
-                const {user: {clients, pendingClients}} = getState();
                 dispatch(updateUser({
                     pendingClients: pendingClients.filter((pendingClient) => pendingClient.platform !== type),
                     clients: clients.filter((client) => client.platform !== type)
@@ -286,9 +321,11 @@ export function unlinkSMSChannel(userId, type) {
     };
 }
 
-export function pingSMSChannel(userId, type) {
+export function pingSMSChannel(type) {
     return (dispatch, getState) => {
-        return core(getState()).appUsers.pingChannel(userId, type)
+        const {config: {appId}, user: {_id, clients}} = getState();
+        const client = clients.find((client) => client.platform === type);
+        return dispatch(http('POST', `/client/apps/${appId}/appusers/${_id}/clients/${client._id}/ping`))
             .then(() => {
                 dispatch(updateSMSAttributes({
                     linkState: 'linked'
@@ -327,40 +364,24 @@ export function failSMSLink(error, type) {
     };
 }
 
-export function fetchViberQRCode() {
+export function fetchTransferRequestCode(type) {
     return (dispatch, getState) => {
-        const {integrations: {viber}} = getState();
+        const {user: {_id}, integrations, config: {appId}} = getState();
+        const integration = integrations.find(({type:_type}) => type === _type);
 
-        if (viber.qrCode || fetchingViber) {
+        if (!integration) {
             return Promise.resolve();
         }
 
-        dispatch(unsetError('viber'));
-        fetchingViber = true;
-        return core(getState()).appUsers.viber.getQRCode(getUserId(getState()))
-            .then(({url}) => {
-                dispatch(setViberQRCode(url));
-            })
-            .catch(() => {
-                dispatch(setError('viber'));
-            })
-            .then(() => {
-                fetchingViber = false;
-            });
-    };
-}
-
-export function fetchTransferRequestCode(channel) {
-    return (dispatch, getState) => {
-        const userId = getUserId(getState());
-        dispatch(unsetError(channel));
-        return core(getState()).appUsers.transferRequest(userId, {
-            type: channel
-        }).then((res) => {
+        dispatch(unsetError(type));
+        return dispatch(http('GET', `/client/apps/${appId}/appusers/${_id}/transferrequest`, {
+            type,
+            integrationId: integration._id
+        })).then((res) => {
             const transferRequestCode = res.transferRequests[0].code;
-            dispatch(setTransferRequestCode(channel, transferRequestCode));
+            dispatch(setTransferRequestCode(type, transferRequestCode));
         }).catch(() => {
-            dispatch(setError(channel));
+            dispatch(setError(type));
         });
     };
 }

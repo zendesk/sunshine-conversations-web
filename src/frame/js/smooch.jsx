@@ -17,7 +17,7 @@ import { setConfig, fetchConfig } from './actions/config';
 import { reset } from './actions/common';
 
 import { observable, observeStore } from './utils/events';
-import { waitForPage, monitorUrlChanges, stopMonitoringUrlChanges, monitorBrowserState, stopMonitoringBrowserState, updateHostClassNames } from './utils/dom';
+import { waitForPage, monitorBrowserState, stopMonitoringBrowserState, updateHostClassNames } from './utils/dom';
 import { isImageUploadSupported } from './utils/media';
 import { playNotificationSound, isAudioSupported } from './utils/sound';
 import * as storage from './utils/storage';
@@ -94,7 +94,6 @@ function onStoreChange(props, previousProps) {
 function cleanUp() {
     store.dispatch(disconnectFaye());
     stopMonitoringBrowserState();
-    stopMonitoringUrlChanges();
     unsubscribeFromStore();
     store.dispatch(reset());
 }
@@ -174,8 +173,6 @@ export function init(props = {}) {
 
     monitorBrowserState(store.dispatch.bind(store));
 
-    monitorUrlChanges(() => store.dispatch(setCurrentLocation(parent.document.location)));
-
     return store.dispatch(fetchConfig())
         .then(() => {
             if (props.userId && props.jwt) {
@@ -233,8 +230,9 @@ export function getConversation() {
     return store.getState().conversation;
 }
 
-export function getUserId() {
-    return userActions.getUserId(store.getState());
+export function getUser() {
+    const {user} = store.getState();
+    return Object.keys(user).length > 0 ? user : undefined;
 }
 
 export function destroy() {
