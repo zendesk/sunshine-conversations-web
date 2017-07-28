@@ -5,28 +5,19 @@ import ConnectNotification, { __Rewire__ as ConnectNotificationRewire } from '..
 import { CHANNEL_DETAILS } from '../../../src/frame/js/constants/channels';
 
 import { wrapComponentWithStore } from '../../utils/react';
-import { createMockedStore } from '../../utils/redux';
+import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 
 const sandbox = sinon.sandbox.create();
 
 function getStoreState(state = {}) {
-    const defaultState = {
-        app: {
-            settings: {
-                web: {
-                    channels: {}
-                }
-            },
-            integrations: []
-        },
+    return generateBaseStoreProps({
         ui: {
             text: {
                 connectNotificationText: 'connectNotificationText'
             }
-        }
-    };
-
-    return Object.assign(defaultState, state);
+        },
+        ...state
+    });
 }
 
 describe('ConnectNotification Component', () => {
