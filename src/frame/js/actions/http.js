@@ -1,5 +1,7 @@
 import urljoin from 'urljoin';
 
+import {getClientId} from '../utils/client';
+
 /**
  * Stringifies query parameters and append them to the url
  * @param  {string} url  - an url
@@ -58,6 +60,8 @@ export default function http(method, url, data, extraHeaders = {}, baseUrl) {
             Accept: 'application/json',
             'Content-Type': 'application/json',
             'x-smooch-sdk': `web/${VERSION}`,
+            'x-smooch-clientid': getClientId(config.appId),
+            'x-smooch-appid': config.appId,
             ...extraHeaders
         };
 
