@@ -1,5 +1,4 @@
 import { Client, Scheduler as FayeScheduler } from 'faye';
-import urljoin from 'urljoin';
 import { batchActions } from 'redux-batched-actions';
 
 import { setUser } from './user';
@@ -10,36 +9,19 @@ import { getClientId } from '../utils/client';
 import { ANIMATION_TIMINGS } from '../constants/styles';
 
 
-export const SET_FAYE_CONVERSATION_SUBSCRIPTION = 'SET_FAYE_CONVERSATION_SUBSCRIPTION';
-export const SET_FAYE_CONVERSATION_ACTIVITY_SUBSCRIPTION = 'SET_FAYE_CONVERSATION_ACTIVITY_SUBSCRIPTION';
-export const SET_FAYE_USER_SUBSCRIPTION = 'SET_FAYE_USER_SUBSCRIPTION';
-export const UNSET_FAYE_SUBSCRIPTIONS = 'UNSET_FAYE_SUBSCRIPTIONS';
+export const SET_FAYE_SUBSCRIPTION = 'SET_FAYE_SUBSCRIPTION';
+export const UNSET_FAYE_SUBSCRIPTION = 'UNSET_FAYE_SUBSCRIPTION';
 
-export function setFayeConversationSubscription(subscription) {
+export function setFayeSubscription(subscription) {
     return {
-        type: SET_FAYE_CONVERSATION_SUBSCRIPTION,
+        type: SET_FAYE_SUBSCRIPTION,
         subscription
     };
 }
 
-export function setFayeConversationActivitySubscription(subscription) {
+export function unsetFayeSubscription() {
     return {
-        type: SET_FAYE_CONVERSATION_ACTIVITY_SUBSCRIPTION,
-        subscription
-    };
-}
-
-export function setFayeUserSubscription(subscription) {
-    return {
-        type: SET_FAYE_USER_SUBSCRIPTION,
-        subscription
-    };
-}
-
-
-export function unsetFayeSubscriptions() {
-    return {
-        type: UNSET_FAYE_SUBSCRIPTIONS
+        type: UNSET_FAYE_SUBSCRIPTION
     };
 }
 
@@ -76,7 +58,7 @@ export function getClient() {
 
             const Scheduler = getScheduler(realtime);
 
-            client = new Client(urljoin(realtime.baseUrl, 'faye'), {
+            client = new Client(realtime.baseUrl, {
                 scheduler: Scheduler
             });
 
@@ -129,16 +111,16 @@ export function handleConversationSubscription(message) {
     };
 }
 
-export function subscribeConversation() {
+export function subscribe() {
     return (dispatch, getState) => {
         const client = dispatch(getClient());
-        const {conversation: {_id: conversationId}} = getState();
-        const subscription = client.subscribe(`/v1/conversations/${conversationId}`, (message) => {
-            dispatch(handleConversationSubscription(message));
+        const {config: {appId}, user: {_id}} = getState();
+        const subscription = client.subscribe(`/sdk/apps/${appId}/appusers/${_id}`, ({type, ...rest}) => {
+            console.log('Faye message received', type, rest);
         });
 
         return subscription.then(() => {
-            return dispatch(setFayeConversationSubscription(subscription));
+            return dispatch(setFayeSubscription(subscription));
         });
     };
 }
@@ -158,20 +140,6 @@ export function handleConversationActivitySubscription({activity, role, data={}}
     };
 }
 
-export function subscribeConversationActivity() {
-    return (dispatch, getState) => {
-        const client = dispatch(getClient());
-        const {conversation: {_id: conversationId}} = getState();
-        const subscription = client.subscribe(`/v1/conversations/${conversationId}/activity`, (message) => {
-            dispatch(handleConversationActivitySubscription(message));
-        });
-
-        return subscription.then(() => {
-            return dispatch(setFayeConversationActivitySubscription(subscription));
-        });
-    };
-}
-
 export function updateUser(currentAppUser, nextAppUser) {
     return (dispatch) => {
         if (currentAppUser._id !== nextAppUser._id) {
@@ -184,7 +152,7 @@ export function updateUser(currentAppUser, nextAppUser) {
             // Faye needs to be reconnected on the right user/conversation channels
             disconnectFaye();
 
-            return dispatch(subscribeUser()).then(() => {
+            return dispatch(subscribe()).then(() => {
                 // TODO : figure out if still relevant
                 // if (nextAppUser.conversationStarted) {
                 //     return dispatch(handleConversationUpdated());
@@ -249,20 +217,6 @@ export function handleUserSubscription({appUser, event}) {
         }
 
         return dispatch(updateUser(currentAppUser, appUser));
-    };
-}
-
-export function subscribeUser() {
-    return (dispatch, getState) => {
-        const client = dispatch(getClient());
-        const {user} = getState();
-        const subscription = client.subscribe(`/v1/users/${user._id}`, (message) => {
-            dispatch(handleUserSubscription(message));
-        });
-
-        return subscription.then(() => {
-            return dispatch(setFayeUserSubscription(subscription));
-        });
     };
 }
 

@@ -3,7 +3,7 @@ import { batchActions } from 'redux-batched-actions';
 
 import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi, showConnectNotification } from './app-state';
 import { setUser } from './user';
-import { disconnectClient, subscribeConversation, subscribeUser, subscribeConversationActivity, unsetFayeSubscriptions } from './faye';
+import { disconnectClient, subscribe as subscribeFaye, unsetFayeSubscription } from './faye';
 
 import http from './http';
 import { setAuth } from './auth';
@@ -485,48 +485,16 @@ export function getMessages() {
     };
 }
 
-export function connectFayeConversation() {
-    return (dispatch, getState) => {
-        const {user: {conversationStarted}, conversation: {_id:conversationId}, faye: {conversationSubscription}} = getState();
-
-        if (conversationStarted && conversationId && !conversationSubscription) {
-            return Promise.all([
-                // dispatch(subscribeConversation()),
-                // dispatch(subscribeConversationActivity())
-            ]);
-        }
-
-        return Promise.resolve();
-    };
-}
-
-export function connectFayeUser() {
-    return (dispatch, getState) => {
-
-        const {faye: {userSubscription}} = getState();
-
-        if (!userSubscription) {
-            return dispatch(subscribeUser());
-        }
-
-        return Promise.resolve();
-    };
-}
-
 export function disconnectFaye() {
     return (dispatch, getState) => {
-        const {faye: {conversationSubscription, userSubscription}} = getState();
+        const {faye: {subscription}} = getState();
 
-        if (conversationSubscription) {
-            conversationSubscription.cancel();
-        }
-
-        if (userSubscription) {
-            userSubscription.cancel();
+        if (subscription) {
+            subscription.cancel();
         }
 
         disconnectClient();
-        dispatch(unsetFayeSubscriptions());
+        dispatch(unsetFayeSubscription());
     };
 }
 
@@ -558,7 +526,7 @@ export function handleUserConversationResponse({appUser, conversation, hasPrevio
         dispatch(batchActions(actions));
 
         if (appUser.conversationStarted) {
-            return dispatch(connectFayeConversation());
+            return dispatch(subscribeFaye());
         }
 
         return Promise.resolve();
