@@ -140,7 +140,7 @@ export function init(props = {}) {
         setConfig('appId', props.appId),
         setConfig('soundNotificationEnabled', props.soundNotificationEnabled && isAudioSupported()),
         setConfig('imageUploadEnabled', props.imageUploadEnabled && isImageUploadSupported()),
-        setConfig('configBaseUrl', props.configBaseUrl || `https://${props.appId}.config.smooch.io`)
+        setConfig('configBaseUrl', props.configBaseUrl || `https://${props.appId}.config.smooch.io/sdk/`)
     ];
 
     if (appUserId) {
