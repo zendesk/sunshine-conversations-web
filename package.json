@@ -137,7 +137,6 @@
     "sinon": "2.3.4",
     "sinon-chai": "2.7.0",
     "sinon-stub-promise": "0.1.0",
-    "smooch-core": "3.4.0",
     "stats-webpack-plugin": "0.2.2",
     "style-loader": "0.18.2",
     "uglify-js": "3.0.17",
