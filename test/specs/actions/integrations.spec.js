@@ -1,6 +1,5 @@
 import sinon from 'sinon';
 
-import { createMock as createCoreMock } from '../../mocks/core';
 import { createMock as createThrottleMock } from '../../mocks/throttle';
 import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 
@@ -8,62 +7,30 @@ import * as integrationsActions from '../../../src/frame/js/actions/integrations
 import { __Rewire__ as IntegrationsRewire } from '../../../src/frame/js/actions/integrations';
 import { updateUser } from '../../../src/frame/js/actions/user';
 
-const sandbox = sinon.sandbox.create();
 
 describe('Integrations Actions', () => {
-    let coreMock;
+    let sandbox;
+
+    let httpStub;
     let mockedStore;
-    let pendingAppUser;
     let updateUserSpy;
     let handleConversationUpdatedStub;
+
+    before(() => {
+        sandbox = sinon.sandbox.create();
+    });
 
     beforeEach(() => {
         // Disable throttling for unit tests
         IntegrationsRewire('Throttle', createThrottleMock(sandbox));
-        pendingAppUser = {
-            appuser: {
-                _id: '1',
-                clients: [],
-                pendingClients: [{
-                    displayName: '+0123456789',
-                    id: 'abcdefg',
-                    platform: 'twilio',
-                    linkedAt: '2016-07-28',
-                    active: true
-                }]
-            }
-        };
-
-        coreMock = createCoreMock(sandbox);
-        IntegrationsRewire('core', () => coreMock);
-        coreMock.appUsers.linkChannel.resolves({
-            appUser: pendingAppUser
-        });
-        coreMock.appUsers.unlinkChannel.resolves();
-        coreMock.appUsers.pingChannel.resolves();
-        coreMock.appUsers.getMessages.resolves({
-            conversation: {
-            },
-            messages: []
-        });
-        coreMock.appUsers.transferRequest.resolves({
-            transferRequests: [{
-                code: '1234'
-            }]
-        });
-
+        httpStub = sandbox.stub().returnsAsyncThunk();
+        IntegrationsRewire('http', httpStub);
         updateUserSpy = sandbox.spy(updateUser);
         IntegrationsRewire('updateUser', updateUserSpy);
         handleConversationUpdatedStub = sandbox.stub().returnsAsyncThunk();
         IntegrationsRewire('handleConversationUpdated', handleConversationUpdatedStub);
 
-        mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
-            user: {
-                _id: '1',
-                clients: [],
-                pendingClients: []
-            }
-        }));
+        mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
 
     });
 
@@ -73,52 +40,105 @@ describe('Integrations Actions', () => {
 
 
     describe('linkSMSChannel', () => {
+        beforeEach(() => {
+            httpStub.returnsAsyncThunk({
+                value: {
+                    client: {}
+                }
+            });
+        });
+
         it('should set the twilio integration to pending state', () => {
-            return mockedStore.dispatch(integrationsActions.linkSMSChannel('1', {
+            const {config: {appId}, user: {_id}} = mockedStore.getState();
+            return mockedStore.dispatch(integrationsActions.linkSMSChannel({
                 type: 'twilio',
                 phoneNumber: '+0123456789'
             })).then(() => {
-                coreMock.appUsers.linkChannel.should.have.been.calledWith('1', {
+                httpStub.should.have.been.calledWith('POST', `/client/apps/${appId}/appusers/${_id}/clients`, {
                     type: 'twilio',
                     phoneNumber: '+0123456789'
                 });
             });
         });
-
-        it('should start faye if user returns with conversationStarted', () => {
-            pendingAppUser.conversationStarted = true;
-
-            return mockedStore.dispatch(integrationsActions.linkSMSChannel('1', {
-                type: 'twilio',
-                phoneNumber: '+0123456789'
-            })).then(() => {
-                handleConversationUpdatedStub.should.have.been.calledOnce;
-            });
-        });
     });
 
     describe('unlinkSMSChannel', () => {
+        beforeEach(() => {
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
+                user: {
+                    _id: '1',
+                    clients: [
+                        {
+                            platform: 'twilio',
+                            _id: 'twilio-client'
+                        }
+                    ],
+                    pendingClients: []
+                }
+            }));
+        });
+
         it('should set the sms integration state to unlinked', () => {
-            return mockedStore.dispatch(integrationsActions.unlinkSMSChannel('1', 'twilio')).then(() => {
-                coreMock.appUsers.unlinkChannel.should.have.been.calledWith('1', 'twilio');
+            const {config: {appId}, user: {_id}} = mockedStore.getState();
+            return mockedStore.dispatch(integrationsActions.unlinkSMSChannel('twilio')).then(() => {
+                httpStub.should.have.been.calledWith('DELETE', `/client/apps/${appId}/appusers/${_id}/clients/twilio-client`);
             });
         });
     });
 
     describe('pingSMSChannel', () => {
+        beforeEach(() => {
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
+                user: {
+                    _id: '1',
+                    clients: [
+                        {
+                            platform: 'twilio',
+                            _id: 'twilio-client'
+                        }
+                    ],
+                    pendingClients: []
+                }
+            }));
+        });
+
         it('should call the ping channel API', () => {
-            return mockedStore.dispatch(integrationsActions.pingSMSChannel('1', 'twilio')).then(() => {
-                coreMock.appUsers.pingChannel.should.have.been.calledWith('1', 'twilio');
+            const {config: {appId}, user: {_id}} = mockedStore.getState();
+            return mockedStore.dispatch(integrationsActions.pingSMSChannel('twilio')).then(() => {
+                httpStub.should.have.been.calledWith('POST', `/client/apps/${appId}/appusers/${_id}/clients/twilio-client/ping`);
             });
         });
     });
 
     describe('fetchTransferRequestCode', () => {
+        beforeEach(() => {
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
+                config: {
+                    integrations: [
+                        {
+                            type: 'messenger',
+                            _id: 'messenger-integration'
+                        }
+                    ]
+                }
+            }));
+
+            httpStub.returnsAsyncThunk({
+                value: {
+                    transferRequests: [{
+                        code: '1234'
+                    }]
+                }
+            });
+        });
+
         it('should call the transferrequest API', () => {
             const channel = 'messenger';
+            const {config: {appId}, user: {_id}} = mockedStore.getState();
             return mockedStore.dispatch(integrationsActions.fetchTransferRequestCode(channel)).then(() => {
-                coreMock.appUsers.transferRequest.should.have.been.calledWith('1', {
-                    type: channel
+                httpStub.should.have.been.calledWith('GET', `/client/apps/${appId}/appusers/${_id}/transferrequest`, {
+                    type: channel,
+                    integrationId: 'messenger-integration'
                 });
             });
         });
