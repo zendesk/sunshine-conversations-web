@@ -30,7 +30,11 @@ describe('Integrations Actions', () => {
         handleConversationUpdatedStub = sandbox.stub().returnsAsyncThunk();
         IntegrationsRewire('handleConversationUpdated', handleConversationUpdatedStub);
 
-        mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
+        mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
+            user: {
+                _id: '1'
+            }
+        }));
 
     });
 

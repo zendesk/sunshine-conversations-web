@@ -1,14 +1,13 @@
 import sinon from 'sinon';
 
-import { createMock } from '../../mocks/core';
 import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 
 import { createTransaction, getAccount, __Rewire__ as StripeRewire } from '../../../src/frame/js/actions/stripe';
 
 describe('Stripe Actions', () => {
     let sandbox;
-    let coreMock;
     let mockedStore;
+    let httpStub;
 
     before(() => {
         sandbox = sinon.sandbox.create();
@@ -20,11 +19,8 @@ describe('Stripe Actions', () => {
                 _id: '1'
             }
         }));
-
-        coreMock = createMock(sandbox);
-        StripeRewire('core', () => coreMock);
-        coreMock.appUsers.stripe.createTransaction.resolves();
-        coreMock.stripe.getAccount.resolves();
+        httpStub = sandbox.stub().returnsAsyncThunk();
+        StripeRewire('http', httpStub);
     });
 
     afterEach(() => {
@@ -32,17 +28,22 @@ describe('Stripe Actions', () => {
     });
 
     describe('createTransaction', () => {
-        it('should call smooch-core appUser stripe api', () => {
+        it('should call stripe api endpoint', () => {
+            const {config: {appId}, user: {_id}} = mockedStore.getState();
             return mockedStore.dispatch(createTransaction('actionId', 'token')).then(() => {
-                coreMock.appUsers.stripe.createTransaction.should.have.been.calledWith('1', 'actionId', 'token');
+                httpStub.should.have.been.calledWith('GET', `/client/apps/${appId}/appusers/${_id}/stripe/transaction`, {
+                    actionId: 'actionId',
+                    token: 'token'
+                });
             });
         });
     });
 
     describe('getAccount', () => {
-        it('should call smooch-core stripe api', () => {
+        it('should call stripe api endpoint', () => {
+            const {config: {appId}, user: {_id}} = mockedStore.getState();
             return mockedStore.dispatch(getAccount()).then(() => {
-                coreMock.stripe.getAccount.should.have.been.calledOnce;
+                httpStub.should.have.been.calledWith('GET', `/client/apps/${appId}/appusers/${_id}/stripe/customer`);
             });
         });
     });

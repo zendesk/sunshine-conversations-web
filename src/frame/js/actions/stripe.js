@@ -1,11 +1,14 @@
 import { showErrorNotification } from './app-state';
-import { core } from '../utils/core';
-import { getUserId } from './user';
+import http from './http';
 
 export function createTransaction(actionId, token) {
     return (dispatch, getState) => {
-        return core(getState()).appUsers.stripe.createTransaction(getUserId(getState()), actionId, token).catch((e) => {
-            dispatch(showErrorNotification(getState().ui.text.actionPaymentError));
+        const {config: {appId}, user: {_id}, ui} = getState();
+        return dispatch(http('GET', `/client/apps/${appId}/appusers/${_id}/stripe/transaction`, {
+            actionId,
+            token
+        })).catch((e) => {
+            dispatch(showErrorNotification(ui.text.actionPaymentError));
             throw e;
         });
     };
@@ -13,6 +16,7 @@ export function createTransaction(actionId, token) {
 
 export function getAccount() {
     return (dispatch, getState) => {
-        return core(getState()).stripe.getAccount();
+        const {config: {appId}, user: {_id}} = getState();
+        return dispatch(http('GET', `/client/apps/${appId}/appusers/${_id}/stripe/customer`));
     };
 }
