@@ -25,7 +25,7 @@ export function fetchConfig() {
     return (dispatch, getState) => {
         const {configBaseUrl, appId} = getState().config;
 
-        return dispatch(http('GET', `/client/apps/${appId}/config`, {}, {}, configBaseUrl))
+        return dispatch(http('GET', `/apps/${appId}/config`, {}, {}, configBaseUrl))
             .then(({config}) => {
                 const actions = Object.keys(config).map((key) => {
                     if (key === 'style') {
