@@ -367,7 +367,7 @@ export function failSMSLink(error, type) {
 export function fetchTransferRequestCode(type) {
     return (dispatch, getState) => {
         const {user: {_id}, config: {integrations, appId}} = getState();
-        const integration = integrations.find(({type:_type}) => type === _type);
+        const integration = integrations.find((integration) => type === integration.type);
 
         if (!integration) {
             return Promise.resolve();
