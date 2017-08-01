@@ -264,7 +264,7 @@ export function fetchMessageBirdAttributes() {
 export function linkSMSChannel(data) {
     return (dispatch, getState) => {
         const {config: {appId}, user: {_id, pendingClients}} = getState();
-        return dispatch(http('POST', `/client/apps/${appId}/appusers/${_id}/clients`, data))
+        return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/clients`, data))
             .then(({client}) => {
                 dispatch(updateUser({
                     pendingClients: [...pendingClients, client]
@@ -288,7 +288,7 @@ export function unlinkSMSChannel(type) {
             return Promise.resolve();
         }
 
-        return dispatch(http('DELETE', `/client/apps/${appId}/appusers/${_id}/clients/${client._id}`))
+        return dispatch(http('DELETE', `/apps/${appId}/appusers/${_id}/clients/${client._id}`))
             .then(() => {
                 dispatch(updateUser({
                     pendingClients: pendingClients.filter((pendingClient) => pendingClient.platform !== type),
@@ -325,7 +325,7 @@ export function pingSMSChannel(type) {
     return (dispatch, getState) => {
         const {config: {appId}, user: {_id, clients}} = getState();
         const client = clients.find((client) => client.platform === type);
-        return dispatch(http('POST', `/client/apps/${appId}/appusers/${_id}/clients/${client._id}/ping`))
+        return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/clients/${client._id}/ping`))
             .then(() => {
                 dispatch(updateSMSAttributes({
                     linkState: 'linked'
@@ -374,7 +374,7 @@ export function fetchTransferRequestCode(type) {
         }
 
         dispatch(unsetError(type));
-        return dispatch(http('GET', `/client/apps/${appId}/appusers/${_id}/transferrequest`, {
+        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/transferrequest`, {
             type,
             integrationId: integration._id
         })).then((res) => {

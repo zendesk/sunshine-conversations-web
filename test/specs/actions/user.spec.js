@@ -13,17 +13,7 @@ describe('User Actions', () => {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        httpStub = sandbox.stub().returnsAsyncThunk({
-            value: {
-                response: {
-                    status: 200
-                },
-                appUser: {
-                    _id: '1',
-                    email: 'mocked@email.com'
-                }
-            }
-        });
+        httpStub = sandbox.stub().returnsAsyncThunk();
         UserRewire('http', httpStub);
 
         setUserSpy = sandbox.spy(userActions.setUser);
@@ -55,27 +45,23 @@ describe('User Actions', () => {
         });
 
         describe('is dirty', () => {
-            it('should call smooch-core update api and update the store on server response', () => {
+            it('should call api and update the store', () => {
                 const props = {
                     email: 'other@email.com'
                 };
-                const {config: {appId}, user: {_id}} = mockedStore.getState();
-                return mockedStore.dispatch(userActions.immediateUpdate(props)).then((response) => {
+
+                const {config: {appId}, user: {_id, email}} = mockedStore.getState();
+
+                email.should.eq('some@email.com');
+
+                return mockedStore.dispatch(userActions.immediateUpdate(props)).then(() => {
                     httpStub.should.have.been.calledWith('PUT', `/apps/${appId}/appusers/${_id}`, {
                         email: 'other@email.com'
                     });
 
-                    // the values here are different because these are values
-                    // returned by the server and mocked in the beforeEach
-                    response.appUser.should.deep.eq({
+                    setUserSpy.should.have.been.calledWithMatch({
                         _id: '1',
-                        email: 'mocked@email.com'
-                    });
-
-
-                    setUserSpy.should.have.been.calledWith({
-                        _id: '1',
-                        email: 'mocked@email.com'
+                        email: 'other@email.com'
                     });
                 });
             });

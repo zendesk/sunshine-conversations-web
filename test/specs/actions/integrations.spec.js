@@ -58,7 +58,7 @@ describe('Integrations Actions', () => {
                 type: 'twilio',
                 phoneNumber: '+0123456789'
             })).then(() => {
-                httpStub.should.have.been.calledWith('POST', `/client/apps/${appId}/appusers/${_id}/clients`, {
+                httpStub.should.have.been.calledWith('POST', `/apps/${appId}/appusers/${_id}/clients`, {
                     type: 'twilio',
                     phoneNumber: '+0123456789'
                 });
@@ -85,7 +85,7 @@ describe('Integrations Actions', () => {
         it('should set the sms integration state to unlinked', () => {
             const {config: {appId}, user: {_id}} = mockedStore.getState();
             return mockedStore.dispatch(integrationsActions.unlinkSMSChannel('twilio')).then(() => {
-                httpStub.should.have.been.calledWith('DELETE', `/client/apps/${appId}/appusers/${_id}/clients/twilio-client`);
+                httpStub.should.have.been.calledWith('DELETE', `/apps/${appId}/appusers/${_id}/clients/twilio-client`);
             });
         });
     });
@@ -109,7 +109,7 @@ describe('Integrations Actions', () => {
         it('should call the ping channel API', () => {
             const {config: {appId}, user: {_id}} = mockedStore.getState();
             return mockedStore.dispatch(integrationsActions.pingSMSChannel('twilio')).then(() => {
-                httpStub.should.have.been.calledWith('POST', `/client/apps/${appId}/appusers/${_id}/clients/twilio-client/ping`);
+                httpStub.should.have.been.calledWith('POST', `/apps/${appId}/appusers/${_id}/clients/twilio-client/ping`);
             });
         });
     });
@@ -140,7 +140,7 @@ describe('Integrations Actions', () => {
             const channel = 'messenger';
             const {config: {appId}, user: {_id}} = mockedStore.getState();
             return mockedStore.dispatch(integrationsActions.fetchTransferRequestCode(channel)).then(() => {
-                httpStub.should.have.been.calledWith('GET', `/client/apps/${appId}/appusers/${_id}/transferrequest`, {
+                httpStub.should.have.been.calledWith('GET', `/apps/${appId}/appusers/${_id}/transferrequest`, {
                     type: channel,
                     integrationId: 'messenger-integration'
                 });

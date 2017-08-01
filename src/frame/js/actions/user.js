@@ -44,20 +44,27 @@ export function immediateUpdate(props) {
 
         if (isDirty) {
             return dispatch(http('PUT', `/apps/${appId}/appusers/${user._id}`, props))
-                .then((response) => {
-                    dispatch(setUser(response.appUser));
+                .then(() => {
+                    dispatch(setUser({
+                        ...user,
+                        ...props,
+                        properties: {
+                            ...user.properties,
+                            ...props.properties
+                        }
+                    }));
+
                     if (updateToResolve) {
-                        updateToResolve(response);
+                        updateToResolve(getState().user);
                     }
-                    return response;
+
+                    return getState().user;
                 });
         } else if (updateToResolve) {
             updateToResolve(user);
             return pendingUpdatePromise;
         } else {
-            return Promise.resolve({
-                user
-            });
+            return Promise.resolve(user);
         }
     };
 }

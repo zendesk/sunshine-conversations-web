@@ -31,7 +31,7 @@ describe('Stripe Actions', () => {
         it('should call stripe api endpoint', () => {
             const {config: {appId}, user: {_id}} = mockedStore.getState();
             return mockedStore.dispatch(createTransaction('actionId', 'token')).then(() => {
-                httpStub.should.have.been.calledWith('GET', `/client/apps/${appId}/appusers/${_id}/stripe/transaction`, {
+                httpStub.should.have.been.calledWith('POST', `/apps/${appId}/appusers/${_id}/stripe/transaction`, {
                     actionId: 'actionId',
                     token: 'token'
                 });
@@ -43,7 +43,7 @@ describe('Stripe Actions', () => {
         it('should call stripe api endpoint', () => {
             const {config: {appId}, user: {_id}} = mockedStore.getState();
             return mockedStore.dispatch(getAccount()).then(() => {
-                httpStub.should.have.been.calledWith('GET', `/client/apps/${appId}/appusers/${_id}/stripe/customer`);
+                httpStub.should.have.been.calledWith('GET', `/apps/${appId}/appusers/${_id}/stripe/customer`);
             });
         });
     });
