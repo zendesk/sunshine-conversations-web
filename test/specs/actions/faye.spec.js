@@ -2,13 +2,14 @@ import sinon from 'sinon';
 import { Client } from 'faye';
 
 import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
-import { hideChannelPage, hideConnectNotification } from '../../../src/frame/js/actions/app-state';
+import { hideChannelPage, hideConnectNotification, hideTypingIndicator } from '../../../src/frame/js/actions/app-state';
 import { setUser } from '../../../src/frame/js/actions/user';
 import { addMessage, incrementUnreadCount } from '../../../src/frame/js/actions/conversation';
 import * as fayeActions from '../../../src/frame/js/actions/faye';
 import { __Rewire__ as FayeRewire, __RewireAPI__ as FayeRewireAPI } from '../../../src/frame/js/actions/faye';
 
 const handleMessageEvents = FayeRewireAPI.__get__('handleMessageEvents');
+const handleActivityEvents = FayeRewireAPI.__get__('handleActivityEvents');
 const getClient = FayeRewireAPI.__get__('getClient');
 const sandbox = sinon.sandbox.create();
 
@@ -17,6 +18,8 @@ describe('Faye Actions', () => {
     let getMessagesStub;
     let disconnectFayeStub;
     let showSettingsStub;
+    let showTypingIndicatorStub;
+    let hideTypingIndicatorSpy;
     let hideChannelPageSpy;
     let hideConnectNotificationSpy;
     let addMessageSpy;
@@ -41,6 +44,12 @@ describe('Faye Actions', () => {
 
         hideChannelPageSpy = sandbox.spy(hideChannelPage);
         FayeRewire('hideChannelPage', hideChannelPageSpy);
+
+        showTypingIndicatorStub = sandbox.stub().returnsSyncThunk();
+        FayeRewire('showTypingIndicator', showTypingIndicatorStub);
+
+        hideTypingIndicatorSpy = sandbox.spy(hideTypingIndicator);
+        FayeRewire('hideTypingIndicator', hideTypingIndicatorSpy);
 
         hideConnectNotificationSpy = sandbox.spy(hideConnectNotification);
         FayeRewire('hideConnectNotification', hideConnectNotificationSpy);
@@ -210,6 +219,81 @@ describe('Faye Actions', () => {
             });
         });
     });
+
+    describe('handleActivityEvents', () => {
+        beforeEach(() => {
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
+                conversation: {
+                    _id: 'some-conversation-id'
+                }
+            }));
+        });
+
+        function generateEvent({conversationId='some-conversation-id', activity} = {}) {
+            return {
+                conversation: {
+                    _id: conversationId
+                },
+                activity
+            };
+        }
+
+        describe('message from same conversation', () => {
+            it('should call the spy', () => {
+                [{
+                    type: 'typing:start',
+                    spy: showTypingIndicatorStub
+                }, {
+                    type: 'typing:stop',
+                    spy: hideTypingIndicatorSpy
+                }].forEach(({type, spy}) => {
+                    const activity = {
+                        type,
+                        role: 'appMaker'
+                    };
+                    mockedStore.dispatch(handleActivityEvents([generateEvent({
+                        activity
+                    })]));
+
+                    spy.should.have.been.calledOnce;
+                });
+            });
+        });
+
+        describe('message from appUser', () => {
+            it('should do nothing', () => {
+                ['typing:start', 'typing:stop'].forEach((type) => {
+                    const activity = {
+                        type,
+                        role: 'appUser'
+                    };
+                    mockedStore.dispatch(handleActivityEvents([generateEvent({
+                        activity
+                    })]));
+
+                    showTypingIndicatorStub.should.not.have.been.called;
+                    hideTypingIndicatorSpy.should.not.have.been.called;
+                });
+            });
+        });
+
+        describe('message from different conversation', () => {
+            it('should not add the message', () => {
+                const activity = {
+                    type: 'typing:start'
+                };
+
+                mockedStore.dispatch(handleActivityEvents([generateEvent({
+                    activity,
+                    conversationId: 'some-other-conversation-id'
+                })]));
+
+                showTypingIndicatorStub.should.not.have.been.called;
+                hideTypingIndicatorSpy.should.not.have.been.called;
+            });
+        });
+    });
+
 
     describe('subscribe', () => {
         it('should call setFayeSubcription', () => {

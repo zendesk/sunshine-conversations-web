@@ -118,33 +118,43 @@ function handleMessageEvents(events) {
     };
 }
 
+function handleActivityEvents(events) {
+    return (dispatch, getState) => {
+        const {conversation: {_id: currentConversationId}} = getState();
+
+        // Discard messages not related to the current conversation.
+        // To be changed once the Web Messenger supports
+        // multiple conversations.
+
+        events
+            .filter(({conversation}) => conversation._id === currentConversationId)
+            .forEach(({activity: {type, role, data}}) => {
+                if (role === 'appMaker') {
+                    // Web Messenger only handles appMaker activities for now
+                    switch (type) {
+                        case 'typing:start':
+                            return dispatch(showTypingIndicator(data));
+                        case 'typing:stop':
+                            return dispatch(hideTypingIndicator());
+                    }
+                }
+            });
+    };
+}
+
 export function subscribe() {
     return (dispatch, getState) => {
         const client = dispatch(getClient());
         const {config: {appId}, user: {_id}} = getState();
         const subscription = client.subscribe(`/sdk/apps/${appId}/appusers/${_id}`, function({events}) {
-            const messageEvents = events
-                .filter(({type}) => type === 'message');
+            const messageEvents = events.filter(({type}) => type === 'message');
+            const activityEvents = events.filter(({type}) => type === 'activity');
 
             dispatch(handleMessageEvents(messageEvents));
+            dispatch(handleActivityEvents(activityEvents));
         });
 
         return subscription.then(() => dispatch(setFayeSubscription(subscription)));
-    };
-}
-
-export function handleConversationActivitySubscription({activity, role, data={}}) {
-    return (dispatch) => {
-        if (role === 'appMaker') {
-            // Web Messenger only handles appMaker activities for now
-
-            switch (activity) {
-                case 'typing:start':
-                    return dispatch(showTypingIndicator(data));
-                case 'typing:stop':
-                    return dispatch(hideTypingIndicator());
-            }
-        }
     };
 }
 
