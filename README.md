@@ -264,22 +264,19 @@ Smooch.updateUser({
 });
 ```
 
-#### getUserId()
-Returns the userId of the current user.
+#### getUser()
+Returns the current user.
 
 ```javascript
-Smooch.getUserId()
+var user = Smooch.getUser()
 ```
 
 #### getConversation()
-Returns promise that resolves to conversation object, or rejects if none exists
+Returns the conversation if it exists
 
 ```javascript
-Smooch.getConversation().then(conversation => ...);
+var conversation = Smooch.getConversation();
 ```
-
-#### getCore()
-Returns an instance of [smooch-core](https://github.com/smooch/smooch-core-js) to allow access to APIs the Web Messenger doesn't expose. For more information on how to use Smooch-Core, please visit the [documentation](http://docs.smooch.io/rest/?javascript).
 
 ### Events
 If you want to make sure your events are triggered, try to bind them before calling `Smooch.init`.

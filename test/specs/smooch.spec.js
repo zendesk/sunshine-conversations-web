@@ -44,7 +44,6 @@ describe('Smooch', () => {
     let sendMessageStub;
     let disconnectFayeStub;
     let updateUserStub;
-    let getUserIdStub;
     let openWidgetStub;
     let closeWidgetStub;
     let fetchUserConversationStub;
@@ -62,7 +61,6 @@ describe('Smooch', () => {
 
         immediateUpdateStub = sandbox.stub().returnsAsyncThunk();
         updateUserStub = sandbox.stub();
-        getUserIdStub = sandbox.stub().returns('1234');
         cleanUpStub = sandbox.stub();
         setUserStub = sandbox.stub();
         setAuthStub = sandbox.stub();
@@ -71,7 +69,6 @@ describe('Smooch', () => {
             ...userActions,
             update: updateUserStub,
             immediateUpdate: immediateUpdateStub,
-            getUserId: getUserIdStub,
             setUser: setUserStub
         });
 
@@ -298,47 +295,23 @@ describe('Smooch', () => {
         });
     });
 
-    describe.skip('Update user', () => {
-        describe('conversation started', () => {
-            beforeEach(() => {
-                updateUserStub.returnsAsyncThunk({
-                    value: {
-                        appUser: {
-                            conversationStarted: true
-                        }
+    describe('Update user', () => {
+        beforeEach(() => {
+            updateUserStub.returnsAsyncThunk({
+                value: {
+                    appUser: {
+                        conversationStarted: false
                     }
-                });
-            });
-
-            it('should call handleConversationUpdated', () => {
-                return Smooch.updateUser({
-                    email: 'update@me.com'
-                }).then(() => {
-                    updateUserStub.should.have.been.calledWith({
-                        email: 'update@me.com'
-                    });
-                });
+                }
             });
         });
 
-        describe('conversation not started', () => {
-            beforeEach(() => {
-                updateUserStub.returnsAsyncThunk({
-                    value: {
-                        appUser: {
-                            conversationStarted: false
-                        }
-                    }
-                });
-            });
-
-            it('should not handleConversationUpdated', () => {
-                return Smooch.updateUser({
+        it('should call the user action', () => {
+            return Smooch.updateUser({
+                email: 'update@me.com'
+            }).then(() => {
+                updateUserStub.should.have.been.calledWith({
                     email: 'update@me.com'
-                }).then(() => {
-                    updateUserStub.should.have.been.calledWith({
-                        email: 'update@me.com'
-                    });
                 });
             });
         });
@@ -370,12 +343,6 @@ describe('Smooch', () => {
         it('should dispatch close action', () => {
             Smooch.close();
             closeWidgetStub.should.have.been.calledOnce;
-        });
-    });
-
-    describe('Get User Id', () => {
-        it('should call the conversation action', () => {
-            return Smooch.getUserId(mockedStore.getState()).should.eq('1234');
         });
     });
 });

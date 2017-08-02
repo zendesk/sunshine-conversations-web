@@ -530,7 +530,7 @@ export function disconnectFaye() {
     };
 }
 
-export function handleUserConversationResponse({appUser, conversation, messages, sessionToken}) {
+export function handleUserConversationResponse({appUser, conversation, hasPrevious, messages, sessionToken}) {
     return (dispatch, getState) => {
         const {config: {appId}} = getState();
         Raven.setUserContext({
@@ -539,7 +539,10 @@ export function handleUserConversationResponse({appUser, conversation, messages,
 
         const actions = [
             setUser(appUser),
-            setConversation(conversation),
+            setConversation({
+                ...conversation,
+                hasMoreMessages: hasPrevious
+            }),
             setMessages(messages)
         ];
 
