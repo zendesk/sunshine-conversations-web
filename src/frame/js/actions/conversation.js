@@ -50,6 +50,12 @@ export function setMessages(messages) {
     };
 }
 
+export function addMessage(message) {
+    return {
+        type: ADD_MESSAGE,
+        message
+    };
+}
 
 export function addMessages(messages, append = true) {
     return {
@@ -153,7 +159,7 @@ function onMessageSendFailure(message) {
     };
 }
 
-function addMessage(props) {
+export function addClientMessage(props) {
     return (dispatch, getState) => {
         const {config: {appId}} = getState();
         if (props._clientId) {
@@ -186,10 +192,7 @@ function addMessage(props) {
 
         dispatch(batchActions([
             setShouldScrollToBottom(true),
-            {
-                type: ADD_MESSAGE,
-                message
-            }
+            addMessage(message)
         ]));
 
         return message;
@@ -215,9 +218,12 @@ function _getMessages({before} = {}) {
     return (dispatch, getState) => {
         const {user: {_id}, config: {appId}} = getState();
 
-        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/messages`, {
-            before
-        }));
+        const data = {};
+        if (before) {
+            data.before = before;
+        }
+
+        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/messages`, data));
     };
 }
 
@@ -241,7 +247,7 @@ function sendChain(sendFn, message) {
 
 export function sendMessage(props) {
     return (dispatch) => {
-        const message = dispatch(addMessage(props));
+        const message = dispatch(addClientMessage(props));
         return dispatch(sendChain(postSendMessage, message));
     };
 }
@@ -383,7 +389,7 @@ export function sendLocation(props = {}) {
         if (props._clientSent) {
             message = props;
         } else {
-            message = dispatch(addMessage({
+            message = dispatch(addClientMessage({
                 type: 'location',
                 ...props
             }));
@@ -452,7 +458,7 @@ export function uploadImage(file) {
 
         return resizeImage(file)
             .then((dataUrl) => {
-                const message = dispatch(addMessage({
+                const message = dispatch(addClientMessage({
                     mediaUrl: dataUrl,
                     mediaType: 'image/jpeg',
                     type: 'image'
@@ -493,7 +499,7 @@ export function disconnectFaye() {
             subscription.cancel();
         }
 
-        disconnectClient();
+        dispatch(disconnectClient());
         dispatch(unsetFayeSubscription());
     };
 }

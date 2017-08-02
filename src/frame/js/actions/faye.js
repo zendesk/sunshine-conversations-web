@@ -51,7 +51,7 @@ const getScheduler = ({retryInterval, maxConnectionAttempts}) => {
     };
 };
 
-export function getClient() {
+function getClient() {
     return (dispatch, getState) => {
         if (!client) {
             const {config: {realtime, appId}, auth, user} = getState();
@@ -81,6 +81,7 @@ export function getClient() {
                 }
             });
 
+
             client.on('transport:up', function() {
                 const {user} = getState();
 
@@ -94,20 +95,26 @@ export function getClient() {
     };
 }
 
-export function handleConversationSubscription(message) {
+function handleMessageEvents(events) {
     return (dispatch, getState) => {
-        const {config: {appId}} = getState();
-        if (message.source.id !== getClientId(appId)) {
-            dispatch(addMessage(message));
+        const {config: {appId}, conversation: {_id: currentConversationId}} = getState();
 
-            if (message.role === 'appUser') {
-                dispatch(resetUnreadCount());
-            }
-        }
+        // Discard messages sent from the current client
+        // and messages not related to the current conversation.
+        // To be changed once the Web Messenger supports
+        // multiple conversations.
 
-        if (message.role !== 'appUser') {
-            dispatch(incrementUnreadCount());
-        }
+        events
+            .filter(({conversation, message}) => conversation._id === currentConversationId && message.source.id !== getClientId(appId))
+            .forEach(({message}) => {
+                dispatch(addMessage(message));
+
+                if (message.role === 'appUser') {
+                    dispatch(resetUnreadCount());
+                } else {
+                    dispatch(incrementUnreadCount());
+                }
+            });
     };
 }
 
@@ -115,13 +122,14 @@ export function subscribe() {
     return (dispatch, getState) => {
         const client = dispatch(getClient());
         const {config: {appId}, user: {_id}} = getState();
-        const subscription = client.subscribe(`/sdk/apps/${appId}/appusers/${_id}`, ({type, ...rest}) => {
-            console.log('Faye message received', type, rest);
+        const subscription = client.subscribe(`/sdk/apps/${appId}/appusers/${_id}`, function({events}) {
+            const messageEvents = events
+                .filter(({type}) => type === 'message');
+
+            dispatch(handleMessageEvents(messageEvents));
         });
 
-        return subscription.then(() => {
-            return dispatch(setFayeSubscription(subscription));
-        });
+        return subscription.then(() => dispatch(setFayeSubscription(subscription)));
     };
 }
 
@@ -221,8 +229,10 @@ export function handleUserSubscription({appUser, event}) {
 }
 
 export function disconnectClient() {
-    if (client) {
-        client.disconnect();
-        client = undefined;
-    }
+    return () => {
+        if (client) {
+            client.disconnect();
+            client = undefined;
+        }
+    };
 }
