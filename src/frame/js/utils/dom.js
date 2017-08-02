@@ -4,8 +4,6 @@ import { hasFocus } from '../actions/browser';
 import { WIDGET_STATE } from '../constants/app';
 import { DISPLAY_STYLE } from '../constants/styles';
 
-const pushState = window.history && window.history.pushState;
-const replaceState = window.history && window.history.replaceState;
 const parentDocument = parent.document;
 
 const STATE_CLASSNAMES = {
@@ -18,8 +16,6 @@ const DISPLAY_STYLE_CLASSNAMES = {
     [DISPLAY_STYLE.BUTTON]: hostStyles.locals.displayButton,
     [DISPLAY_STYLE.TAB]: hostStyles.locals.displayTab
 };
-
-let monitorCallback;
 
 export function waitForPage() {
     return new Promise((resolve) => {
@@ -57,41 +53,6 @@ export function updateHostClassNames(widgetState, displayStyle) {
     }
 }
 
-export function monitorUrlChanges(callback) {
-    stopMonitoringUrlChanges();
-
-    monitorCallback = callback;
-    parent.addEventListener('hashchange', monitorCallback);
-
-    if (parent.history) {
-        parent.history.pushState = (state, title, url, ...rest) => {
-            pushState && pushState.apply(parent.history, [state, title, url, ...rest]);
-
-            if (url) {
-                monitorCallback();
-            }
-        };
-
-        parent.history.replaceState = (state, title, url, ...rest) => {
-            replaceState && replaceState.apply(parent.history, [state, title, url, ...rest]);
-
-            if (url) {
-                monitorCallback();
-            }
-        };
-    }
-}
-
-export function stopMonitoringUrlChanges() {
-    if (monitorCallback) {
-        parent.removeEventListener('hashchange', monitorCallback);
-
-        if (parent.history) {
-            parent.history.pushState = pushState;
-            parent.history.replaceState = replaceState;
-        }
-    }
-}
 
 export function getWindowLocation() {
     return parent.location;

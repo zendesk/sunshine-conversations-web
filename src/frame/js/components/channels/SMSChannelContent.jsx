@@ -14,7 +14,6 @@ export class SMSChannelContentComponent extends Component {
         phoneNumber: PropTypes.string,
         originator: PropTypes.string,
         linkState: PropTypes.oneOf(['unlinked', 'pending', 'linked']),
-        smoochId: PropTypes.string.isRequired,
         text: PropTypes.object.isRequired,
         channelState: PropTypes.object.isRequired,
         type: PropTypes.oneOf(['twilio', 'messagebird'])
@@ -22,7 +21,7 @@ export class SMSChannelContentComponent extends Component {
 
     linkPhoneNumber = () => {
         const {dispatch, channelState:{appUserNumber}, type} = this.props;
-        dispatch(linkSMSChannel(this.props.smoochId, {
+        dispatch(linkSMSChannel({
             type,
             phoneNumber: appUserNumber.replace(/[()\-\s]/g, '')
         }));
@@ -30,7 +29,7 @@ export class SMSChannelContentComponent extends Component {
 
     unlinkChannel = () => {
         const {dispatch, type} = this.props;
-        dispatch(unlinkSMSChannel(this.props.smoochId, type));
+        dispatch(unlinkSMSChannel(type));
     }
 
     handleInputChange = (telNumber) => {
@@ -49,7 +48,7 @@ export class SMSChannelContentComponent extends Component {
 
     onSendText = () => {
         const {dispatch, type} = this.props;
-        dispatch(pingSMSChannel(this.props.smoochId, type));
+        dispatch(pingSMSChannel(type));
     }
 
     onNumberValid = () => {
