@@ -15,6 +15,10 @@ import Loading from './Loading';
 export class ActionComponent extends Component {
 
     static propTypes = {
+        dispatch: PropTypes.func.isRequired,
+        _id: PropTypes.string.isRequired,
+        appName: PropTypes.string.isRequired,
+        appIconUrl: PropTypes.string.isRequired,
         text: PropTypes.string.isRequired,
         type: PropTypes.string,
         buttonColor: PropTypes.string,
@@ -24,7 +28,6 @@ export class ActionComponent extends Component {
         state: PropTypes.string,
         actionPaymentCompletedText: PropTypes.string.isRequired,
         integrations: PropTypes.array.isRequired,
-        stripe: PropTypes.object,
         user: PropTypes.object.isRequired
     };
 
@@ -115,7 +118,7 @@ export class ActionComponent extends Component {
     }
 
     render() {
-        const {buttonColor, amount, currency, text, uri, type, actionPaymentCompletedText, integrations, stripe, user} = this.props;
+        const {buttonColor, amount, currency, text, uri, type, actionPaymentCompletedText, integrations, user, appName, appIconUrl} = this.props;
         const {state} = this.state;
 
         const stripeIntegration = getIntegration(integrations, 'stripeConnect');
@@ -129,8 +132,6 @@ export class ActionComponent extends Component {
         // the public key is necessary to use with Checkout
         // use the link fallback if this happens
         if (type === 'buy' && stripeIntegration) {
-            // let's change this when we support other providers
-            const stripeAccount = stripe;
             if (state === 'offered') {
                 return <StripeCheckout componentClass='div'
                                        className='sk-action'
@@ -139,8 +140,8 @@ export class ActionComponent extends Component {
                                        email={ user.email }
                                        amount={ amount }
                                        currency={ currency.toUpperCase() }
-                                       name={ stripeAccount.appName }
-                                       image={ stripeAccount.iconUrl }
+                                       name={ appName }
+                                       image={ appIconUrl }
                                        closed={ this.onStripeClose }
                                        executionContext={ parent }>
                            <a className='btn btn-sk-primary'
@@ -200,7 +201,9 @@ export default connect(({ui: {text}, user, config}) => {
         user,
         actionPaymentCompletedText: text.actionPaymentCompleted,
         integrations: config.integrations,
-        stripe: config.stripe
+        stripe: config.stripe,
+        appName: config.app.name,
+        appIconUrl: config.app.iconUrl,
     };
 }, null, null, {
     withRef: true
