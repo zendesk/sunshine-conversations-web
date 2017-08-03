@@ -2,7 +2,7 @@ import sinon from 'sinon';
 
 import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 
-import { createTransaction, getAccount, __Rewire__ as StripeRewire } from '../../../src/frame/js/actions/stripe';
+import { createTransaction, __Rewire__ as StripeRewire } from '../../../src/frame/js/actions/stripe';
 
 describe('Stripe Actions', () => {
     let sandbox;
