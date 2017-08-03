@@ -3,7 +3,7 @@ import { batchActions } from 'redux-batched-actions';
 
 import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi, showConnectNotification } from './app-state';
 import { setUser } from './user';
-import { disconnectClient, subscribeConversation, subscribeUser, subscribeConversationActivity, unsetFayeSubscriptions } from './faye';
+import { disconnectClient, subscribe as subscribeFaye, unsetFayeSubscription } from './faye';
 
 import http from './http';
 import { setAuth } from './auth';
@@ -50,6 +50,12 @@ export function setMessages(messages) {
     };
 }
 
+export function addMessage(message) {
+    return {
+        type: ADD_MESSAGE,
+        message
+    };
+}
 
 export function addMessages(messages, append = true) {
     return {
@@ -153,7 +159,7 @@ function onMessageSendFailure(message) {
     };
 }
 
-function addMessage(props) {
+export function addClientMessage(props) {
     return (dispatch, getState) => {
         const {config: {appId}} = getState();
         if (props._clientId) {
@@ -186,10 +192,7 @@ function addMessage(props) {
 
         dispatch(batchActions([
             setShouldScrollToBottom(true),
-            {
-                type: ADD_MESSAGE,
-                message
-            }
+            addMessage(message)
         ]));
 
         return message;
@@ -215,9 +218,12 @@ function _getMessages({before} = {}) {
     return (dispatch, getState) => {
         const {user: {_id}, config: {appId}} = getState();
 
-        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/messages`, {
-            before
-        }));
+        const data = {};
+        if (before) {
+            data.before = before;
+        }
+
+        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/messages`, data));
     };
 }
 
@@ -241,7 +247,7 @@ function sendChain(sendFn, message) {
 
 export function sendMessage(props) {
     return (dispatch) => {
-        const message = dispatch(addMessage(props));
+        const message = dispatch(addClientMessage(props));
         return dispatch(sendChain(postSendMessage, message));
     };
 }
@@ -383,7 +389,7 @@ export function sendLocation(props = {}) {
         if (props._clientSent) {
             message = props;
         } else {
-            message = dispatch(addMessage({
+            message = dispatch(addClientMessage({
                 type: 'location',
                 ...props
             }));
@@ -452,7 +458,7 @@ export function uploadImage(file) {
 
         return resizeImage(file)
             .then((dataUrl) => {
-                const message = dispatch(addMessage({
+                const message = dispatch(addClientMessage({
                     mediaUrl: dataUrl,
                     mediaType: 'image/jpeg',
                     type: 'image'
@@ -485,48 +491,16 @@ export function getMessages() {
     };
 }
 
-export function connectFayeConversation() {
-    return (dispatch, getState) => {
-        const {user: {conversationStarted}, conversation: {_id:conversationId}, faye: {conversationSubscription}} = getState();
-
-        if (conversationStarted && conversationId && !conversationSubscription) {
-            return Promise.all([
-                // dispatch(subscribeConversation()),
-                // dispatch(subscribeConversationActivity())
-            ]);
-        }
-
-        return Promise.resolve();
-    };
-}
-
-export function connectFayeUser() {
-    return (dispatch, getState) => {
-
-        const {faye: {userSubscription}} = getState();
-
-        if (!userSubscription) {
-            return dispatch(subscribeUser());
-        }
-
-        return Promise.resolve();
-    };
-}
-
 export function disconnectFaye() {
     return (dispatch, getState) => {
-        const {faye: {conversationSubscription, userSubscription}} = getState();
+        const {faye: {subscription}} = getState();
 
-        if (conversationSubscription) {
-            conversationSubscription.cancel();
+        if (subscription) {
+            subscription.cancel();
         }
 
-        if (userSubscription) {
-            userSubscription.cancel();
-        }
-
-        disconnectClient();
-        dispatch(unsetFayeSubscriptions());
+        dispatch(disconnectClient());
+        dispatch(unsetFayeSubscription());
     };
 }
 
@@ -558,7 +532,7 @@ export function handleUserConversationResponse({appUser, conversation, hasPrevio
         dispatch(batchActions(actions));
 
         if (appUser.conversationStarted) {
-            return dispatch(connectFayeConversation());
+            return dispatch(subscribeFaye());
         }
 
         return Promise.resolve();
