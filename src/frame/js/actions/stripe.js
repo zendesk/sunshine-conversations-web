@@ -13,10 +13,3 @@ export function createTransaction(actionId, token) {
         });
     };
 }
-
-export function getAccount() {
-    return (dispatch, getState) => {
-        const {config: {appId}, user: {_id}} = getState();
-        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/stripe/customer`));
-    };
-}
