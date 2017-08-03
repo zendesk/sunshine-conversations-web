@@ -1,5 +1,4 @@
 import { Client, Scheduler as FayeScheduler } from 'faye';
-import urljoin from 'urljoin';
 import { batchActions } from 'redux-batched-actions';
 
 import { setUser } from './user';
@@ -10,36 +9,19 @@ import { getClientId } from '../utils/client';
 import { ANIMATION_TIMINGS } from '../constants/styles';
 
 
-export const SET_FAYE_CONVERSATION_SUBSCRIPTION = 'SET_FAYE_CONVERSATION_SUBSCRIPTION';
-export const SET_FAYE_CONVERSATION_ACTIVITY_SUBSCRIPTION = 'SET_FAYE_CONVERSATION_ACTIVITY_SUBSCRIPTION';
-export const SET_FAYE_USER_SUBSCRIPTION = 'SET_FAYE_USER_SUBSCRIPTION';
-export const UNSET_FAYE_SUBSCRIPTIONS = 'UNSET_FAYE_SUBSCRIPTIONS';
+export const SET_FAYE_SUBSCRIPTION = 'SET_FAYE_SUBSCRIPTION';
+export const UNSET_FAYE_SUBSCRIPTION = 'UNSET_FAYE_SUBSCRIPTION';
 
-export function setFayeConversationSubscription(subscription) {
+export function setFayeSubscription(subscription) {
     return {
-        type: SET_FAYE_CONVERSATION_SUBSCRIPTION,
+        type: SET_FAYE_SUBSCRIPTION,
         subscription
     };
 }
 
-export function setFayeConversationActivitySubscription(subscription) {
+export function unsetFayeSubscription() {
     return {
-        type: SET_FAYE_CONVERSATION_ACTIVITY_SUBSCRIPTION,
-        subscription
-    };
-}
-
-export function setFayeUserSubscription(subscription) {
-    return {
-        type: SET_FAYE_USER_SUBSCRIPTION,
-        subscription
-    };
-}
-
-
-export function unsetFayeSubscriptions() {
-    return {
-        type: UNSET_FAYE_SUBSCRIPTIONS
+        type: UNSET_FAYE_SUBSCRIPTION
     };
 }
 
@@ -69,14 +51,14 @@ const getScheduler = ({retryInterval, maxConnectionAttempts}) => {
     };
 };
 
-export function getClient() {
+function getClient() {
     return (dispatch, getState) => {
         if (!client) {
             const {config: {realtime, appId}, auth, user} = getState();
 
             const Scheduler = getScheduler(realtime);
 
-            client = new Client(urljoin(realtime.baseUrl, 'faye'), {
+            client = new Client(realtime.baseUrl, {
                 scheduler: Scheduler
             });
 
@@ -99,6 +81,7 @@ export function getClient() {
                 }
             });
 
+
             client.on('transport:up', function() {
                 const {user} = getState();
 
@@ -112,63 +95,66 @@ export function getClient() {
     };
 }
 
-export function handleConversationSubscription(message) {
+function handleMessageEvents(events) {
     return (dispatch, getState) => {
-        const {config: {appId}} = getState();
-        if (message.source.id !== getClientId(appId)) {
-            dispatch(addMessage(message));
+        const {config: {appId}, conversation: {_id: currentConversationId}} = getState();
 
-            if (message.role === 'appUser') {
-                dispatch(resetUnreadCount());
-            }
-        }
+        // Discard messages sent from the current client
+        // and messages not related to the current conversation.
+        // To be changed once the Web Messenger supports
+        // multiple conversations.
 
-        if (message.role !== 'appUser') {
-            dispatch(incrementUnreadCount());
-        }
+        events
+            .filter(({conversation, message}) => conversation._id === currentConversationId && message.source.id !== getClientId(appId))
+            .forEach(({message}) => {
+                dispatch(addMessage(message));
+
+                if (message.role === 'appUser') {
+                    dispatch(resetUnreadCount());
+                } else {
+                    dispatch(incrementUnreadCount());
+                }
+            });
     };
 }
 
-export function subscribeConversation() {
+function handleActivityEvents(events) {
+    return (dispatch, getState) => {
+        const {conversation: {_id: currentConversationId}} = getState();
+
+        // Discard messages not related to the current conversation.
+        // To be changed once the Web Messenger supports
+        // multiple conversations.
+
+        events
+            .filter(({conversation}) => conversation._id === currentConversationId)
+            .forEach(({activity: {type, role, data}}) => {
+                if (role === 'appMaker') {
+                    // Web Messenger only handles appMaker activities for now
+                    switch (type) {
+                        case 'typing:start':
+                            return dispatch(showTypingIndicator(data));
+                        case 'typing:stop':
+                            return dispatch(hideTypingIndicator());
+                    }
+                }
+            });
+    };
+}
+
+export function subscribe() {
     return (dispatch, getState) => {
         const client = dispatch(getClient());
-        const {conversation: {_id: conversationId}} = getState();
-        const subscription = client.subscribe(`/v1/conversations/${conversationId}`, (message) => {
-            dispatch(handleConversationSubscription(message));
+        const {config: {appId}, user: {_id}} = getState();
+        const subscription = client.subscribe(`/sdk/apps/${appId}/appusers/${_id}`, function({events}) {
+            const messageEvents = events.filter(({type}) => type === 'message');
+            const activityEvents = events.filter(({type}) => type === 'activity');
+
+            dispatch(handleMessageEvents(messageEvents));
+            dispatch(handleActivityEvents(activityEvents));
         });
 
-        return subscription.then(() => {
-            return dispatch(setFayeConversationSubscription(subscription));
-        });
-    };
-}
-
-export function handleConversationActivitySubscription({activity, role, data={}}) {
-    return (dispatch) => {
-        if (role === 'appMaker') {
-            // Web Messenger only handles appMaker activities for now
-
-            switch (activity) {
-                case 'typing:start':
-                    return dispatch(showTypingIndicator(data));
-                case 'typing:stop':
-                    return dispatch(hideTypingIndicator());
-            }
-        }
-    };
-}
-
-export function subscribeConversationActivity() {
-    return (dispatch, getState) => {
-        const client = dispatch(getClient());
-        const {conversation: {_id: conversationId}} = getState();
-        const subscription = client.subscribe(`/v1/conversations/${conversationId}/activity`, (message) => {
-            dispatch(handleConversationActivitySubscription(message));
-        });
-
-        return subscription.then(() => {
-            return dispatch(setFayeConversationActivitySubscription(subscription));
-        });
+        return subscription.then(() => dispatch(setFayeSubscription(subscription)));
     };
 }
 
@@ -184,7 +170,7 @@ export function updateUser(currentAppUser, nextAppUser) {
             // Faye needs to be reconnected on the right user/conversation channels
             disconnectFaye();
 
-            return dispatch(subscribeUser()).then(() => {
+            return dispatch(subscribe()).then(() => {
                 // TODO : figure out if still relevant
                 // if (nextAppUser.conversationStarted) {
                 //     return dispatch(handleConversationUpdated());
@@ -252,23 +238,11 @@ export function handleUserSubscription({appUser, event}) {
     };
 }
 
-export function subscribeUser() {
-    return (dispatch, getState) => {
-        const client = dispatch(getClient());
-        const {user} = getState();
-        const subscription = client.subscribe(`/v1/users/${user._id}`, (message) => {
-            dispatch(handleUserSubscription(message));
-        });
-
-        return subscription.then(() => {
-            return dispatch(setFayeUserSubscription(subscription));
-        });
-    };
-}
-
 export function disconnectClient() {
-    if (client) {
-        client.disconnect();
-        client = undefined;
-    }
+    return () => {
+        if (client) {
+            client.disconnect();
+            client = undefined;
+        }
+    };
 }

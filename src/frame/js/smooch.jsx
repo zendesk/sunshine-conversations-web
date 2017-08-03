@@ -190,7 +190,8 @@ export function init(props = {}) {
 
             observable.trigger('ready');
         })
-        .catch(() => {
+        .catch((err) => {
+            Raven.captureException(err);
             cleanUp();
         });
 }
