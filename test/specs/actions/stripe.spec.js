@@ -38,13 +38,4 @@ describe('Stripe Actions', () => {
             });
         });
     });
-
-    describe('getAccount', () => {
-        it('should call stripe api endpoint', () => {
-            const {config: {appId}, user: {_id}} = mockedStore.getState();
-            return mockedStore.dispatch(getAccount()).then(() => {
-                httpStub.should.have.been.calledWith('GET', `/apps/${appId}/appusers/${_id}/stripe/customer`);
-            });
-        });
-    });
 });
