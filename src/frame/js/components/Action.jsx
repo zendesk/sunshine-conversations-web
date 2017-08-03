@@ -203,7 +203,7 @@ export default connect(({ui: {text}, user, config}) => {
         integrations: config.integrations,
         stripe: config.stripe,
         appName: config.app.name,
-        appIconUrl: config.app.iconUrl,
+        appIconUrl: config.app.iconUrl
     };
 }, null, null, {
     withRef: true
