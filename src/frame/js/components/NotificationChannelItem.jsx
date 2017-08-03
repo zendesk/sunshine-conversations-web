@@ -7,6 +7,7 @@ import { bindAll } from '../utils/functions';
 
 export class NotificationChannelItemComponent extends Component {
     static propTypes = {
+        dispatch: PropTypes.func.isRequired,
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         linked: PropTypes.bool.isRequired,
@@ -68,9 +69,9 @@ export class NotificationChannelItemComponent extends Component {
     }
 }
 
-export default connect(({app, ui}) => {
+export default connect(({config, ui}) => {
     return {
-        linkColor: app.settings.web.linkColor,
+        linkColor: config.style.linkColor,
         notificationSettingsConnectedAsText: ui.text.notificationSettingsConnectedAs,
         notificationSettingsConnectedText: ui.text.notificationSettingsConnected
     };

@@ -57,9 +57,9 @@ export class SettingsComponent extends Component {
     }
 }
 
-export default connect(({app, user, ui}) => {
+export default connect(({config, user, ui}) => {
     return {
-        appChannels: app.integrations,
+        appChannels: config.integrations,
         notificationSettingsChannelsTitleText: ui.text.notificationSettingsChannelsTitle,
         notificationSettingsChannelsDescriptionText: ui.text.notificationSettingsChannelsDescription,
         user

@@ -145,7 +145,12 @@ function handleActivityEvents(events) {
 export function subscribe() {
     return (dispatch, getState) => {
         const client = dispatch(getClient());
-        const {config: {appId}, user: {_id}} = getState();
+        const {config: {appId}, user: {_id}, faye: {subscription: existingSubscription}} = getState();
+
+        if (existingSubscription) {
+            return existingSubscription;
+        }
+
         const subscription = client.subscribe(`/sdk/apps/${appId}/appusers/${_id}`, function({events}) {
             const messageEvents = events.filter(({type}) => type === 'message');
             const activityEvents = events.filter(({type}) => type === 'activity');
