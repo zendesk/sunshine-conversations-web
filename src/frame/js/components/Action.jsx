@@ -201,7 +201,6 @@ export default connect(({ui: {text}, user, config}) => {
         user,
         actionPaymentCompletedText: text.actionPaymentCompleted,
         integrations: config.integrations,
-        stripe: config.stripe,
         appName: config.app.name,
         appIconUrl: config.app.iconUrl
     };
