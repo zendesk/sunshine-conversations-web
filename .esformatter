@@ -303,8 +303,7 @@
     "esformatter-quotes",
     "esformatter-braces",
     "esformatter-dot-notation",
-    "esformatter-jsx",
-    "esformatter-semicolons"
+    "esformatter-jsx"
   ],
   "quotes": {
     "type": "single",

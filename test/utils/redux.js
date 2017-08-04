@@ -31,6 +31,7 @@ export function generateBaseStoreProps(extraProps = {}) {
             appId: 'some-app-id',
             apiBaseUrl: 'http://localhost',
             configBaseUrl: 'http://localhost',
+            app: {},
             style: {},
             integrations: [],
             realtime: {},

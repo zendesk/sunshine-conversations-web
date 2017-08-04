@@ -58,6 +58,13 @@ function getStoreState(state = {}) {
                 actionPaymentCompleted: 'payment completed text'
             },
             ...state.ui
+        },
+        config: {
+            app: {
+                name: 'app-name',
+                iconUrl: 'iconUrl'
+            },
+            ...state.config
         }
     });
 }
@@ -146,8 +153,8 @@ describe('Action Component', () => {
                         type: 'stripeConnect'
                     }
                 ],
-                stripe: {
-                    appName: 'app-name',
+                app: {
+                    name: 'app-name',
                     iconUrl: 'iconUrl'
                 }
             }
@@ -226,11 +233,7 @@ describe('Action Component', () => {
                                 {
                                     type: 'stripeConnect'
                                 }
-                            ],
-                            stripe: {
-                                appName: 'app-name',
-                                iconUrl: 'iconUrl'
-                            }
+                            ]
                         },
                         user: {
                             email: ''
@@ -356,12 +359,6 @@ describe('Action Component', () => {
     describe('buy action without stripe keys', () => {
         const props = getBuyProps();
         const storeState = getStoreState({
-            app: {
-                stripe: {
-                    appName: 'app-name',
-                    iconUrl: 'iconUrl'
-                }
-            },
             ui: {
                 text: {
                     actionPaymentCompleted: 'payment completed text'
