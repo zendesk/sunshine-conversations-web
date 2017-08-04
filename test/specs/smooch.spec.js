@@ -32,7 +32,13 @@ function restoreAppStore() {
     });
 }
 
-const defaultState = generateBaseStoreProps();
+const defaultState = generateBaseStoreProps({
+    config: {
+        app: {
+            status: 'active'
+        }
+    }
+});
 
 describe('Smooch', () => {
     const sandbox = sinon.sandbox.create();

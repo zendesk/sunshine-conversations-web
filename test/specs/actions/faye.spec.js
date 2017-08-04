@@ -10,6 +10,9 @@ import { __Rewire__ as FayeRewire, __RewireAPI__ as FayeRewireAPI } from '../../
 
 const handleMessageEvents = FayeRewireAPI.__get__('handleMessageEvents');
 const handleActivityEvents = FayeRewireAPI.__get__('handleActivityEvents');
+const handleLinkEvents = FayeRewireAPI.__get__('handleLinkEvents');
+const updateUser = FayeRewireAPI.__get__('updateUser');
+
 const getClient = FayeRewireAPI.__get__('getClient');
 const sandbox = sinon.sandbox.create();
 
@@ -294,6 +297,46 @@ describe('Faye Actions', () => {
         });
     });
 
+    describe('handleLinkEvents', () => {
+        function generateEvent({type='link', appUserId='some-user-id', clientId='some-client-id', platform= 'messenger'} = {}) {
+            return {
+                type,
+                appUser: {
+                    _id: appUserId
+                },
+                client: {
+                    id: clientId,
+                    platform
+                }
+            };
+        }
+
+        beforeEach(() => {
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
+                user: {
+                    _id: 'some-user-id'
+                },
+                appState: {
+                    visibleChannelType: 'messenger'
+                }
+            }));
+        });
+        describe('link event', () => {
+            [true, false].forEach((isSamePlatform) => {
+                describe(`platform is ${isSamePlatform ? '' : 'not'} the same as visibleChannelType`, () => {
+                    it(`should ${isSamePlatform ? '' : 'not'} show the settings page`, () => {
+                        const events = [generateEvent({
+                            platform: isSamePlatform ? 'messenger' : 'web'
+                        })];
+
+                        mockedStore.dispatch(handleLinkEvents(events));
+                        hideConnectNotificationSpy.should.have.been.calledOnce;
+                        isSamePlatform ? showSettingsStub.should.have.been.calledOnce : showSettingsStub.should.not.have.been.called;
+                    });
+                });
+            });
+        });
+    });
 
     describe('subscribe', () => {
         it('should call setFayeSubcription', () => {
@@ -304,10 +347,12 @@ describe('Faye Actions', () => {
         });
     });
 
-    describe.skip('updateUser', () => {
+    describe('updateUser', () => {
         let currentAppUser;
         let nextAppUser;
-        describe('different appUser', () => {
+        let client;
+
+        describe.skip('different appUser', () => {
             beforeEach(() => {
                 currentAppUser = {
                     _id: 1
@@ -315,79 +360,40 @@ describe('Faye Actions', () => {
                 nextAppUser = {
                     _id: 2
                 };
+                client = {
+                    id: 'some-client_id'
+                };
             });
 
-            it('should subscribe new user', () => {
-                mockedStore.dispatch(fayeActions.updateUser(currentAppUser, nextAppUser));
-                hideChannelPageSpy.should.have.been.calledOnce;
-                disconnectFayeStub.should.have.been.calledOnce;
-                setUserSpy.should.have.been.calledWithMatch(nextAppUser);
-            });
+        // TODO : write test for this case when implemented
         });
 
         describe('same appUser', () => {
             beforeEach(() => {
                 currentAppUser = {
-                    _id: 1
+                    _id: 1,
+                    clients: [{
+                        id: 'some-existing-client'
+                    }]
                 };
                 nextAppUser = {
                     _id: 1
                 };
+                client = {
+                    id: 'some-client_id'
+                };
             });
-            describe('current appUser started conversation', () => {
-                it('should fetch conversation', () => {
-                    currentAppUser.conversationStarted = true;
-                    mockedStore.dispatch(fayeActions.updateUser(currentAppUser, nextAppUser));
-                    getMessagesStub.should.have.been.calledOnce;
-                });
-            });
-            describe.skip('next appUser started conversation', () => {
-                // TODO : figure out if still relevant
-                it('should connect faye and fetch conversation', () => {
-                    nextAppUser.conversationStarted = true;
-                    mockedStore.dispatch(fayeActions.updateUser(currentAppUser, nextAppUser));
-                });
-            });
-        });
-    });
 
-    describe.skip('handleUserSubscription', () => {
-        beforeEach(() => {
-            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
-                user: {
-                    _id: 1
-                },
-                appState: {
-                    visibleChannelType: 'web'
-                }
-            }));
-        });
-        describe('link event', () => {
-            const event = {
-                type: 'link',
-                clientId: 123
-            };
-            [true, false].forEach((platform) => {
-                describe(`platform is ${platform ? '' : 'not'} the same as visibleChannelType`, () => {
-                    it(`should ${platform ? '' : 'not'} show the settings page`, () => {
-                        const appUser = {
-                            _id: 1,
-                            clients: [
-                                {
-                                    id: 123,
-                                    platform: platform ? 'web' : 'messenger'
-                                }
-                            ]
-                        };
-                        const req = {
-                            appUser: appUser,
-                            event: event
-                        };
-
-                        mockedStore.dispatch(fayeActions.handleUserSubscription(req));
-                        hideConnectNotificationSpy.should.have.been.calledOnce;
-                        platform ? showSettingsStub.should.have.been.calledOnce : showSettingsStub.should.not.have.been.called;
-                    });
+            it('should fetch conversation and add client to user', () => {
+                mockedStore.dispatch(updateUser(currentAppUser, nextAppUser, client));
+                getMessagesStub.should.have.been.calledOnce;
+                setUserSpy.should.have.been.calledWithMatch({
+                    clients: [
+                        {
+                            id: 'some-existing-client'
+                        },
+                        client
+                    ]
                 });
             });
         });

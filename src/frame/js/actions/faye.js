@@ -142,6 +142,61 @@ function handleActivityEvents(events) {
     };
 }
 
+function updateUser(currentAppUser, nextAppUser, client) {
+    return (dispatch) => {
+        if (currentAppUser._id !== nextAppUser._id) {
+            // wat do?
+        } else {
+            dispatch(setUser({
+                ...currentAppUser,
+                clients: [
+                    ...currentAppUser.clients,
+                    client
+                ]
+            }));
+
+            return dispatch(getMessages());
+        }
+    };
+}
+
+function handleLinkEvents(events) {
+    return (dispatch, getState) => {
+        events.forEach(({type, appUser, client}) => {
+            const {user: currentAppUser, appState: {visibleChannelType}} = getState();
+
+            if (type === 'link') {
+                dispatch(hideConnectNotification());
+                if (client.platform === visibleChannelType) {
+                    dispatch(showSettings());
+                    // add a delay to let the settings page animation finish
+                    // if it wasn't open already
+                    return setTimeout(() => {
+                        dispatch(hideChannelPage());
+
+                        // add a delay to let the channel page hide, then update the user
+                        // why? React will just remove the channel page from the DOM if
+                        // we update the user right away.
+                        setTimeout(() => {
+                            dispatch(updateUser(currentAppUser, appUser, client));
+                        }, ANIMATION_TIMINGS.PAGE_TRANSITION);
+                    }, ANIMATION_TIMINGS.PAGE_TRANSITION);
+                }
+
+                return dispatch(updateUser(currentAppUser, appUser, client));
+            } else if (type === 'link:cancelled') {
+                if (client.platform === 'twilio' || client.platform === 'messagebird') {
+                    return dispatch(cancelSMSLink(client.platform));
+                }
+            } else if (type === 'link:failed') {
+                if (client && (client.platform === 'twilio' || client.platform === 'messagebird')) {
+                    return dispatch(failSMSLink(event.err, client.platform));
+                }
+            }
+        });
+    };
+}
+
 export function subscribe() {
     return (dispatch, getState) => {
         const client = dispatch(getClient());
@@ -154,92 +209,22 @@ export function subscribe() {
         const subscription = client.subscribe(`/sdk/apps/${appId}/appusers/${_id}`, function({events}) {
             const messageEvents = events.filter(({type}) => type === 'message');
             const activityEvents = events.filter(({type}) => type === 'activity');
+            const linkEvents = events.filter(({type}) => type.startsWith('link'));
 
-            dispatch(handleMessageEvents(messageEvents));
-            dispatch(handleActivityEvents(activityEvents));
+            if (messageEvents.length > 0) {
+                dispatch(handleMessageEvents(messageEvents));
+            }
+
+            if (activityEvents.length > 0) {
+                dispatch(handleActivityEvents(activityEvents));
+            }
+
+            if (linkEvents.length > 0) {
+                dispatch(handleLinkEvents(linkEvents));
+            }
         });
 
         return subscription.then(() => dispatch(setFayeSubscription(subscription)));
-    };
-}
-
-export function updateUser(currentAppUser, nextAppUser) {
-    return (dispatch) => {
-        if (currentAppUser._id !== nextAppUser._id) {
-            // take no chances, that user might already be linked and it would crash
-            dispatch(batchActions([
-                hideChannelPage(),
-                setUser(nextAppUser)
-            ]));
-
-            // Faye needs to be reconnected on the right user/conversation channels
-            disconnectFaye();
-
-            return dispatch(subscribe()).then(() => {
-                // TODO : figure out if still relevant
-                // if (nextAppUser.conversationStarted) {
-                //     return dispatch(handleConversationUpdated());
-                // }
-            });
-        } else {
-            dispatch(setUser(nextAppUser));
-
-            if (currentAppUser.conversationStarted) {
-                // if the conversation is already started,
-                // fetch the conversation for merged messages
-                return dispatch(getMessages());
-            } else if (nextAppUser.conversationStarted) {
-                // TODO : figure out if still relevant
-                // if the conversation wasn't already started,
-                // `handleConversationUpdated` will connect faye and fetch it
-                // return dispatch(handleConversationUpdated());
-            }
-        }
-    };
-}
-
-export function handleUserSubscription({appUser, event}) {
-    return (dispatch, getState) => {
-        const {user: currentAppUser, appState: {visibleChannelType}} = getState();
-
-        if (event.type === 'link') {
-            dispatch(hideConnectNotification());
-            const {platform} = appUser.clients.find((c) => c.id === event.clientId);
-            if (platform === visibleChannelType) {
-                dispatch(showSettings());
-                // add a delay to let the settings page animation finish
-                // if it wasn't open already
-                return setTimeout(() => {
-                    dispatch(hideChannelPage());
-
-                    // add a delay to let the channel page hide, then update the user
-                    // why? React will just remove the channel page from the DOM if
-                    // we update the user right away.
-                    setTimeout(() => {
-                        dispatch(updateUser(currentAppUser, appUser));
-                    }, ANIMATION_TIMINGS.PAGE_TRANSITION);
-                }, ANIMATION_TIMINGS.PAGE_TRANSITION);
-            }
-        } else if (event.type === 'link:cancelled') {
-            const {platform} = appUser.pendingClients.find((c) => c.id === event.clientId);
-            if (platform === 'twilio' || platform === 'messagebird') {
-                return dispatch(cancelSMSLink(platform));
-            }
-        } else if (event.type === 'link:failed') {
-            const pendingClient = currentAppUser.pendingClients.find((c) => c.id === event.clientId);
-
-            if (pendingClient && (pendingClient.platform === 'twilio' || pendingClient.platform === 'messagebird')) {
-                return dispatch(failSMSLink(event.err, pendingClient.platform));
-            }
-        } else if (event.type === 'link:failed') {
-            const pendingClient = currentAppUser.pendingClients.find((c) => c.id === event.clientId);
-
-            if (pendingClient && pendingClient.platform === 'twilio') {
-                return dispatch(failSMSLink(event.err));
-            }
-        }
-
-        return dispatch(updateUser(currentAppUser, appUser));
     };
 }
 
