@@ -2,7 +2,7 @@ import sinon from 'sinon';
 
 import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 
-import { createTransaction, getAccount, __Rewire__ as StripeRewire } from '../../../src/frame/js/actions/stripe';
+import { createTransaction, __Rewire__ as StripeRewire } from '../../../src/frame/js/actions/stripe';
 
 describe('Stripe Actions', () => {
     let sandbox;
@@ -35,15 +35,6 @@ describe('Stripe Actions', () => {
                     actionId: 'actionId',
                     token: 'token'
                 });
-            });
-        });
-    });
-
-    describe('getAccount', () => {
-        it('should call stripe api endpoint', () => {
-            const {config: {appId}, user: {_id}} = mockedStore.getState();
-            return mockedStore.dispatch(getAccount()).then(() => {
-                httpStub.should.have.been.calledWith('GET', `/apps/${appId}/appusers/${_id}/stripe/customer`);
             });
         });
     });
