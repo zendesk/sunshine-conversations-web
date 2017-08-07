@@ -1,5 +1,3 @@
-import { batchActions } from 'redux-batched-actions';
-
 import { updateUser } from './user';
 import http from './http';
 
@@ -261,20 +259,28 @@ export function fetchMessageBirdAttributes() {
     };
 }
 
-export function linkSMSChannel(data) {
+export function linkSMSChannel(criteria) {
     return (dispatch, getState) => {
-        const {config: {appId}, user: {_id, pendingClients}} = getState();
-        return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/clients`, data))
+        const {config: {appId}, user: {_id: appUserId, pendingClients}, conversation: {_id: conversationId}} = getState();
+        return dispatch(http('POST', `/apps/${appId}/appusers/${appUserId}/clients`, {
+            criteria,
+            confirmation: {
+                type: 'prompt'
+            },
+            target: {
+                conversationId
+            }
+        }))
             .then(({client}) => {
                 dispatch(updateUser({
                     pendingClients: [...pendingClients, client]
                 }));
                 dispatch(updateSMSAttributes({
                     linkState: 'pending'
-                }, data.type));
+                }, criteria.type));
             })
             .catch((e) => {
-                dispatch(handleLinkFailure(e.response, data.type));
+                dispatch(handleLinkFailure(e.response, criteria.type));
             });
     };
 }
@@ -288,7 +294,7 @@ export function unlinkSMSChannel(type) {
             return Promise.resolve();
         }
 
-        return dispatch(http('DELETE', `/apps/${appId}/appusers/${_id}/clients/${client._id}`))
+        return dispatch(http('DELETE', `/apps/${appId}/appusers/${_id}/clients/${client.id}`))
             .then(() => {
                 dispatch(updateUser({
                     pendingClients: pendingClients.filter((pendingClient) => pendingClient.platform !== type),
@@ -325,7 +331,7 @@ export function pingSMSChannel(type) {
     return (dispatch, getState) => {
         const {config: {appId}, user: {_id, clients}} = getState();
         const client = clients.find((client) => client.platform === type);
-        return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/clients/${client._id}/ping`))
+        return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/clients/${client.id}/ping`))
             .then(() => {
                 dispatch(updateSMSAttributes({
                     linkState: 'linked'
@@ -345,16 +351,14 @@ export function cancelSMSLink(type) {
     return (dispatch, getState) => {
         const {user: {pendingClients}, integrations, ui: {text: {smsLinkCancelled}}} = getState();
         const {appUserNumber} = integrations[type];
-        dispatch(batchActions([
-            updateUser({
-                pendingClients: pendingClients.filter((pendingClient) => pendingClient.platform !== type)
-            }),
-            updateSMSAttributes({
-                linkState: 'unlinked',
-                hasError: true,
-                errorMessage: smsLinkCancelled.replace('{appUserNumber}', appUserNumber)
-            }, type)
-        ]));
+        dispatch(updateUser({
+            pendingClients: pendingClients.filter((pendingClient) => pendingClient.platform !== type)
+        }));
+        dispatch(updateSMSAttributes({
+            linkState: 'unlinked',
+            hasError: true,
+            errorMessage: smsLinkCancelled.replace('{appUserNumber}', appUserNumber)
+        }, type));
     };
 }
 
