@@ -1,4 +1,5 @@
 import sinon from 'sinon';
+import hat from 'hat';
 
 import { createMock as createThrottleMock } from '../../mocks/throttle';
 import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
@@ -44,12 +45,21 @@ describe('Integrations Actions', () => {
 
 
     describe('linkSMSChannel', () => {
+        let conversationId;
+
         beforeEach(() => {
             httpStub.returnsAsyncThunk({
                 value: {
                     client: {}
                 }
             });
+
+            conversationId = hat();
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
+                conversation: {
+                    _id: conversationId
+                }
+            }));
         });
 
         it('should set the twilio integration to pending state', () => {
@@ -59,8 +69,16 @@ describe('Integrations Actions', () => {
                 phoneNumber: '+0123456789'
             })).then(() => {
                 httpStub.should.have.been.calledWith('POST', `/apps/${appId}/appusers/${_id}/clients`, {
-                    type: 'twilio',
-                    phoneNumber: '+0123456789'
+                    criteria: {
+                        type: 'twilio',
+                        phoneNumber: '+0123456789'
+                    },
+                    confirmation: {
+                        type: 'prompt'
+                    },
+                    target: {
+                        conversationId
+                    }
                 });
             });
         });
@@ -74,7 +92,7 @@ describe('Integrations Actions', () => {
                     clients: [
                         {
                             platform: 'twilio',
-                            _id: 'twilio-client'
+                            id: 'twilio-client'
                         }
                     ],
                     pendingClients: []
@@ -98,7 +116,7 @@ describe('Integrations Actions', () => {
                     clients: [
                         {
                             platform: 'twilio',
-                            _id: 'twilio-client'
+                            id: 'twilio-client'
                         }
                     ],
                     pendingClients: []
