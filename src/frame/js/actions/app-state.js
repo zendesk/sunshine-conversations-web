@@ -1,4 +1,5 @@
-import { resetUnreadCount, connectFayeUser } from './conversation';
+import { resetUnreadCount } from './conversation';
+import { subscribe as subscribeFaye } from './faye';
 import { observable } from '../utils/events';
 import { hasLinkableChannels, isChannelLinked } from '../utils/user';
 import { getIntegration } from '../utils/app';
@@ -33,17 +34,6 @@ export const HIDE_TYPING_INDICATOR = 'HIDE_TYPING_INDICATOR';
 export const UPDATE_WIDGET_SIZE = 'UPDATE_WIDGET_SIZE';
 export const SET_INITIALIZATION_STATE = 'SET_INITIALIZATION_STATE';
 
-function connectToFayeUser() {
-    return (dispatch, getState) => {
-        const {app: {integrations: appChannels, settings}, user: {clients}} = getState();
-
-        if (hasLinkableChannels(appChannels, clients, settings.web)) {
-            return dispatch(connectFayeUser());
-        }
-
-        return Promise.resolve();
-    };
-}
 
 export function toggleWidget() {
     return (dispatch, getState) => {
@@ -88,7 +78,7 @@ export function showSettings() {
         dispatch({
             type: SHOW_SETTINGS
         });
-        return dispatch(connectToFayeUser());
+        return dispatch(subscribeFaye());
     };
 }
 
@@ -181,7 +171,7 @@ export function setEmbedded(value) {
 
 export function showChannelPage(channelType) {
     return (dispatch, getState) => {
-        const {user, app: {integrations}} = getState();
+        const {user, config: {integrations}} = getState();
         const channelDetails = CHANNEL_DETAILS[channelType];
         const isLinked = isChannelLinked(user.clients, channelType);
         const appChannel = getIntegration(integrations, channelType);
@@ -191,7 +181,7 @@ export function showChannelPage(channelType) {
         if (openLink) {
             window.open(url);
             if (!isLinked && channelDetails.isLinkable) {
-                return dispatch(connectToFayeUser());
+                return dispatch(subscribeFaye());
             }
         } else {
             dispatch({
@@ -199,7 +189,7 @@ export function showChannelPage(channelType) {
                 channelType
             });
 
-            return dispatch(connectToFayeUser())
+            return dispatch(subscribeFaye())
                 .then(() => dispatch(channelDetails.onChannelPage()));
         }
     };

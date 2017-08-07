@@ -20,6 +20,7 @@ export function generateBaseStoreProps(extraProps = {}) {
         },
         user: {
             pendingClients: [],
+            clients: [],
             ...extraProps.user
         },
         appState: {

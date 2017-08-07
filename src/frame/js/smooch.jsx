@@ -175,20 +175,29 @@ export function init(props = {}) {
 
     return store.dispatch(fetchConfig())
         .then(() => {
-            if (props.userId && props.jwt) {
-                return login(props.userId, props.jwt);
+            const {config: {app: {status}}} = store.getState();
+
+            if (status !== 'active') {
+                return Promise.resolve();
             }
 
-            if (appUserId && sessionToken) {
-                return store.dispatch(fetchUserConversation());
-            }
-        })
-        .then(() => {
-            if (!props.embedded) {
-                render();
-            }
+            return Promise.resolve()
+                .then(() => {
+                    if (props.userId && props.jwt) {
+                        return login(props.userId, props.jwt);
+                    }
 
-            observable.trigger('ready');
+                    if (appUserId && sessionToken) {
+                        return store.dispatch(fetchUserConversation());
+                    }
+                })
+                .then(() => {
+                    if (!props.embedded) {
+                        render();
+                    }
+
+                    observable.trigger('ready');
+                });
         })
         .catch((err) => {
             Raven.captureException(err);

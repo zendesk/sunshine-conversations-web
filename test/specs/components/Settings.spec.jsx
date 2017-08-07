@@ -18,7 +18,7 @@ describe('Settings', () => {
     let getAppChannelDetailsStub;
 
     const defaultStoreProps = {
-        app: {
+        config: {
             integrations: [
                 {
                     _id: 1,
