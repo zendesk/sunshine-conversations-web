@@ -29,11 +29,9 @@ describe('Notification Channel Item Component', () => {
                     linked: linked
                 });
                 mockedStore = createMockedStore(sandbox, {
-                    app: {
-                        settings: {
-                            web: {
-                                linkColor: '#00000'
-                            }
+                    config: {
+                        style: {
+                            linkColor: '#00000'
                         }
                     },
                     ui: {
