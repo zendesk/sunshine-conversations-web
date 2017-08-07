@@ -7,6 +7,7 @@ import { disconnectClient, subscribe as subscribeFaye, unsetFayeSubscription } f
 
 import http from './http';
 import { setAuth } from './auth';
+import { setConfig } from './config';
 
 import { observable } from '../utils/events';
 import { Throttle } from '../utils/throttle';
@@ -504,7 +505,7 @@ export function disconnectFaye() {
     };
 }
 
-export function handleUserConversationResponse({appUser, conversation, hasPrevious, messages, sessionToken}) {
+export function handleUserConversationResponse({appUser, conversation, hasPrevious, messages, sessionToken, settings}) {
     return (dispatch, getState) => {
         const {config: {appId}} = getState();
         Raven.setUserContext({
@@ -519,6 +520,10 @@ export function handleUserConversationResponse({appUser, conversation, hasPrevio
             }),
             setMessages(messages)
         ];
+
+        for (const key of Object.keys(settings)) {
+            actions.push(setConfig(key, settings[key]));
+        }
 
         storage.setItem(`${appId}.appUserId`, appUser._id);
 
