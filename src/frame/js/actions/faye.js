@@ -162,7 +162,7 @@ function updateUser(currentAppUser, nextAppUser, client) {
 
 function handleLinkEvents(events) {
     return (dispatch, getState) => {
-        events.forEach(({type, appUser, client}) => {
+        events.forEach(({type, appUser, client, err}) => {
             const {user: currentAppUser, appState: {visibleChannelType}} = getState();
 
             if (type === 'link') {
@@ -190,7 +190,7 @@ function handleLinkEvents(events) {
                 }
             } else if (type === 'link:failed') {
                 if (client && (client.platform === 'twilio' || client.platform === 'messagebird')) {
-                    return dispatch(failSMSLink(event.err, client.platform));
+                    return dispatch(failSMSLink(err, client.platform));
                 }
             }
         });
