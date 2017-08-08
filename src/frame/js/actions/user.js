@@ -1,13 +1,12 @@
 import deepEqual from 'deep-equal';
+import pick from 'lodash.pick';
 
 import http from './http';
-
 
 export const SET_USER = 'SET_USER';
 export const UPDATE_USER = 'UPDATE_USER';
 export const RESET_USER = 'RESET_USER';
 
-const waitDelay = 5000; // ms
 let pendingUserProps = {};
 let pendingUpdatePromise;
 let pendingResolve;
@@ -24,7 +23,7 @@ export const EDITABLE_PROPERTIES = [
 
 export function immediateUpdate(props) {
     return (dispatch, getState) => {
-        const {config: {appId}, user} = getState();
+        const {config: {appId, profile}, user} = getState();
 
         const updateToResolve = pendingResolve;
         if (pendingTimeout) {
@@ -34,15 +33,14 @@ export function immediateUpdate(props) {
         }
 
         lastUpdateAttempt = Date.now();
-
-        props = Object.assign({}, pendingUserProps, props);
+        console.log('Updating attempt');
+        props = pick(Object.assign({}, pendingUserProps, props), EDITABLE_PROPERTIES);
         pendingUserProps = {};
 
-        const isDirty = EDITABLE_PROPERTIES.reduce((isDirty, prop) => {
-            return isDirty || !deepEqual(user[prop], props[prop]);
-        }, false);
+        const isDirty = Object.keys(props)
+            .some((key) => !deepEqual(user[key], props[key]));
 
-        if (isDirty) {
+        if (isDirty && profile.enabled) {
             return dispatch(http('PUT', `/apps/${appId}/appusers/${user._id}`, props))
                 .then(() => {
                     dispatch(setUser({
@@ -70,9 +68,14 @@ export function immediateUpdate(props) {
 }
 
 export function update(props) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         Object.assign(pendingUserProps, props);
 
+        if (!getState().user._id) {
+            return Promise.resolve();
+        }
+
+        const waitDelay = getState().config.profile.uploadInterval * 1000;
         const timeNow = Date.now();
         const lastUpdateTime = lastUpdateAttempt || 0;
 
@@ -86,7 +89,7 @@ export function update(props) {
             pendingUpdatePromise = new Promise(function(resolve) {
                 pendingResolve = resolve;
 
-                setTimeout(() => {
+                pendingTimeout = setTimeout(() => {
                     resolve(dispatch(immediateUpdate(pendingUserProps)));
                 }, timeToWait);
             });
@@ -94,6 +97,14 @@ export function update(props) {
             return pendingUpdatePromise;
         }
     };
+}
+
+export function _resetState() {
+    clearTimeout(pendingTimeout);
+    pendingTimeout = null;
+    pendingResolve = null;
+    pendingUserProps = {};
+    lastUpdateAttempt = undefined;
 }
 
 export function setUser(props) {
