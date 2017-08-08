@@ -516,7 +516,7 @@ export function handleUserConversationResponse({appUser, conversation, hasPrevio
             setUser(appUser),
             setConversation({
                 ...conversation,
-                hasMoreMessages: hasPrevious
+                hasMoreMessages: !!hasPrevious
             }),
             setMessages(messages)
         ];
