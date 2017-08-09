@@ -1,4 +1,5 @@
 import sinon from 'sinon';
+import hat from 'hat';
 
 import { createMockedStore, generateBaseStoreProps } from '../utils/redux';
 
@@ -56,6 +57,9 @@ describe('Smooch', () => {
     let cleanUpStub;
     let getItemStub;
     let mockedStore;
+    let resetAuthStub;
+    let resetUserStub;
+    let removeItemStub;
 
     beforeEach(() => {
         SmoochRewire('renderWidget', sandbox.stub().returns({}));
@@ -70,12 +74,15 @@ describe('Smooch', () => {
         cleanUpStub = sandbox.stub();
         setUserStub = sandbox.stub();
         setAuthStub = sandbox.stub();
+        resetAuthStub = sandbox.stub();
+        resetUserStub = sandbox.stub();
 
         SmoochRewire('userActions', {
             ...userActions,
             update: updateUserStub,
             immediateUpdate: immediateUpdateStub,
-            setUser: setUserStub
+            setUser: setUserStub,
+            resetUser: resetUserStub
         });
 
         loginStub = sandbox.stub().returnsAsyncThunk();
@@ -83,7 +90,8 @@ describe('Smooch', () => {
         SmoochRewire('authActions', {
             ...authActions,
             login: loginStub,
-            setAuth: setAuthStub
+            setAuth: setAuthStub,
+            resetAuth: resetAuthStub
         });
 
         SmoochRewire('cleanUp', cleanUpStub);
@@ -97,9 +105,11 @@ describe('Smooch', () => {
         });
 
         getItemStub = sandbox.stub();
+        removeItemStub = sandbox.stub();
         SmoochRewire('storage', {
             ...storage,
-            getItem: getItemStub
+            getItem: getItemStub,
+            removeItem: removeItemStub
         });
 
         sandbox.stub(document.body, 'appendChild');
@@ -177,6 +187,66 @@ describe('Smooch', () => {
                                 }
                             });
                         });
+
+                        if (hasAppUserId && hasSessionToken) {
+                            it('should reset local user data on invalid_auth error', () => {
+                                const error = new Error();
+                                error.code = 'invalid_auth';
+                                fetchUserConversationStub.callsFake(() => {
+                                    return () => Promise.reject(error);
+                                });
+
+                                const props = {
+                                    appId: hat()
+                                };
+
+                                return Smooch.init(props).then(() => {
+                                    fetchConfigStub.should.have.been.calledOnce;
+                                    loginStub.should.not.have.been.called;
+                                    renderStub.should.have.been.calledOnce;
+
+                                    setAuthStub.should.have.been.calledOnce;
+                                    setUserStub.should.have.been.calledOnce;
+
+                                    resetUserStub.should.have.been.calledOnce;
+                                    resetAuthStub.should.have.been.calledOnce;
+
+                                    removeItemStub.should.have.been.calledTwice;
+                                    removeItemStub.should.have.been.calledWith(`${props.appId}.appUserId`);
+                                    removeItemStub.should.have.been.calledWith(`${props.appId}.sessionToken`);
+
+                                    fetchUserConversationStub.should.have.been.calledOnce;
+                                });
+                            });
+
+                            it('should not reset local user data for a non invalid_auth error', () => {
+                                const error = new Error();
+                                error.code = 'bad_request';
+                                fetchUserConversationStub.callsFake(() => {
+                                    return () => Promise.reject(error);
+                                });
+
+                                const props = {
+                                    appId: hat()
+                                };
+
+                                return Smooch.init(props)
+                                    .then(() => {
+                                        fetchConfigStub.should.have.been.calledOnce;
+                                        loginStub.should.not.have.been.called;
+
+                                        setAuthStub.should.have.been.calledOnce;
+                                        setUserStub.should.have.been.calledOnce;
+
+                                        renderStub.should.not.have.been.called;
+                                        resetUserStub.should.not.have.been.called;
+                                        resetAuthStub.should.not.have.been.called;
+                                        removeItemStub.should.not.have.been.called;
+
+                                        fetchUserConversationStub.should.have.been.calledOnce;
+                                    });
+                            });
+                        }
                     });
 
                     describe('auth user with jwt', () => {

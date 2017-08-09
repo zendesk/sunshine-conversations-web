@@ -188,7 +188,20 @@ export function init(props = {}) {
                     }
 
                     if (appUserId && sessionToken) {
-                        return store.dispatch(fetchUserConversation());
+                        return store.dispatch(fetchUserConversation())
+                            .catch((err) => {
+                                if (err.code === 'invalid_auth') {
+                                    storage.removeItem(`${props.appId}.appUserId`);
+                                    storage.removeItem(`${props.appId}.sessionToken`);
+
+                                    return store.dispatch(batchActions([
+                                        authActions.resetAuth(),
+                                        userActions.resetUser()
+                                    ]));
+                                } else {
+                                    throw err;
+                                }
+                            });
                     }
                 })
                 .then(() => {
