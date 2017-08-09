@@ -3,6 +3,7 @@ import { batchActions } from 'redux-batched-actions';
 import http from './http';
 import { resetConversation, handleUserConversationResponse, disconnectFaye } from './conversation';
 import { setUser, resetUser } from './user';
+import { resetIntegrations } from './integrations';
 
 import { getClientId, getClientInfo } from '../utils/client';
 import { removeItem } from '../utils/storage';
@@ -21,7 +22,8 @@ export function login(userId, jwt) {
             setUser({
                 userId
             }),
-            resetConversation()
+            resetConversation(),
+            resetIntegrations()
         ];
 
         dispatch(disconnectFaye());
@@ -65,7 +67,8 @@ export function logout() {
             const actions = [
                 resetAuth(),
                 resetUser(),
-                resetConversation()
+                resetConversation(),
+                resetIntegrations()
             ];
 
             dispatch(disconnectFaye());

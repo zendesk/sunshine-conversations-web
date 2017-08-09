@@ -5,6 +5,7 @@ import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 import { login, logout, setAuth, resetAuth, __Rewire__ as AuthRewire } from '../../../src/frame/js/actions/auth';
 import { setUser, resetUser } from '../../../src/frame/js/actions/user';
 import { resetConversation } from '../../../src/frame/js/actions/conversation';
+import { resetIntegrations } from '../../../src/frame/js/actions/integrations';
 
 describe('Auth Actions', () => {
     let mockedStore;
@@ -20,6 +21,7 @@ describe('Auth Actions', () => {
     let resetUserSpy;
     let resetAuthSpy;
     let setAuthSpy;
+    let resetIntegrationsSpy;
 
     before(() => {
         sandbox = sinon.sandbox.create();
@@ -45,6 +47,9 @@ describe('Auth Actions', () => {
 
         setUserSpy = sandbox.spy(setUser);
         AuthRewire('setUser', setUserSpy);
+
+        resetIntegrationsSpy = sandbox.spy(resetIntegrations);
+        AuthRewire('resetIntegrations', resetIntegrationsSpy);
 
         resetConversationSpy = sandbox.spy(resetConversation);
         AuthRewire('resetConversation', resetConversationSpy);
@@ -97,6 +102,7 @@ describe('Auth Actions', () => {
 
                         resetConversationSpy.should.have.been.calledOnce;
                         disconnectFayeStub.should.have.been.calledOnce;
+                        resetIntegrationsSpy.should.have.been.calledOnce;
 
                         const {config: {appId}} = mockedStore.getState();
                         httpStub.should.have.been.calledWith('POST', `/apps/${mockedStore.getState().config.appId}/login`, {
@@ -132,6 +138,7 @@ describe('Auth Actions', () => {
 
                         resetConversationSpy.should.have.been.calledOnce;
                         disconnectFayeStub.should.have.been.calledOnce;
+                        resetIntegrationsSpy.should.have.been.calledOnce;
 
                         const {config: {appId}} = mockedStore.getState();
                         httpStub.should.have.been.calledWith('POST', `/apps/${mockedStore.getState().config.appId}/login`, {
@@ -174,6 +181,7 @@ describe('Auth Actions', () => {
                     resetAuthSpy.should.not.have.been.called;
                     resetUserSpy.should.not.have.been.called;
                     resetConversationSpy.should.not.have.been.called;
+                    resetIntegrationsSpy.should.not.have.been.called;
                     disconnectFayeStub.should.not.have.been.called;
                     removeItemStub.should.not.have.been.called;
                 });
@@ -194,6 +202,7 @@ describe('Auth Actions', () => {
                     resetAuthSpy.should.have.been.calledOnce;
                     resetUserSpy.should.have.been.calledOnce;
                     resetConversationSpy.should.have.been.calledOnce;
+                    resetIntegrationsSpy.should.have.been.calledOnce;
                     disconnectFayeStub.should.have.been.calledOnce;
 
                     removeItemStub.should.have.been.calledTwice;
@@ -218,6 +227,7 @@ describe('Auth Actions', () => {
                     resetAuthSpy.should.have.been.calledOnce;
                     resetUserSpy.should.have.been.calledOnce;
                     resetConversationSpy.should.have.been.calledOnce;
+                    resetIntegrationsSpy.should.have.been.calledOnce;
                     disconnectFayeStub.should.have.been.calledOnce;
 
                     removeItemStub.should.have.been.calledTwice;
