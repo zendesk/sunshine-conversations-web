@@ -1,5 +1,6 @@
 import sinon from 'sinon';
 import { Client } from 'faye';
+import hat from 'hat';
 
 import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 import { hideChannelPage, hideConnectNotification, hideTypingIndicator } from '../../../src/frame/js/actions/app-state';
@@ -7,6 +8,8 @@ import { setUser } from '../../../src/frame/js/actions/user';
 import { addMessage, incrementUnreadCount } from '../../../src/frame/js/actions/conversation';
 import * as fayeActions from '../../../src/frame/js/actions/faye';
 import { __Rewire__ as FayeRewire, __RewireAPI__ as FayeRewireAPI } from '../../../src/frame/js/actions/faye';
+import { login, setAuth } from '../../../src/frame/js/actions/auth';
+import { setItem } from '../../../src/frame/js/utils/storage';
 
 const handleMessageEvents = FayeRewireAPI.__get__('handleMessageEvents');
 const handleActivityEvents = FayeRewireAPI.__get__('handleActivityEvents');
@@ -352,10 +355,16 @@ describe('Faye Actions', () => {
         let nextAppUser;
         let client;
 
-        describe.skip('different appUser', () => {
+        describe('different appUser', () => {
+            let setItemSpy;
+            let loginStub;
+            let setAuthStub;
+            let fetchUserConversationStub;
+
             beforeEach(() => {
                 currentAppUser = {
-                    _id: 1
+                    _id: 1,
+                    clients: []
                 };
                 nextAppUser = {
                     _id: 2
@@ -363,9 +372,65 @@ describe('Faye Actions', () => {
                 client = {
                     id: 'some-client_id'
                 };
+
+                setItemSpy = sandbox.spy(setItem);
+                FayeRewire('setItem', setItemSpy);
+
+                loginStub = sandbox.stub().returnsAsyncThunk();
+                FayeRewire('login', loginStub);
+
+                setAuthStub = sandbox.stub().returnsAsyncThunk();
+                FayeRewire('setAuth', setAuthStub);
+
+                fetchUserConversationStub = sandbox.stub().returnsAsyncThunk();
+                FayeRewire('fetchUserConversation', fetchUserConversationStub);
             });
 
-        // TODO : write test for this case when implemented
+            it('should fetch the new user and conversation if JWT was not used', () => {
+                nextAppUser.sessionToken = hat();
+
+                mockedStore.dispatch(updateUser(currentAppUser, nextAppUser, client));
+
+                loginStub.should.not.have.been.called;
+
+                setUserSpy.should.have.been.calledWith({
+                    ...currentAppUser,
+                    _id: nextAppUser._id
+                });
+
+                const appId = mockedStore.getState().config.appId;
+                setItemSpy.should.have.been.calledTwice;
+                setItemSpy.should.have.been.calledWith(`${appId}.appUserId`, nextAppUser._id);
+                setItemSpy.should.have.been.calledWith(`${appId}.sessionToken`, nextAppUser.sessionToken);
+
+                setAuthStub.should.have.been.calledOnce;
+                setAuthStub.should.have.been.calledWith({
+                    sessionToken: nextAppUser.sessionToken
+                });
+
+                fetchUserConversationStub.should.have.been.calledOnce;
+            });
+
+            it('should login if JWT was used', () => {
+                nextAppUser.userId = hat();
+
+                mockedStore.dispatch(updateUser(currentAppUser, nextAppUser, client));
+
+                fetchUserConversationStub.should.not.have.been.called;
+
+                setUserSpy.should.have.been.calledWith({
+                    ...currentAppUser,
+                    _id: nextAppUser._id
+                });
+
+                const appId = mockedStore.getState().config.appId;
+                setItemSpy.should.have.been.calledOnce;
+                setItemSpy.should.have.been.calledWith(`${appId}.appUserId`, nextAppUser._id);
+
+                setAuthStub.should.not.have.been.called;
+
+                loginStub.should.have.been.calledOnce;
+            });
         });
 
         describe('same appUser', () => {
