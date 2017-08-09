@@ -546,18 +546,19 @@ export function handleUserConversationResponse({appUser, conversation, hasPrevio
 
 export function startConversation() {
     return (dispatch, getState) => {
-        const {user: {_id: userId, pendingAttributes}, config: {appId}, conversation: {_id: conversationId}} = getState();
+        const {user: {_id: appUserId, userId, pendingAttributes}, config: {appId}, conversation: {_id: conversationId}} = getState();
 
         if (conversationId) {
             return Promise.resolve();
         }
 
         let promise;
-        if (userId) {
-            promise = dispatch(http('POST', `/appusers/${userId}/conversations`));
+        if (appUserId) {
+            promise = dispatch(http('POST', `/appusers/${appUserId}/conversations`));
         } else {
             promise = dispatch(http('POST', `/apps/${appId}/appusers`, {
                 ...pendingAttributes,
+                userId,
                 client: getClientInfo(appId)
             }));
         }

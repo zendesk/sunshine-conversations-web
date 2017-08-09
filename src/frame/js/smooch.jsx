@@ -223,22 +223,11 @@ export function login(userId, jwt) {
         throw new Error('Must provide a userId and a jwt to log in.');
     }
 
-    const actions = [
-        authActions.setAuth({
-            jwt
-        }),
-        userActions.setUser({
-            userId
-        })
-    ];
-
-    store.dispatch(batchActions(actions));
-
-    return store.dispatch(authActions.login());
+    return store.dispatch(authActions.login(userId, jwt));
 }
 
 export function logout() {
-    return login();
+    return store.dispatch(authActions.logout());
 }
 
 export function sendMessage(props) {
