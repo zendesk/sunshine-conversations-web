@@ -342,11 +342,76 @@ describe('Faye Actions', () => {
     });
 
     describe('subscribe', () => {
-        it('should call setFayeSubcription', () => {
-            mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
-            mockedStore.dispatch(fayeActions.subscribe()).then(() => {
-                setFayeSubscriptionSpy.should.have.been.calledOnce;
+        let getClientStub;
+        let subscribeStub;
+
+        beforeEach(() => {
+            subscribeStub = sandbox.stub().resolves();
+
+            getClientStub = sandbox.stub().returnsSyncThunk({
+                value: {
+                    subscribe: subscribeStub
+                }
             });
+            FayeRewire('getClient', getClientStub);
+        });
+
+        it('should abort if user does not exist', () => {
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
+
+            return mockedStore.dispatch(fayeActions.subscribe())
+                .then(() => {
+                    getClientStub.should.not.have.been.called;
+                    subscribeStub.should.not.have.been.called;
+                    setFayeSubscriptionSpy.should.not.have.been.called;
+                });
+        });
+
+        it('should return an existing subscription', () => {
+            const existingSubscription = Promise.resolve();
+
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
+                user: {
+                    _id: hat()
+                },
+                faye: {
+                    subscription: existingSubscription
+                }
+            }));
+
+            const promise = mockedStore.dispatch(fayeActions.subscribe());
+            promise.should.equal(existingSubscription);
+
+            return promise
+                .then(() => {
+                    getClientStub.should.not.have.been.called;
+                    subscribeStub.should.not.have.been.called;
+                    setFayeSubscriptionSpy.should.not.have.been.called;
+                });
+        });
+
+        it('should call setFayeSubcription', () => {
+            const createdSubscription = Promise.resolve();
+            subscribeStub.returns(createdSubscription);
+
+            const userId = hat();
+            mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
+                user: {
+                    _id: userId
+                }
+            }));
+
+            return mockedStore.dispatch(fayeActions.subscribe())
+                .then(() => {
+                    getClientStub.should.have.been.calledOnce;
+
+                    const {config: {appId}} = mockedStore.getState();
+                    subscribeStub.should.have.been.calledOnce;
+                    subscribeStub.should.have.been.calledWith(`/sdk/apps/${appId}/appusers/${userId}`);
+
+                    setFayeSubscriptionSpy.should.have.been.calledOnce;
+                    setFayeSubscriptionSpy.should.have.been.calledWith(createdSubscription);
+                });
         });
     });
 

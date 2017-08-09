@@ -1,11 +1,11 @@
 import { CHANNEL_DETAILS } from '../constants/channels';
 import { getIntegration } from './app';
 
-export function isChannelLinked(clients, channelType) {
+export function isChannelLinked(clients = [], channelType) {
     return !!clients.find((client) => client.platform === channelType);
 }
 
-export function getDisplayName(clients, channelType) {
+export function getDisplayName(clients = [], channelType) {
     const client = clients.find((client) => client.platform === channelType);
     return client && client.displayName;
 }
@@ -22,7 +22,7 @@ export function getLinkableChannels(appChannels) {
         });
 }
 
-export function hasLinkableChannels(appChannels, clients) {
+export function hasLinkableChannels(appChannels, clients = []) {
     return getLinkableChannels(appChannels)
         .some((channelType) => {
             // a channel is not considered as linkable if it's already linked

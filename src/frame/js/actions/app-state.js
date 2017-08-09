@@ -74,11 +74,8 @@ export function closeWidget() {
 }
 
 export function showSettings() {
-    return (dispatch) => {
-        dispatch({
-            type: SHOW_SETTINGS
-        });
-        return dispatch(subscribeFaye());
+    return {
+        type: SHOW_SETTINGS
     };
 }
 
@@ -189,8 +186,7 @@ export function showChannelPage(channelType) {
                 channelType
             });
 
-            return dispatch(subscribeFaye())
-                .then(() => dispatch(channelDetails.onChannelPage()));
+            return dispatch(channelDetails.onChannelPage());
         }
     };
 }
