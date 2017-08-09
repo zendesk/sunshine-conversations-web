@@ -18,10 +18,6 @@ export class ChannelComponent extends Component {
     render() {
         const {appChannels, visibleChannelType, smoochId, clients, pendingClients, channelStates} = this.props;
 
-        if (!smoochId) {
-            return null;
-        }
-
         const channelPages = getAppChannelDetails(appChannels).map(({channel, details}) => {
             const client = clients.find((client) => client.platform === channel.type);
             const pendingClient = pendingClients.find((client) => client.platform === channel.type);

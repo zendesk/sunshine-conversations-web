@@ -23,7 +23,6 @@ import { disableAnimation } from '../actions/app-state';
 export class WidgetComponent extends Component {
     static propTypes = {
         dispatch: PropTypes.func.isRequired,
-        smoochId: PropTypes.string,
         config: PropTypes.object.isRequired,
         widgetSize: PropTypes.string.isRequired,
         appState: PropTypes.object.isRequired
@@ -60,14 +59,14 @@ export class WidgetComponent extends Component {
     };
 
     render() {
-        const {appState, config, smoochId, widgetSize} = this.props;
+        const {appState, config, widgetSize} = this.props;
         const {displayStyle, isBrandColorDark, isAccentColorDark, isLinkColorDark} = config.style;
 
         const settingsComponent = appState.settingsVisible ? <Settings /> : null;
 
         // if no user set in store or the app has no channels,
         // no need to render the channel page manager
-        const channelsComponent = smoochId && hasChannels(config) ? <Channel /> : null;
+        const channelsComponent = hasChannels(config) ? <Channel /> : null;
 
         const footer = appState.settingsVisible ? null : <ChatInput ref={ (c) => this._input = c } />;
 
@@ -156,7 +155,6 @@ export default connect(({appState: {settingsVisible, widgetState, errorNotificat
             showAnimation
         },
         config,
-        widgetSize,
-        smoochId: user._id
+        widgetSize
     };
 })(WidgetComponent);
