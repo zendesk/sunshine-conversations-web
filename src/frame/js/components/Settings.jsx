@@ -20,10 +20,6 @@ export class SettingsComponent extends Component {
     render() {
         const {appChannels, user, notificationSettingsChannelsTitleText, notificationSettingsChannelsDescriptionText} = this.props;
 
-        if (!user._id) {
-            return null;
-        }
-
         let channels = getAppChannelDetails(appChannels);
         channels.sort(({channel}) => {
             // List the linked channels first

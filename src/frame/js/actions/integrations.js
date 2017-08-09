@@ -1,4 +1,6 @@
 import { updateUser } from './user';
+import { startConversation } from './conversation';
+import { subscribe as subscribeFaye } from './faye';
 import http from './http';
 
 export const SET_ERROR = 'SET_ERROR';
@@ -118,9 +120,17 @@ export function resetTransferRequestCode(channel) {
     };
 }
 
+function ensureUserAndFayeConnection(dispatch, getState) {
+    if (getState().user._id) {
+        return dispatch(subscribeFaye());
+    } else {
+        return dispatch(startConversation());
+    }
+}
+
 export function fetchWeChatQRCode() {
     return (dispatch, getState) => {
-        const {config: {appId, integrations}, user: {_id}, integrations: {wechat}} = getState();
+        const {config: {appId, integrations}, integrations: {wechat}} = getState();
 
         if (wechat.qrCode || fetchingWeChat) {
             return Promise.resolve();
@@ -134,7 +144,12 @@ export function fetchWeChatQRCode() {
         dispatch(unsetError('wechat'));
         fetchingWeChat = true;
 
-        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/integrations/${wechatIntegration._id}/qrcode`))
+        return ensureUserAndFayeConnection(dispatch, getState)
+            .then(() => {
+                const {user: {_id}} = getState();
+
+                return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/integrations/${wechatIntegration._id}/qrcode`));
+            })
             .then(({url}) => {
                 dispatch(setWeChatQRCode(url));
             })
@@ -149,7 +164,7 @@ export function fetchWeChatQRCode() {
 
 export function fetchViberQRCode() {
     return (dispatch, getState) => {
-        const {config: {appId, integrations}, user: {_id}, integrations: {viber}} = getState();
+        const {config: {appId, integrations}, integrations: {viber}} = getState();
 
         if (viber.qrCode || fetchingViber) {
             return Promise.resolve();
@@ -163,7 +178,12 @@ export function fetchViberQRCode() {
         dispatch(unsetError('viber'));
         fetchingViber = true;
 
-        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/integrations/${viberIntegration._id}/qrcode`))
+        return ensureUserAndFayeConnection(dispatch, getState)
+            .then(() => {
+                const {user: {_id}} = getState();
+
+                return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/integrations/${viberIntegration._id}/qrcode`));
+            })
             .then(({url}) => {
                 dispatch(setViberQRCode(url));
             })
@@ -221,7 +241,7 @@ export function resetMessageBirdAttributes() {
 
 export function fetchTwilioAttributes() {
     return (dispatch, getState) => {
-        const {user: {clients, pendingClients}} = getState();
+        const {user: {clients=[], pendingClients=[]}} = getState();
         const client = clients.find((client) => client.platform === 'twilio');
         const pendingClient = pendingClients.find((client) => client.platform === 'twilio');
 
@@ -241,7 +261,7 @@ export function fetchTwilioAttributes() {
 
 export function fetchMessageBirdAttributes() {
     return (dispatch, getState) => {
-        const {user: {clients, pendingClients}} = getState();
+        const {user: {clients=[], pendingClients=[]}} = getState();
         const client = clients.find((client) => client.platform === 'messagebird');
         const pendingClient = pendingClients.find((client) => client.platform === 'messagebird');
 
@@ -261,16 +281,22 @@ export function fetchMessageBirdAttributes() {
 
 export function linkSMSChannel(criteria) {
     return (dispatch, getState) => {
-        const {config: {appId}, user: {_id: appUserId, pendingClients}, conversation: {_id: conversationId}} = getState();
-        return dispatch(http('POST', `/apps/${appId}/appusers/${appUserId}/clients`, {
-            criteria,
-            confirmation: {
-                type: 'prompt'
-            },
-            target: {
-                conversationId
-            }
-        }))
+        const {config: {appId}, user: {pendingClients=[]}} = getState();
+
+        return ensureUserAndFayeConnection(dispatch, getState)
+            .then(() => {
+                const {user: {_id: appUserId}, conversation: {_id: conversationId}} = getState();
+
+                return dispatch(http('POST', `/apps/${appId}/appusers/${appUserId}/clients`, {
+                    criteria,
+                    confirmation: {
+                        type: 'prompt'
+                    },
+                    target: {
+                        conversationId
+                    }
+                }));
+            })
             .then(({client}) => {
                 dispatch(updateUser({
                     pendingClients: [...pendingClients, client]
@@ -370,7 +396,7 @@ export function failSMSLink(error, type) {
 
 export function fetchTransferRequestCode(type) {
     return (dispatch, getState) => {
-        const {user: {_id}, config: {integrations, appId}} = getState();
+        const {config: {integrations, appId}} = getState();
         const integration = integrations.find((integration) => type === integration.type);
 
         if (!integration) {
@@ -378,14 +404,22 @@ export function fetchTransferRequestCode(type) {
         }
 
         dispatch(unsetError(type));
-        return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/transferrequest`, {
-            type,
-            integrationId: integration._id
-        })).then((res) => {
-            const transferRequestCode = res.transferRequests[0].code;
-            dispatch(setTransferRequestCode(type, transferRequestCode));
-        }).catch(() => {
-            dispatch(setError(type));
-        });
+
+        return ensureUserAndFayeConnection(dispatch, getState)
+            .then(() => {
+                const {user: {_id}} = getState();
+
+                return dispatch(http('GET', `/apps/${appId}/appusers/${_id}/transferrequest`, {
+                    type,
+                    integrationId: integration._id
+                }));
+            })
+            .then((res) => {
+                const transferRequestCode = res.transferRequests[0].code;
+                dispatch(setTransferRequestCode(type, transferRequestCode));
+            })
+            .catch(() => {
+                dispatch(setError(type));
+            });
     };
 }
