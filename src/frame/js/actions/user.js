@@ -33,7 +33,7 @@ export function immediateUpdate(props) {
         }
 
         lastUpdateAttempt = Date.now();
-        console.log('Updating attempt');
+
         props = pick(Object.assign({}, pendingUserProps, props), EDITABLE_PROPERTIES);
         pendingUserProps = {};
 
