@@ -45,6 +45,7 @@ describe('Smooch', () => {
     const sandbox = sinon.sandbox.create();
 
     let loginStub;
+    let logoutStub;
     let setUserStub;
     let setAuthStub;
     let immediateUpdateStub;
@@ -86,10 +87,12 @@ describe('Smooch', () => {
         });
 
         loginStub = sandbox.stub().returnsAsyncThunk();
+        logoutStub = sandbox.stub().returnsAsyncThunk();
 
         SmoochRewire('authActions', {
             ...authActions,
             login: loginStub,
+            logout: logoutStub,
             setAuth: setAuthStub,
             resetAuth: resetAuthStub
         });
@@ -329,6 +332,7 @@ describe('Smooch', () => {
             it('should call the login action', () => {
                 return Smooch.login('some-id', 'some-jwt').then(() => {
                     loginStub.should.have.been.calledOnce;
+                    loginStub.should.have.been.calledWith('some-id', 'some-jwt');
                 });
             });
 
@@ -393,17 +397,10 @@ describe('Smooch', () => {
         });
     });
 
-    describe.skip('Logout', () => {
-        let smoochLoginStub;
-
-        beforeEach(() => {
-            smoochLoginStub = sandbox.stub().resolves();
-            SmoochRewire('login', smoochLoginStub);
-        });
-
-        it('should call login', () => {
-            Smooch.logout().then(() => {
-                smoochLoginStub.should.have.been.called;
+    describe('Logout', () => {
+        it('should call logout', () => {
+            return Smooch.logout().then(() => {
+                logoutStub.should.have.been.calledOnce;
             });
         });
     });
