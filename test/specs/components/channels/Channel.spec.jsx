@@ -34,14 +34,6 @@ describe('Channel Component', () => {
         sandbox.restore();
     });
 
-    it('should render nothing if no smoochId', () => {
-        const store = createMockedStore(sandbox, generateBaseStoreProps({
-            user: {}
-        }));
-        const component = wrapComponentWithStore(Channel, null, store);
-        TestUtils.scryRenderedDOMComponentsWithClass(component, 'channel-pages-container').length.should.be.eq(0);
-    });
-
     it('should render container without children if no channels', () => {
         const store = createMockedStore(sandbox, generateBaseStoreProps({
             user: {

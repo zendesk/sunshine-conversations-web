@@ -1,5 +1,4 @@
 import sinon from 'sinon';
-import ReactDOM from 'react-dom';
 import TestUtils from 'react-dom/test-utils';
 
 import NotificationChannelItem from '../../../src/frame/js/components/NotificationChannelItem';
@@ -64,15 +63,7 @@ describe('Settings', () => {
             }
         ]);
 
-        const storeProps = {
-            ...defaultStoreProps,
-            user: {
-                _id: 1230912,
-                clients: []
-            }
-        };
-
-        mockedStore = createMockedStore(sandbox, storeProps);
+        mockedStore = createMockedStore(sandbox, defaultStoreProps);
 
         component = wrapComponentWithStore(Settings, null, mockedStore);
     });
@@ -93,18 +84,5 @@ describe('Settings', () => {
     it('should set channel description text', () => {
         const description = TestUtils.scryRenderedDOMComponentsWithClass(component, 'settings-description')[0];
         description.textContent.should.eq(mockedStore.getState().ui.text.notificationSettingsChannelsDescription);
-    });
-
-    describe('No user id', () => {
-        beforeEach(() => {
-            mockedStore = createMockedStore(sandbox, defaultStoreProps);
-
-            component = wrapComponentWithStore(Settings, null, mockedStore);
-        });
-
-        it('should not render', () => {
-            const componentNode = ReactDOM.findDOMNode(component);
-            expect(componentNode).to.be.null;
-        });
     });
 });
