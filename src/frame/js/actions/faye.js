@@ -3,11 +3,12 @@ import { batchActions } from 'redux-batched-actions';
 
 import { setUser } from './user';
 import { showSettings, showTypingIndicator, hideTypingIndicator, hideChannelPage, hideConnectNotification } from './app-state';
-import { addMessage, incrementUnreadCount, resetUnreadCount, getMessages, disconnectFaye } from './conversation';
+import { addMessage, incrementUnreadCount, resetUnreadCount, getMessages, fetchUserConversation } from './conversation';
 import { cancelSMSLink, failSMSLink } from './integrations';
 import { getClientId } from '../utils/client';
 import { ANIMATION_TIMINGS } from '../constants/styles';
-
+import { login, setAuth } from './auth';
+import { setItem } from '../utils/storage';
 
 export const SET_FAYE_SUBSCRIPTION = 'SET_FAYE_SUBSCRIPTION';
 export const UNSET_FAYE_SUBSCRIPTION = 'UNSET_FAYE_SUBSCRIPTION';
@@ -143,9 +144,30 @@ function handleActivityEvents(events) {
 }
 
 function updateUser(currentAppUser, nextAppUser, client) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         if (currentAppUser._id !== nextAppUser._id) {
-            // wat do?
+            const {config: {appId}} = getState();
+            const actions = [];
+            actions.push(setUser({
+                ...currentAppUser,
+                _id: nextAppUser._id
+            }));
+            setItem(`${appId}.appUserId`, nextAppUser._id);
+
+            if (nextAppUser.sessionToken) {
+                actions.push(setAuth({
+                    sessionToken: nextAppUser.sessionToken
+                }));
+                setItem(`${appId}.sessionToken`, nextAppUser.sessionToken);
+            }
+
+            dispatch(batchActions(actions));
+
+            if (nextAppUser.userId) {
+                return dispatch(login());
+            } else {
+                return dispatch(fetchUserConversation());
+            }
         } else {
             dispatch(setUser({
                 ...currentAppUser,
