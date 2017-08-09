@@ -2,7 +2,7 @@ import Raven from 'raven-js';
 import { batchActions } from 'redux-batched-actions';
 
 import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi, showConnectNotification } from './app-state';
-import { setUser } from './user';
+import { setUser, immediateUpdate as immediateUpdateUser } from './user';
 import { disconnectClient, subscribe as subscribeFaye, unsetFayeSubscription } from './faye';
 
 import http from './http';
@@ -563,7 +563,8 @@ export function startConversation() {
         }
 
         return promise
-            .then((response) => dispatch(handleUserConversationResponse(response)));
+            .then((response) => dispatch(handleUserConversationResponse(response)))
+            .then(() => dispatch(immediateUpdateUser()));
     };
 }
 
