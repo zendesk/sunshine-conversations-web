@@ -3,8 +3,8 @@ import { batchActions } from 'redux-batched-actions';
 
 import { setUser } from './user';
 import { showSettings, showTypingIndicator, hideTypingIndicator, hideChannelPage, hideConnectNotification } from './app-state';
-import { addMessage, incrementUnreadCount, resetUnreadCount, getMessages, fetchUserConversation } from './conversation';
-import { cancelSMSLink, failSMSLink } from './integrations';
+import { addMessage, incrementUnreadCount, resetUnreadCount, getMessages, fetchUserConversation, disconnectFaye, resetConversation } from './conversation';
+import { cancelSMSLink, failSMSLink, resetIntegrations } from './integrations';
 import { getClientId } from '../utils/client';
 import { ANIMATION_TIMINGS } from '../constants/styles';
 import { login, setAuth } from './auth';
@@ -146,10 +146,12 @@ function handleActivityEvents(events) {
 function updateUser(currentAppUser, nextAppUser, client) {
     return (dispatch, getState) => {
         if (currentAppUser._id !== nextAppUser._id) {
-            const {config: {appId}} = getState();
-            const actions = [];
+            const {config: {appId}, auth: {jwt}} = getState();
+            const actions = [
+                resetConversation(),
+                resetIntegrations()
+            ];
             actions.push(setUser({
-                ...currentAppUser,
                 _id: nextAppUser._id
             }));
             setItem(`${appId}.appUserId`, nextAppUser._id);
@@ -161,10 +163,11 @@ function updateUser(currentAppUser, nextAppUser, client) {
                 setItem(`${appId}.sessionToken`, nextAppUser.sessionToken);
             }
 
+            dispatch(disconnectFaye());
             dispatch(batchActions(actions));
 
             if (nextAppUser.userId) {
-                return dispatch(login());
+                return dispatch(login(nextAppUser.userId, jwt));
             } else {
                 return dispatch(fetchUserConversation());
             }

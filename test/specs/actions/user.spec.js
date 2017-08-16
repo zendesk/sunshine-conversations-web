@@ -4,7 +4,7 @@ import hat from 'hat';
 import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 
 import * as userActions from '../../../src/frame/js/actions/user';
-import { __Rewire__ as UserRewire } from '../../../src/frame/js/actions/user';
+import { __Rewire__ as UserRewire, __RewireAPI__ as UserRewireAPI } from '../../../src/frame/js/actions/user';
 
 describe('User Actions', () => {
     let sandbox;
@@ -35,12 +35,16 @@ describe('User Actions', () => {
                 email
             }
         }));
+
+        clearTimeout(UserRewireAPI.__get__('pendingTimeout'));
+        UserRewireAPI.__set__('pendingTimeout', null);
+        UserRewireAPI.__set__('pendingResolve', null);
+        UserRewireAPI.__set__('pendingUserProps', {});
+        UserRewireAPI.__set__('lastUpdateAttempt', undefined);
     });
 
     afterEach(() => {
         sandbox.restore();
-
-        userActions._resetState();
     });
 
     describe('immediateUpdate', () => {
@@ -102,7 +106,6 @@ describe('User Actions', () => {
         });
     });
 
-    // skip these untils fake timers weirdness is resolved.
     describe('update', () => {
         let immediateUpdateSpy;
         let setTimeoutStub;
