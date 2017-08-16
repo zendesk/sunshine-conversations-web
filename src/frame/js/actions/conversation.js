@@ -505,7 +505,7 @@ export function disconnectFaye() {
     };
 }
 
-export function handleUserConversationResponse({appUser, conversation, hasPrevious, messages=[], sessionToken, settings}) {
+export function handleUserConversationResponse({appUser, conversation, hasPrevious, messages=[], sessionToken, settings={}}) {
     return (dispatch, getState) => {
         const {config: {appId}} = getState();
         Raven.setUserContext({
@@ -546,7 +546,8 @@ export function handleUserConversationResponse({appUser, conversation, hasPrevio
 
 export function startConversation() {
     return (dispatch, getState) => {
-        const {user: {_id: appUserId, userId, pendingAttributes}, config: {appId}, conversation: {_id: conversationId}} = getState();
+        const {user, config: {appId}, conversation: {_id: conversationId}} = getState();
+        const {_id: appUserId, userId, pendingAttributes} = user;
 
         if (conversationId) {
             return Promise.resolve();
@@ -554,7 +555,16 @@ export function startConversation() {
 
         let promise;
         if (appUserId) {
-            promise = dispatch(http('POST', `/appusers/${appUserId}/conversations`));
+            promise = dispatch(http('POST', `/apps/${appId}/appusers/${appUserId}/conversations`))
+                .then(({conversation}) => {
+                    return {
+                        conversation,
+                        appUser: {
+                            ...user,
+                            conversationStarted: true
+                        }
+                    };
+                });
         } else {
             promise = dispatch(http('POST', `/apps/${appId}/appusers`, {
                 ...pendingAttributes,
@@ -564,7 +574,7 @@ export function startConversation() {
         }
 
         return promise
-            .then((response) => dispatch(handleUserConversationResponse(response)))
+            .then((payload) => dispatch(handleUserConversationResponse(payload)))
             .then(() => dispatch(immediateUpdateUser()));
     };
 }
