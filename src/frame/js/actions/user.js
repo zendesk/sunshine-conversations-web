@@ -99,14 +99,6 @@ export function update(props) {
     };
 }
 
-export function _resetState() {
-    clearTimeout(pendingTimeout);
-    pendingTimeout = null;
-    pendingResolve = null;
-    pendingUserProps = {};
-    lastUpdateAttempt = undefined;
-}
-
 export function setUser(props) {
     return {
         type: SET_USER,
