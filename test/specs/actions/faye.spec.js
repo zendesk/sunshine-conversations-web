@@ -5,10 +5,10 @@ import hat from 'hat';
 import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
 import { hideChannelPage, hideConnectNotification, hideTypingIndicator } from '../../../src/frame/js/actions/app-state';
 import { setUser } from '../../../src/frame/js/actions/user';
-import { addMessage, incrementUnreadCount } from '../../../src/frame/js/actions/conversation';
+import { addMessage, incrementUnreadCount, resetConversation } from '../../../src/frame/js/actions/conversation';
+import { resetIntegrations } from '../../../src/frame/js/actions/integrations';
 import * as fayeActions from '../../../src/frame/js/actions/faye';
 import { __Rewire__ as FayeRewire, __RewireAPI__ as FayeRewireAPI } from '../../../src/frame/js/actions/faye';
-import { login, setAuth } from '../../../src/frame/js/actions/auth';
 import { setItem } from '../../../src/frame/js/utils/storage';
 
 const handleMessageEvents = FayeRewireAPI.__get__('handleMessageEvents');
@@ -33,6 +33,8 @@ describe('Faye Actions', () => {
     let resetUnreadCountStub;
     let setUserSpy;
     let setFayeSubscriptionSpy;
+    let resetIntegrationsSpy;
+    let resetConversationSpy;
 
     beforeEach(() => {
         mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
@@ -47,6 +49,12 @@ describe('Faye Actions', () => {
 
         showSettingsStub = sandbox.stub().returnsAsyncThunk();
         FayeRewire('showSettings', showSettingsStub);
+
+        resetIntegrationsSpy = sandbox.spy(resetIntegrations);
+        FayeRewire('resetIntegrations', resetIntegrationsSpy);
+
+        resetConversationSpy = sandbox.spy(resetConversation);
+        FayeRewire('resetConversation', resetConversationSpy);
 
         hideChannelPageSpy = sandbox.spy(hideChannelPage);
         FayeRewire('hideChannelPage', hideChannelPageSpy);
@@ -459,7 +467,6 @@ describe('Faye Actions', () => {
                 loginStub.should.not.have.been.called;
 
                 setUserSpy.should.have.been.calledWith({
-                    ...currentAppUser,
                     _id: nextAppUser._id
                 });
 
@@ -473,10 +480,19 @@ describe('Faye Actions', () => {
                     sessionToken: nextAppUser.sessionToken
                 });
 
+                disconnectFayeStub.should.have.been.calledOnce;
+                resetConversationSpy.should.have.been.calledOnce;
+                resetIntegrationsSpy.should.have.been.calledOnce;
                 fetchUserConversationStub.should.have.been.calledOnce;
             });
 
             it('should login if JWT was used', () => {
+                const jwt = hat();
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
+                    auth: {
+                        jwt
+                    }
+                }));
                 nextAppUser.userId = hat();
 
                 mockedStore.dispatch(updateUser(currentAppUser, nextAppUser, client));
@@ -484,7 +500,6 @@ describe('Faye Actions', () => {
                 fetchUserConversationStub.should.not.have.been.called;
 
                 setUserSpy.should.have.been.calledWith({
-                    ...currentAppUser,
                     _id: nextAppUser._id
                 });
 
@@ -494,7 +509,11 @@ describe('Faye Actions', () => {
 
                 setAuthStub.should.not.have.been.called;
 
+                disconnectFayeStub.should.have.been.calledOnce;
+                resetConversationSpy.should.have.been.calledOnce;
+                resetIntegrationsSpy.should.have.been.calledOnce;
                 loginStub.should.have.been.calledOnce;
+                loginStub.should.have.been.calledWith(nextAppUser.userId, jwt);
             });
         });
 
@@ -525,6 +544,10 @@ describe('Faye Actions', () => {
                         client
                     ]
                 });
+
+                disconnectFayeStub.should.not.have.been.called;
+                resetConversationSpy.should.not.have.been.called;
+                resetIntegrationsSpy.should.not.have.been.called;
             });
         });
     });
