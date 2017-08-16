@@ -1,22 +1,25 @@
 import sinon from 'sinon';
+import Raven from 'raven-js';
 
 import { createMock as createThrottleMock } from '../../mocks/throttle';
 import { createMockedStore, findActionsByType, generateBaseStoreProps } from '../../utils/redux';
 
 import * as conversationActions from '../../../src/frame/js/actions/conversation';
-import { __Rewire__ as RewireConversationActions } from '../../../src/frame/js/actions/conversation';
-import { updateUser } from '../../../src/frame/js/actions/user';
+import { __Rewire__ as ConversationActionsRewire, __RewireAPI__ as ConversationActionsRewireAPI } from '../../../src/frame/js/actions/conversation';
+import { updateUser, setUser } from '../../../src/frame/js/actions/user';
+import { setConfig } from '../../../src/frame/js/actions/config';
+import { setAuth } from '../../../src/frame/js/actions/auth';
 import { showErrorNotification, showConnectNotification } from '../../../src/frame/js/actions/app-state';
 import { unsetFayeSubscriptions } from '../../../src/frame/js/actions/faye';
+import { setItem, removeItem } from '../../../src/frame/js/utils/storage';
 
 import { SEND_STATUS, LOCATION_ERRORS } from '../../../src/frame/js/constants/message';
 
+const handleUserConversationResponse = ConversationActionsRewireAPI.__get__('handleUserConversationResponse');
 
 describe('Conversation Actions', () => {
     let sandbox;
     let mockedStore;
-    let conversationSubscriptionMock;
-    let userSubscriptionMock;
 
     let replaceMessageSpy;
     let setConversationSpy;
@@ -31,8 +34,6 @@ describe('Conversation Actions', () => {
     let showConnectNotificationSpy;
     let isFileTypeSupportedStub;
     let resizeImageStub;
-    let subscribeConversationStub;
-    let subscribeUserStub;
     let disconnectClientSpy;
 
     before(() => {
@@ -41,32 +42,24 @@ describe('Conversation Actions', () => {
 
     beforeEach(() => {
         // Disable throttling for unit tests
-        RewireConversationActions('Throttle', createThrottleMock(sandbox));
-        conversationSubscriptionMock = {
-            cancel: sandbox.stub().resolves()
-        };
-
-        userSubscriptionMock = {
-            cancel: sandbox.stub().resolves()
-        };
+        ConversationActionsRewire('Throttle', createThrottleMock(sandbox));
 
         // Conversation actions
-
         replaceMessageSpy = sandbox.spy(conversationActions.replaceMessage);
-        RewireConversationActions('replaceMessage', replaceMessageSpy);
+        ConversationActionsRewire('replaceMessage', replaceMessageSpy);
         setConversationSpy = sandbox.spy(conversationActions.setConversation);
-        RewireConversationActions('setConversation', setConversationSpy);
+        ConversationActionsRewire('setConversation', setConversationSpy);
 
 
         startConversationStub = sandbox.stub().returnsAsyncThunk();
-        RewireConversationActions('startConversation', startConversationStub);
+        ConversationActionsRewire('startConversation', startConversationStub);
         getMessagesStub = sandbox.stub().returnsAsyncThunk({
             value: {
                 conversation: {},
                 messages: []
             }
         });
-        RewireConversationActions('_getMessages', getMessagesStub);
+        ConversationActionsRewire('_getMessages', getMessagesStub);
 
         // Http actions
         httpStub = sandbox.stub().returnsAsyncThunk({
@@ -76,52 +69,47 @@ describe('Conversation Actions', () => {
                 }
             }
         });
-        RewireConversationActions('http', httpStub);
+        ConversationActionsRewire('http', httpStub);
 
         // Media Utils
-        RewireConversationActions('isImageUploadSupported', sandbox.stub().returns(true));
+        ConversationActionsRewire('isImageUploadSupported', sandbox.stub().returns(true));
         isFileTypeSupportedStub = sandbox.stub();
-        RewireConversationActions('isFileTypeSupported', isFileTypeSupportedStub);
+        ConversationActionsRewire('isFileTypeSupported', isFileTypeSupportedStub);
         resizeImageStub = sandbox.stub();
-        RewireConversationActions('resizeImage', resizeImageStub);
-        RewireConversationActions('getBlobFromDataUrl', sandbox.stub().returns('this-is-a-blob'));
+        ConversationActionsRewire('resizeImage', resizeImageStub);
+        ConversationActionsRewire('getBlobFromDataUrl', sandbox.stub().returns('this-is-a-blob'));
 
         // Device utils
-        RewireConversationActions('getClientId', sandbox.stub().returns('1234'));
-        RewireConversationActions('getClientInfo', sandbox.stub().returns({
+        ConversationActionsRewire('getClientId', sandbox.stub().returns('1234'));
+        ConversationActionsRewire('getClientInfo', sandbox.stub().returns({
             id: '1234'
         }));
 
         // User utils
-        RewireConversationActions('hasLinkableChannels', sandbox.stub().returns(true));
-        RewireConversationActions('isChannelLinked', sandbox.stub().returns(false));
+        ConversationActionsRewire('hasLinkableChannels', sandbox.stub().returns(true));
+        ConversationActionsRewire('isChannelLinked', sandbox.stub().returns(false));
 
         // DOM utils
         getWindowLocationStub = sandbox.stub();
-        RewireConversationActions('getWindowLocation', getWindowLocationStub);
+        ConversationActionsRewire('getWindowLocation', getWindowLocationStub);
 
         // User actions
         updateUserSpy = sandbox.spy(updateUser);
-        RewireConversationActions('updateUser', updateUserSpy);
+        ConversationActionsRewire('updateUser', updateUserSpy);
         immediateUpdateStub = sandbox.stub().returnsAsyncThunk();
-        RewireConversationActions('immediateUpdate', immediateUpdateStub);
+        ConversationActionsRewire('immediateUpdate', immediateUpdateStub);
 
         // AppState actions
         showConnectNotificationSpy = sandbox.spy(showConnectNotification);
-        RewireConversationActions('showConnectNotification', showConnectNotificationSpy);
+        ConversationActionsRewire('showConnectNotification', showConnectNotificationSpy);
         showErrorNotificationSpy = sandbox.spy(showErrorNotification);
-        RewireConversationActions('showErrorNotification', showErrorNotificationSpy);
+        ConversationActionsRewire('showErrorNotification', showErrorNotificationSpy);
 
         // Faye actions
         disconnectClientSpy = sandbox.spy();
-        RewireConversationActions('disconnectClient', disconnectClientSpy);
-        subscribeConversationStub = sandbox.stub().returnsAsyncThunk();
-        RewireConversationActions('subscribeConversation', subscribeConversationStub);
-        RewireConversationActions('subscribeConversationActivity', sandbox.stub().returnsAsyncThunk());
-        subscribeUserStub = sandbox.stub().returnsAsyncThunk();
-        RewireConversationActions('subscribeUser', subscribeUserStub);
+        ConversationActionsRewire('disconnectClient', disconnectClientSpy);
         unsetFayeSubscriptionsSpy = sandbox.spy(unsetFayeSubscriptions);
-        RewireConversationActions('unsetFayeSubscriptions', unsetFayeSubscriptionsSpy);
+        ConversationActionsRewire('unsetFayeSubscriptions', unsetFayeSubscriptionsSpy);
     });
 
     afterEach(() => {
@@ -234,7 +222,7 @@ describe('Conversation Actions', () => {
             postSendMessageStub = sandbox.stub().returnsAsyncThunk({
                 value: message
             });
-            RewireConversationActions('postSendMessage', postSendMessageStub);
+            ConversationActionsRewire('postSendMessage', postSendMessageStub);
         });
 
         conversationStartedSuite(conversationActions.sendMessage('message'));
@@ -274,7 +262,7 @@ describe('Conversation Actions', () => {
                 postSendMessageStub = sandbox.stub().returnsAsyncThunk({
                     rejects: true
                 });
-                RewireConversationActions('postSendMessage', postSendMessageStub);
+                ConversationActionsRewire('postSendMessage', postSendMessageStub);
             });
 
             it('should update message send status', () => {
@@ -304,7 +292,7 @@ describe('Conversation Actions', () => {
             postSendMessageStub = sandbox.stub().returnsAsyncThunk({
                 value: message
             });
-            RewireConversationActions('postSendMessage', postSendMessageStub);
+            ConversationActionsRewire('postSendMessage', postSendMessageStub);
             locationMessage = {
                 type: 'location',
                 _clientSent: Date.now() / 1000
@@ -481,8 +469,8 @@ describe('Conversation Actions', () => {
         beforeEach(() => {
             postSendMessageStub = sandbox.stub();
             postUploadImageStub = sandbox.stub();
-            RewireConversationActions('postSendMessage', postSendMessageStub);
-            RewireConversationActions('postUploadImage', postUploadImageStub);
+            ConversationActionsRewire('postSendMessage', postSendMessageStub);
+            ConversationActionsRewire('postUploadImage', postUploadImageStub);
         });
 
 
@@ -567,7 +555,7 @@ describe('Conversation Actions', () => {
             postUploadImageStub = sandbox.stub().returnsAsyncThunk({
                 value: image
             });
-            RewireConversationActions('postUploadImage', postUploadImageStub);
+            ConversationActionsRewire('postUploadImage', postUploadImageStub);
         });
 
         conversationStartedSuite(conversationActions.uploadImage({}));
@@ -613,7 +601,7 @@ describe('Conversation Actions', () => {
                     postUploadImageStub = sandbox.stub().returnsAsyncThunk({
                         rejects: true
                     });
-                    RewireConversationActions('postUploadImage', postUploadImageStub);
+                    ConversationActionsRewire('postUploadImage', postUploadImageStub);
                 });
 
                 it('should update message send status', () => {
@@ -649,104 +637,6 @@ describe('Conversation Actions', () => {
                 });
 
                 setConversationSpy.should.have.been.called;
-            });
-        });
-    });
-
-    describe.skip('connectFayeConversation', () => {
-        [true, false].forEach((conversationStarted) => {
-            [true, false].forEach((active) => {
-                describe(`with${active ? '' : 'out'} subscription active and with${conversationStarted ? '' : 'out'} conversation started`, () => {
-                    it(`should ${!active && conversationStarted ? '' : 'not'} subscribe to conversation`, () => {
-                        mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
-                            user: {
-                                conversationStarted
-                            },
-                            conversation: {
-                                _id: conversationStarted ? 'some-conversation-id' : null
-                            },
-                            faye: {
-                                conversationSubscription: active ? conversationSubscriptionMock : null
-                            }
-                        }));
-
-                        return mockedStore.dispatch(conversationActions.connectFayeConversation()).then(() => {
-                            if (conversationStarted && !active) {
-                                subscribeConversationStub.should.have.been.calledOnce;
-                            } else {
-                                subscribeConversationStub.should.not.have.been.called;
-                            }
-                        });
-                    });
-                });
-            });
-        });
-    });
-
-    describe.skip('connectFayeUser', () => {
-        [true, false].forEach((subscribed) => {
-            describe(`user ${subscribed ? '' : 'not'} subscribed`, () => {
-                it(`should ${subscribed ? 'not' : ''} subscribe user`, () => {
-                    mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
-                        faye: {
-                            userSubscription: subscribed ? userSubscriptionMock : null
-                        }
-                    }));
-
-                    return mockedStore.dispatch(conversationActions.connectFayeUser()).then(() => {
-                        if (subscribed) {
-                            subscribeUserStub.should.have.not.been.called;
-                        } else {
-                            subscribeUserStub.should.have.been.calledOnce;
-                        }
-                    });
-                });
-            });
-        });
-    });
-
-    describe.skip('disconnectFaye', () => {
-        [true, false].forEach((active) => {
-            describe(`with${active ? '' : 'out'} subscription active`, () => {
-                it(`should ${active ? '' : 'not'} cancel subscription`, () => {
-                    mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
-                        faye: {
-                            conversationSubscription: active ? conversationSubscriptionMock : null
-                        }
-                    }));
-                    mockedStore.dispatch(conversationActions.disconnectFaye());
-
-                    userSubscriptionMock.cancel.should.not.have.been.called;
-                    disconnectClientSpy.should.have.been.called;
-                    unsetFayeSubscriptionsSpy.should.have.been.called;
-                    if (active) {
-                        conversationSubscriptionMock.cancel.should.have.been.called;
-                    } else {
-                        conversationSubscriptionMock.cancel.should.not.have.been.called;
-                    }
-                });
-            });
-        });
-
-        [true, false].forEach((subscribed) => {
-            describe(`user ${subscribed ? '' : 'not'} subscribed`, () => {
-                it(`should ${subscribed ? '' : 'not'} cancel their subscription`, () => {
-                    mockedStore = subscribed ? createMockedStore(sandbox, generateBaseStoreProps({
-                        faye: {
-                            userSubscription: userSubscriptionMock
-                        }
-                    })) : createMockedStore(sandbox, generateBaseStoreProps());
-                    mockedStore.dispatch(conversationActions.disconnectFaye());
-
-                    conversationSubscriptionMock.cancel.should.not.have.been.called;
-                    disconnectClientSpy.should.have.been.called;
-                    unsetFayeSubscriptionsSpy.should.have.been.called;
-                    if (subscribed) {
-                        userSubscriptionMock.cancel.should.have.been.called;
-                    } else {
-                        userSubscriptionMock.cancel.should.not.have.been.called;
-                    }
-                });
             });
         });
     });
@@ -887,7 +777,7 @@ describe('Conversation Actions', () => {
         let mockedStore;
         beforeEach(() => {
             handleUserConversationResponseStub = sandbox.stub().returnsAsyncThunk();
-            RewireConversationActions('handleUserConversationResponse', handleUserConversationResponseStub);
+            ConversationActionsRewire('handleUserConversationResponse', handleUserConversationResponseStub);
 
             const props = generateBaseStoreProps({
                 user: {
@@ -905,5 +795,166 @@ describe('Conversation Actions', () => {
                     handleUserConversationResponseStub.should.have.been.calledOnce;
                 });
         });
+    });
+
+
+    describe('handleUserConversationResponse', () => {
+        let appId;
+        let setUserContextStub;
+        let subscribeFayeStub;
+        let setUserSpy;
+        let setConversationSpy;
+        let setMessagesSpy;
+        let setConfigSpy;
+        let setItemSpy;
+        let removeItemSpy;
+        let setAuthSpy;
+
+        beforeEach(() => {
+            subscribeFayeStub = sandbox.stub().returnsAsyncThunk();
+            ConversationActionsRewire('subscribeFaye', subscribeFayeStub);
+            setUserSpy = sandbox.spy(setUser);
+            ConversationActionsRewire('setUser', setUserSpy);
+            setConversationSpy = sandbox.spy(conversationActions.setConversation);
+            ConversationActionsRewire('setConversation', setConversationSpy);
+            setMessagesSpy = sandbox.spy(conversationActions.setMessages);
+            ConversationActionsRewire('setMessages', setMessagesSpy);
+            setConfigSpy = sandbox.spy(setConfig);
+            ConversationActionsRewire('setConfig', setConfigSpy);
+            setAuthSpy = sandbox.spy(setAuth);
+            ConversationActionsRewire('setAuth', setAuthSpy);
+            setItemSpy = sandbox.spy(setItem);
+            removeItemSpy = sandbox.spy(removeItem);
+            ConversationActionsRewire('storage', {
+                setItem: setItemSpy,
+                removeItem: removeItemSpy
+            });
+
+            setUserContextStub = sandbox.stub(Raven, 'setUserContext');
+
+            mockedStore = createMockedStore(sandbox);
+            appId = mockedStore.getState().config.appId;
+        });
+
+        const promises = [
+            // hasUserId: true and hasSessionToken: true is not a scenario that should happen
+            {
+                hasUserId: true,
+                hasSessionToken: false,
+                hasSettings: true,
+                conversationStarted: true
+            },
+            {
+                hasUserId: false,
+                hasSessionToken: false,
+                hasSettings: true,
+                conversationStarted: true
+            },
+            {
+                hasUserId: false,
+                hasSessionToken: true,
+                hasSettings: true,
+                conversationStarted: true
+            },
+            {
+                hasUserId: true,
+                hasSessionToken: false,
+                hasSettings: true,
+                conversationStarted: false
+            },
+            {
+                hasUserId: false,
+                hasSessionToken: false,
+                hasSettings: true,
+                conversationStarted: false
+            },
+            {
+                hasUserId: false,
+                hasSessionToken: true,
+                hasSettings: true,
+                conversationStarted: false
+            }
+        ].map((expectations) => {
+            const {hasUserId, hasSessionToken, hasSettings, conversationStarted} = expectations;
+
+            const payload = {
+                appUser: {
+                    _id: 'some-app-user-id',
+                    conversationStarted
+                }
+            };
+
+            if (hasUserId) {
+                payload.appUser.userId = 'some-user-id';
+            }
+
+            if (hasSessionToken) {
+                payload.sessionToken = 'some-session-token';
+            }
+
+            if (hasSettings) {
+                payload.settings = {
+                    first: 'first',
+                    second: 'second',
+                    third: 'third'
+                };
+            }
+
+            return {
+                expectations,
+                payload
+            };
+        }).map(({expectations, payload}) => {
+            const {hasUserId, hasSessionToken, hasSettings, conversationStarted} = expectations;
+
+            const generateExpectationString = (expectations) => {
+                return Object.keys(expectations).map((key) => `${key}: ${expectations[key]}`).join(', ');
+            };
+
+            it(`should meet expectations (${generateExpectationString(expectations)})`, () => {
+                return mockedStore.dispatch(handleUserConversationResponse(payload)).then(() => {
+                    setUserContextStub.should.have.been.calledWith({
+                        id: 'some-app-user-id'
+                    });
+
+                    setMessagesSpy.should.have.been.calledOnce;
+                    setUserSpy.should.have.been.calledOnce;
+                    setConversationSpy.should.have.been.calledOnce;
+
+                    if (hasUserId) {
+                        removeItemSpy.should.have.been.calledWith(`${appId}.appUserId`);
+                    } else {
+                        setItemSpy.should.have.been.calledWith(`${appId}.appUserId`, 'some-app-user-id');
+                    }
+
+                    if (hasSessionToken) {
+                        setItemSpy.should.have.been.calledWith(`${appId}.sessionToken`, 'some-session-token');
+                        setAuthSpy.should.have.been.calledWith({
+                            sessionToken: 'some-session-token'
+                        });
+                    } else {
+                        setItemSpy.should.not.have.been.calledWith(`${appId}.sessionToken`);
+                        setAuthSpy.should.not.have.been.called;
+                    }
+
+                    if (conversationStarted) {
+                        subscribeFayeStub.should.have.been.calledOnce;
+                    } else {
+                        subscribeFayeStub.should.not.have.been.called;
+                    }
+
+                    if (hasSettings) {
+                        setConfigSpy.should.have.been.calledThrice;
+                        setConfigSpy.should.have.been.calledWith('first', 'first');
+                        setConfigSpy.should.have.been.calledWith('second', 'second');
+                        setConfigSpy.should.have.been.calledWith('third', 'third');
+                    } else {
+                        setConfigSpy.should.not.have.been.called;
+                    }
+                });
+            });
+        });
+
+        return Promise.all(promises);
     });
 });
