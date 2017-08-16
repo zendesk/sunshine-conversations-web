@@ -525,7 +525,14 @@ export function handleUserConversationResponse({appUser, conversation, hasPrevio
             actions.push(setConfig(key, settings[key]));
         }
 
-        storage.setItem(`${appId}.appUserId`, appUser._id);
+        if (appUser.userId) {
+            // if the user is identified using a userId,
+            // there's no need to persist or leave the appUserId
+            // in storage since it's useless without a jwt
+            storage.removeItem(`${appId}.appUserId`);
+        } else {
+            storage.setItem(`${appId}.appUserId`, appUser._id);
+        }
 
         if (sessionToken) {
             storage.setItem(`${appId}.sessionToken`, sessionToken);
