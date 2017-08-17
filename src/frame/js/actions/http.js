@@ -59,7 +59,7 @@ export default function http(method, url, data, extraHeaders = {}, baseUrl) {
         const headers = {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            'x-smooch-sdk': `web/${VERSION}`,
+            'x-smooch-sdk': `web/${VENDOR_ID}/${VERSION}`,
             'x-smooch-clientid': getClientId(config.appId),
             'x-smooch-appid': config.appId,
             ...extraHeaders
