@@ -25,7 +25,7 @@ function generateExpectation(method, url, data, headers, useJwt, useSessionToken
         headers: Object.assign({
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'x-smooch-sdk': `web/${VERSION}`
+            'x-smooch-sdk': `web/${VENDOR_ID}/${VERSION}`
         }, headers)
     };
 

@@ -29,6 +29,10 @@ module.exports = function(options) {
     const config = require('./config/default/config.json');
     const {buildType} = options;
 
+    // set VENDOR_ID env var or pass it in the options
+    // before calling webpack to set the vendor id
+    const vendorId = process.env.VENDOR_ID || options.vendorId || 'smooch';
+
     try {
         Object.assign(config, require('./config/config.json'));
     }
@@ -206,6 +210,7 @@ module.exports = function(options) {
     const plugins = [
         new webpack.DefinePlugin({
             VERSION: `'${VERSION}'`,
+            VENDOR_ID: `'${vendorId}'`,
             FRAME_JS_URL: `'${publicPath}${frameJsFilename}'`,
             FRAME_CSS_URL: `'${publicPath}${frameCssFilename}'`,
             SENTRY_DSN: options.sentryDsn ? `'${options.sentryDsn}'` : 'undefined'
