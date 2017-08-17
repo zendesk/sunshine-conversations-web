@@ -145,7 +145,7 @@ describe('Message Component', () => {
         describe('file message', () => {
             const props = Object.assign({}, defaultProps, {
                 role: 'appUser',
-                name: 'Smooch appUser',
+                name: 'WebMessenger appUser',
                 type: 'file'
             });
 
@@ -161,7 +161,7 @@ describe('Message Component', () => {
         describe('location message', () => {
             const props = Object.assign({}, defaultProps, {
                 role: 'appUser',
-                name: 'Smooch appUser',
+                name: 'WebMessenger appUser',
                 avatarUrl: 'http://some-image.url',
                 type: 'location'
             });
@@ -207,7 +207,7 @@ describe('Message Component', () => {
         describe(`${role} without actions`, () => {
             const props = Object.assign({}, defaultProps, {
                 role: role,
-                name: 'Smooch',
+                name: 'WebMessenger',
                 type: 'text',
                 avatarUrl: 'http://some-image.url'
             });
@@ -265,7 +265,7 @@ describe('Message Component', () => {
         describe(`${role} with actions`, () => {
             const props = Object.assign({}, defaultProps, {
                 role: role,
-                name: `Smooch ${role}`,
+                name: `WebMessenger ${role}`,
                 avatarUrl: 'http://some-image.url',
                 type: 'image',
                 mediaUrl: 'media-url',
@@ -310,7 +310,7 @@ describe('Message Component', () => {
         it('should not contain any reply or locationRequest actions', () => {
             const props = Object.assign({}, defaultProps, {
                 role: role,
-                name: `Smooch ${role}`,
+                name: `WebMessenger ${role}`,
                 avatarUrl: 'http://some-image.url',
                 actions: [
                     {

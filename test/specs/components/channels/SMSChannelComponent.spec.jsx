@@ -40,7 +40,7 @@ describe('SMS Channel Content Component', () => {
 
     describe('user has sms linking enabled', () => {
         const linkedProps = {
-            smoochId: '12345',
+            appUserId: '12345',
             phoneNumber: '123456789',
             channelState: {
                 appUserNumber: '+151455555555',
@@ -63,7 +63,7 @@ describe('SMS Channel Content Component', () => {
 
     describe('user has sms linking disabled', () => {
         const unlinkedProps = {
-            smoochId: '12345',
+            appUserId: '12345',
             phoneNumber: '123456789',
             channelState: {
                 appUserNumber: '',
@@ -131,7 +131,7 @@ describe('SMS Channel Content Component', () => {
 
     describe('user is in pending state', () => {
         const pendingProps = {
-            smoochId: '12345',
+            appUserId: '12345',
             channelState: {
                 appUserNumberValid: true,
                 appUserNumber: '+15145555555',

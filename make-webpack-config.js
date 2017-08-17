@@ -52,7 +52,7 @@ module.exports = function(options) {
         };
     } else if (buildType === 'host') {
         entry = {
-            smooch: './src/host/js/index'
+            [vendorId]: './src/host/js/index'
         };
     } else if (buildType === 'frame') {
         entry = {
@@ -60,7 +60,7 @@ module.exports = function(options) {
         };
     } else if (buildType === 'dev' || buildType === 'test') {
         entry = {
-            smooch: './src/host/js/index',
+            [vendorId]: './src/host/js/index',
             frame: './src/frame/js/index'
         };
     } else {

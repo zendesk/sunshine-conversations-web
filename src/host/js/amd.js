@@ -1,6 +1,6 @@
-const Smooch = require('./smooch');
+const WebMessenger = require('./web-messenger');
 
 /* global define:false */
 define([], function() {
-    return Smooch;
+    return WebMessenger;
 });

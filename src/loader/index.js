@@ -25,8 +25,8 @@
         }
     };
 
-    w.__onSmoochHostReady__ = function onHostReady(Lib) {
-        delete w.__onSmoochHostReady__;
+    w.__onWebMessengerHostReady__ = function onHostReady(Lib) {
+        delete w.__onWebMessengerHostReady__;
         // replace skeleton with real lib
         w[globalVarName] = Lib;
 

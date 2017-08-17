@@ -7,8 +7,8 @@ import * as userActions from '../../src/frame/js/actions/user';
 import * as authActions from '../../src/frame/js/actions/auth';
 import * as storage from '../../src/frame/js/utils/storage';
 import * as appStateActions from '../../src/frame/js/actions/app-state';
-import * as Smooch from '../../src/frame/js/smooch';
-import { __Rewire__ as SmoochRewire } from '../../src/frame/js/smooch';
+import * as WebMessenger from '../../src/frame/js/web-messenger';
+import { __Rewire__ as WebMessengerRewire } from '../../src/frame/js/web-messenger';
 
 const AppStore = require('../../src/frame/js/store');
 const store = AppStore.store;
@@ -41,7 +41,7 @@ const defaultState = generateBaseStoreProps({
     }
 });
 
-describe('Smooch', () => {
+describe('WebMessenger', () => {
     const sandbox = sinon.sandbox.create();
 
     let loginStub;
@@ -63,12 +63,12 @@ describe('Smooch', () => {
     let removeItemStub;
 
     beforeEach(() => {
-        SmoochRewire('renderWidget', sandbox.stub().returns({}));
+        WebMessengerRewire('renderWidget', sandbox.stub().returns({}));
 
         disconnectFayeStub = sandbox.stub().returnsAsyncThunk();
-        SmoochRewire('disconnectFaye', disconnectFayeStub);
+        WebMessengerRewire('disconnectFaye', disconnectFayeStub);
         fetchUserConversationStub = sandbox.stub().returnsAsyncThunk();
-        SmoochRewire('fetchUserConversation', fetchUserConversationStub);
+        WebMessengerRewire('fetchUserConversation', fetchUserConversationStub);
 
         immediateUpdateStub = sandbox.stub().returnsAsyncThunk();
         updateUserStub = sandbox.stub();
@@ -78,7 +78,7 @@ describe('Smooch', () => {
         resetAuthStub = sandbox.stub();
         resetUserStub = sandbox.stub();
 
-        SmoochRewire('userActions', {
+        WebMessengerRewire('userActions', {
             ...userActions,
             update: updateUserStub,
             immediateUpdate: immediateUpdateStub,
@@ -89,7 +89,7 @@ describe('Smooch', () => {
         loginStub = sandbox.stub().returnsAsyncThunk();
         logoutStub = sandbox.stub().returnsAsyncThunk();
 
-        SmoochRewire('authActions', {
+        WebMessengerRewire('authActions', {
             ...authActions,
             login: loginStub,
             logout: logoutStub,
@@ -97,11 +97,11 @@ describe('Smooch', () => {
             resetAuth: resetAuthStub
         });
 
-        SmoochRewire('cleanUp', cleanUpStub);
+        WebMessengerRewire('cleanUp', cleanUpStub);
 
         openWidgetStub = sandbox.stub().returnsSyncThunk();
         closeWidgetStub = sandbox.stub().returnsSyncThunk();
-        SmoochRewire('appStateActions', {
+        WebMessengerRewire('appStateActions', {
             ...appStateActions,
             openWidget: openWidgetStub,
             closeWidget: closeWidgetStub
@@ -109,7 +109,7 @@ describe('Smooch', () => {
 
         getItemStub = sandbox.stub();
         removeItemStub = sandbox.stub();
-        SmoochRewire('storage', {
+        WebMessengerRewire('storage', {
             ...storage,
             getItem: getItemStub,
             removeItem: removeItemStub
@@ -140,9 +140,9 @@ describe('Smooch', () => {
             fetchConfigStub = sandbox.stub().returnsAsyncThunk();
             loginStub = sandbox.stub().resolves();
             renderStub = sandbox.stub();
-            SmoochRewire('fetchConfig', fetchConfigStub);
-            SmoochRewire('login', loginStub);
-            SmoochRewire('render', renderStub);
+            WebMessengerRewire('fetchConfig', fetchConfigStub);
+            WebMessengerRewire('login', loginStub);
+            WebMessengerRewire('render', renderStub);
         });
 
         [true, false].forEach((hasAppUserId) => {
@@ -168,7 +168,7 @@ describe('Smooch', () => {
                                 appId: 'some-app-id'
                             };
 
-                            return Smooch.init(props).then(() => {
+                            return WebMessenger.init(props).then(() => {
                                 fetchConfigStub.should.have.been.calledOnce;
                                 loginStub.should.not.have.been.called;
                                 renderStub.should.have.been.calledOnce;
@@ -203,7 +203,7 @@ describe('Smooch', () => {
                                     appId: hat()
                                 };
 
-                                return Smooch.init(props).then(() => {
+                                return WebMessenger.init(props).then(() => {
                                     fetchConfigStub.should.have.been.calledOnce;
                                     loginStub.should.not.have.been.called;
                                     renderStub.should.have.been.calledOnce;
@@ -233,7 +233,7 @@ describe('Smooch', () => {
                                     appId: hat()
                                 };
 
-                                return Smooch.init(props)
+                                return WebMessenger.init(props)
                                     .then(() => {
                                         fetchConfigStub.should.have.been.calledOnce;
                                         loginStub.should.not.have.been.called;
@@ -260,7 +260,7 @@ describe('Smooch', () => {
                                 jwt: 'some-jwt'
                             };
 
-                            return Smooch.init(props).then(() => {
+                            return WebMessenger.init(props).then(() => {
                                 fetchConfigStub.should.have.been.calledOnce;
                                 loginStub.should.have.been.calledOnce;
                                 renderStub.should.have.been.calledOnce;
@@ -283,13 +283,13 @@ describe('Smooch', () => {
                         });
 
                         it('should reject', () => {
-                            return Smooch.init(props).should.be.rejectedWith(Error, /already initialized/);
+                            return WebMessenger.init(props).should.be.rejectedWith(Error, /already initialized/);
                         });
                     });
 
                     describe('without appId', () => {
                         it('should throw', () => {
-                            return Smooch.init().should.be.rejectedWith(Error, /provide an appId/);
+                            return WebMessenger.init().should.be.rejectedWith(Error, /provide an appId/);
                         });
                     });
 
@@ -298,7 +298,7 @@ describe('Smooch', () => {
                             fetchConfigStub = sandbox.stub().returnsAsyncThunk({
                                 rejects: true
                             });
-                            SmoochRewire('fetchConfig', fetchConfigStub);
+                            WebMessengerRewire('fetchConfig', fetchConfigStub);
                         });
 
                         it('should reset the store state', () => {
@@ -306,7 +306,7 @@ describe('Smooch', () => {
                                 appId: 'some-app-id'
                             };
 
-                            return Smooch.init(props).then(() => {
+                            return WebMessenger.init(props).then(() => {
                                 cleanUpStub.should.have.been.calledOnce;
                             });
                         });
@@ -328,7 +328,7 @@ describe('Smooch', () => {
             });
 
             it('should call the login action', () => {
-                return Smooch.login('some-id', 'some-jwt').then(() => {
+                return WebMessenger.login('some-id', 'some-jwt').then(() => {
                     loginStub.should.have.been.calledOnce;
                     loginStub.should.have.been.calledWith('some-id', 'some-jwt');
                 });
@@ -336,9 +336,9 @@ describe('Smooch', () => {
 
             it('should throw if missing props', () => {
                 return Promise.all([
-                    Smooch.login('some-id').should.be.rejectedWith(Error, /provide a userId and a jwt/),
-                    Smooch.login(undefined, 'some-jwt').should.be.rejectedWith(Error, /provide a userId and a jwt/),
-                    Smooch.login().should.be.rejectedWith(Error, /provide a userId and a jwt/)
+                    WebMessenger.login('some-id').should.be.rejectedWith(Error, /provide a userId and a jwt/),
+                    WebMessenger.login(undefined, 'some-jwt').should.be.rejectedWith(Error, /provide a userId and a jwt/),
+                    WebMessenger.login().should.be.rejectedWith(Error, /provide a userId and a jwt/)
                 ]);
             });
         });
@@ -351,11 +351,11 @@ describe('Smooch', () => {
             sendMessageStub = sandbox.stub().returnsAsyncThunk({
                 value: {}
             });
-            SmoochRewire('_sendMessage', sendMessageStub);
+            WebMessengerRewire('_sendMessage', sendMessageStub);
         });
 
         it('should call the conversation action', () => {
-            return Smooch.sendMessage('here is my message').then(() => {
+            return WebMessenger.sendMessage('here is my message').then(() => {
                 sendMessageStub.should.have.been.calledWith('here is my message');
             });
         });
@@ -370,7 +370,7 @@ describe('Smooch', () => {
         describe('conversation exists', () => {
 
             it('should call handleConversationUpdated', () => {
-                Smooch.getConversation().should.eq(mockedStore.getState().conversation);
+                WebMessenger.getConversation().should.eq(mockedStore.getState().conversation);
             });
         });
     });
@@ -387,7 +387,7 @@ describe('Smooch', () => {
         });
 
         it('should call the user action', () => {
-            return Smooch.updateUser({
+            return WebMessenger.updateUser({
                 email: 'update@me.com'
             }).then(() => {
                 updateUserStub.should.have.been.calledWith({
@@ -399,7 +399,7 @@ describe('Smooch', () => {
 
     describe('Logout', () => {
         it('should call logout', () => {
-            return Smooch.logout().then(() => {
+            return WebMessenger.logout().then(() => {
                 logoutStub.should.have.been.calledOnce;
             });
         });
@@ -407,14 +407,14 @@ describe('Smooch', () => {
 
     describe('Open', () => {
         it('should dispatch open action', () => {
-            Smooch.open();
+            WebMessenger.open();
             openWidgetStub.should.have.been.calledOnce;
         });
     });
 
     describe('Close', () => {
         it('should dispatch close action', () => {
-            Smooch.close();
+            WebMessenger.close();
             closeWidgetStub.should.have.been.calledOnce;
         });
     });

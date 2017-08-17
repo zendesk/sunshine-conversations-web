@@ -11,12 +11,12 @@ export class ChannelComponent extends Component {
         pendingClients: PropTypes.array.isRequired,
         channelStates: PropTypes.object.isRequired,
         visibleChannelType: PropTypes.string,
-        smoochId: PropTypes.string,
+        appUserId: PropTypes.string,
         clients: PropTypes.array
     };
 
     render() {
-        const {appChannels, visibleChannelType, smoochId, clients, pendingClients, channelStates} = this.props;
+        const {appChannels, visibleChannelType, appUserId, clients, pendingClients, channelStates} = this.props;
 
         const channelPages = getAppChannelDetails(appChannels).map(({channel, details}) => {
             const client = clients.find((client) => client.platform === channel.type);
@@ -37,7 +37,7 @@ export class ChannelComponent extends Component {
                        <details.Component {...channel}
                                           channelState={ channelStates[channel.type] }
                                           getContent={ details.getContent }
-                                          smoochId={ smoochId }
+                                          appUserId={ appUserId }
                                           linked={ !!client } />
                    </ChannelPage>;
         });
@@ -53,7 +53,7 @@ export default connect(({appState, config, user, integrations}) => {
         visibleChannelType: appState.visibleChannelType,
         appChannels: config.integrations,
         channelStates: integrations,
-        smoochId: user._id,
+        appUserId: user._id,
         clients: user.clients || [],
         pendingClients: user.pendingClients || []
     };

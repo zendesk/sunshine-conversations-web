@@ -24,7 +24,7 @@ export class WeChatChannelContentComponent extends Component {
 
         if (channelState.qrCode) {
             return <img alt='WeChat QR Code'
-                        style={ {    width: '40%'} }
+                        style={ { width: '40%' } }
                         src={ channelState.qrCode } />;
         }
 
@@ -35,7 +35,7 @@ export class WeChatChannelContentComponent extends Component {
         };
 
         return <Loading dark={ true }
-                                 style={ loadingStyle } />;
+                        style={ loadingStyle } />;
     }
 }
 
