@@ -75,7 +75,7 @@ describe('Message Component', () => {
             });
 
             it('should not contain any actions', () => {
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-action').length.should.be.eq(0);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'action').length.should.be.eq(0);
             });
 
             it('should render a text message', () => {
@@ -98,21 +98,21 @@ describe('Message Component', () => {
         });
 
         it('should not have an avatar', () => {
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-msg-avatar').length.should.be.eq(0);
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'msg-avatar').length.should.be.eq(0);
         });
 
         it('should be on the right', () => {
-            const row = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-row');
-            row.className.indexOf('sk-right-row').should.be.gte(0);
-            row.className.indexOf('sk-left-row').should.be.eq(-1);
+            const row = TestUtils.findRenderedDOMComponentWithClass(component, 'row');
+            row.className.indexOf('right-row').should.be.gte(0);
+            row.className.indexOf('left-row').should.be.eq(-1);
         });
 
         it('should not put an author name on the message', () => {
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-from').length.should.eq(0);
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'from').length.should.eq(0);
         });
 
         it('should not contain any actions', () => {
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-action').length.should.be.eq(0);
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'action').length.should.be.eq(0);
         });
 
         it('should render the text message', () => {
@@ -120,25 +120,25 @@ describe('Message Component', () => {
         });
 
         describe('with text sending in progress', () => {
-            it('should render the text message with sk-msg-unsent', () => {
+            it('should render the text message with msg-unsent', () => {
                 const unsentProps = Object.assign(props, {
                     sendStatus: SEND_STATUS.SENDING
                 });
 
                 component = wrapComponentWithStore(Message, unsentProps, mockedStore);
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-msg-unsent').length.should.be.eq(1);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'msg-unsent').length.should.be.eq(1);
             });
         });
 
         describe('with text sending failed', () => {
-            it('should render the text message with sk-msg-unsent and a retry prompt', () => {
+            it('should render the text message with msg-unsent and a retry prompt', () => {
                 const unsentProps = Object.assign(props, {
                     sendStatus: SEND_STATUS.FAILED
                 });
 
                 component = wrapComponentWithStore(Message, unsentProps, mockedStore);
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-msg-unsent').length.should.be.eq(1);
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-retry').length.should.be.eq(1);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'msg-unsent').length.should.be.eq(1);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'retry').length.should.be.eq(1);
             });
         });
 
@@ -171,28 +171,28 @@ describe('Message Component', () => {
             });
 
             describe('with location sending in progress', () => {
-                it('should render a loading spinner sk-msg-unsent', () => {
+                it('should render a loading spinner msg-unsent', () => {
                     const unsentProps = Object.assign(props, {
                         sendStatus: SEND_STATUS.SENDING,
                         text: null
                     });
 
                     component = wrapComponentWithStore(Message, unsentProps, mockedStore);
-                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-msg-unsent').length.should.be.eq(1);
-                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-message-location-loading').length.should.be.eq(1);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'msg-unsent').length.should.be.eq(1);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'message-location-loading').length.should.be.eq(1);
                     TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedText').length.should.eq(0);
                 });
             });
 
             describe('with location sending failed', () => {
-                it('should render the text message with sk-msg-unsent and a retry prompt', () => {
+                it('should render the text message with msg-unsent and a retry prompt', () => {
                     const unsentProps = Object.assign(props, {
                         sendStatus: SEND_STATUS.FAILED
                     });
 
                     component = wrapComponentWithStore(Message, unsentProps, mockedStore);
-                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-msg-unsent').length.should.be.eq(1);
-                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-retry').length.should.be.eq(1);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'msg-unsent').length.should.be.eq(1);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'retry').length.should.be.eq(1);
                     TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedText').length.should.eq(1);
                 });
             });
@@ -227,9 +227,9 @@ describe('Message Component', () => {
             });
 
             it('should be on the left', () => {
-                const row = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-row');
-                row.className.indexOf('sk-left-row').should.be.gte(0);
-                row.className.indexOf('sk-right-row').should.be.eq(-1);
+                const row = TestUtils.findRenderedDOMComponentWithClass(component, 'row');
+                row.className.indexOf('left-row').should.be.gte(0);
+                row.className.indexOf('right-row').should.be.eq(-1);
             });
 
             it('should not contain any actions', () => {
@@ -242,22 +242,22 @@ describe('Message Component', () => {
 
             describe('avatar', () => {
                 it('should not display on first message', () => {
-                    TestUtils.scryRenderedDOMComponentsWithClass(firstMessage, 'sk-msg-avatar').length.should.eq(0);
+                    TestUtils.scryRenderedDOMComponentsWithClass(firstMessage, 'msg-avatar').length.should.eq(0);
                 });
 
                 it('should display on last message', () => {
-                    TestUtils.scryRenderedDOMComponentsWithClass(lastMessage, 'sk-msg-avatar').length.should.eq(1);
+                    TestUtils.scryRenderedDOMComponentsWithClass(lastMessage, 'msg-avatar').length.should.eq(1);
                 });
             });
 
 
             describe('author name', () => {
                 it('should display on first message', () => {
-                    const fromNode = TestUtils.findRenderedDOMComponentWithClass(firstMessage, 'sk-from');
+                    const fromNode = TestUtils.findRenderedDOMComponentWithClass(firstMessage, 'from');
                     fromNode.textContent.should.be.eq(props.name);
                 });
                 it('should not display on last message', () => {
-                    TestUtils.scryRenderedDOMComponentsWithClass(lastMessage, 'sk-from').length.should.eq(0);
+                    TestUtils.scryRenderedDOMComponentsWithClass(lastMessage, 'from').length.should.eq(0);
                 });
             });
         });
@@ -288,9 +288,9 @@ describe('Message Component', () => {
             });
 
             it('should be on the left', () => {
-                const row = TestUtils.findRenderedDOMComponentWithClass(component, 'sk-row');
-                row.className.indexOf('sk-left-row').should.be.gte(0);
-                row.className.indexOf('sk-right-row').should.be.eq(-1);
+                const row = TestUtils.findRenderedDOMComponentWithClass(component, 'row');
+                row.className.indexOf('left-row').should.be.gte(0);
+                row.className.indexOf('right-row').should.be.eq(-1);
             });
 
             it('should contain actions', () => {
@@ -328,7 +328,7 @@ describe('Message Component', () => {
             });
 
             component = wrapComponentWithStore(Message, props, mockedStore);
-            TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-action').length.should.be.eq(0);
+            TestUtils.scryRenderedDOMComponentsWithClass(component, 'action').length.should.be.eq(0);
         });
     });
 

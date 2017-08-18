@@ -56,7 +56,7 @@ describe('SMS Channel Content Component', () => {
             const appUserPhoneNumber = TestUtils.findRenderedDOMComponentWithClass(component, 'linked-state');
             appUserPhoneNumber.textContent.should.eq(`${linkedProps.channelState.appUserNumber}${storeState.ui.text.smsChangeNumber}`);
 
-            const button = TestUtils.findRenderedDOMComponentWithClass(component, 'btn-sk-primary');
+            const button = TestUtils.findRenderedDOMComponentWithClass(component, 'btn-primary');
             button.textContent.should.eql(storeState.ui.text.smsSendText);
         });
     });
@@ -88,10 +88,10 @@ describe('SMS Channel Content Component', () => {
                         }
                     };
                     component = wrapComponentWithStore(SMSChannelContent, props, mockedStore);
-                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-primary').length.should.eq(appUserNumberValid ? 1 : 0);
+                    TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-primary').length.should.eq(appUserNumberValid ? 1 : 0);
 
                     if (appUserNumberValid) {
-                        const button = TestUtils.findRenderedDOMComponentWithClass(component, 'btn-sk-primary');
+                        const button = TestUtils.findRenderedDOMComponentWithClass(component, 'btn-primary');
                         button.textContent.should.eql(storeState.ui.text.smsContinue);
                     }
                 });

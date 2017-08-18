@@ -1,4 +1,4 @@
-.sk-typing-indicator-container {
+.typing-indicator-container {
     display: block;
     clear: both;
     padding-top: 2px;
@@ -12,9 +12,9 @@
         opacity: 1;
     }
 
-    .sk-typing-indicator {
+    .typing-indicator {
         clear: both;
-        background-color: @sk-light-grey;
+        background-color: @light-grey;
         width: auto;
         height: 35px;
         border-radius: 14px;
@@ -25,7 +25,7 @@
         animation: 2s bulge infinite ease-out;
         vertical-align: middle;
 
-        &.sk-typing-indicator-first {
+        &.typing-indicator-first {
             border-top-left-radius: 14px;
         }
 
@@ -53,14 +53,14 @@
         }
     }
 
-    .sk-typing-indicator-avatar {
-        .sk-msg-avatar();
+    .typing-indicator-avatar {
+        .msg-avatar();
         margin-bottom: 0px;
         vertical-align: middle;
     }
 
-    .sk-typing-indicator-avatar-placeholder {
-        .sk-msg-avatar-placeholder();
+    .typing-indicator-avatar-placeholder {
+        .msg-avatar-placeholder();
     }
 
     @-webkit-keyframes blink {

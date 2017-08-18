@@ -83,7 +83,7 @@ export class SMSChannelContentComponent extends Component {
             };
         }
 
-        const linkButton = appUserNumberValid ? <button className='btn btn-sk-primary'
+        const linkButton = appUserNumberValid ? <button className='btn btn-primary'
                                                         onClick={ this.linkPhoneNumber }>
                                                     { smsContinue }
                                                 </button> : '';
@@ -126,12 +126,12 @@ export class SMSChannelContentComponent extends Component {
             color: 'white'
         };
         const linkedComponentButton = isMobile.phone ? <a href={ sendTextUrl }
-                                                          className='btn btn-sk-primary sms-linking'
+                                                          className='btn btn-primary sms-linking'
                                                           onClick={ this.onStartTexting }
                                                           style={ linkStyle }>
                                                            { smsStartTexting }
                                                        </a> :
-            <button className='btn btn-sk-primary sms-linking'
+            <button className='btn btn-primary sms-linking'
                     onClick={ this.onSendText }>
                 { smsSendText }
             </button>;

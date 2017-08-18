@@ -75,7 +75,7 @@ export class ReplyActionsComponent extends Component {
             };
 
             const locationIcon = <LocationIcon/>;
-            const imageIcon = <img className='sk-reply-action-icon'
+            const imageIcon = <img className='reply-action-icon'
                                    alt='Icon'
                                    src={ iconUrl } />;
 
@@ -83,7 +83,7 @@ export class ReplyActionsComponent extends Component {
                 iconUrl ? imageIcon :
                     null;
 
-            return <button className='btn btn-sk-reply-action'
+            return <button className='btn btn-reply-action'
                            style={ buttonStyle }
                            onClick={ onClick }
                            key={ index }>
@@ -91,7 +91,7 @@ export class ReplyActionsComponent extends Component {
                    </button>;
         });
 
-        return <div className='sk-reply-container'>
+        return <div className='reply-container'>
                    { items }
                </div>;
     }

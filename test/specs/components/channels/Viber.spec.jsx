@@ -51,7 +51,7 @@ describe('Viber Channel Component', () => {
             },
             uri: 'some-uri'
         }, store);
-        TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-error-link').length.should.eql(1);
+        TestUtils.scryRenderedDOMComponentsWithClass(component, 'error-link').length.should.eql(1);
     });
 
     it('should render loading spinner', () => {

@@ -113,7 +113,7 @@ export class ChatInputComponent extends Component {
             inputContainerClasses.push('no-upload');
         }
 
-        return <div id='sk-footer'>
+        return <div id='footer'>
                    { imageUploadButton }
                    <form onSubmit={ this.onSendMessage }
                          action='#'>

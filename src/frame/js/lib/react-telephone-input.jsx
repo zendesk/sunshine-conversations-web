@@ -58,7 +58,8 @@ export class ReactTelephoneInput extends Component {
         autoFormat: true,
         onlyCountries: allCountries,
         defaultCountry: allCountries[0].iso2,
-        onEnterKeyPress: () => {},
+        onEnterKeyPress: () => {
+        },
         preferredCountries: []
     };
 
@@ -459,7 +460,7 @@ export class ReactTelephoneInput extends Component {
             }, function() {
                 self.scrollTo(self.getElement(self.state.highlightCountryIndex), true);
             });
-}
+        }
 
         switch (event.which) {
             case keys.DOWN:
@@ -516,7 +517,7 @@ export class ReactTelephoneInput extends Component {
                            key={ `flag_no_ ${index}` }
                            data-flag-key={ `flag_no_ ${index}` }
                            className={ itemClasses }
-                           data-dial-code={ '1' }
+                           data-dial-code='1'
                            data-country-code={ country.iso2 }
                            onClick={ this.handleFlagItemClick.bind(this, country) }>
                            <div className={ inputFlagClasses } />
@@ -568,25 +569,25 @@ export class ReactTelephoneInput extends Component {
 
         const inputFlagClasses = 'flag ' + this.state.selectedCountry.iso2;
 
-        return <div className={ 'react-tel-input' }>
+        return <div className='react-tel-input'>
                    <input onChange={ this.handleInput }
                           onClick={ this.handleInputClick }
                           onFocus={ this.handleInputFocus }
                           onBlur={ this.handleInputBlur }
                           onKeyDown={ this.handleInputKeyDown }
                           value={ this.state.formattedNumber }
-                          ref={ 'numberInput' }
-                          type={ 'tel' }
+                          ref='numberInput'
+                          type='tel'
                           className={ inputClasses }
-                          autoComplete={ 'tel' }
-                          placeholder={ '+1 212-555-2368' }>
+                          autoComplete='tel'
+                          placeholder='+1 212-555-2368'>
                    </input>
-                   <div ref={ 'flagDropDownButton' }
+                   <div ref='flagDropDownButton'
                         className={ flagViewClasses }
                         onKeyDown={ this.handleKeydown }>
-                       <div ref={ 'selectedFlag' }
+                       <div ref='selectedFlag'
                             onClick={ this.handleFlagDropdownClick }
-                            className={ 'selected-flag' }
+                            className='selected-flag'
                             title={ this.state.selectedCountry.name + ': + ' + this.state.selectedCountry.dialCode }>
                            <div className={ inputFlagClasses }>
                                <div className={ arrowClasses } />
