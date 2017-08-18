@@ -29,9 +29,10 @@ module.exports = function(options) {
     const config = require('./config/default/config.json');
     const {buildType} = options;
 
-    // set VENDOR_ID env var or pass it in the options
-    // before calling webpack to set the vendor id
+    // set branding variables in the env vars or pass them via the options
     const vendorId = process.env.VENDOR_ID || options.vendorId || PACKAGE_NAME;
+    const licenseContent = process.env.LICENSE || options.license || LICENSE;
+    const providedPublicPath = process.env.PUBLIC_PATH || options.publicPath;
 
     try {
         Object.assign(config, require('./config/config.json'));
@@ -158,8 +159,8 @@ module.exports = function(options) {
         })
     };
 
-    const publicPath = options.publicPath ?
-        options.publicPath :
+    const publicPath = providedPublicPath ?
+        providedPublicPath :
         buildType === 'dev' ?
             '/_assets/' :
             'https://cdn.smooch.io/';
@@ -190,7 +191,7 @@ module.exports = function(options) {
 
 
     // The following variables are about how the frame files will be referenced in the iframe html.
-    // see `FRAME_JS_URL` and `FRAME_CSS_URL` in `src/host/js/smooch.js`.
+    // see `FRAME_JS_URL` and `FRAME_CSS_URL` in `src/host/js/web-messenger.js`.
     // In host and npm mode, it's referencing files that should already (or soon to) be on the CDN
     // so it should target the full name + version.
     // In other cases, iframe.js/css will do just fine.
@@ -246,7 +247,7 @@ module.exports = function(options) {
             new webpack.NoEmitOnErrorsPlugin(),
 
             new webpack.BannerPlugin({
-                banner: vendorId + ' ' + VERSION + ' \n' + LICENSE,
+                banner: vendorId + ' ' + VERSION + ' \n' + licenseContent,
                 entryOnly: true
             }),
             new OptimizeCssAssetsPlugin({
@@ -278,7 +279,7 @@ module.exports = function(options) {
             new webpack.NoEmitOnErrorsPlugin(),
 
             new webpack.BannerPlugin({
-                banner: vendorId + ' ' + VERSION + ' \n' + LICENSE,
+                banner: vendorId + ' ' + VERSION + ' \n' + licenseContent,
                 entryOnly: true
             })
         );

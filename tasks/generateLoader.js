@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 
-let content = fs.readFileSync(path.join(__dirname, '../src/loader/index.js')).toString();
+let content = fs.readFileSync(path.join(__dirname, '../src/loader/index.js'), 'utf8').toString();
 
 if (process.env.WEBLOADER_URL) {
     content = content.replace(
