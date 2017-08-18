@@ -31,7 +31,7 @@ module.exports = function(options) {
 
     // set VENDOR_ID env var or pass it in the options
     // before calling webpack to set the vendor id
-    const vendorId = process.env.VENDOR_ID || options.vendorId || 'smooch';
+    const vendorId = process.env.VENDOR_ID || options.vendorId || PACKAGE_NAME;
 
     try {
         Object.assign(config, require('./config/config.json'));
@@ -246,7 +246,7 @@ module.exports = function(options) {
             new webpack.NoEmitOnErrorsPlugin(),
 
             new webpack.BannerPlugin({
-                banner: PACKAGE_NAME + ' ' + VERSION + ' \n' + LICENSE,
+                banner: vendorId + ' ' + VERSION + ' \n' + LICENSE,
                 entryOnly: true
             }),
             new OptimizeCssAssetsPlugin({
@@ -278,7 +278,7 @@ module.exports = function(options) {
             new webpack.NoEmitOnErrorsPlugin(),
 
             new webpack.BannerPlugin({
-                banner: PACKAGE_NAME + ' ' + VERSION + ' \n' + LICENSE,
+                banner: vendorId + ' ' + VERSION + ' \n' + LICENSE,
                 entryOnly: true
             })
         );
