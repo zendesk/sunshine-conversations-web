@@ -66,19 +66,19 @@ export class HeaderComponent extends Component {
             ) : null;
 
         const settingsButton = showSettingsButton ? (
-            <div id='sk-settings-handle'
+            <div id='settings-handle'
                  onClick={ this.showSettings }>
                 <i className='fa fa-ellipsis-h'></i>
             </div>
             ) : null;
 
         const backButton = settingsMode ? (
-            <div className='sk-back-handle'
+            <div className='back-handle'
                  onClick={ this.hideSettings }>
                 <i className='fa fa-arrow-left'></i>
             </div>
             ) : null;
-        const closeHandle = widgetOpened && <div className='sk-close-handle sk-close-hidden'>
+        const closeHandle = widgetOpened && <div className='close-handle close-hidden'>
                                                 <i className='fa fa-times'></i>
                                             </div>;
 
@@ -103,9 +103,9 @@ export class HeaderComponent extends Component {
             };
         }
 
-        return <div id={ settingsMode ? 'sk-settings-header' : 'sk-header' }
+        return <div id={ settingsMode ? 'settings-header' : 'header' }
                     onClick={ this.onClick }
-                    className='sk-header-wrapper'
+                    className='header-wrapper'
                     style={ style }>
                    { settingsButton }
                    { settingsMode ? settingsText : headerText }

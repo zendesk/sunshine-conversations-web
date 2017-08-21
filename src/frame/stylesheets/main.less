@@ -49,13 +49,13 @@ html, body {
     -webkit-text-size-adjust: 100%;
 }
 
-#sk-container {
+#container {
     overflow: hidden;
     .container();
 
     padding: @widget-box-shadow-width;
 
-    #sk-wrapper {
+    #wrapper {
         position: relative;
         background: @background-color;
         position: relative;
@@ -82,14 +82,14 @@ html, body {
         border: none;
         height: 100%;
         max-height: 100%;
-        &.sk-appear {
+        &.appear {
             &,
-            #sk-wrapper {
+            #wrapper {
                 height: 100%;
                 max-height: 100%;
             }
         }
-        #sk-wrapper {
+        #wrapper {
             width: 100%;
             max-width: 100%;
         }
@@ -108,7 +108,7 @@ html, body {
     }
 }
 
-.widget-embedded #sk-container {
+.widget-embedded #container {
     .container();
     padding: 0;
     height: 100%;
@@ -118,7 +118,7 @@ html, body {
     left: 0;
     right: 0;
     position: absolute;
-    #sk-wrapper {
+    #wrapper {
         background: @background-color;
         width: 100%;
         height: 100%;
@@ -127,30 +127,30 @@ html, body {
         box-shadow: none;
         border: none;
     }
-    #sk-header,
-    #sk-settings-header {
+    #header,
+    #settings-header {
         cursor: default;
         border-radius: 0;
-        .sk-close-handle,
-        .sk-show-handle {
+        .close-handle,
+        .show-handle {
             display: none;
         }
     }
-    #sk-conversation {
+    #conversation {
         height: ~"calc(100% - @{remaining-height})";
-        .sk-messages-container {
+        .messages-container {
             position: relative;
         }
     }
-    #sk-settings-handle {
+    #settings-handle {
         display: block;
         right: 10px;
     }
-    #sk-footer {
+    #footer {
         box-shadow: none;
         height: 50px;
     }
-    .sk-settings {
+    .settings {
         width: 100%;
         height: @widget-height-md;
     }

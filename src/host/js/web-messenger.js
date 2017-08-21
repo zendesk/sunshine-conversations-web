@@ -2,7 +2,7 @@ import hostStyles from '../stylesheets/iframe.less';
 import { waitForPage } from './utils/dom';
 import { init as initEnquire } from './utils/enquire';
 
-const Smooch = {};
+const WebMessenger = {};
 let Lib;
 let iframe;
 
@@ -89,23 +89,24 @@ const Skeleton = {
 function setUp() {
     Lib = undefined;
     iframe = undefined;
-    window.__onSmoochFrameReady__ = onSmoochReady;
+    window.__onWebMessengerFrameReady__ = onWebMessengerReady;
     for (let func = LIB_FUNCS[0], i = 0; i < LIB_FUNCS.length; func = LIB_FUNCS[++i]) {
-        Smooch[func] &&
-        delete Smooch[func];
+        if (WebMessenger[func]) {
+            delete WebMessenger[func];
+        }
     }
-    Object.assign(Smooch, Skeleton);
+    Object.assign(WebMessenger, Skeleton);
 }
 
-function onSmoochReady(_Lib) {
-    window.__onSmoochFrameReady__ = function() {};
+function onWebMessengerReady(_Lib) {
+    window.__onWebMessengerFrameReady__ = function() {};
     Lib = _Lib;
     if (!isEmbedded) {
         initEnquire(iframe);
     }
 
     for (let func = LIB_FUNCS[0], i = 0; i < LIB_FUNCS.length; func = LIB_FUNCS[++i]) {
-        Smooch[func] = Lib[func];
+        WebMessenger[func] = Lib[func];
     }
 
     if (pendingOnCalls) {
@@ -177,4 +178,4 @@ function injectFrame() {
 
 setUp();
 
-export default Smooch;
+export default WebMessenger;

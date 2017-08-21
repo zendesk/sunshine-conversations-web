@@ -1,4 +1,4 @@
 import './utils/polyfills';
 import './utils/raven';
-import * as Smooch from './smooch';
-parent.window.__onSmoochFrameReady__(Smooch);
+import * as WebMessenger from './web-messenger';
+parent.window.__onWebMessengerFrameReady__(WebMessenger);

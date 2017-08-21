@@ -25,7 +25,7 @@ class ViberChannelContentComponent extends Component {
         }
 
         if (channelState.hasError) {
-            return <a className={ 'sk-error-link' }
+            return <a className='error-link'
                       onClick={ fetchViberQRCode }>
                        { text.viberQRCodeError }
                    </a>;
@@ -33,7 +33,7 @@ class ViberChannelContentComponent extends Component {
 
         if (channelState.qrCode) {
             return <img alt='Viber QR Code'
-                        style={ {    width: '40%'} }
+                        style={ { width: '40%' } }
                         src={ channelState.qrCode } />;
         }
 
@@ -44,7 +44,7 @@ class ViberChannelContentComponent extends Component {
         };
 
         return <Loading dark={ true }
-                                 style={ loadingStyle } />;
+                        style={ loadingStyle } />;
     }
 }
 

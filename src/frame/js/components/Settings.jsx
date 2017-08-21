@@ -35,7 +35,7 @@ export class SettingsComponent extends Component {
                                             hasURL={ !!details.getURL(channel) } />;
         });
 
-        return <div className='sk-settings'>
+        return <div className='settings'>
                    <div className='content-wrapper'>
                        <div className='settings-wrapper'>
                            <p className='settings-header'>
