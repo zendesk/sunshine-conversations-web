@@ -83,12 +83,12 @@ class MessageComponent extends Component {
             lastItem = 'location';
         }
 
-        const avatarClass = hasImage ? ['sk-msg-avatar', 'sk-msg-avatar-img'] : ['sk-msg-avatar'];
-        const avatarPlaceHolder = isAppUser ? null : (<div className='sk-msg-avatar-placeholder' />);
-        const containerClasses = ['sk-msg'];
+        const avatarClass = hasImage ? ['msg-avatar', 'msg-avatar-img'] : ['msg-avatar'];
+        const avatarPlaceHolder = isAppUser ? null : (<div className='msg-avatar-placeholder' />);
+        const containerClasses = ['msg'];
 
         if (hasImage || actions.length > 0) {
-            containerClasses.push('sk-msg-image');
+            containerClasses.push('msg-image');
         }
 
         const actionList = actions.map((action) => {
@@ -102,10 +102,10 @@ class MessageComponent extends Component {
                  className={ avatarClass.join(' ') }
                  src={ avatarUrl } />;
 
-        const textClasses = ['sk-message-item', 'sk-message-text'];
+        const textClasses = ['message-item', 'message-text'];
 
         if (lastItem === 'text') {
-            textClasses.push('sk-last-item');
+            textClasses.push('last-item');
         }
 
         const textPart = (hasText || hasFile) && <TextMessage {...this.props}
@@ -120,67 +120,67 @@ class MessageComponent extends Component {
             }
         }
 
-        const rowClass = ['sk-row'];
+        const rowClass = ['row'];
 
         if (isAppUser) {
-            rowClass.push('sk-right-row');
+            rowClass.push('right-row');
         } else {
-            rowClass.push('sk-left-row');
+            rowClass.push('left-row');
         }
 
         if (firstInGroup) {
             if (isAppUser) {
-                rowClass.push('sk-row-appuser-first');
+                rowClass.push('row-appuser-first');
             } else {
-                rowClass.push('sk-row-appmaker-first');
+                rowClass.push('row-appmaker-first');
             }
         }
 
         if (lastInGroup) {
             if (isAppUser) {
-                rowClass.push('sk-row-appuser-last');
+                rowClass.push('row-appuser-last');
             } else {
-                rowClass.push('sk-row-appmaker-last');
+                rowClass.push('row-appmaker-last');
             }
         }
 
         if (!firstInGroup && !lastInGroup) {
             if (isAppUser) {
-                rowClass.push('sk-row-appuser-middle');
+                rowClass.push('row-appuser-middle');
             } else {
-                rowClass.push('sk-row-appmaker-middle');
+                rowClass.push('row-appmaker-middle');
             }
         }
 
-        const fromName = <div className='sk-from'>
+        const fromName = <div className='from'>
                              { isAppUser ? '' : name }
                          </div>;
 
-        const actionListClasses = ['sk-message-item'];
+        const actionListClasses = ['message-item'];
 
         if (lastItem === 'actions') {
-            actionListClasses.push('sk-last-item');
+            actionListClasses.push('last-item');
         }
 
         if ([SEND_STATUS.SENDING, SEND_STATUS.FAILED].includes(sendStatus)) {
-            containerClasses.push('sk-msg-unsent');
+            containerClasses.push('msg-unsent');
         }
 
-        const clickToRetry = <div className='sk-retry'>
+        const clickToRetry = <div className='retry'>
                                  { isMobile.any ? tapToRetryText : clickToRetryText }
                              </div>;
 
 
-        const locationClasses = ['sk-message-item'];
+        const locationClasses = ['message-item'];
 
         if (lastItem === 'location') {
-            locationClasses.push('sk-last-item');
+            locationClasses.push('last-item');
         }
 
         if (sendStatus === SEND_STATUS.SENDING) {
-            locationClasses.push('sk-message-location-loading');
+            locationClasses.push('message-location-loading');
         } else {
-            locationClasses.push('sk-message-text');
+            locationClasses.push('message-text');
         }
 
         let locationPart;
@@ -198,7 +198,7 @@ class MessageComponent extends Component {
         return <div className={ rowClass.join(' ') }>
                    { !isAppUser && firstInGroup ? fromName : null }
                    { lastInGroup ? avatar : avatarPlaceHolder }
-                   <div className='sk-msg-wrapper'>
+                   <div className='msg-wrapper'>
                        <div className={ containerClasses.join(' ') }
                             style={ style }
                             ref='messageContent'
@@ -212,7 +212,7 @@ class MessageComponent extends Component {
                        </div>
                        { sendStatus === SEND_STATUS.FAILED ? clickToRetry : null }
                    </div>
-                   <div className='sk-clear'></div>
+                   <div className='clear'></div>
                </div>;
     }
 }

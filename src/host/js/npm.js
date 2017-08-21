@@ -1,1 +1,1 @@
-module.exports = require('./smooch');
+module.exports = require('./web-messenger');

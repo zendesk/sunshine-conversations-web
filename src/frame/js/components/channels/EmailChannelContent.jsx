@@ -6,12 +6,12 @@ export class EmailChannelContentComponent extends Component {
     static propTypes = {
         linkColor: PropTypes.string,
         fromAddress: PropTypes.string,
-        smoochAddress: PropTypes.string.isRequired
+        genericAddress: PropTypes.string.isRequired
     };
 
     render() {
-        const {linkColor, fromAddress, smoochAddress} = this.props;
-        const email = fromAddress || smoochAddress;
+        const {linkColor, fromAddress, genericAddress} = this.props;
+        const email = fromAddress || genericAddress;
 
         const styleOverride = linkColor ? {
             color: `#${linkColor}`
