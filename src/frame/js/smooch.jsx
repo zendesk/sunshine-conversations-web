@@ -110,11 +110,11 @@ export function init(props = {}) {
     const {appState: {isInitialized}} = store.getState();
 
     if (isInitialized) {
-        throw new Error('Web Messenger is already initialized. Call `destroy()` first before calling `init()` again.');
+        return Promise.reject(new Error('Web Messenger is already initialized. Call `destroy()` first before calling `init()` again.'));
     }
 
     if (!props.appId) {
-        throw new Error('Must provide an appId');
+        return Promise.reject(new Error('Must provide an appId'));
     }
 
     lastTriggeredMessageTimestamp = 0;
@@ -220,7 +220,7 @@ export function init(props = {}) {
 
 export function login(userId, jwt) {
     if (!userId || !jwt) {
-        throw new Error('Must provide a userId and a jwt to log in.');
+        return Promise.reject(new Error('Must provide a userId and a jwt to log in.'));
     }
 
     return store.dispatch(authActions.login(userId, jwt));
