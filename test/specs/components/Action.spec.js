@@ -180,7 +180,7 @@ describe('Action Component', () => {
             it('should render a Stripe button', () => {
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedStripe').length.should.be.eq(1);
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedLoading').length.should.be.eq(0);
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-action-paid').length.should.be.eq(0);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-action-paid').length.should.be.eq(0);
                 componentNode.textContent.should.eq('action text');
             });
         });
@@ -198,7 +198,7 @@ describe('Action Component', () => {
             it('should render a loading element', () => {
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedStripe').length.should.be.eq(0);
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedLoading').length.should.be.eq(1);
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-action-paid').length.should.be.eq(0);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-action-paid').length.should.be.eq(0);
                 componentNode.textContent.should.eq('');
             });
         });
@@ -214,7 +214,7 @@ describe('Action Component', () => {
             });
 
             it('should show a payment completed button', () => {
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-action-paid').length.should.be.eq(1);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-action-paid').length.should.be.eq(1);
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedStripe').length.should.be.eq(0);
                 TestUtils.scryRenderedDOMComponentsWithClass(component, 'mockedLoading').length.should.be.eq(0);
                 componentNode.textContent.should.eq('payment completed text');

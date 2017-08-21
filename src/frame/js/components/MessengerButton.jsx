@@ -57,7 +57,7 @@ export class MessengerButtonComponent extends Component {
                           </div>;
         }
 
-        return <div id='sk-messenger-button'
+        return <div id='messenger-button'
                     className={ `messenger-button-${shown ? 'shown' : 'hidden'}` }
                     style={ style }
                     onClick={ this.onClick }>

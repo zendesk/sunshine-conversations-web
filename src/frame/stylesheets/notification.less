@@ -1,10 +1,10 @@
-.sk-notification-container {
+.notification-container {
     box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
     position: absolute;
     width: 100%;
     z-index: 1;
 
-    .sk-notification {
+    .notification {
         overflow: hidden;
         width: 100%;
 
@@ -13,9 +13,9 @@
         p {
             margin: 18px 18px;
             a {
-                color: @sk-blue;
+                color: @blue;
             }
-            .sk-notification-close {
+            .notification-close {
                 font-size: 20px;
                 font-weight: 600;
 
@@ -31,33 +31,33 @@
 
                 text-decoration: none;
 
-                color: @sk-dark-grey;
+                color: @dark-grey;
             }
         }
 
-        &.sk-notification-error {
+        &.notification-error {
             background-color: @brand-danger;
             color: white;
-            .sk-notification-close {
+            .notification-close {
                 color: white;
             }
         }
     }
 
-    .sk-notification-enter {
+    .notification-enter {
         height: 0;
     }
 
-    .sk-notification-enter-active {
+    .notification-enter-active {
         .transition(height 500ms);
         height: @notification-height;
     }
 
-    .sk-notification-leave {
+    .notification-leave {
         height: @notification-height;
     }
 
-    .sk-notification-leave-active {
+    .notification-leave-active {
         .transition(height 500ms);
         height: 0;
     }

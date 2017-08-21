@@ -60,7 +60,7 @@ export class IntroductionComponent extends Component {
         const channelsAvailable = channelDetailsList.length > 0;
         const introText = channelsAvailable ? `${introductionText} ${introAppText}` : introductionText;
 
-        return <div className='sk-intro-section'
+        return <div className='intro-section'
                     ref='introductionContainer'>
                    { config.app.iconUrl ? <img className='app-icon'
                                                alt='App icon'

@@ -1,4 +1,4 @@
-#sk-messenger-button {
+#messenger-button {
     position: fixed;
     right: @messenger-button-shadow-width;
 
@@ -18,8 +18,8 @@
     transform: scale(1, 1);
 
     &.messenger-button-shown {
-        -webkit-animation: sk-messenger-button-shown-frames .4s cubic-bezier(.62, .28, .23, .99);
-                animation: sk-messenger-button-shown-frames .4s cubic-bezier(.62, .28, .23, .99);
+        -webkit-animation: messenger-button-shown-frames .4s cubic-bezier(.62, .28, .23, .99);
+                animation: messenger-button-shown-frames .4s cubic-bezier(.62, .28, .23, .99);
         -webkit-animation-delay: .2s;
                 animation-delay: .2s;
         -webkit-animation-fill-mode: both;
@@ -27,16 +27,16 @@
     }
 
     &.messenger-button-hidden {
-        -webkit-animation: sk-messenger-button-hidden-frames .4s cubic-bezier(.62, .28, .23, .99);
-                animation: sk-messenger-button-hidden-frames .4s cubic-bezier(.62, .28, .23, .99);
+        -webkit-animation: messenger-button-hidden-frames .4s cubic-bezier(.62, .28, .23, .99);
+                animation: messenger-button-hidden-frames .4s cubic-bezier(.62, .28, .23, .99);
         -webkit-animation-delay: .0s;
                 animation-delay: .0s;
         -webkit-animation-fill-mode: both;
                 animation-fill-mode: both;
 
         .widget-xs & {
-            -webkit-animation: sk-messenger-button-hidden-frames-xs .4s cubic-bezier(.62, .28, .23, .99);
-                    animation: sk-messenger-button-hidden-frames-xs .4s cubic-bezier(.62, .28, .23, .99);
+            -webkit-animation: messenger-button-hidden-frames-xs .4s cubic-bezier(.62, .28, .23, .99);
+                    animation: messenger-button-hidden-frames-xs .4s cubic-bezier(.62, .28, .23, .99);
             -webkit-animation-delay: .0s;
                     animation-delay: .0s;
             -webkit-animation-fill-mode: both;
@@ -66,7 +66,7 @@
     }
 }
 
-@keyframes sk-messenger-button-shown-frames {
+@keyframes messenger-button-shown-frames {
     0% {
         transform: scale(0, 0);
         bottom: 0;
@@ -83,7 +83,7 @@
     }
 }
 
-@-webkit-keyframes sk-messenger-button-shown-frames {
+@-webkit-keyframes messenger-button-shown-frames {
     0% {
         transform: scale(0, 0);
         bottom: 0;
@@ -101,7 +101,7 @@
 }
 
 
-@keyframes sk-messenger-button-hidden-frames {
+@keyframes messenger-button-hidden-frames {
     0% {
         bottom: @widget-messenger-button-vertical-spacing;
         opacity: 1;
@@ -119,7 +119,7 @@
     }
 }
 
-@-webkit-keyframes sk-messenger-button-hidden-frames {
+@-webkit-keyframes messenger-button-hidden-frames {
     0% {
         bottom: @widget-messenger-button-vertical-spacing;
         opacity: 1;
@@ -141,7 +141,7 @@
 
 // We need a different keyframes setup on mobile since the iframe will take 100% height and width of the page
 // The button will need to compensate for the new iframe positionning.
-@keyframes sk-messenger-button-hidden-frames-xs {
+@keyframes messenger-button-hidden-frames-xs {
     0% {
         bottom: @widget-vertical-spacing + @widget-messenger-button-vertical-spacing;
         right: @widget-horizontal-spacing - @messenger-button-shadow-width;
@@ -162,7 +162,7 @@
     }
 }
 
-@-webkit-keyframes sk-messenger-button-hidden-frames-xs {
+@-webkit-keyframes messenger-button-hidden-frames-xs {
     0% {
         bottom: @widget-vertical-spacing + @widget-messenger-button-vertical-spacing;
         right: @widget-horizontal-spacing - @messenger-button-shadow-width;

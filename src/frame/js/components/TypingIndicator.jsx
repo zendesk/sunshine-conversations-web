@@ -30,17 +30,17 @@ export class TypingIndicatorComponent extends Component {
         const avatar = avatarUrl ?
             <img src={ avatarUrl }
                  alt={ `${name}'s avatar` }
-                 className='sk-typing-indicator-avatar' /> :
-            <div className='sk-typing-indicator-avatar-placeholder' />;
+                 className='typing-indicator-avatar' /> :
+            <div className='typing-indicator-avatar-placeholder' />;
 
-        const fromName = name && firstInGroup ? <div className='sk-from'>
+        const fromName = name && firstInGroup ? <div className='from'>
                                                     { name }
                                                 </div> : null;
 
-        return <div className={ `sk-typing-indicator-container ${mounted ? 'fade-in' : ''}` }>
+        return <div className={ `typing-indicator-container ${mounted ? 'fade-in' : ''}` }>
                    { fromName }
                    { avatar }
-                   <div className={ `sk-typing-indicator ${firstInGroup ? 'sk-typing-indicator-first' : ''}` }>
+                   <div className={ `typing-indicator ${firstInGroup ? 'typing-indicator-first' : ''}` }>
                        <span></span>
                        <span></span>
                        <span></span>
