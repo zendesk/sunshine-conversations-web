@@ -215,6 +215,7 @@ export function init(props = {}) {
         .catch((err) => {
             Raven.captureException(err);
             cleanUp();
+            throw err;
         });
 }
 
