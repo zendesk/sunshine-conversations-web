@@ -40,7 +40,7 @@ export default class TextMessage extends Component {
 
         if (this.props.type === 'file') {
             const innerHtml = createMarkup(autolink(escapeHtml(this.props.mediaUrl), linkOptions));
-            text.push(<span key={ 'fileUrl' }><span dangerouslySetInnerHTML={ innerHtml }></span>
+            text.push(<span key='fileUrl'><span dangerouslySetInnerHTML={ innerHtml }></span>
                       <br/>
                       </span>);
         }

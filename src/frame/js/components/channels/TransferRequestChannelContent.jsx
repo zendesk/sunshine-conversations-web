@@ -36,7 +36,7 @@ export class TransferRequestChannelContentComponent extends Component {
         const {transferRequestCode, hasError} = channelState;
 
         if (hasError) {
-            return <a className={ 'sk-error-link' }
+            return <a className='error-link'
                       onClick={ this.onTryAgain }>
                        { transferError }
                    </a>;
@@ -56,7 +56,7 @@ export class TransferRequestChannelContentComponent extends Component {
         };
 
         return <Loading dark={ true }
-                                 style={ loadingStyle } />;
+                        style={ loadingStyle } />;
     }
 }
 

@@ -61,13 +61,13 @@ describe('ReplyActions Component', () => {
     });
 
     it('should render choices', () => {
-        TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-reply-action').forEach((node, index) => {
+        TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-reply-action').forEach((node, index) => {
             const choice = CHOICES[index];
             node.textContent.trim().should.eq(choice.text);
 
             if (choice.type === 'locationRequest') {
                 node.querySelectorAll('img').length.should.eq(0);
-                TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-location-icon').length.should.be.eq(1);
+                TestUtils.scryRenderedDOMComponentsWithClass(component, 'location-icon').length.should.be.eq(1);
             } else if (choice.iconUrl) {
                 const icon = node.querySelector('img');
                 icon.src.should.eq(choice.iconUrl);
@@ -78,7 +78,7 @@ describe('ReplyActions Component', () => {
     });
 
     it('should call sendMessage/sendLocation when clicked', () => {
-        TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-sk-reply-action').forEach((node, index) => {
+        TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn-reply-action').forEach((node, index) => {
             const choice = CHOICES[index];
             TestUtils.Simulate.click(node);
 

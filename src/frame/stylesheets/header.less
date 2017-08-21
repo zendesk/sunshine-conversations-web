@@ -4,13 +4,13 @@
     line-height: @header-line-height;
     padding: @header-vertical-padding @header-horizontal-padding;
     position: relative;
-    background-color: @sk-light-grey;
+    background-color: @light-grey;
     cursor: pointer;
     border-radius: 8px 8px 0 0;
     font-size: 16px;
     font-weight: 400;
     box-sizing: content-box;
-    border-bottom: 1px solid @sk-grey;
+    border-bottom: 1px solid @grey;
     color: @header-default-text-color;
 
     .widget-xs & {
@@ -23,21 +23,21 @@
         font-size: 15px;
     }
 
-    .sk-close-handle {
+    .close-handle {
         cursor: pointer;
         position: absolute;
         top: @header-vertical-padding;
         right: 10px;
     }
 
-    .sk-back-handle {
+    .back-handle {
         cursor: pointer;
         display: inline-block;
         margin-right: 8px;
         height: 30px;
     }
 
-    .sk-close-handle .fa {
+    .close-handle .fa {
         font-size: 17px;
     }
 
@@ -54,18 +54,18 @@
     }
 }
 
-#sk-header {
+#header {
     .header();
     text-align: center;
 }
 
-#sk-badge {
+#badge {
     position: absolute;
     top: 11px;
     left: 10px;
 }
 
-#sk-settings-handle  {
+#settings-handle  {
     cursor: pointer;
     position: absolute;
     top: 7px;
@@ -74,19 +74,19 @@
     display: none;
 }
 
-&.sk-appear {
-    #sk-settings-handle {
+&.appear {
+    #settings-handle {
         display: block;
     }
 }
 
-#sk-settings-header {
+#settings-header {
     .header();
 }
 
 
-.sk-branding-color-dark {
-    #sk-header, #sk-settings-header {
+.branding-color-dark {
+    #header, #settings-header {
         &, .fa {
             color: #fff;
         }

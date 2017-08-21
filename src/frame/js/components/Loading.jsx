@@ -9,7 +9,7 @@ export default class Loading extends Component {
     };
 
     render() {
-        const classNames = ['sk-fading-circle'];
+        const classNames = ['fading-circle'];
         const {color, dark, style} = this.props;
         const innerCircleStyle = { };
 
@@ -24,9 +24,9 @@ export default class Loading extends Component {
         const circles = [];
 
         for (let i = 1; i < 13; i++) {
-            circles.push(<div className={ `sk-circle${i} sk-circle` }
+            circles.push(<div className={ `circle${i} circle` }
                               key={ i }>
-                             <div className='sk-inner-circle'
+                             <div className='inner-circle'
                                   style={ innerCircleStyle } />
                          </div>);
         }

@@ -52,6 +52,6 @@ describe('TransferRequestChannelContent', () => {
             }
         }, store);
 
-        TestUtils.scryRenderedDOMComponentsWithClass(component, 'sk-error-link').length.should.eql(1);
+        TestUtils.scryRenderedDOMComponentsWithClass(component, 'error-link').length.should.eql(1);
     });
 });

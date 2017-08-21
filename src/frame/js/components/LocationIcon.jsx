@@ -11,7 +11,7 @@ export class LocationIconComponent extends Component {
         const {accentColor} = this.props;
         const backgroundFill = `#${accentColor}`;
 
-        return <svg className='sk-location-icon'
+        return <svg className='location-icon'
                     fill={ backgroundFill }
                     viewBox='0 0 127.9 127.9'>
                    <g>
