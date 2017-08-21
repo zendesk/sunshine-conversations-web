@@ -282,16 +282,14 @@ describe('Smooch', () => {
                             }));
                         });
 
-                        it('should throw', () => {
-                            (function() {
-                                Smooch.init(props);
-                            }).should.throw(/already initialized/);
+                        it('should reject', () => {
+                            return Smooch.init(props).should.be.rejectedWith(Error, /already initialized/);
                         });
                     });
 
                     describe('without appId', () => {
                         it('should throw', () => {
-                            Smooch.init.should.throw(/provide an appId/);
+                            return Smooch.init().should.be.rejectedWith(Error, /provide an appId/);
                         });
                     });
 
@@ -337,9 +335,11 @@ describe('Smooch', () => {
             });
 
             it('should throw if missing props', () => {
-                expect(() => Smooch.login('some-id')).to.throw;
-                expect(() => Smooch.login(undefined, 'some-jwt')).to.throw;
-                expect(() => Smooch.login()).to.throw;
+                return Promise.all([
+                    Smooch.login('some-id').should.be.rejectedWith(Error, /provide a userId and a jwt/),
+                    Smooch.login(undefined, 'some-jwt').should.be.rejectedWith(Error, /provide a userId and a jwt/),
+                    Smooch.login().should.be.rejectedWith(Error, /provide a userId and a jwt/)
+                ]);
             });
         });
     });
