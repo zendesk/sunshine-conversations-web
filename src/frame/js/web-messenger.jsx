@@ -1,5 +1,5 @@
 import React from 'react';
-import { render as reactRender } from 'react-dom';
+import { render as reactRender, unmountComponentAtNode } from 'react-dom';
 import { batchActions } from 'redux-batched-actions';
 import { Provider } from 'react-redux';
 import '../stylesheets/main.less';
@@ -92,6 +92,7 @@ function onStoreChange(props, previousProps) {
 }
 
 function cleanUp() {
+    unmountComponentAtNode(document.querySelector('#mount'));
     store.dispatch(disconnectFaye());
     stopMonitoringBrowserState();
     unsubscribeFromStore();
