@@ -6,12 +6,12 @@ export class EmailChannelContentComponent extends Component {
     static propTypes = {
         linkColor: PropTypes.string,
         fromAddress: PropTypes.string,
-        genericAddress: PropTypes.string.isRequired
+        smoochAddress: PropTypes.string.isRequired
     };
 
     render() {
-        const {linkColor, fromAddress, genericAddress} = this.props;
-        const email = fromAddress || genericAddress;
+        const {linkColor, fromAddress, smoochAddress} = this.props;
+        const email = fromAddress || smoochAddress;
 
         const styleOverride = linkColor ? {
             color: `#${linkColor}`
@@ -19,7 +19,8 @@ export class EmailChannelContentComponent extends Component {
 
         return <a href={ `mailto:${email}` }
                   style={ styleOverride }
-                  target='_blank'>
+                  target='_blank'
+                  rel='noopener noreferrer'>
                    { email }
                </a>;
     }
