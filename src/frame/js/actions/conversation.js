@@ -113,11 +113,10 @@ function postSendMessage(message) {
 
 function postUploadImage(message) {
     return (dispatch, getState) => {
-        const {config: {appId}, user: {_id}} = getState();        
+        const {config: {appId}, user: {_id}} = getState();
         const blob = getBlobFromDataUrl(message.mediaUrl);
         const data = new FormData();
 
-        data.append('source', blob);
         data.append('sender', JSON.stringify({
             type: 'appUser',
             client: getClientInfo(appId)
@@ -126,6 +125,8 @@ function postUploadImage(message) {
         if (message.metadata) {
             data.append('message', JSON.stringify(pick(message, ['metadata'])));
         }
+
+        data.append('source', blob);
 
         return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/images`, data));
     };
