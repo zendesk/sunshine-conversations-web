@@ -4,15 +4,28 @@
     var onCallArgs = [];
     var renderArgs;
     var destroyArgs;
-    var next;
+    var promiseCalls = [];
     w[globalVarName] = {
         init: function() {
             initArgs = arguments;
-            return {
-                then: function(_next) {
-                    next = _next;
+            var fakePromise = {
+                then: function(next) {
+                    promiseCalls.push({
+                        type: 't',
+                        next: next
+                    });
+                    return fakePromise;
+                },
+                catch: function(next) {
+                    promiseCalls.push({
+                        type: 'c',
+                        next: next
+                    });
+                    return fakePromise;
                 }
             };
+
+            return fakePromise;
         },
         on: function() {
             onCallArgs.push(arguments);
@@ -31,9 +44,15 @@
         w[globalVarName] = Lib;
 
         if (initArgs) {
-            var initCall = Lib.init.apply(Lib, initArgs);
-            if (next) {
-                initCall.then(next);
+            var promise = Lib.init.apply(Lib, initArgs);
+            for (var i = 0; i < promiseCalls.length; i++) {
+                var call = promiseCalls[i];
+
+                if (call.type === 't') {
+                    promise = promise.then(call.next);
+                } else {
+                    promise = promise.catch(call.next);
+                }
             }
         }
 
