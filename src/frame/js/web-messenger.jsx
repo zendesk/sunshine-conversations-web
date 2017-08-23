@@ -194,13 +194,13 @@ export function init(props = {}) {
                                     storage.removeItem(`${props.appId}.appUserId`);
                                     storage.removeItem(`${props.appId}.sessionToken`);
 
-                                    return store.dispatch(batchActions([
+                                    store.dispatch(batchActions([
                                         authActions.resetAuth(),
                                         userActions.resetUser()
                                     ]));
-                                } else {
-                                    throw err;
                                 }
+
+                                throw err;
                             });
                     }
                 })
