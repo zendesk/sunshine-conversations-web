@@ -203,7 +203,7 @@ describe('WebMessenger', () => {
                                     appId: hat()
                                 };
 
-                                return WebMessenger.init(props).catch(() => {
+                                return WebMessenger.init(props).should.be.rejected.then(() => {
                                     fetchConfigStub.should.have.been.calledOnce;
                                     loginStub.should.not.have.been.called;
                                     renderStub.should.have.been.calledOnce;
@@ -234,7 +234,7 @@ describe('WebMessenger', () => {
                                 };
 
                                 return WebMessenger.init(props)
-                                    .catch(() => {
+                                    .should.be.rejected.then(() => {
                                         fetchConfigStub.should.have.been.calledOnce;
                                         loginStub.should.not.have.been.called;
 
@@ -306,7 +306,7 @@ describe('WebMessenger', () => {
                                 appId: 'some-app-id'
                             };
 
-                            return WebMessenger.init(props).catch(() => {
+                            return WebMessenger.init(props).should.be.rejected.then(() => {
                                 cleanUpStub.should.have.been.calledOnce;
                             });
                         });
