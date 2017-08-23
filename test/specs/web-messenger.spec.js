@@ -234,7 +234,7 @@ describe('WebMessenger', () => {
                                 };
 
                                 return WebMessenger.init(props)
-                                    .then(() => {
+                                    .should.be.rejected.then(() => {
                                         fetchConfigStub.should.have.been.calledOnce;
                                         loginStub.should.not.have.been.called;
 
@@ -306,7 +306,7 @@ describe('WebMessenger', () => {
                                 appId: 'some-app-id'
                             };
 
-                            return WebMessenger.init(props).then(() => {
+                            return WebMessenger.init(props).should.be.rejected.then(() => {
                                 cleanUpStub.should.have.been.calledOnce;
                             });
                         });

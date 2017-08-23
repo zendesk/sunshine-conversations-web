@@ -9,10 +9,9 @@ let iframe;
 let isEmbedded;
 let embeddedContainer;
 
+let pendingInitChains = [];
 let pendingOnCalls = [];
 let pendingInitCall;
-let pendingInitNext;
-let pendingInitCatch;
 
 const shouldRenderLink = /lebo|awle|pide|obo|rawli/i.test(navigator.userAgent);
 const isPhantomJS = /PhantomJS/.test(navigator.userAgent) && process.env.NODE_ENV !== 'test';
@@ -65,10 +64,24 @@ const Skeleton = {
             });
         }
 
-        return {
-            then: (next) => pendingInitNext = next,
-            catch: (next) => pendingInitCatch = next
+        const fakePromise = {
+            then: (next) => {
+                pendingInitChains.push({
+                    type: 'then',
+                    next
+                });
+                return fakePromise;
+            },
+            catch: (next) => {
+                pendingInitChains.push({
+                    type: 'catch',
+                    next
+                });
+                return fakePromise;
+            }
         };
+
+        return fakePromise;
     },
     render(container) {
         if (iframe) {
@@ -118,18 +131,18 @@ function onWebMessengerReady(_Lib) {
 
 
     if (pendingInitCall) {
-        const promise = Lib.init(...pendingInitCall);
+        let promise = Lib.init(...pendingInitCall);
         pendingInitCall = undefined;
 
-        if (pendingInitNext) {
-            promise.then(pendingInitNext);
-            pendingInitNext = undefined;
+        for (let call = pendingInitChains[0], i = 0; i < pendingInitChains.length; call = pendingInitChains[++i]) {
+            if (call.type === 'then') {
+                promise = promise.then(call.next);
+            } else {
+                promise = promise.catch(call.next);
+            }
         }
 
-        if (pendingInitCatch) {
-            pendingInitCatch = undefined;
-            promise.catch(pendingInitCatch);
-        }
+        pendingInitChains = undefined;
     }
 }
 
