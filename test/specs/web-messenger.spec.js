@@ -203,10 +203,10 @@ describe('WebMessenger', () => {
                                     appId: hat()
                                 };
 
-                                return WebMessenger.init(props).should.be.rejected.then(() => {
+                                return WebMessenger.init(props).then(() => {
                                     fetchConfigStub.should.have.been.calledOnce;
                                     loginStub.should.not.have.been.called;
-                                    renderStub.should.not.have.been.called;
+                                    renderStub.should.have.been.calledOnce;
 
                                     setAuthStub.should.have.been.calledOnce;
                                     setUserStub.should.have.been.calledOnce;
@@ -235,19 +235,19 @@ describe('WebMessenger', () => {
 
                                 return WebMessenger.init(props)
                                     .should.be.rejected.then(() => {
-                                    fetchConfigStub.should.have.been.calledOnce;
-                                    loginStub.should.not.have.been.called;
+                                        fetchConfigStub.should.have.been.calledOnce;
+                                        loginStub.should.not.have.been.called;
 
-                                    setAuthStub.should.have.been.calledOnce;
-                                    setUserStub.should.have.been.calledOnce;
+                                        setAuthStub.should.have.been.calledOnce;
+                                        setUserStub.should.have.been.calledOnce;
 
-                                    renderStub.should.not.have.been.called;
-                                    resetUserStub.should.not.have.been.called;
-                                    resetAuthStub.should.not.have.been.called;
-                                    removeItemStub.should.not.have.been.called;
+                                        renderStub.should.not.have.been.called;
+                                        resetUserStub.should.not.have.been.called;
+                                        resetAuthStub.should.not.have.been.called;
+                                        removeItemStub.should.not.have.been.called;
 
-                                    fetchUserConversationStub.should.have.been.calledOnce;
-                                });
+                                        fetchUserConversationStub.should.have.been.calledOnce;
+                                    });
                             });
                         }
                     });
