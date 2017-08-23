@@ -1,4 +1,5 @@
 import Raven from 'raven-js';
+import pick from 'lodash.pick';
 import { batchActions } from 'redux-batched-actions';
 
 import { showErrorNotification, setShouldScrollToBottom, setFetchingMoreMessages as setFetchingMoreMessagesUi, showConnectNotification } from './app-state';
@@ -114,17 +115,18 @@ function postUploadImage(message) {
     return (dispatch, getState) => {
         const {config: {appId}, user: {_id}} = getState();
         const blob = getBlobFromDataUrl(message.mediaUrl);
-
         const data = new FormData();
-        data.append('source', blob);
-        data.append('sender', {
+
+        data.append('sender', JSON.stringify({
             type: 'appUser',
             client: getClientInfo(appId)
-        });
+        }));
 
-        Object.keys(message).forEach((key) => {
-            data.append(key, message[key]);
-        });
+        if (message.metadata) {
+            data.append('message', JSON.stringify(pick(message, ['metadata'])));
+        }
+
+        data.append('source', blob);
 
         return dispatch(http('POST', `/apps/${appId}/appusers/${_id}/images`, data));
     };
