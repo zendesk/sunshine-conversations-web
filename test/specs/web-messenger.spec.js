@@ -143,15 +143,25 @@ describe('WebMessenger', () => {
             WebMessengerRewire('fetchConfig', fetchConfigStub);
             WebMessengerRewire('login', loginStub);
             WebMessengerRewire('render', renderStub);
+            mockedStore = mockAppStore(sandbox, generateBaseStoreProps({
+                ...defaultState,
+                appState: {
+                    isInitialized: false
+                }
+            }));
         });
 
-        describe('app is inactive', () => {
+        describe('is inactive', () => {
             beforeEach(() => {
                 mockedStore = mockAppStore(sandbox, generateBaseStoreProps({
+                    ...defaultState,
                     config: {
                         app: {
                             status: 'inactive'
                         }
+                    },
+                    appState: {
+                        isInitialized: false
                     }
                 }));
             });
@@ -160,6 +170,19 @@ describe('WebMessenger', () => {
                 return WebMessenger.init({
                     appId: 'some-app-id'
                 }).should.be.rejectedWith(Error, /inactive/);
+            });
+        });
+
+
+        describe('is already initialized', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, defaultState);
+            });
+
+            it('should throw an error', () => {
+                return WebMessenger.init({
+                    appId: 'some-app-id'
+                }).should.be.rejectedWith(Error, /is already initialized/);
             });
         });
 
@@ -361,6 +384,21 @@ describe('WebMessenger', () => {
             sandbox.restore();
         });
 
+        describe('is not initialized', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, generateBaseStoreProps({
+                    ...defaultState,
+                    appState: {
+                        isInitialized: false
+                    }
+                }));
+            });
+
+            it('should throw an error', () => {
+                return WebMessenger.login('userId', 'jwt').should.be.rejectedWith(Error, /initialize the Web Messenger first/);
+            });
+        });
+
         describe('conversation started', () => {
             const state = Object.assign({}, defaultState);
             beforeEach(() => {
@@ -387,7 +425,6 @@ describe('WebMessenger', () => {
     describe('Send message', () => {
         beforeEach(() => {
             mockedStore = mockAppStore(sandbox, defaultState);
-
             sendMessageStub = sandbox.stub().returnsAsyncThunk({
                 value: {}
             });
@@ -400,6 +437,21 @@ describe('WebMessenger', () => {
             });
         });
 
+        describe('is not initialized', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, generateBaseStoreProps({
+                    ...defaultState,
+                    appState: {
+                        isInitialized: false
+                    }
+                }));
+            });
+
+            it('should throw an error', () => {
+                return WebMessenger.sendMessage('some message').should.be.rejectedWith(Error, /initialize the Web Messenger first/);
+            });
+        });
+
     });
 
     describe('Get conversation', () => {
@@ -408,9 +460,23 @@ describe('WebMessenger', () => {
         });
 
         describe('conversation exists', () => {
-
-            it('should call handleConversationUpdated', () => {
+            it('should return the stored conversation', () => {
                 WebMessenger.getConversation().should.eq(mockedStore.getState().conversation);
+            });
+        });
+
+        describe('is not initialized', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, generateBaseStoreProps({
+                    ...defaultState,
+                    appState: {
+                        isInitialized: false
+                    }
+                }));
+            });
+
+            it('should throw an error', () => {
+                return expect(() => WebMessenger.getConversation()).to.throw(Error, /initialize the Web Messenger first/);
             });
         });
     });
@@ -435,12 +501,44 @@ describe('WebMessenger', () => {
                 });
             });
         });
+
+        describe('is not initialized', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, generateBaseStoreProps({
+                    ...defaultState,
+                    appState: {
+                        isInitialized: false
+                    }
+                }));
+            });
+
+            it('should throw an error', () => {
+                return WebMessenger.updateUser({
+                    email: 'update@me.com'
+                }).should.be.rejectedWith(Error, /initialize the Web Messenger first/);
+            });
+        });
     });
 
     describe('Logout', () => {
         it('should call logout', () => {
             return WebMessenger.logout().then(() => {
                 logoutStub.should.have.been.calledOnce;
+            });
+        });
+
+        describe('is not initialized', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, generateBaseStoreProps({
+                    ...defaultState,
+                    appState: {
+                        isInitialized: false
+                    }
+                }));
+            });
+
+            it('should throw an error', () => {
+                return WebMessenger.logout().should.be.rejectedWith(Error, /initialize the Web Messenger first/);
             });
         });
     });
@@ -450,12 +548,42 @@ describe('WebMessenger', () => {
             WebMessenger.open();
             openWidgetStub.should.have.been.calledOnce;
         });
+
+        describe('is not initialized', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, generateBaseStoreProps({
+                    ...defaultState,
+                    appState: {
+                        isInitialized: false
+                    }
+                }));
+            });
+
+            it('should throw an error', () => {
+                return expect(() => WebMessenger.open()).to.throw(Error, /initialize the Web Messenger first/);
+            });
+        });
     });
 
     describe('Close', () => {
         it('should dispatch close action', () => {
             WebMessenger.close();
             closeWidgetStub.should.have.been.calledOnce;
+        });
+
+        describe('is not initialized', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, generateBaseStoreProps({
+                    ...defaultState,
+                    appState: {
+                        isInitialized: false
+                    }
+                }));
+            });
+
+            it('should throw an error', () => {
+                return expect(() => WebMessenger.open()).to.throw(Error, /initialize the Web Messenger first/);
+            });
         });
     });
 });
