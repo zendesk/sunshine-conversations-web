@@ -99,6 +99,13 @@ function cleanUp() {
     store.dispatch(reset());
 }
 
+function checkInitialization() {
+    const {appState: {isInitialized}} = store.getState();
+    if (!isInitialized) {
+        throw new Error('Must initialize the Web Messenger first using `init()`.');
+    }
+}
+
 export function on(...args) {
     return observable.on(...args);
 }
@@ -179,7 +186,7 @@ export function init(props = {}) {
             const {config: {app: {status}}} = store.getState();
 
             if (status !== 'active') {
-                return Promise.resolve();
+                throw new Error('App is inactive.');
             }
 
             return Promise.resolve()
@@ -223,26 +230,37 @@ export function init(props = {}) {
 }
 
 export function login(userId, jwt) {
-    if (!userId || !jwt) {
-        return Promise.reject(new Error('Must provide a userId and a jwt to log in.'));
-    }
+    return Promise.resolve()
+        .then(() => checkInitialization())
+        .then(() => {
+            if (!userId || !jwt) {
+                return Promise.reject(new Error('Must provide a userId and a jwt to log in.'));
+            }
 
-    return store.dispatch(authActions.login(userId, jwt));
+            return store.dispatch(authActions.login(userId, jwt));
+        });
 }
 
 export function logout() {
-    return store.dispatch(authActions.logout());
+    return Promise.resolve()
+        .then(() => checkInitialization())
+        .then(() => store.dispatch(authActions.logout()));
 }
 
 export function sendMessage(props) {
-    return store.dispatch(_sendMessage(props));
+    return Promise.resolve()
+        .then(() => checkInitialization())
+        .then(() => store.dispatch(_sendMessage(props)));
 }
 
 export function updateUser(props) {
-    return store.dispatch(userActions.update(props));
+    return Promise.resolve()
+        .then(() => checkInitialization())
+        .then(() => store.dispatch(userActions.update(props)));
 }
 
 export function getConversation() {
+    checkInitialization();
     return store.getState().conversation;
 }
 
@@ -265,10 +283,12 @@ export function destroy() {
 }
 
 export function open() {
+    checkInitialization();
     store.dispatch(appStateActions.openWidget());
 }
 
 export function close() {
+    checkInitialization();
     store.dispatch(appStateActions.closeWidget());
 }
 
@@ -277,5 +297,6 @@ export function isOpened() {
 }
 
 export function render() {
+    checkInitialization();
     return renderWidget();
 }
