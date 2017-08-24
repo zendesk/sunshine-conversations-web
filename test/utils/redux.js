@@ -24,7 +24,7 @@ export function generateBaseStoreProps(extraProps = {}) {
             ...extraProps.user
         },
         appState: {
-            isInitialized: false,
+            isInitialized: true,
             visibleChannelType: null,
             ...extraProps.appState
         },
