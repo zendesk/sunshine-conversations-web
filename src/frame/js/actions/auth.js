@@ -13,7 +13,7 @@ export const RESET_AUTH = 'RESET_AUTH';
 
 export function login(userId, jwt) {
     return (dispatch, getState) => {
-        const {config: {appId}, auth: {sessionToken}} = getState();
+        const {config: {appId}, auth: {sessionToken}, user: {_id}} = getState();
 
         const actions = [
             setAuth({
@@ -30,6 +30,7 @@ export function login(userId, jwt) {
         dispatch(batchActions(actions));
 
         return dispatch(http('POST', `/apps/${appId}/login`, {
+            appUserId: _id,
             userId,
             sessionToken,
             client: getClientInfo(appId)
