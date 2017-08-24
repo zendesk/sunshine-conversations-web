@@ -582,7 +582,7 @@ describe('WebMessenger', () => {
             });
 
             it('should throw an error', () => {
-                return expect(() => WebMessenger.open()).to.throw(Error, /initialize the Web Messenger first/);
+                return expect(() => WebMessenger.close()).to.throw(Error, /initialize the Web Messenger first/);
             });
         });
     });
