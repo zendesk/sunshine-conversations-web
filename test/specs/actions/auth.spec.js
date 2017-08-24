@@ -69,6 +69,9 @@ describe('Auth Actions', () => {
         mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
             auth: {
                 sessionToken: 'some-session-token'
+            },
+            user: {
+                _id: 'some-appuser-id'
             }
         }));
     });
@@ -107,6 +110,7 @@ describe('Auth Actions', () => {
                         const {config: {appId}} = mockedStore.getState();
                         httpStub.should.have.been.calledWith('POST', `/apps/${mockedStore.getState().config.appId}/login`, {
                             userId,
+                            appUserId: 'some-appuser-id',
                             client: {
                                 id: 'some-client-id'
                             },
@@ -143,6 +147,7 @@ describe('Auth Actions', () => {
                         const {config: {appId}} = mockedStore.getState();
                         httpStub.should.have.been.calledWith('POST', `/apps/${mockedStore.getState().config.appId}/login`, {
                             userId,
+                            appUserId: 'some-appuser-id',
                             client: {
                                 id: 'some-client-id'
                             },
