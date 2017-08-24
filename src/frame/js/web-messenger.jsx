@@ -179,7 +179,7 @@ export function init(props = {}) {
             const {config: {app: {status}}} = store.getState();
 
             if (status !== 'active') {
-                return Promise.resolve();
+                throw new Error('App is inactive.');
             }
 
             return Promise.resolve()

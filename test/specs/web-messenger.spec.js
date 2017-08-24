@@ -145,6 +145,24 @@ describe('WebMessenger', () => {
             WebMessengerRewire('render', renderStub);
         });
 
+        describe('app is inactive', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, generateBaseStoreProps({
+                    config: {
+                        app: {
+                            status: 'inactive'
+                        }
+                    }
+                }));
+            });
+
+            it('should throw an error', () => {
+                return WebMessenger.init({
+                    appId: 'some-app-id'
+                }).should.be.rejectedWith(Error, /inactive/);
+            });
+        });
+
         [true, false].forEach((hasAppUserId) => {
             [true, false].forEach((hasSessionToken) => {
                 describe(`with${hasAppUserId ? '' : 'out'} appUserId and with${hasSessionToken? '':'out'} sessionToken`, () => {
