@@ -186,6 +186,8 @@ export function init(props = {}) {
                 .then(() => {
                     if (props.userId && props.jwt) {
                         return login(props.userId, props.jwt);
+                    } else if (props.userId || props.jwt) {
+                        throw new Error('Must provide a userId and a JWT in order to use the authenticated mode.');
                     }
 
                     if (appUserId && sessionToken) {
