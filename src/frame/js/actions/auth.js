@@ -87,9 +87,7 @@ export function upgradeUser(clientId) {
         return dispatch(http('POST', `/apps/${appId}/appusers/upgrade`, {
             clientId
         }))
-            .then((response) => {
-                return response && response.appUser;
-            });
+            .then((response) => response && response.appUser);
     };
 }
 
