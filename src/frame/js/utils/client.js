@@ -2,8 +2,26 @@ import uuid from 'uuid';
 
 import * as storage from './storage';
 
+export function getLegacyClientId() {
+    return storage.getItem('sk_deviceid');
+}
+
+export function upgradeLegacyClientId(appId) {
+    const legacyId = getLegacyClientId();
+    if (legacyId) {
+        storage.setItem(`${appId}.clientId`, legacyId);
+        storage.removeItem('sk_deviceid');
+    }
+}
+
 export function getClientId(appId) {
     const SK_STORAGE = `${appId}.clientId`;
+
+    const legacyId = getLegacyClientId();
+    if (legacyId) {
+        return legacyId;
+    }
+
     const clientId = storage.getItem(SK_STORAGE) ||
     uuid.v4().replace(/-/g, '');
 
@@ -11,7 +29,6 @@ export function getClientId(appId) {
 
     return clientId;
 }
-
 
 export function getClientInfo(appId) {
     return {
