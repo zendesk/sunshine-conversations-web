@@ -34,6 +34,7 @@ module.exports = function(options) {
     const isBranded = vendorId !== PACKAGE_NAME;
     const licenseContent = process.env.LICENSE || options.license || LICENSE;
     const providedPublicPath = process.env.PUBLIC_PATH || options.publicPath;
+    const version = process.env.VERSION || VERSION;
 
     try {
         Object.assign(config, require('./config/config.json'));
@@ -169,7 +170,7 @@ module.exports = function(options) {
     // Only need to append the version if we're building the host lib or the frame lib
     // in prevision of a release.
     const baseFilename = ['host', 'frame'].includes(buildType) ?
-        `[name].${VERSION}` :
+        `[name].${version}` :
         '[name]';
 
     // Only use .min.js if we ask for minification
@@ -202,8 +203,8 @@ module.exports = function(options) {
     if (['host', 'npm'].includes(buildType)) {
         // in this case, it's referencing an already built frame lib
         // and it's mostly likely minified already.
-        frameJsFilename = `frame.${VERSION}.min.js`;
-        frameCssFilename = `frame.${VERSION}.css`;
+        frameJsFilename = `frame.${version}.min.js`;
+        frameCssFilename = `frame.${version}.css`;
     } else {
         frameJsFilename = 'frame.js';
         frameCssFilename = 'frame.css';
@@ -211,7 +212,7 @@ module.exports = function(options) {
 
     const plugins = [
         new webpack.DefinePlugin({
-            VERSION: `'${VERSION}'`,
+            VERSION: `'${version}'`,
             VENDOR_ID: `'${vendorId}'`,
             FRAME_JS_URL: `'${publicPath}${frameJsFilename}'`,
             FRAME_CSS_URL: `'${publicPath}${frameCssFilename}'`,
@@ -221,7 +222,7 @@ module.exports = function(options) {
     ];
 
     if (buildType === 'frame') {
-        plugins.push(new ExtractTextPlugin(`frame.${VERSION}.css`));
+        plugins.push(new ExtractTextPlugin(`frame.${version}.css`));
     } else {
         plugins.push(new ExtractTextPlugin('frame.css'));
     }
@@ -249,7 +250,7 @@ module.exports = function(options) {
             new webpack.NoEmitOnErrorsPlugin(),
 
             new webpack.BannerPlugin({
-                banner: vendorId + ' ' + VERSION + ' \n' + licenseContent,
+                banner: vendorId + ' ' + version + ' \n' + licenseContent,
                 entryOnly: true
             }),
             new OptimizeCssAssetsPlugin({
@@ -281,7 +282,7 @@ module.exports = function(options) {
             new webpack.NoEmitOnErrorsPlugin(),
 
             new webpack.BannerPlugin({
-                banner: vendorId + ' ' + VERSION + ' \n' + licenseContent,
+                banner: vendorId + ' ' + version + ' \n' + licenseContent,
                 entryOnly: true
             })
         );
