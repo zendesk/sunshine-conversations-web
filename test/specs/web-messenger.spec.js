@@ -57,10 +57,14 @@ describe('WebMessenger', () => {
     let fetchUserConversationStub;
     let cleanUpStub;
     let getItemStub;
+    let setItemStub;
     let mockedStore;
     let resetAuthStub;
     let resetUserStub;
     let removeItemStub;
+    let getLegacyClientIdStub;
+    let upgradeLegacyClientIdStub;
+    let upgradeUserStub;
 
     beforeEach(() => {
         WebMessengerRewire('renderWidget', sandbox.stub().returns({}));
@@ -69,6 +73,10 @@ describe('WebMessenger', () => {
         WebMessengerRewire('disconnectFaye', disconnectFayeStub);
         fetchUserConversationStub = sandbox.stub().returnsAsyncThunk();
         WebMessengerRewire('fetchUserConversation', fetchUserConversationStub);
+        getLegacyClientIdStub = sandbox.stub();
+        WebMessengerRewire('getLegacyClientId', getLegacyClientIdStub);
+        upgradeLegacyClientIdStub = sandbox.stub();
+        WebMessengerRewire('upgradeLegacyClientId', upgradeLegacyClientIdStub);
 
         immediateUpdateStub = sandbox.stub().returnsAsyncThunk();
         updateUserStub = sandbox.stub();
@@ -88,13 +96,15 @@ describe('WebMessenger', () => {
 
         loginStub = sandbox.stub().returnsAsyncThunk();
         logoutStub = sandbox.stub().returnsAsyncThunk();
+        upgradeUserStub = sandbox.stub().returnsAsyncThunk();
 
         WebMessengerRewire('authActions', {
             ...authActions,
             login: loginStub,
             logout: logoutStub,
             setAuth: setAuthStub,
-            resetAuth: resetAuthStub
+            resetAuth: resetAuthStub,
+            upgradeUser: upgradeUserStub
         });
 
         WebMessengerRewire('cleanUp', cleanUpStub);
@@ -108,10 +118,12 @@ describe('WebMessenger', () => {
         });
 
         getItemStub = sandbox.stub();
+        setItemStub = sandbox.stub();
         removeItemStub = sandbox.stub();
         WebMessengerRewire('storage', {
             ...storage,
             getItem: getItemStub,
+            setItem: setItemStub,
             removeItem: removeItemStub
         });
 
@@ -183,6 +195,126 @@ describe('WebMessenger', () => {
                 return WebMessenger.init({
                     appId: 'some-app-id'
                 }).should.be.rejectedWith(Error, /is already initialized/);
+            });
+        });
+
+        describe('with legacy clientId', () => {
+            let legacyId;
+
+            beforeEach(() => {
+                legacyId = hat();
+                getLegacyClientIdStub.returns(legacyId);
+            });
+
+            it('should upgrade the clientId', () => {
+                const appUserId = hat();
+                const sessionToken = hat();
+                const appId = hat();
+
+                upgradeUserStub.returnsAsyncThunk({
+                    value: {
+                        _id: appUserId,
+                        sessionToken
+                    }
+                });
+
+                return WebMessenger.init({
+                    appId
+                })
+                    .then(() => {
+                        getLegacyClientIdStub.should.have.been.calledOnce;
+
+                        upgradeUserStub.should.have.been.calledOnce;
+                        upgradeUserStub.should.have.been.calledWith(legacyId);
+
+                        setItemStub.should.have.been.calledWith(`${appId}.sessionToken`, sessionToken);
+
+                        upgradeLegacyClientIdStub.should.have.been.calledOnce;
+                        upgradeLegacyClientIdStub.should.have.been.calledWith(appId);
+
+                        setUserStub.should.have.been.calledWith({
+                            _id: appUserId
+                        });
+                        setAuthStub.should.have.been.calledWith({
+                            sessionToken
+                        });
+
+                        loginStub.should.not.have.been.called;
+                        fetchUserConversationStub.should.have.been.calledOnce;
+                    });
+            });
+
+            it('should swallow errors during upgrade', () => {
+                const appId = hat();
+
+                upgradeUserStub.returnsAsyncThunk({
+                    rejects: true
+                });
+
+                return WebMessenger.init({
+                    appId
+                })
+                    .then(() => {
+                        getLegacyClientIdStub.should.have.been.calledOnce;
+
+                        upgradeUserStub.should.have.been.calledOnce;
+                        upgradeUserStub.should.have.been.calledWith(legacyId);
+
+                        setItemStub.should.not.have.been.called;
+
+                        upgradeLegacyClientIdStub.should.have.been.calledOnce;
+                        upgradeLegacyClientIdStub.should.have.been.calledWith(appId);
+
+                        setUserStub.should.not.have.been.called;
+                        setAuthStub.should.not.have.been.called;
+                        loginStub.should.not.have.been.called;
+                        fetchUserConversationStub.should.not.have.been.called;
+                    });
+            });
+
+            it('should continue if no user found', () => {
+                const appId = hat();
+
+                return WebMessenger.init({
+                    appId
+                })
+                    .then(() => {
+                        getLegacyClientIdStub.should.have.been.calledOnce;
+
+                        upgradeUserStub.should.have.been.calledOnce;
+                        upgradeUserStub.should.have.been.calledWith(legacyId);
+
+                        setItemStub.should.not.have.been.called;
+
+                        upgradeLegacyClientIdStub.should.have.been.calledOnce;
+                        upgradeLegacyClientIdStub.should.have.been.calledWith(appId);
+
+                        setUserStub.should.not.have.been.called;
+                        setAuthStub.should.not.have.been.called;
+                        loginStub.should.not.have.been.called;
+                        fetchUserConversationStub.should.not.have.been.called;
+                    });
+            });
+        });
+
+        describe('without legacy clientId', () => {
+            it('should not upgrade the clientId', () => {
+                const appId = hat();
+
+                return WebMessenger.init({
+                    appId
+                })
+                    .then(() => {
+                        getLegacyClientIdStub.should.have.been.calledOnce;
+
+                        upgradeUserStub.should.not.have.been.called;
+                        setItemStub.should.not.have.been.called;
+                        upgradeLegacyClientIdStub.should.not.have.been.called;
+                        setUserStub.should.not.have.been.called;
+                        setAuthStub.should.not.have.been.called;
+                        loginStub.should.not.have.been.called;
+                        fetchUserConversationStub.should.not.have.been.called;
+                    });
             });
         });
 

@@ -81,6 +81,16 @@ export function logout() {
     };
 }
 
+export function upgradeUser(clientId) {
+    return (dispatch, getState) => {
+        const {config: {appId}} = getState();
+        return dispatch(http('POST', `/apps/${appId}/appusers/upgrade`, {
+            clientId
+        }))
+            .then((response) => response && response.appUser);
+    };
+}
+
 export function setAuth(props) {
     return {
         type: SET_AUTH,

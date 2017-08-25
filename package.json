@@ -32,7 +32,7 @@
     "build:amd": "webpack --config webpack-host-amd.config.js",
     "start": "node dev-server/server-production",
     "lint": "eslint . --ext=js --ext=jsx",
-    "dev": "nodemon --watch dev-server/ --watch dev-site/index.html --watch dev-site/embedded.html --watch config/config.json dev-server/server-development",
+    "dev": "nodemon --watch dev-server/ --watch dev-site/index.html --watch dev-site/embedded.html --watch config/config.json --watch config/default/config.json dev-server/server-development",
     "sentry-cli": "sentry-cli",
     "uglify:loader": "node ./tasks/generateLoader.js | uglifyjs --mangle",
     "upload:cdn": "aws s3 cp dist/ s3://$SK_JS_S3_BUCKET/ --recursive --acl public-read --cache-control \"max-age=630720000, public\"",
