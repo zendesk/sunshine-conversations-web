@@ -21,6 +21,7 @@ import { waitForPage, monitorBrowserState, stopMonitoringBrowserState, updateHos
 import { isImageUploadSupported } from './utils/media';
 import { playNotificationSound, isAudioSupported } from './utils/sound';
 import * as storage from './utils/storage';
+import { getLegacyClientId, upgradeLegacyClientId } from './utils/client';
 
 import { WIDGET_STATE } from './constants/app';
 
@@ -138,8 +139,8 @@ export function init(props = {}) {
         appId: props.appId
     });
 
-    const sessionToken = storage.getItem(`${props.appId}.sessionToken`);
-    const appUserId = storage.getItem(`${props.appId}.appUserId`);
+    let sessionToken = storage.getItem(`${props.appId}.sessionToken`);
+    let appUserId = storage.getItem(`${props.appId}.appUserId`);
 
     const actions = [
         appStateActions.setInitializationState(true),
@@ -190,6 +191,33 @@ export function init(props = {}) {
             }
 
             return Promise.resolve()
+                .then(() => {
+                    const legacyClientId = getLegacyClientId();
+                    if (legacyClientId) {
+                        return store.dispatch(authActions.upgradeUser(legacyClientId))
+                            .catch(() => {
+                                // swallow errors
+                            })
+                            .then((user) => {
+                                upgradeLegacyClientId(props.appId);
+
+                                if (user) {
+                                    appUserId = user._id;
+                                    sessionToken = user.sessionToken;
+                                    storage.setItem(`${props.appId}.sessionToken`, sessionToken);
+
+                                    store.dispatch(batchActions([
+                                        userActions.setUser({
+                                            _id: appUserId
+                                        }),
+                                        authActions.setAuth({
+                                            sessionToken
+                                        })
+                                    ]));
+                                }
+                            });
+                    }
+                })
                 .then(() => {
                     if (props.userId && props.jwt) {
                         return login(props.userId, props.jwt);
