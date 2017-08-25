@@ -31,6 +31,7 @@ module.exports = function(options) {
 
     // set branding variables in the env vars or pass them via the options
     const vendorId = process.env.VENDOR_ID || options.vendorId || PACKAGE_NAME;
+    const isBranded = vendorId !== PACKAGE_NAME;
     const licenseContent = process.env.LICENSE || options.license || LICENSE;
     const providedPublicPath = process.env.PUBLIC_PATH || options.publicPath;
 
@@ -214,7 +215,8 @@ module.exports = function(options) {
             VENDOR_ID: `'${vendorId}'`,
             FRAME_JS_URL: `'${publicPath}${frameJsFilename}'`,
             FRAME_CSS_URL: `'${publicPath}${frameCssFilename}'`,
-            SENTRY_DSN: options.sentryDsn ? `'${options.sentryDsn}'` : 'undefined'
+            SENTRY_DSN: options.sentryDsn ? `'${options.sentryDsn}'` : 'undefined',
+            IS_BRANDED: `${isBranded}`
         })
     ];
 
