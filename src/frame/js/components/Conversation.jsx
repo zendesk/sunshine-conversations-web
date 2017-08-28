@@ -112,7 +112,8 @@ export class ConversationComponent extends Component {
             this._isScrolling = true;
             const container = findDOMNode(this);
             const logo = this._logo;
-            let scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight - INTRO_BOTTOM_SPACER;
+            const logoHeight = logo ? logo.clientHeight : 0;
+            let scrollTop = container.scrollHeight - container.clientHeight - logoHeight - INTRO_BOTTOM_SPACER;
 
             if (replyActions.length > 0 || typingIndicatorShown) {
                 scrollTop = scrollTop + EXTRA_COMPONENT_BOTTOM_SPACER;
@@ -187,6 +188,25 @@ export class ConversationComponent extends Component {
             this.scrollToPreviousFirstMessage();
         } else {
             this.scrollToBottom();
+        }
+    }
+
+    generateLogo() {
+        if (!IS_BRANDED) {
+            const logoStyle = isMobile.apple.device ? {
+                paddingBottom: 10
+            } : undefined;
+
+            return <div className='logo'
+                        ref={ (c) => this._logo = c }
+                        style={ logoStyle }>
+                       <a href='https://smooch.io/live-web-chat/?utm_source=widget'
+                          rel='noopener noreferrer'
+                          target='_blank'><span>Messaging by</span> <img className='image'
+                                                                                                                                                             src={ logo }
+                                                                                                                                                             srcSet={ `${logo} 1x, ${logo2x} 2x` }
+                                                                                                                                                             alt='smooch.io' /></a>
+                   </div>;
         }
     }
 
@@ -276,10 +296,6 @@ export class ConversationComponent extends Component {
             }
         }
 
-        const logoStyle = isMobile.apple.device ? {
-            paddingBottom: 10
-        } : undefined;
-
         const messagesContainerStyle = {
             maxHeight: hasMoreMessages ? '100%' : `calc(100% - ${introHeight + INTRO_BOTTOM_SPACER}px)`
         };
@@ -321,16 +337,7 @@ export class ConversationComponent extends Component {
                             className='messages'>
                            { messageItems }
                        </div>
-                       <div className='logo'
-                            ref={ (c) => this._logo = c }
-                            style={ logoStyle }>
-                           <a href='https://smooch.io/live-web-chat/?utm_source=widget'
-                              rel='noopener noreferrer'
-                              target='_blank'><span>Messaging by</span> <img className='image'
-                                                                                                                                                                 src={ logo }
-                                                                                                                                                                 srcSet={ `${logo} 1x, ${logo2x} 2x` }
-                                                                                                                                                                 alt='smooch.io' /></a>
-                       </div>
+                       { this.generateLogo() }
                    </div>
                </div>;
     }
