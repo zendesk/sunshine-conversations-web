@@ -13,7 +13,7 @@ let pendingInitChains = [];
 let pendingOnCalls = [];
 let pendingInitCall;
 
-const shouldRenderLink = /lebo|awle|pide|obo|rawli/i.test(navigator.userAgent);
+const isCrawler = /lebo|awle|pide|obo|rawli/i.test(navigator.userAgent);
 const isPhantomJS = /PhantomJS/.test(navigator.userAgent) && process.env.NODE_ENV !== 'test';
 
 const LIB_FUNCS = [
@@ -32,7 +32,7 @@ const LIB_FUNCS = [
     'isOpened'
 ];
 
-if (shouldRenderLink) {
+if (isCrawler && !IS_BRANDED) {
     const el = document.createElement('a');
     el.href = 'https://smooch.io/live-web-chat/?utm_source=widget';
     el.text = 'Messaging by smooch.io';
@@ -57,7 +57,7 @@ const Skeleton = {
         pendingInitCall = args;
         isEmbedded = args.length > 0 && !!args[0].embedded;
 
-        if (!shouldRenderLink && !isPhantomJS) {
+        if (!isCrawler && !isPhantomJS) {
             waitForPage(() => {
                 injectFrame();
                 hostStyles.use();
