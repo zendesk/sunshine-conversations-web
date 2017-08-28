@@ -31,7 +31,7 @@ module.exports = function(options) {
 
     // set branding variables in the env vars or pass them via the options
     const vendorId = process.env.VENDOR_ID || options.vendorId || PACKAGE_NAME;
-    const isBranded = vendorId !== PACKAGE_NAME;
+    const isBranded = process.env.IS_BRANDED === 'true' || options.isBranded || false;
     const licenseContent = process.env.LICENSE || options.license || LICENSE;
     const providedPublicPath = process.env.PUBLIC_PATH || options.publicPath;
     const version = process.env.VERSION || VERSION;
