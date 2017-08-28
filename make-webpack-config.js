@@ -26,7 +26,6 @@ module.exports = function(options) {
     const VERSION = require('./package.json').version;
     const PACKAGE_NAME = require('./package.json').name;
     const LICENSE = fs.readFileSync('LICENSE', 'utf8');
-    const config = require('./config/default/config.json');
     const {buildType} = options;
 
     // set branding variables in the env vars or pass them via the options
@@ -35,13 +34,6 @@ module.exports = function(options) {
     const licenseContent = process.env.LICENSE || options.license || LICENSE;
     const providedPublicPath = process.env.PUBLIC_PATH || options.publicPath;
     const version = process.env.VERSION || options.version || VERSION;
-
-    try {
-        Object.assign(config, require('./config/config.json'));
-    }
-    catch (e) {
-        // do nothing
-    }
 
     let entry;
 
