@@ -34,7 +34,7 @@ module.exports = function(options) {
     const isBranded = process.env.IS_BRANDED === 'true' || options.isBranded || false;
     const licenseContent = process.env.LICENSE || options.license || LICENSE;
     const providedPublicPath = process.env.PUBLIC_PATH || options.publicPath;
-    const version = process.env.VERSION || VERSION;
+    const version = process.env.VERSION || options.version || VERSION;
 
     try {
         Object.assign(config, require('./config/config.json'));
