@@ -39,7 +39,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
     "deep-equal": "1.0.1",
-    "faye": "jugarrit/faye#temp-smooch-fix",
+    "faye": "smooch/faye#temp-smooch-fix",
     "ismobilejs": "0.3.9",
     "lodash.bindall": "4.4.0",
     "lodash.debounce": "4.0.3",
