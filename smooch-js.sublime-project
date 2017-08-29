@@ -1,7 +1,7 @@
 {
     "folders": [{
         "path": ".",
-        "folder_exclude_patterns": ["node_modules", "tmp", "dist", "bower_components", "coverage", "vendor", "temp", "lib"]
+        "folder_exclude_patterns": ["node_modules", "tmp", "dist", "coverage", "vendor", "temp", "lib"]
     }],
     "settings": {
         "tab_size": 4,
