@@ -19,7 +19,6 @@ karma.conf.js
 .eslintrc
 .jshintrc
 .jsfmtrc
-bower.json
 circle.yml
 make-webpack-config.js
 webpack-dev-server.config.js

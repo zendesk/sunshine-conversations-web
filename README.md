@@ -2,7 +2,6 @@
 
   [![Circle CI](https://circleci.com/gh/smooch/smooch-js.svg?style=svg)](https://circleci.com/gh/smooch/smooch-js)
   [![npm version](https://badge.fury.io/js/smooch.svg)](http://badge.fury.io/js/smooch)
-  [![Bower version](https://badge.fury.io/bo/smooch.svg)](http://badge.fury.io/bo/smooch)
 
 Smooch is the best way to have personal, rich conversations with people on your website or customers on any device. Our features, integrations and developer-friendly APIs empower companies to connect with their customers in a whole new way.
 
@@ -66,20 +65,6 @@ See https://github.com/andris9/encoding/issues/16
 
 #### Notes about Angular 2
 Some users reported that including the Smooch Web Messenger script in their Angular 2 app would cause some problems. The [workaround](https://github.com/smooch/smooch-js/issues/404#issuecomment-257768495) for that is to add it after all your scripts.
-
-### Bower
-
-Install from bower
-
-```
-bower install smooch
-```
-
-Include in JS using preferred method and init
-
-```javascript
-Smooch.init({appToken: 'your_app_token'});
-```
 
 ## API
 
