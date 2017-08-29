@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const StatsPlugin = require('stats-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const urljoin = require('urljoin');
 
 
 const rulesByExtension = require('./webpack/lib/rulesByExtension');
@@ -206,8 +207,8 @@ module.exports = function(options) {
         new webpack.DefinePlugin({
             VERSION: `'${version}'`,
             VENDOR_ID: `'${vendorId}'`,
-            FRAME_JS_URL: `'${publicPath}${frameJsFilename}'`,
-            FRAME_CSS_URL: `'${publicPath}${frameCssFilename}'`,
+            FRAME_JS_URL: `'${urljoin(publicPath, frameJsFilename)}'`,
+            FRAME_CSS_URL: `'${urljoin(publicPath, frameCssFilename)}'`,
             SENTRY_DSN: options.sentryDsn ? `'${options.sentryDsn}'` : 'undefined',
             IS_BRANDED: `${isBranded}`
         })
