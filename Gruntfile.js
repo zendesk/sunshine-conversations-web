@@ -90,9 +90,6 @@ module.exports = function(grunt) {
             buildNpm: {
                 cmd: 'npm run build:npm'
             },
-            buildAmd: {
-                cmd: 'npm run build:amd'
-            },
             uploadCdn: {
                 cmd: 'npm run upload:cdn'
             },
@@ -127,7 +124,7 @@ module.exports = function(grunt) {
     grunt.registerTask('versionBump', function() {
         var semver = require('semver');
         var VERSION_REGEXP = /(\bversion[\'\"]?\s*[:=]\s*[\'\"])([\da-z\.-]+)([\'\"])/i;
-        var files = ['package.json', 'bower.json', 'src/js/constants/version.js'];
+        var files = ['package.json', 'src/js/constants/version.js'];
         var fullVersion = grunt.option('version');
         var versionType = grunt.option('versionType');
         var globalVersion;
@@ -195,7 +192,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('deploy', ['build', 'exec:uploadCdn', 'exec:updateLoader']);
 
-    grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:buildAmd', 'exec:addDist', 'exec:addLib']);
+    grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist', 'exec:addLib']);
     grunt.registerTask('publish:release', ['release', 'exec:setReleaseCommits', 'exec:uploadSourceMap', 'exec:finalizeRelease']);
     grunt.registerTask('publish:cleanup', ['exec:cleanRelease', 'exec:push']);
 

@@ -12,7 +12,6 @@ const rulesByExtension = require('./webpack/lib/rulesByExtension');
 // Possible options:
 // buildType : possible values ['npm', 'host', 'frame', 'dev', 'test']
 //  - npm : build in prevision of the npm release
-//  - amd : build in prevision of the bower release
 //  - host : build the host lib only
 //  - frame : build the frame lib only
 //  - dev : build both the frame and the host for the dev server
@@ -41,10 +40,6 @@ module.exports = function(options) {
     if (buildType === 'npm') {
         entry = {
             index: './src/host/js/npm'
-        };
-    } else if (buildType === 'amd') {
-        entry = {
-            amd: './src/host/js/amd'
         };
     } else if (buildType === 'host') {
         entry = {

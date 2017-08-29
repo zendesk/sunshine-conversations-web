@@ -29,7 +29,6 @@
     "build:host": "webpack --config webpack-host.config.js",
     "build:frame": "webpack --config webpack-frame.config.js",
     "build:npm": "rm -rf lib && webpack --config webpack-host-npm.config.js",
-    "build:amd": "webpack --config webpack-host-amd.config.js",
     "start": "node dev-server/server-production",
     "lint": "eslint . --ext=js --ext=jsx",
     "dev": "nodemon --watch dev-server/ --watch dev-site/index.html --watch dev-site/embedded.html --watch config/config.json --watch config/default/config.json dev-server/server-development",
