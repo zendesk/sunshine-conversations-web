@@ -20,7 +20,11 @@ const getContent = exports.getContent = (webloaderUrl, globalVariableName) => {
         );
     }
 
-    return minify(content).code;
+    return minify(content, {
+        compress: {
+            reduce_vars: false
+        }
+    }).code;
 };
 
 
