@@ -64,12 +64,8 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | Option | Optional? | Default value | Description |
 | --- | --- | --- | --- |
 | appId | No | - | Your app id |
-| givenName | Yes | - | User's given name |
-| surname | Yes | - | User's surname |
-| email | Yes | - | User's email |
 | jwt | Yes | - | Token to authenticate your communication with the server (see http://docs.smooch.io/javascript/#authenticating-users-optional)
 | userId | Yes | - | User's id |
-| properties | Yes | - | An object with all properties you want to set on your user |
 | soundNotificationEnabled | Yes | `true` | Enables the sound notification for new messages |
 | imageUploadEnabled | Yes | `true` | Enables the image upload feature. |
 | embedded | Yes | False | Tells the widget it will be embedded. (see Embedded section below) |
@@ -78,16 +74,9 @@ Initializes the Smooch widget in the web page using the specified options. It re
 ```javascript
 var skPromise = Smooch.init({
     appId: '<app-id>',
-    givenName: 'Cool',
-    surname: 'Person',
-    email: 'their_email@whatever.com',
-    // For secure mode
+    // For authenticated mode
     jwt: 'your_jwt',
     userId: 'user_id',
-    // Additional properties
-    properties: {
-        'anything': 'whatever_you_want'    
-    },
     customText: {
         headerText: 'How can we help?',
         inputPlaceholder: 'Type a message...',
