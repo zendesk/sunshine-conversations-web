@@ -365,9 +365,11 @@ describe('WebMessenger', () => {
                         });
 
                         if (hasAppUserId && hasSessionToken) {
-                            it('should reset local user data on invalid_auth error', () => {
+                            const resetDataTest = function(statusCode) {
                                 const error = new Error();
-                                error.code = 'invalid_auth';
+                                error.response = {
+                                    status: statusCode
+                                };
                                 fetchUserConversationStub.callsFake(() => {
                                     return () => Promise.reject(error);
                                 });
@@ -393,6 +395,18 @@ describe('WebMessenger', () => {
 
                                     fetchUserConversationStub.should.have.been.calledOnce;
                                 });
+                            };
+
+                            it('should reset local user data on 401 error', () => {
+                                return resetDataTest(401);
+                            });
+
+                            it('should reset local user data on 403 error', () => {
+                                return resetDataTest(403);
+                            });
+
+                            it('should reset local user data on 404 error', () => {
+                                return resetDataTest(404);
                             });
 
                             it('should not reset local user data for a non invalid_auth error', () => {

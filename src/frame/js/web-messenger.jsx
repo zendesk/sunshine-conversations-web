@@ -228,7 +228,8 @@ export function init(props = {}) {
                     if (appUserId && sessionToken) {
                         return store.dispatch(fetchUserConversation())
                             .catch((err) => {
-                                if (err.code === 'invalid_auth') {
+                                const statusCode = err.response && err.response.status;
+                                if (statusCode === 401 || statusCode === 403 || statusCode === 404) {
                                     storage.removeItem(`${props.appId}.appUserId`);
                                     storage.removeItem(`${props.appId}.sessionToken`);
 
