@@ -564,7 +564,7 @@ export function startConversation() {
 
         let promise;
         if (appUserId) {
-            promise = dispatch(http('POST', `/apps/${appId}/appusers/${appUserId}/conversations`))
+            promise = dispatch(http('POST', `/apps/${appId}/appusers/${appUserId}/conversation`))
                 .then(({conversation}) => {
                     return {
                         conversation,
