@@ -18,18 +18,21 @@ The Smooch Web Messenger will add [live web messaging](https://smooch.io/live-we
 
 ### Script Tag
 
-Add the following code towards the end of the `body` section on your page. Placing it at the end allows the rest of the page to load first.
-
-```html
-<script src="https://cdn.smooch.io/smooch.min.js"></script>
-```
-
-
-Initialize the plugin using this code snippet
+Add the following code towards the end of the `head` section on your page and replace `<app-id>` with your app id at the end of the script.
 
 ```html
 <script>
-    Smooch.init({appToken: 'your_app_token'});
+    !function(e,n,t,r){
+        function o(){try{var e;if((e="string"==typeof this.response?JSON.parse(this.response):this.response).url){var t=n.getElementsByTagName("script")[0],r=n.createElement("script");r.async=!0,r.src=e.url,t.parentNode.insertBefore(r,t)}}catch(e){}}var s,p,a,i=[],c=[];e[t]={init:function(){s=arguments;var e={then:function(n){return c.push({type:"t",next:n}),e},catch:function(n){return c.push({type:"c",next:n}),e}};return e},on:function(){i.push(arguments)},render:function(){p=arguments},destroy:function(){a=arguments}},e.__onWebMessengerHostReady__=function(n){if(delete e.__onWebMessengerHostReady__,e[t]=n,s)for(var r=n.init.apply(n,s),o=0;o<c.length;o++){var u=c[o];r="t"===u.type?r.then(u.next):r.catch(u.next)}p&&n.render.apply(n,p),a&&n.destroy.apply(n,a);for(o=0;o<i.length;o++)n.on.apply(n,i[o])};var u=new XMLHttpRequest;u.addEventListener("load",o),u.open("GET","https://"+r+".webloader.smooch.io/",!0),u.responseType="json",u.send()
+    }(window,document,"Smooch","<app-id>");
+</script>
+```
+
+then initialize the Web Messenger by placing this snippet towards the end of the `body` section of your page.
+
+```html
+<script>
+    Smooch.init({appId: '<app-id>'});
 </script>
 ```
 
@@ -39,10 +42,6 @@ Install from npm
 
 ```
 npm install --save smooch
-
-// The library also has peer dependencies. If you don't already have them in your project, go ahead and install them too
-
-npm install --save babel-polyfill@6.9 babel-runtime@6.9 react@15 react-dom@15
 ```
 
 Require and init
@@ -50,40 +49,23 @@ Require and init
 ```javascript
 var Smooch = require('smooch');
 
-Smooch.init({appToken: 'your_app_token'});
+Smooch.init({appId: '<app-id>'});
 ```
-
-#### Notes about Webpack
-If you are building an isomorphic app, make sure you init the widget in client code only. It currently won't work on the server side. You'll also need to add the following to your plugins since `iconv-loader` doesn't work very well with webpack :
-
-```javascript
-new webpack.NormalModuleReplacementPlugin(/\/iconv-loader$/, 'node-noop')
-```
-
-You will need to install `node-noop` in your project.
-See https://github.com/andris9/encoding/issues/16
-
-#### Notes about Angular 2
-Some users reported that including the Smooch Web Messenger script in their Angular 2 app would cause some problems. The [workaround](https://github.com/smooch/smooch-js/issues/404#issuecomment-257768495) for that is to add it after all your scripts.
 
 ## API
 
 ### Individual functions
 
 #### init(options)
-Initializes the Smooch widget in the web page using the specified options. It returns a promise that will resolve when the widget is ready.
+Initializes the Smooch widget in the web page using the specified options. It returns a promise that will resolve when the Web Messenger is ready. Note that except`on` and `off`, all methods needs to be called after a successful `init`.
 
 ##### Options
 
 | Option | Optional? | Default value | Description |
 | --- | --- | --- | --- |
-| appToken | No | - | Your app token |
-| givenName | Yes | - | User's given name |
-| surname | Yes | - | User's surname |
-| email | Yes | - | User's email |
+| appId | No | - | Your app id |
 | jwt | Yes | - | Token to authenticate your communication with the server (see http://docs.smooch.io/javascript/#authenticating-users-optional)
 | userId | Yes | - | User's id |
-| properties | Yes | - | An object with all properties you want to set on your user |
 | soundNotificationEnabled | Yes | `true` | Enables the sound notification for new messages |
 | imageUploadEnabled | Yes | `true` | Enables the image upload feature. |
 | embedded | Yes | False | Tells the widget it will be embedded. (see Embedded section below) |
@@ -91,17 +73,10 @@ Initializes the Smooch widget in the web page using the specified options. It re
 
 ```javascript
 var skPromise = Smooch.init({
-    appToken: 'your_app_token',
-    givenName: 'Cool',
-    surname: 'Person',
-    email: 'their_email@whatever.com',
-    // For secure mode
+    appId: '<app-id>',
+    // For authenticated mode
     jwt: 'your_jwt',
     userId: 'user_id',
-    // Additional properties
-    properties: {
-        'anything': 'whatever_you_want'    
-    },
     customText: {
         headerText: 'How can we help?',
         inputPlaceholder: 'Type a message...',
@@ -166,9 +141,7 @@ skPromise.then(function() {
     //do something else
 });
 
-
 ```
-
 
 #### open()
 Opens the conversation widget (noop when embedded)
@@ -191,31 +164,22 @@ Tells if the widget is currently opened or closed.
 Smooch.isOpened();
 ```
 
-#### login(userId [, jwt] [, attributes])
-Logs a user in the widget, retrieving the conversation that user already had on other browsers and/or devices. This will destroy and reinitialize the widget with the user's data. Note that you don't need to call this after `init`, it's already done internally. This returns a promise that resolves when the widget is ready again.
+#### login(userId , jwt)
+Logs a user in the Web Messenger, retrieving the conversation the user already had on other browsers and/or devices. Note that you don't need to call this after `init` if you passed the user id and jwt already, it's done internally. This returns a promise that resolves when the Web Messenger is ready again.
+
 ```
-Smooch.login('some-id');
-
-// in case you are using the jwt authentication
 Smooch.login('some-id', 'some-jwt');
-
-// in case you want to update user attributes at the same time
-Smooch.login('some-id', { email: 'my@new-email.com'});
-
-// in case you want to update user attributes at the same time and use jwt
-Smooch.login('some-id', 'some-jwt', { email: 'my@new-email.com'});
-
 ```
 
 #### logout()
-Logs out the current user and reinitialize the widget with an anonymous user.This returns a promise that resolves when the widget is ready again.
+Logs out the current user and reinitialize the widget with an anonymous user. This returns a promise that resolves when the Web Messenger is ready again.
 
 ```
 Smooch.logout();
 ```
 
 #### destroy()
-Destroys the widget and makes it disappear. The widget has to be reinitialized with `init`  to be working again because it also clears up the app token from the widget. It will also unbind all listeners you might have with `Smooch.on`.
+Destroys the Web Messenger and makes it disappear. The Web Messenger has to be reinitialized with `init` to be working again because it also clears up the app id from the Web Messenger. It will also unbind all listeners you might have with `Smooch.on`.
 
 ```
 Smooch.destroy();
