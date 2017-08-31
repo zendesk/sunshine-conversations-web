@@ -29,7 +29,7 @@ export class WidgetComponent extends Component {
     };
 
     onTouchStart = (e) => {
-        resetUnreadCount();
+        this.props.dispatch(resetUnreadCount());
         // the behavior is problematic only on iOS devices
         if (this._input && isMobile.apple.device) {
             const component = this._input.getWrappedInstance();
@@ -43,7 +43,7 @@ export class WidgetComponent extends Component {
     };
 
     onClick = () => {
-        resetUnreadCount();
+        this.props.dispatch(resetUnreadCount());
     };
 
     handleResize = () => {
