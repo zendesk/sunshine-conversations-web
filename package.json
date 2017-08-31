@@ -2,7 +2,7 @@
   "name": "smooch",
   "description": "Smooch.io powered web messaging",
   "analyze": false,
-  "version": "3.15.0",
+  "version": "3.15.2",
   "keywords": [
     "smooch",
     "javascript",
@@ -39,7 +39,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
     "deep-equal": "1.0.1",
-    "faye": "smooch/faye#temp-smooch-fix",
+    "faye": "smooch/faye#fa283a9d074d9add7dee173f897b8d691ec6f6f5",
     "ismobilejs": "0.3.9",
     "lodash.bindall": "4.4.0",
     "lodash.debounce": "4.0.3",
