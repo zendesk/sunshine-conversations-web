@@ -18,9 +18,9 @@ module.exports = function(grunt) {
                 bump: false,
                 commit: true,
                 push: false,
-                remote: 'git@github.com:smooch/smooch-js.git',
+                remote: 'git@github.com:smooch/smooch-web.git',
                 github: {
-                    repo: 'smooch/smooch-js',
+                    repo: 'smooch/smooch-web',
                     accessTokenVar: 'GITHUB_ACCESS_TOKEN',
                     releaseNotes: 'release_notes'
                 }
