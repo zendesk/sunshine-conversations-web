@@ -1,6 +1,6 @@
 # [Smooch Web Messenger](https://smooch.io)
 
-  [![Circle CI](https://circleci.com/gh/smooch/smooch-js.svg?style=svg)](https://circleci.com/gh/smooch/smooch-js)
+  [![Circle CI](https://circleci.com/gh/smooch/smooch-web.svg?style=svg)](https://circleci.com/gh/smooch/smooch-web)
   [![npm version](https://badge.fury.io/js/smooch.svg)](http://badge.fury.io/js/smooch)
 
 Smooch is the best way to have personal, rich conversations with people on your website or customers on any device. Our features, integrations and developer-friendly APIs empower companies to connect with their customers in a whole new way.
@@ -309,7 +309,7 @@ The embedded widget will take full width and height of the container. You must g
 
 ### Clone the git repo
 ```
-git clone https://github.com/smooch/smooch-js
+git clone https://github.com/smooch/smooch-web
 ```
 
 ### Install Node.js and run the following
