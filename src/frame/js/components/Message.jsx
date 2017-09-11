@@ -43,7 +43,7 @@ class MessageComponent extends Component {
     }
 
     _restyleBubble() {
-        const bubble = findDOMNode(this.refs.messageContent);
+        const bubble = this._messageContent;
         if (bubble) {
             const messageElement = bubble.firstChild;
             const messageProperties = getElementProperties(messageElement);
@@ -84,7 +84,7 @@ class MessageComponent extends Component {
         }
 
         const avatarClass = hasImage ? ['msg-avatar', 'msg-avatar-img'] : ['msg-avatar'];
-        const avatarPlaceHolder = isAppUser ? null : (<div className='msg-avatar-placeholder' />);
+        const avatarPlaceHolder = isAppUser ? null : <div className='msg-avatar-placeholder' />;
         const containerClasses = ['msg'];
 
         if (hasImage || actions.length > 0) {
@@ -197,11 +197,11 @@ class MessageComponent extends Component {
 
         return <div className={ rowClass.join(' ') }>
                    { !isAppUser && firstInGroup ? fromName : null }
-                   { lastInGroup ? avatar : avatarPlaceHolder }
                    <div className='msg-wrapper'>
+                       { lastInGroup ? avatar : avatarPlaceHolder }
                        <div className={ containerClasses.join(' ') }
                             style={ style }
-                            ref='messageContent'
+                            ref={ (c) => this._messageContent = c }
                             onClick={ this.onMessageClick.bind(this) }>
                            { imagePart ? imagePart : null }
                            { textPart ? textPart : null }
