@@ -138,6 +138,8 @@
         .msg-wrapper {
             max-width: 100%;
             position: relative;
+            display: flex;
+            flex-direction: row;
 
             .msg, .msg-image {
                 font-size: @font-size-base;
@@ -247,8 +249,7 @@
         }
         &.left-row {
             .msg-wrapper {
-                display: inline-block;
-
+                align-items: flex-end;
                 .msg, .msg-image {
                     background-color: @light-grey;
                     color: @darker-grey;
@@ -266,24 +267,27 @@
             }
         }
         &.right-row {
-            .msg, .msg-image {
-                background-color: @blue;
-                float: right;
-                color: white;
-                max-width: 204px;
-
-                &:after {
-                    left: 100%;
-                    border-color: rgba(0, 174, 255, 0);
-                    border-left-color: inherit;
-                }
-                a.link, a.link:visited {
+            .msg-wrapper {
+                flex-direction: row-reverse;
+                .msg, .msg-image {
+                    background-color: @blue;
+                    float: right;
                     color: white;
-                }
-            }
+                    max-width: 204px;
 
-            .msg-image {
-                background-color: transparent;
+                    &:after {
+                        left: 100%;
+                        border-color: rgba(0, 174, 255, 0);
+                        border-left-color: inherit;
+                    }
+                    a.link, a.link:visited {
+                        color: white;
+                    }
+                }
+
+                .msg-image {
+                    background-color: transparent;
+                }
             }
         }
         &:last-child {
@@ -376,7 +380,7 @@
 
 .msg-avatar {
     width: 31px;
-    height: auto;
+    height: 31px;
     border-radius: 50%;
     margin-right: 5px;
     display: inline-block;
