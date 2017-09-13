@@ -2,6 +2,7 @@ import WebMessenger from './web-messenger';
 
 if (window.__onWebMessengerHostReady__) {
     window.__onWebMessengerHostReady__(WebMessenger);
-} else {
-    console.error('Script loader not found. Please check out the setup instructions.');
+} else if (GLOBAL_VAR_NAME) {
+    // Script loader wasn't found, host bundle is being used on its own.
+    global[GLOBAL_VAR_NAME] = WebMessenger;
 }

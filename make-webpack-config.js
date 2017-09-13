@@ -9,6 +9,10 @@ const urljoin = require('urljoin');
 
 const rulesByExtension = require('./webpack/lib/rulesByExtension');
 
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 // Possible options:
 // buildType : possible values ['npm', 'host', 'frame', 'dev', 'test']
 //  - npm : build in prevision of the npm release
@@ -34,6 +38,7 @@ module.exports = function(options) {
     const licenseContent = process.env.LICENSE || options.license || LICENSE;
     const providedPublicPath = process.env.PUBLIC_PATH || options.publicPath;
     const version = process.env.VERSION || options.version || VERSION;
+    const globalVarName = capitalizeFirstLetter(vendorId);
 
     let entry;
 
@@ -202,6 +207,7 @@ module.exports = function(options) {
         new webpack.DefinePlugin({
             VERSION: `'${version}'`,
             VENDOR_ID: `'${vendorId}'`,
+            GLOBAL_VAR_NAME: `'${globalVarName}'`,
             FRAME_JS_URL: `'${urljoin(publicPath, frameJsFilename)}'`,
             FRAME_CSS_URL: `'${urljoin(publicPath, frameCssFilename)}'`,
             SENTRY_DSN: options.sentryDsn ? `'${options.sentryDsn}'` : 'undefined',

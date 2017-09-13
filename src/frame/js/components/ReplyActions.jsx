@@ -11,6 +11,7 @@ import LocationIcon from './LocationIcon';
 
 export class ReplyActionsComponent extends Component {
     static propTypes = {
+        dispatch: PropTypes.func.isRequired,
         accentColor: PropTypes.string,
         isAccentColorDark: PropTypes.bool,
         choices: PropTypes.array.isRequired,

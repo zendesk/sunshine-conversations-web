@@ -39,6 +39,7 @@
     "globals": {
         "VERSION": true,
         "VENDOR_ID": true,
+        "GLOBAL_VAR_NAME": true,
         "FRAME_JS_URL": true,
         "FRAME_CSS_URL": true,
         "SENTRY_DSN": true,
