@@ -57,7 +57,7 @@ function renderWidget(container) {
 function renderLink() {
     const el = document.createElement('div');
 
-    render(<a href='https://smooch.io/live-web-chat/?utm_source=widget'>Messaging by smooch.io</a>, el);
+    render(<a href='https://gorgias.io/?utm_source=widget'>Powered by <b>Gorgias</b></a>, el);
 
     waitForPage().then(() => {
         document.body.appendChild(el);

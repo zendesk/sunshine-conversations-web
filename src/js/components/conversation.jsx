@@ -317,14 +317,17 @@ export class ConversationComponent extends Component {
                             className='sk-messages'>
                            { messageItems }
                        </div>
-                       <div className='sk-logo'
+                       <div
+                            className='sk-logo'
                             ref='logo'
-                            style={ logoStyle }>
-                           <a href='https://smooch.io/live-web-chat/?utm_source=widget'
-                              target='_blank'><span>Messaging by</span> <img className='sk-image'
-                                                                                                                                       src={ logo }
-                                                                                                                                       srcSet={ `${logo} 1x, ${logo2x} 2x` }
-                                                                                                                                       alt='smooch.io' /></a>
+                            style={ logoStyle }
+                       >
+                           <a
+                               href='https://gorgias.io/?utm_source=widget'
+                                target='_blank'
+                           >
+                               <span>Powered by <b>Gorgias</b></span>
+                           </a>
                        </div>
                    </div>
                </div>;
