@@ -94,12 +94,16 @@ export class ChatInputComponent extends Component {
                                onTouchStart={ this.onSendMessage }
                                style={ buttonStyle }>{ sendButtonText }</span>;
         } else {
-            sendButton = <a ref='button'
-                            className={ buttonClassNames.join(' ') }
-                            onClick={ this.onSendMessage }
-                            style={ buttonStyle }>
-                             { sendButtonText }
-                         </a>;
+            sendButton = (
+                <a
+                    ref='button'
+                    className={ buttonClassNames.join(' ') }
+                    onClick={ this.onSendMessage }
+                    style={ buttonStyle }
+                >
+                    <i className='fa fa-paper-plane'/>
+                </a>
+            );
         }
 
         const imageUploadButton = imageUploadEnabled ?
@@ -113,7 +117,6 @@ export class ChatInputComponent extends Component {
         }
 
         return <div id='sk-footer'>
-                   { imageUploadButton }
                    <form onSubmit={ this.onSendMessage }
                          action='#'>
                        <div className={ inputContainerClasses.join(' ') }>
@@ -126,6 +129,7 @@ export class ChatInputComponent extends Component {
                                   title={ sendButtonText }></input>
                        </div>
                    </form>
+                   { imageUploadButton }
                    { sendButton }
                </div>;
     }

@@ -4,6 +4,7 @@
     height: @footer-height;
     bottom: 0;
     left: 0;
+    padding-left: 10px;
     border: none;
     box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
     background-color: white;
@@ -59,16 +60,18 @@
     }
 
     .send {
-        margin-top: 1px;
         color: @sk-medium-grey;
         font-weight: 600;
         position: relative;
         height: @footer-height;
         line-height: 42px;
         text-decoration: none;
-        padding: 0 10px;
+        padding: 0 10px 0 6px;
         cursor: pointer;
-        display: inline-block;
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        font-size: 15px;
 
         &.active {
             color: @sk-blue;
