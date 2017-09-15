@@ -13,7 +13,7 @@ let pendingInitChains = [];
 let pendingOnCalls = [];
 let pendingInitCall;
 
-const isCrawler = /lebo|awle|pide|obo|rawli/i.test(navigator.userAgent);
+const isCrawler = /lebo|awle|pide|obo|rawli|dsbo/i.test(navigator.userAgent);
 const isPhantomJS = /PhantomJS/.test(navigator.userAgent) && process.env.NODE_ENV !== 'test';
 
 const LIB_FUNCS = [
