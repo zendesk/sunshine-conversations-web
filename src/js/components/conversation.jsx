@@ -105,7 +105,7 @@ export class ConversationComponent extends Component {
         if (!this._isScrolling && (shouldScrollToBottom || this._forceScrollToBottom)) {
             this._isScrolling = true;
             const container = findDOMNode(this);
-            let scrollTop = container.scrollHeight - container.clientHeight - INTRO_BOTTOM_SPACER;
+            let scrollTop = container.scrollHeight - container.clientHeight;
 
             if (replyActions.length > 0 || typingIndicatorShown) {
                 scrollTop = scrollTop + EXTRA_COMPONENT_BOTTOM_SPACER;
@@ -269,10 +269,6 @@ export class ConversationComponent extends Component {
             }
         }
 
-        const messagesContainerStyle = {
-            maxHeight: hasMoreMessages ? '100%' : `calc(100% - ${introHeight + INTRO_BOTTOM_SPACER}px)`
-        };
-
         let retrieveHistory;
         if (hasMoreMessages) {
             if (isFetchingMoreMessages) {
@@ -307,7 +303,7 @@ export class ConversationComponent extends Component {
             >
                 <div ref='messagesContainer'
                      className='sk-messages-container'
-                     style={messagesContainerStyle}>
+                >
                     {retrieveHistory}
                     <div ref='messages'
                          className='sk-messages'>
