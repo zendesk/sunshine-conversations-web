@@ -294,21 +294,43 @@ export class ConversationComponent extends Component {
             }
         }
 
-        return <div id='sk-conversation'
-                    className={ errorNotificationMessage && 'notification-shown' }
-                    ref='container'
-                    onTouchMove={ this.onTouchMove }
-                    onScroll={ isMobile.any ? this.onScroll : this.debounceOnScroll }>
-                   <div ref='messagesContainer'
-                        className='sk-messages-container'
-                        style={ messagesContainerStyle }>
-                       { retrieveHistory }
-                       <div ref='messages'
-                            className='sk-messages'>
-                           { messageItems }
-                       </div>
-                   </div>
-               </div>;
+        const logoStyle = isMobile.apple.device ? {
+            paddingBottom: 10
+        } : undefined;
+
+        return (
+            <div id='sk-conversation'
+                 className={errorNotificationMessage && 'notification-shown'}
+                 ref='container'
+                 onTouchMove={this.onTouchMove}
+                 onScroll={isMobile.any ? this.onScroll : this.debounceOnScroll}
+            >
+                <div ref='messagesContainer'
+                     className='sk-messages-container'
+                     style={messagesContainerStyle}>
+                    {retrieveHistory}
+                    <div ref='messages'
+                         className='sk-messages'>
+                        {messageItems}
+                    </div>
+                </div>
+
+                <div className='sk-logo-wrapper'>
+                    <div
+                        className='sk-logo'
+                        ref='logo'
+                        style={logoStyle}
+                    >
+                        <a
+                            href='https://gorgias.io/?utm_source=widget'
+                            target='_blank'
+                        >
+                            <span>Powered by <b>Gorgias</b></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        );
     }
 }
 

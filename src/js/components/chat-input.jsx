@@ -116,24 +116,8 @@ export class ChatInputComponent extends Component {
             inputContainerClasses.push('no-upload');
         }
 
-        const logoStyle = isMobile.apple.device ? {
-            paddingBottom: 10
-        } : undefined;
-
         return (
             <div id='sk-footer'>
-                <div
-                    className='sk-logo'
-                    ref='logo'
-                    style={logoStyle}
-                >
-                    <a
-                        href='https://gorgias.io/?utm_source=widget'
-                        target='_blank'
-                    >
-                        <span>Powered by <b>Gorgias</b></span>
-                    </a>
-                </div>
                 <div className='input-wrapper'>
                     <form onSubmit={this.onSendMessage}
                           action='#'>

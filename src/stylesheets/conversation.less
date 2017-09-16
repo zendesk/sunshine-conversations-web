@@ -12,10 +12,10 @@
     }
 
     .sk-messages-container {
-        position: absolute;
-        top: 15px;
+        padding-top: 15px;
         width: 100%;
         max-height: 100%;
+        min-height: ~"calc(100% - 26px)";
     }
 
     .sk-fetch-history {
@@ -249,6 +249,33 @@
     }
 
     .scrollbar-mixin();
+
+    .sk-logo-wrapper {
+
+        .sk-logo {
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: center;
+
+            a {
+                font-size: 12px;
+                color: #bbb;
+                text-decoration: none;
+            }
+
+            b {
+                font-weight: bold;
+            }
+
+            .sk-image {
+                position: relative;
+                left: 2px;
+                top: 3px;
+                width: 87px;
+                vertical-align: baseline;
+            }
+        }
+    }
 
     .sk-from {
         white-space: nowrap;
