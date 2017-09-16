@@ -5,8 +5,6 @@ import isMobile from 'ismobilejs';
 
 import { MessageComponent } from './message';
 import { ConnectNotification } from './connect-notification';
-import { logo, logo2x } from '../constants/assets';
-import { Introduction } from './introduction';
 import { ReplyActions } from './reply-actions';
 import { TypingIndicator } from './typing-indicator';
 
@@ -107,8 +105,7 @@ export class ConversationComponent extends Component {
         if (!this._isScrolling && (shouldScrollToBottom || this._forceScrollToBottom)) {
             this._isScrolling = true;
             const container = findDOMNode(this);
-            const logo = this.refs.logo;
-            let scrollTop = container.scrollHeight - container.clientHeight - logo.clientHeight - INTRO_BOTTOM_SPACER;
+            let scrollTop = container.scrollHeight - container.clientHeight - INTRO_BOTTOM_SPACER;
 
             if (replyActions.length > 0 || typingIndicatorShown) {
                 scrollTop = scrollTop + EXTRA_COMPONENT_BOTTOM_SPACER;
@@ -272,10 +269,6 @@ export class ConversationComponent extends Component {
             }
         }
 
-        const logoStyle = isMobile.apple.device ? {
-            paddingBottom: 10
-        } : undefined;
-
         const messagesContainerStyle = {
             maxHeight: hasMoreMessages ? '100%' : `calc(100% - ${introHeight + INTRO_BOTTOM_SPACER}px)`
         };
@@ -301,14 +294,11 @@ export class ConversationComponent extends Component {
             }
         }
 
-        const introduction = hasMoreMessages ? null : <Introduction/>;
-
         return <div id='sk-conversation'
                     className={ errorNotificationMessage && 'notification-shown' }
                     ref='container'
                     onTouchMove={ this.onTouchMove }
                     onScroll={ isMobile.any ? this.onScroll : this.debounceOnScroll }>
-                   { introduction }
                    <div ref='messagesContainer'
                         className='sk-messages-container'
                         style={ messagesContainerStyle }>
@@ -316,18 +306,6 @@ export class ConversationComponent extends Component {
                        <div ref='messages'
                             className='sk-messages'>
                            { messageItems }
-                       </div>
-                       <div
-                            className='sk-logo'
-                            ref='logo'
-                            style={ logoStyle }
-                       >
-                           <a
-                               href='https://gorgias.io/?utm_source=widget'
-                                target='_blank'
-                           >
-                               <span>Powered by <b>Gorgias</b></span>
-                           </a>
                        </div>
                    </div>
                </div>;

@@ -68,11 +68,10 @@ export class IntroductionComponent extends Component {
                    <div className='app-name'>
                        { app.name }
                    </div>
-                   <div className='intro-text'
-                        dangerouslySetInnerHTML={ createMarkup(introText) } />
-                   { channelsAvailable ?
-                         <AlternateChannels items={ channelDetailsList } /> :
-                         null }
+                   <div
+                       className='intro-text'
+                       dangerouslySetInnerHTML={ createMarkup(introText) }
+                   />
                </div>;
     }
 }

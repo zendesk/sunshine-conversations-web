@@ -116,22 +116,42 @@ export class ChatInputComponent extends Component {
             inputContainerClasses.push('no-upload');
         }
 
-        return <div id='sk-footer'>
-                   <form onSubmit={ this.onSendMessage }
-                         action='#'>
-                       <div className={ inputContainerClasses.join(' ') }>
-                           <input ref='input'
-                                  placeholder={ inputPlaceholderText }
-                                  className='input message-input'
-                                  onChange={ this.onChange }
-                                  onFocus={ this.onFocus }
-                                  value={ this.state.text }
-                                  title={ sendButtonText }></input>
-                       </div>
-                   </form>
-                   { imageUploadButton }
-                   { sendButton }
-               </div>;
+        const logoStyle = isMobile.apple.device ? {
+            paddingBottom: 10
+        } : undefined;
+
+        return (
+            <div id='sk-footer'>
+                <div
+                    className='sk-logo'
+                    ref='logo'
+                    style={logoStyle}
+                >
+                    <a
+                        href='https://gorgias.io/?utm_source=widget'
+                        target='_blank'
+                    >
+                        <span>Powered by <b>Gorgias</b></span>
+                    </a>
+                </div>
+                <div className='input-wrapper'>
+                    <form onSubmit={this.onSendMessage}
+                          action='#'>
+                        <div className={inputContainerClasses.join(' ')}>
+                            <input ref='input'
+                                   placeholder={inputPlaceholderText}
+                                   className='input message-input'
+                                   onChange={this.onChange}
+                                   onFocus={this.onFocus}
+                                   value={this.state.text}
+                                   title={sendButtonText}/>
+                        </div>
+                    </form>
+                    {imageUploadButton}
+                    {sendButton}
+                </div>
+            </div>
+        );
     }
 }
 
