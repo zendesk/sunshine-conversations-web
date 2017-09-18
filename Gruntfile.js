@@ -124,7 +124,6 @@ module.exports = function(grunt) {
     grunt.registerTask('versionBump', function() {
         var semver = require('semver');
         var VERSION_REGEXP = /(\bversion[\'\"]?\s*[:=]\s*[\'\"])([\da-z\.-]+)([\'\"])/i;
-        var files = ['package.json', 'src/js/constants/version.js'];
         var fullVersion = grunt.option('version');
         var versionType = grunt.option('versionType');
         var globalVersion;
@@ -148,22 +147,20 @@ module.exports = function(grunt) {
             });
         }
 
-        files.forEach(function(file) {
-            var version = null;
-            var content = grunt.file.read(file).replace(VERSION_REGEXP, function(match, prefix, parsedVersion, suffix) {
-                version = fullVersion || semver.inc(parsedVersion, versionType);
-                return prefix + version + suffix;
-            });
-
-            if (!globalVersion) {
-                globalVersion = version;
-            } else if (globalVersion !== version) {
-                grunt.warn('Bumping multiple files with different versions!');
-            }
-
-            grunt.file.write(file, content);
-            grunt.log.ok('Version bumped to ' + version + (files.length > 1 ? ' (in ' + file + ')' : ''));
+        var version = null;
+        var content = grunt.file.read('package.json').replace(VERSION_REGEXP, function(match, prefix, parsedVersion, suffix) {
+            version = fullVersion || semver.inc(parsedVersion, versionType);
+            return prefix + version + suffix;
         });
+
+        if (!globalVersion) {
+            globalVersion = version;
+        } else if (globalVersion !== version) {
+            grunt.warn('Bumping multiple files with different versions!');
+        }
+
+        grunt.file.write('package.json', content);
+        grunt.log.ok('Version bumped to ' + version);
 
         grunt.option('globalVersion', globalVersion);
         grunt.config.set('globalVersion', globalVersion);
