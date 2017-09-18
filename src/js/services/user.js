@@ -18,7 +18,8 @@ export const EDITABLE_PROPERTIES = [
     'surname',
     'email',
     'signedUpAt',
-    'properties'
+    'properties',
+    'headerColor'
 ];
 
 export function immediateUpdate(props) {

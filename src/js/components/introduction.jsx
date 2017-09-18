@@ -59,20 +59,31 @@ export class IntroductionComponent extends Component {
         const channelsAvailable = channelDetailsList.length > 0;
         const introText = channelsAvailable ? `${introductionText} ${introAppText}` : introductionText;
 
-        return <div className='sk-intro-section'
-                    ref='introductionContainer'>
-                   { app.iconUrl ? <img className='app-icon'
-                                        alt='App icon'
-                                        src={ app.iconUrl } />
-                         : <DefaultAppIcon /> }
-                   <div className='app-name'>
-                       { app.name }
-                   </div>
-                   <div
-                       className='intro-text'
-                       dangerouslySetInnerHTML={ createMarkup(introText) }
-                   />
-               </div>;
+        return (
+            <div
+                className='sk-intro-section'
+                ref='introductionContainer'
+            >
+                {
+                    app.iconUrl ? (
+                        <img
+                            className='app-icon'
+                            alt='App icon'
+                            src={app.iconUrl}
+                        />
+                    ) : (
+                        <DefaultAppIcon/>
+                    )
+                }
+                <div className='app-name'>
+                    {app.name}
+                </div>
+                <div
+                    className='intro-text'
+                    dangerouslySetInnerHTML={createMarkup(introText)}
+                />
+            </div>
+        );
     }
 }
 

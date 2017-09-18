@@ -34,6 +34,29 @@
         clear: both;
         padding-bottom: 0px;
         padding-top: 2px;
+
+
+        &.sk-row-appmaker-first,
+        &.sk-row-appmaker-middle,
+        &.sk-row-appmaker-last {
+            .sk-msg-wrapper {
+                .sk-msg, .sk-msg-image {
+                    border-top-left-radius: 2px;
+                }
+            }
+        }
+
+        &.sk-row-appuser-first,
+        &.sk-row-appuser-middle,
+        &.sk-row-appuser-last {
+            .sk-msg-wrapper {
+                .sk-msg, .sk-msg-image {
+                    border-top-right-radius: 2px;
+                }
+            }
+        }
+
+
         &.sk-row-appmaker-first:not(.sk-row-appmaker-last) {
             .sk-msg-wrapper {
                 .sk-msg, .sk-msg-image {
@@ -98,6 +121,7 @@
                 line-height: 1.25;
                 position: relative;
                 border-radius: 14px;
+                //border-radius: 0 14px 14px 14px;
                 border-left-color: @sk-blue;
 
                 .transition(opacity 150ms);
@@ -283,7 +307,6 @@
         color: @sk-base-text-color;
         padding-left: 12px;
         margin-bottom: 2px;
-        margin-left: 45px;
     }
 
     .connect-notification {
@@ -344,6 +367,8 @@
     margin-right: 5px;
     display: inline-block;
     margin-left: 9px;
+    margin-top: 3px;
+
     &.sk-msg-avatar-img {
         margin-bottom: 0px;
     }
