@@ -85,28 +85,30 @@
     border-bottom: solid 1px #E6E6E6;
     min-height: @intro-icon-size + @intro-padding + @intro-padding-bottom;
 
-    .app-name {
-        color: #464646;
-        font-size: 18px;
-        font-weight: bold;
-    }
+    display: flex;
+    align-items: center;
 
-    .intro-text {
-        color: @sk-base-text-color;
-        font-size: 13px;
-        line-height: 1.3;
-        margin-top: 8px;
+    .text-column {
+        text-align: left;
+        margin-left: 15px;
+
+        .app-name {
+            color: #464646;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .intro-text {
+            color: @sk-base-text-color;
+            font-size: 16px;
+            line-height: 1.3;
+        }
     }
 
     .app-icon {
-        float: left;
         width: @intro-icon-size;
         height: @intro-icon-size;
         border-radius: 50%;
-    }
-
-    .app-name, .intro-text {
-        margin-left: 68px;
     }
 
     .available-channels {

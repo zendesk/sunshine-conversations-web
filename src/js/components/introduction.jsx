@@ -75,13 +75,15 @@ export class IntroductionComponent extends Component {
                         <DefaultAppIcon/>
                     )
                 }
-                <div className='app-name'>
-                    {app.name}
+                <div className='text-column'>
+                    <div className='app-name'>
+                        {app.name}
+                    </div>
+                    <div
+                        className='intro-text'
+                        dangerouslySetInnerHTML={createMarkup(introText)}
+                    />
                 </div>
-                <div
-                    className='intro-text'
-                    dangerouslySetInnerHTML={createMarkup(introText)}
-                />
             </div>
         );
     }
