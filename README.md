@@ -322,6 +322,13 @@ In one console, run `npm run dev` to start the web server.
 
 Then, go to `http://localhost:8282` to test the normal widget or `http://localhost:8282/embedded` for the embedded one.
 
+## How to generate a custom build
+1. Make changes to the code.
+2. Run `VERSION=X.Y.Z PUBLIC_PATH=https://your.cdn.com npm run build` (replace `https://your.cdn.com` with the address where the files will be hosted and also replace `X.Y.Z` with the version number you want).
+3. Take everything in `dist/` and host it at the address above.
+4. Make sure your server allow cross-origin requests to allow loading the library.
+5. Include the library in the `head` section of your page with a script tag (`<script src="https://your.cdn.com/smooch.X.Y.Z.min.js"></script>`). The script loader is not necessary when using a custom build.
+
 ## Acknowledgements
 
 https://github.com/lipis/flag-icon-css
