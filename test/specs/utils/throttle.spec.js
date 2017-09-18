@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 
-import { Throttle } from '../../../src/js/utils/throttle';
+import { Throttle } from '../../../src/frame/js/utils/throttle';
 
 describe('Throttle', () => {
     let throttledFunc;

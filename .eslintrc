@@ -37,14 +37,23 @@
         "browser": true
     },
     "globals": {
-        "VERSION": true
+        "VERSION": true,
+        "VENDOR_ID": true,
+        "GLOBAL_VAR_NAME": true,
+        "FRAME_JS_URL": true,
+        "FRAME_CSS_URL": true,
+        "SENTRY_DSN": true,
+        "IS_BRANDED": true,
+        "__rewire_reset_all__": true
     },
     "plugins": [
         "react",
         "mocha"
     ],
-    "ecmaFeatures": {
-        "jsx": true
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        }
     },
-    "extends": "eslint:recommended"
+    "extends": ["eslint:recommended", "plugin:react/recommended"]
 }

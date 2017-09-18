@@ -1,0 +1,30 @@
+html.widget-opened {
+    &,
+    body {
+        .widget-xs & {
+            overflow: hidden;
+            position: relative;
+            -webkit-overflow-scrolling: auto;
+            max-height: 100%;
+            height: 100%;
+            width: 100%;
+            #container {
+                #header {
+                    #settings-handle {
+                        height: 40px;
+                        width: 40px;
+                        right: 40px;
+                    }
+                    .close-handle {
+                        height: 40px;
+                        width: 40px;
+                        right: 0;
+                    }
+                }
+            }
+        }
+    }
+}
+#container.ios-device {
+    -webkit-text-size-adjust: 100%;
+}

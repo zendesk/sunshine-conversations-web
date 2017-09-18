@@ -4,23 +4,6 @@
 
 module.exports = function(grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
-    grunt.registerTask('awsconfig', function() {
-        var awsConfig;
-        try {
-            awsConfig = grunt.file.readJSON('grunt-aws.json');
-        }
-        catch (e) {
-            awsConfig = {};
-        }
-
-        awsConfig.key = (process.env.AWS_ACCESS_KEY_ID || awsConfig.key);
-        awsConfig.secret = (process.env.AWS_SECRET_ACCESS_KEY || awsConfig.secret);
-        awsConfig.bucket = (process.env.SK_JS_S3_BUCKET || awsConfig.bucket);
-        awsConfig.distributionId = (process.env.SK_JS_S3_DISTRIBUTION_ID || awsConfig.distributionId);
-        awsConfig.region = (process.env.SK_JS_S3_REGION || awsConfig.region);
-
-        grunt.config.set('aws', awsConfig);
-    });
 
     // Project configuration
     grunt.initConfig({
@@ -28,67 +11,6 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         license: grunt.file.read('LICENSE'),
         globalVersion: '<%= pkg.version %>',
-        clean: ['dist/*'],
-
-        s3: {
-            options: {
-                key: '<%= aws.key %>',
-                secret: '<%= aws.secret %>',
-                bucket: '<%= aws.bucket %>',
-                access: 'public-read',
-                headers: {
-                    'Cache-Control': 'max-age=630720000, public'
-                }
-            },
-            js: {
-                // Files to be uploaded.
-                upload: [{
-                    src: 'dist/smooch.js',
-                    dest: 'smooch.min.js',
-                    options: {
-                        headers: {
-                            'Cache-Control': 'max-age=300, public'
-                        }
-                    }
-                }]
-            },
-            media: {
-                upload: [{
-                    src: 'dist/*.mp3',
-                    dest: '/'
-                }, {
-                    src: 'dist/*.png',
-                    dest: '/'
-                }]
-            }
-        },
-
-        cloudfront: {
-            options: {
-                region: '<%= aws.region %>',
-                distributionId: '<%= aws.distributionId %>',
-                credentials: {
-                    accessKeyId: '<%= aws.key %>',
-                    secretAccessKey: '<%= aws.secret %>'
-                },
-                listInvalidations: false,
-                listDistributions: false
-            },
-            production: {
-                CallerReference: Date.now().toString(),
-                Paths: {
-                    Quantity: 1,
-                    Items: ['/smooch.min.js']
-                }
-            }
-        },
-
-        concurrent: {
-            dev: ['exec:hotDevServer', 'exec:devServer'],
-            options: {
-                logConcurrentOutput: true
-            }
-        },
 
         release: {
             options: {
@@ -96,9 +18,9 @@ module.exports = function(grunt) {
                 bump: false,
                 commit: true,
                 push: false,
-                remote: 'git@github.com:smooch/smooch-js.git',
+                remote: 'git@github.com:smooch/smooch-web.git',
                 github: {
-                    repo: 'smooch/smooch-js',
+                    repo: 'smooch/smooch-web',
                     accessTokenVar: 'GITHUB_ACCESS_TOKEN',
                     releaseNotes: 'release_notes'
                 }
@@ -108,21 +30,39 @@ module.exports = function(grunt) {
         exec: {
             createRelease: {
                 cmd: function() {
-                    return 'git checkout -b r/' + this.option('globalVersion');
+                    return [
+                        'git checkout -b r/' + grunt.config.get('globalVersion'),
+                        'npm run sentry-cli -- releases new ' + grunt.config.get('globalVersion')
+                    ].join(' && ');
+                }
+            },
+            setReleaseCommits: {
+                cmd: function() {
+                    return 'npm run sentry-cli -- releases set-commits ' + grunt.config.get('globalVersion') + ' --auto';
+                }
+            },
+            uploadSourceMap: {
+                cmd: function() {
+                    return 'npm run sentry-cli -- releases files ' + grunt.config.get('globalVersion') + ' upload-sourcemaps ./dist/';
+                }
+            },
+            finalizeRelease: {
+                cmd: function() {
+                    return 'npm run sentry-cli -- releases finalize ' + grunt.config.get('globalVersion');
                 }
             },
             cleanRelease: {
                 cmd: function() {
                     return [
                         'git checkout master',
-                        'git branch -D r/' + this.option('globalVersion'),
-                        'git tag -d ' + this.option('globalVersion')
+                        'git branch -D r/' + grunt.config.get('globalVersion'),
+                        'git tag -d ' + grunt.config.get('globalVersion')
                     ].join(' && ');
                 }
             },
             commitFiles: {
                 cmd: function() {
-                    return 'git commit -am "Release v' + this.option('globalVersion') + ' [ci skip]"';
+                    return 'git commit -am "Release v' + grunt.config.get('globalVersion') + ' [ci skip]"';
                 }
             },
             push: {
@@ -136,7 +76,7 @@ module.exports = function(grunt) {
                 }
             },
             addDist: {
-                cmd: 'git add --force dist/smooch.js'
+                cmd: 'git add --force dist/'
             },
             addLib: {
                 cmd: 'git add --force lib/'
@@ -150,11 +90,11 @@ module.exports = function(grunt) {
             buildNpm: {
                 cmd: 'npm run build:npm'
             },
-            hotDevServer: {
-                cmd: 'npm run hot-dev-server'
+            uploadCdn: {
+                cmd: 'npm run upload:cdn'
             },
-            devServer: {
-                cmd: 'npm run start-dev'
+            updateLoader: {
+                cmd: () => `VERSION=${grunt.config.get('globalVersion')} npm run update:loader`
             }
         },
 
@@ -184,7 +124,7 @@ module.exports = function(grunt) {
     grunt.registerTask('versionBump', function() {
         var semver = require('semver');
         var VERSION_REGEXP = /(\bversion[\'\"]?\s*[:=]\s*[\'\"])([\da-z\.-]+)([\'\"])/i;
-        var files = ['package.json', 'bower.json', 'src/js/constants/version.js'];
+        var files = ['package.json', 'src/js/constants/version.js'];
         var fullVersion = grunt.option('version');
         var versionType = grunt.option('versionType');
         var globalVersion;
@@ -248,14 +188,12 @@ module.exports = function(grunt) {
         grunt.task.run('branchCheck', 'publish:prepare', 'publish:release', 'publish:cleanup');
     });
 
-    grunt.registerTask('build', ['clean', 'exec:build', 'exec:buildNpm']);
-    grunt.registerTask('dev', ['concurrent:dev']);
+    grunt.registerTask('build', ['exec:build', 'exec:buildNpm']);
 
-    grunt.registerTask('deploy', ['build', 'awsconfig', 's3:js', 's3:media', 'cloudfront:production']);
-    grunt.registerTask('default', ['dev']);
+    grunt.registerTask('deploy', ['build', 'exec:uploadCdn', 'exec:updateLoader']);
 
     grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist', 'exec:addLib']);
-    grunt.registerTask('publish:release', ['release']);
+    grunt.registerTask('publish:release', ['release', 'exec:setReleaseCommits', 'exec:uploadSourceMap', 'exec:finalizeRelease']);
     grunt.registerTask('publish:cleanup', ['exec:cleanRelease', 'exec:push']);
 
     grunt.registerTask('branchCheck', 'Checks that you are publishing from Master branch with no working changes', ['gitinfo', 'checkBranchStatus']);

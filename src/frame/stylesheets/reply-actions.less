@@ -1,0 +1,39 @@
+.reply-container {
+    text-align: right;
+    position: relative;
+    display: block;
+    padding-bottom: 10px;
+
+    .btn-reply-action {
+        padding: 3px 7px 4px;
+        border-radius: 7px;
+        border: 1px solid @blue;
+        line-height: 20px;
+        display: inline-block;
+        margin-left: 5px;
+        color: @darker-grey;
+        margin-bottom: 5px;
+
+        .fading-circle {
+            float: left;
+            vertical-align: bottom;
+            margin-right: 5px;
+            top: 2.5px;
+        }
+
+        span {
+            max-width: 280px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            display: block;
+            white-space: nowrap;
+
+            .reply-action-icon, .location-icon {
+                width: 20px;
+                height: 20px;
+                vertical-align: bottom;
+                margin-right: 5px;
+            }
+        }
+    }
+}

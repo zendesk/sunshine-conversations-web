@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 
-import { storage } from '../../../src/js/utils/storage';
+import { getItem, setItem, removeItem } from '../../../src/frame/js/utils/storage';
 
 describe('Storage', () => {
     beforeEach(() => {
@@ -9,20 +9,20 @@ describe('Storage', () => {
 
     describe('with localStorage', () => {
         it('should add item to localStorage', () => {
-            storage.setItem('item', 'value');
+            setItem('item', 'value');
             localStorage.getItem('item').should.eq('value');
         });
 
         it('should remove item from localStorage', () => {
-            storage.setItem('item', 'value');
+            setItem('item', 'value');
             localStorage.getItem('item').should.eq('value');
-            storage.removeItem('item');
+            removeItem('item');
             expect(localStorage.getItem('item')).to.be.null;
         });
 
         it('should get an item from localStorage', () => {
             localStorage.setItem('item', 'value');
-            storage.getItem('item').should.eq('value');
+            getItem('item').should.eq('value');
         });
     });
 
@@ -31,7 +31,7 @@ describe('Storage', () => {
 
         // Chrome doesn't like stubbing localStorage...
         // We're doing it the monkey way.
-        const setItem = localStorage.setItem;
+        const localStorageSetItem = localStorage.setItem.bind(localStorage);
 
         before(() => {
             localStorage.setItem = () => {
@@ -44,21 +44,21 @@ describe('Storage', () => {
         });
 
         after(() => {
-            localStorage.setItem = setItem;
+            localStorage.setItem = localStorageSetItem;
         });
 
         it('should add item to storage', () => {
-            storage.setItem('item', 'value');
+            setItem('item', 'value');
             expect(localStorage.getItem('item')).to.be.null;
-            storage.getItem('item').should.eq('value');
+            getItem('item').should.eq('value');
         });
 
         it('should remove item from storage', () => {
-            storage.setItem('item', 'value');
-            expect(localStorage.getItem('item')).to.be.null;
-            storage.getItem('item').should.eq('value');
-            storage.removeItem('item');
-            expect(storage.getItem('item')).to.be.null;
+            localStorageSetItem('item', 'value');
+            expect(localStorage.getItem('item')).to.eq('value');
+            getItem('item').should.eq('value');
+            removeItem('item');
+            expect(getItem('item')).to.be.null;
         });
     });
 });

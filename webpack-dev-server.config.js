@@ -1,6 +1,4 @@
 module.exports = require('./make-webpack-config')({
-    devServer: true,
-    hotComponents: true,
-    devtool: 'inline-source-map',
+    buildType: 'dev',
     debug: true
 });

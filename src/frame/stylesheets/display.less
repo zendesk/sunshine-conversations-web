@@ -1,0 +1,116 @@
+.button-display {
+    transform-origin: bottom right;
+    bottom: @widget-vertical-spacing;
+
+    &.appear {
+        opacity: 0;
+        -webkit-animation: appear-button-frames .4s cubic-bezier(.62, .28, .23, .99);
+                animation: appear-button-frames .4s cubic-bezier(.62, .28, .23, .99);
+        -webkit-animation-delay: .2s;
+                animation-delay: .2s;
+        -webkit-animation-fill-mode: both;
+                animation-fill-mode: both;
+    }
+
+    &.close {
+        -webkit-animation: close-button-frames .4s cubic-bezier(.62, .28, .23, .99);
+                animation: close-button-frames .4s cubic-bezier(.62, .28, .23, .99);
+        -webkit-animation-delay: .0s;
+                animation-delay: .0s;
+        -webkit-animation-fill-mode: both;
+                animation-fill-mode: both;
+    }
+
+    &.init {
+        transform: scale(0, 0);
+        opacity: 0;
+
+        .widget-lg & {
+            bottom: -@widget-height-lg;
+        }
+
+        .widget-md & {
+            bottom: -@widget-height-md;
+        }
+
+        .widget-sm & {
+            bottom: -@widget-height-sm;
+        }
+    }
+
+    @keyframes appear-button-frames {
+        0% {
+            opacity: 0;
+            transform: scale(0, 0);
+        }
+        1% {
+            opacity: 0;
+            transform: scale(0.1, 0.1);
+        }
+        100% {
+            display: block;
+            opacity: 1;
+            transform: scale(1, 1);
+        }
+    }
+
+    @keyframes close-button-frames {
+        0% {
+            opacity: 1;
+            transform: scale(1, 1);
+        }
+        99% {
+            opacity: 0;
+            transform: scale(0.1, 0.1);
+        }
+        100% {
+            opacity: 0;
+            transform: scale(0, 0);
+        }
+    }
+
+    @-webkit-keyframes appear-button-frames {
+        0% {
+            opacity: 0;
+            transform: scale(0, 0);
+        }
+        1% {
+            opacity: 0;
+            transform: scale(0.1, 0.1);
+        }
+        100% {
+            display: block;
+            opacity: 1;
+            transform: scale(1, 1);
+        }
+    }
+
+    @-webkit-keyframes close-button-frames {
+        0% {
+            opacity: 1;
+            transform: scale(1, 1);
+        }
+        99% {
+            opacity: 0;
+            transform: scale(0.1, 0.1);
+        }
+        100% {
+            opacity: 0;
+            transform: scale(0, 0);
+        }
+    }
+}
+
+.tab-display {
+    top: 0;
+}
+
+.noselect {
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+
+    -webkit-touch-callout: none;
+     -khtml-user-select: none;
+}

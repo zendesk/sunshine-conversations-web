@@ -1,32 +1,78 @@
 import thunkMiddleware from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 
-export function generateBaseStoreProps() {
+export function generateBaseStoreProps(extraProps = {}) {
     return {
+        ...extraProps,
         ui: {
-            text: {}
+            text: {},
+            ...extraProps.ui
         },
-        app: {
-            integrations: []
+        conversation: {
+            messages: [],
+            ...extraProps.conversation
         },
-        integrations: {},
+        auth: {
+            ...extraProps.auth
+        },
+        integrations: {
+            ...extraProps.integrations
+        },
         user: {
-            _id: '1234'
+            pendingClients: [],
+            clients: [],
+            ...extraProps.user
         },
         appState: {
-            visibleChannelType: null
-        }
+            isInitialized: true,
+            visibleChannelType: null,
+            ...extraProps.appState
+        },
+        config: {
+            appId: 'some-app-id',
+            apiBaseUrl: 'http://localhost',
+            configBaseUrl: 'http://localhost',
+            app: {},
+            style: {},
+            integrations: [],
+            realtime: {},
+            ...extraProps.config
+        },
+        faye: {
+            userSubscription: null,
+            conversationSubscription: null,
+            ...extraProps.faye
+        },
+        browser: {}
     };
 }
 
-export function createMockedStore(sinon, mockedState = {}) {
+export function createMockedStore(sinon, mockedState = generateBaseStoreProps()) {
     const middlewares = [thunkMiddleware];
     const mockStore = configureStore(middlewares);
     const store = mockStore(mockedState);
 
     sinon.spy(store, 'dispatch');
-    store.subscribe = sinon.spy(() => {
+    store.subscribe = sinon.stub().callsFake(() => {
         return function() {};
     });
     return store;
+}
+
+export function findActionsByType(actions, type) {
+    const foundActions = [];
+
+    for (const action of actions) {
+        if (action.type === type) {
+            foundActions.push(action);
+        } else if (action.type === 'BATCHING_REDUCER.BATCH') {
+            for (const batchedAction of action.payload) {
+                if (batchedAction.type === type) {
+                    foundActions.push(batchedAction);
+                }
+            }
+        }
+    }
+
+    return foundActions;
 }

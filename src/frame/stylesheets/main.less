@@ -1,0 +1,160 @@
+@import "../../shared/stylesheets/bootstrap/mixins.less";
+@import "../../shared/stylesheets/bootstrap/variables.less";
+@import "../../shared/stylesheets/bootstrap/normalize.less";
+@import "../../shared/stylesheets/variables.less";
+@import "mixins.less";
+@import "display.less";
+@import "unread-badge.less";
+@import "messenger-button.less";
+@import "font-awesome.less";
+@import "forms.less";
+@import "buttons.less";
+@import "header.less";
+@import "notification.less";
+@import "conversation.less";
+@import "reply-actions.less";
+@import "typing-indicator.less";
+@import "footer.less";
+@import "settings.less";
+@import "channels.less";
+@import "visibility.less";
+@import (css) "~react-spinkit/css/three-bounce.css";
+
+.container() {
+    @import "loading.less";
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #333;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+
+    div,
+    a,
+    form,
+    input,
+    label {
+        box-sizing: border-box;
+    }
+}
+
+html, body {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+}
+
+#container {
+    overflow: hidden;
+    .container();
+
+    padding: @widget-box-shadow-width;
+
+    #wrapper {
+        position: relative;
+        background: @background-color;
+        position: relative;
+        border-radius: 10px;
+        box-shadow: 0 0 @widget-box-shadow-width rgba(0,0,0,0.15);
+        overflow: hidden;
+        border: 1px solid rgba(0,0,0,0.15);
+        .widget-size();
+
+        .widget-xs & {
+            border-radius: 0;
+        }
+    }
+
+    .widget-xs & {
+        padding: 0;
+        right: 0;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        position: fixed;
+        border-radius: 0;
+        width: 100%;
+        border: none;
+        height: 100%;
+        max-height: 100%;
+        &.appear {
+            &,
+            #wrapper {
+                height: 100%;
+                max-height: 100%;
+            }
+        }
+        #wrapper {
+            width: 100%;
+            max-width: 100%;
+        }
+    }
+    .input {
+        background-color: white;
+        border: 1px solid white;
+        padding: 0px;
+        font: inherit;
+    }
+
+    .content-wrapper {
+        .scrollbar-mixin();
+        .widget-size();
+        overflow-y: auto;
+    }
+}
+
+.widget-embedded #container {
+    .container();
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+    #wrapper {
+        background: @background-color;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        border-radius: 0;
+        box-shadow: none;
+        border: none;
+    }
+    #header,
+    #settings-header {
+        cursor: default;
+        border-radius: 0;
+        .close-handle,
+        .show-handle {
+            display: none;
+        }
+    }
+    #conversation {
+        height: ~"calc(100% - @{remaining-height})";
+        .messages-container {
+            position: relative;
+        }
+    }
+    #settings-handle {
+        display: block;
+        right: 10px;
+    }
+    #footer {
+        box-shadow: none;
+        height: 50px;
+    }
+    .settings {
+        width: 100%;
+        height: @widget-height-md;
+    }
+}
+
+@import "mobile.less";
+@import "print.less";

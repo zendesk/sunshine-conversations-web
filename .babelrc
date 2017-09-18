@@ -1,12 +1,49 @@
 {
-  "presets": [
-    "stage-2",
-    "es2015-loose",
-    "react"
-  ],
-  "plugins": [
-    "transform-runtime",
-    "transform-class-properties",
-    ["transform-es2015-classes", {"loose": true}]
-  ]
+    "env": {
+        "host": {
+            "presets": [
+                ["env",   {
+                    "useBuiltIns": true
+                }],
+                "stage-2",
+                ["es2015", {
+                    "modules": false
+                }]
+            ],
+            "plugins": [
+                "transform-object-assign"
+            ]
+        },
+        "frame": {
+            "presets": [
+                ["env",   {
+                    "useBuiltIns": true
+                }],
+                "stage-2",
+                "react",
+                ["es2015", {
+                    "modules": false
+                }]
+            ],
+            "plugins": [
+                "transform-runtime",
+                "transform-class-properties"
+            ]
+        },
+        "test": {
+            "presets": [
+                ["env"],
+                "stage-2",
+                "react",
+                ["es2015", {
+                    "modules": false
+                }]
+            ],
+            "plugins": [
+                "transform-runtime",
+                "transform-class-properties",
+                "rewire"
+            ]
+        }
+    }
 }

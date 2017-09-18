@@ -2,70 +2,181 @@ const path = require('path');
 const fs = require('fs');
 const webpack = require('webpack');
 const StatsPlugin = require('stats-webpack-plugin');
-const loadersByExtension = require('./webpack/lib/loadersByExtension');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const urljoin = require('urljoin');
+
+
+const rulesByExtension = require('./webpack/lib/rulesByExtension');
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+// Possible options:
+// buildType : possible values ['npm', 'host', 'frame', 'dev', 'test']
+//  - npm : build in prevision of the npm release
+//  - host : build the host lib only
+//  - frame : build the frame lib only
+//  - dev : build both the frame and the host for the dev server
+//  - test : build for tests
+// publicPath: a way to override the public path (in case of testing on a test CDN)
+// debug : should webpack be in debug mode or not
+// minimize : should the output be minified
+// devtool : webpack devtool options override (sourcemap config)
+// generateStats : should webpack generate a stats.json file for debugging
 
 module.exports = function(options) {
     const VERSION = require('./package.json').version;
     const PACKAGE_NAME = require('./package.json').name;
     const LICENSE = fs.readFileSync('LICENSE', 'utf8');
+    const {buildType} = options;
 
-    const config = require('./config/default/config.json');
+    // set branding variables in the env vars or pass them via the options
+    const vendorId = process.env.VENDOR_ID || options.vendorId || PACKAGE_NAME;
+    const isBranded = process.env.IS_BRANDED === 'true' || options.isBranded || false;
+    const licenseContent = process.env.LICENSE || options.license || LICENSE;
+    const providedPublicPath = process.env.PUBLIC_PATH || options.publicPath;
+    const version = process.env.VERSION || options.version || VERSION;
+    const globalVarName = capitalizeFirstLetter(vendorId);
 
-    try {
-        Object.assign(config, require('./config/config.json'));
+    let entry;
+
+    if (buildType === 'npm') {
+        entry = {
+            index: './src/host/js/npm'
+        };
+    } else if (buildType === 'host') {
+        entry = {
+            [vendorId]: './src/host/js/index'
+        };
+    } else if (buildType === 'frame') {
+        entry = {
+            frame: './src/frame/js/index'
+        };
+    } else if (buildType === 'dev' || buildType === 'test') {
+        entry = {
+            [vendorId]: './src/host/js/index',
+            frame: './src/frame/js/index'
+        };
+    } else {
+        throw new Error('Unknown build type');
     }
-    catch (e) {
-        // do nothing
-    }
 
-    const entry = options.assetsOnly ? {
-        assets: './src/js/constants/assets'
-    } : {
-        smooch: ['./src/js/utils/polyfills', './src/js/umd']
-    };
-
-    if (options.hotComponents && !options.assetsOnly) {
-        entry.smooch.unshift('webpack-hot-middleware/client');
-    }
-
-    const fileLimit = options.bundleAll ? 100000 : 1;
-
-
-    const loaders = {
-        'jsx': options.hotComponents ? ['react-hot-loader', 'babel-loader'] : 'babel-loader',
-        'js': {
-            loader: 'babel-loader',
-            include: [path.join(__dirname, 'src/js'), path.join(__dirname, 'test')]
+    const rules = {
+        'png|jpg|jpeg|gif|svg': {
+            loader: 'url-loader',
+            options: {
+                limit: 1
+            }
         },
-        'json': 'json-loader',
-        'png|jpg|jpeg|gif|svg': `url-loader?limit=${fileLimit}`,
-        'mp3': `url-loader?limit=${fileLimit}`
+        mp3: {
+            loader: 'url-loader',
+            options: {
+                limit: 1
+            }
+        }
     };
-    const cssLoader = options.minimize ? 'css-loader?insertAt=top' : 'css-loader?insertAt=top&localIdentName=[path][name]---[local]---[hash:base64:5]';
-    const stylesheetLoaders = {
-        'css': cssLoader,
-        'less': [cssLoader, 'less-loader']
+
+    const hostJsRule = {
+        test: /\.jsx?(\?.*)?$/,
+        include: [
+            path.resolve(__dirname, 'src/host/'),
+            path.resolve(__dirname, 'src/shared/')
+        ],
+        use: [
+            {
+                loader: 'babel-loader',
+                options: {
+                    forceEnv: 'host'
+                }
+            }
+        ]
     };
-    const additionalLoaders = [];
 
-    const alias = {};
+    const frameJsRule = {
+        test: /\.jsx?(\?.*)?$/,
+        include: [
+            path.resolve(__dirname, 'src/frame/'),
+            path.resolve(__dirname, 'src/shared/'),
+            path.resolve(__dirname, 'test')
+        ],
+        use: [
+            {
+                loader: 'babel-loader',
+                options: {
+                    forceEnv: buildType === 'test' ? 'test' : 'frame'
+                }
+            }
+        ]
+    };
 
-    const externals = [];
-    const modulesDirectories = ['node_modules'];
-    const extensions = ['', '.web.js', '.js', '.jsx'];
-    const root = path.join(__dirname, 'src');
-    const publicPath = options.devServer ?
-        '/_assets/' :
-        'https://cdn.smooch.io/';
+    const hostStyleRule = {
+        test: /\.less(\?.*)?$/,
+        include: [
+            path.resolve(__dirname, 'src/host/'),
+            path.resolve(__dirname, 'src/shared/')
+        ],
+        use: [
+            {
+                loader: 'style-loader/useable',
+                options: {
+                    insertAt: 'bottom'
+                }
+            },
+            {
+                loader: 'css-loader',
+                options: {
+                    modules: true,
+                    sourceMap: true
+                }
+            },
+            {
+                loader: 'less-loader',
+                options: {
+                    sourceMap: true
+                }
+            },
+        ]
+    };
+
+    const frameStyleRule = {
+        test: /\.less(\?.*)?$/,
+        include: [
+            path.resolve(__dirname, 'src/frame/'),
+            path.resolve(__dirname, 'src/shared/')
+        ],
+        use: ExtractTextPlugin.extract({
+            use: [
+                'css-loader',
+                'less-loader'
+            ]
+        })
+    };
+
+    const publicPath = providedPublicPath ?
+        providedPublicPath :
+        buildType === 'dev' ?
+            '/_assets/' :
+            'https://cdn.smooch.io/';
+
+    // Only need to append the version if we're building the host lib or the frame lib
+    // in prevision of a release.
+    const baseFilename = ['host', 'frame'].includes(buildType) ?
+        `[name].${version}` :
+        '[name]';
+
+    // Only use .min.js if we ask for minification
+    const fileExtension = options.minimize ?
+        '.min.js' :
+        '.js';
 
     const output = {
-        path: options.outputPath || path.join(__dirname, 'dist'),
-        publicPath: publicPath,
-        filename: '[name].js' + (options.longTermCaching ? '?[chunkhash]' : ''),
-        chunkFilename: (options.devServer ? '[id].js' : '[name].js') + (options.longTermCaching ? '?[chunkhash]' : ''),
-        sourceMapFilename: '[file].map',
-        library: options.assetsOnly ? undefined : 'Smooch',
-        libraryTarget: options.assetsOnly ? 'commonjs2' : 'var',
+        path: options.outputPath || path.join(__dirname, buildType === 'npm' ? 'lib' : 'dist'),
+        publicPath,
+        filename: baseFilename + fileExtension,
+        chunkFilename: buildType === 'dev' ? '[id].js' : '[chunkhash].js',
+        libraryTarget: buildType === 'npm' ? 'commonjs2' : 'var',
         pathinfo: options.debug
     };
 
@@ -73,56 +184,103 @@ module.exports = function(options) {
         /node_modules[\\\/]/
     ];
 
+
+    // The following variables are about how the frame files will be referenced in the iframe html.
+    // see `FRAME_JS_URL` and `FRAME_CSS_URL` in `src/host/js/web-messenger.js`.
+    // In host and npm mode, it's referencing files that should already (or soon to) be on the CDN
+    // so it should target the full name + version.
+    // In other cases, iframe.js/css will do just fine.
+    let frameJsFilename;
+    let frameCssFilename;
+
+    if (['host', 'npm'].includes(buildType)) {
+        // in this case, it's referencing an already built frame lib
+        // and it's mostly likely minified already.
+        frameJsFilename = `frame.${version}.min.js`;
+        frameCssFilename = `frame.${version}.css`;
+    } else {
+        frameJsFilename = 'frame.js';
+        frameCssFilename = 'frame.css';
+    }
+
     const plugins = [
-        new webpack.PrefetchPlugin('react'),
-        new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment')
+        new webpack.DefinePlugin({
+            VERSION: `'${version}'`,
+            VENDOR_ID: `'${vendorId}'`,
+            GLOBAL_VAR_NAME: `'${globalVarName}'`,
+            FRAME_JS_URL: `'${urljoin(publicPath, frameJsFilename)}'`,
+            FRAME_CSS_URL: `'${urljoin(publicPath, frameCssFilename)}'`,
+            SENTRY_DSN: options.sentryDsn ? `'${options.sentryDsn}'` : 'undefined',
+            IS_BRANDED: `${isBranded}`
+        })
     ];
 
+    if (buildType === 'frame') {
+        plugins.push(new ExtractTextPlugin(`frame.${version}.css`));
+    } else {
+        plugins.push(new ExtractTextPlugin('frame.css'));
+    }
 
-    if (!options.test && !options.assetsOnly) {
+    if (options.generateStats) {
         plugins.push(new StatsPlugin('stats.json', {
             chunkModules: true,
             exclude: excludeFromStats
         }));
     }
 
-    Object.keys(stylesheetLoaders).forEach(function(ext) {
-        let stylesheetLoader = stylesheetLoaders[ext];
-        if (Array.isArray(stylesheetLoader)) {
-            stylesheetLoader = stylesheetLoader.join('!');
-        }
-
-        stylesheetLoaders[ext] = 'style/useable!' + stylesheetLoader;
-    });
-
     if (options.minimize) {
         plugins.push(
             new webpack.optimize.UglifyJsPlugin({
+                sourceMap: true,
                 compressor: {
                     warnings: false
                 }
             }),
-            new webpack.optimize.DedupePlugin(),
             new webpack.DefinePlugin({
                 'process.env': {
                     NODE_ENV: JSON.stringify('production')
                 }
             }),
-            new webpack.NoErrorsPlugin(),
+            new webpack.NoEmitOnErrorsPlugin(),
 
-            new webpack.BannerPlugin(PACKAGE_NAME + ' ' + VERSION + ' \n' + LICENSE, {
+            new webpack.BannerPlugin({
+                banner: vendorId + ' ' + version + ' \n' + licenseContent,
+                entryOnly: true
+            }),
+            new OptimizeCssAssetsPlugin({
+                assetNameRegExp: /\.css$/g,
+                cssProcessor: require('cssnano'),
+                cssProcessorOptions: {
+                    preset: [
+                        'default',
+                        {
+                            discardComments: {
+                                removeAll: true
+                            },
+                            discardDuplicates: {
+                                removeAll: true
+                            }
+                        }
+                    ]
+                },
+                canPrint: false
+            })
+        );
+    } else if (buildType === 'npm') {
+        plugins.push(
+            new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: JSON.stringify('production')
+                }
+            }),
+            new webpack.NoEmitOnErrorsPlugin(),
+
+            new webpack.BannerPlugin({
+                banner: vendorId + ' ' + version + ' \n' + licenseContent,
                 entryOnly: true
             })
         );
     } else if (options.test) {
-        plugins.push(
-            new webpack.DefinePlugin({
-                'process.env': {
-                    NODE_ENV: JSON.stringify('test')
-                }
-            })
-        );
-    } else if (options.assetsOnly) {
         plugins.push(
             new webpack.DefinePlugin({
                 'process.env': {
@@ -140,32 +298,33 @@ module.exports = function(options) {
         );
     }
 
-    if (options.hotComponents) {
-        plugins.push(
-            new webpack.optimize.OccurrenceOrderPlugin(),
-            new webpack.HotModuleReplacementPlugin(),
-            new webpack.NoErrorsPlugin()
-        );
-    }
+    plugins.push(new webpack.LoaderOptionsPlugin({
+        debug: !!options.debug,
+        minimize: !!options.minimize
+    }));
+
+    plugins.push(new webpack.SourceMapDevToolPlugin({
+        filename: buildType !== 'test' && '[file].map'
+    }));
 
     return {
         entry: entry,
         output: output,
         target: 'web',
         module: {
-            loaders: loadersByExtension(loaders).concat(loadersByExtension(stylesheetLoaders)).concat(additionalLoaders)
+            rules: rulesByExtension(rules)
+                .concat([
+                    hostStyleRule,
+                    frameStyleRule,
+                    hostJsRule,
+                    frameJsRule
+                ])
         },
-        devtool: options.devtool,
-        debug: options.debug,
-        resolveLoader: {
-            root: path.join(__dirname, 'node_modules')
-        },
-        externals: externals,
         resolve: {
-            root: root,
-            modulesDirectories: modulesDirectories,
-            extensions: extensions,
-            alias: alias
+            extensions: ['.js', '.jsx'],
+            modules: [
+                'node_modules'
+            ]
         },
         plugins: plugins,
         devServer: {

@@ -1,0 +1,81 @@
+#footer {
+    position: relative;
+    width: 100%;
+    height: @footer-height;
+    bottom: 0;
+    left: 0;
+    border: none;
+    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    z-index: 1;
+    display: -ms-flexbox;; // for IE10
+    display: flex;
+
+    .image-upload {
+        height: @footer-height;
+        width: @footer-height - 10px;
+        color: @medium-grey;
+        display: inline-block;
+        padding: 15px 10px;
+        font-size: @font-size-base;
+        line-height: @font-size-base;
+
+        &:hover {
+            color: #00aeff;
+        }
+    }
+
+    input[type="file"] {
+        position: fixed;
+        top: -1000px;
+    }
+
+    form {
+        flex: 1;
+        -ms-flex: 1; // for IE10
+        display: inline-block;
+    }
+
+    .input-container {
+        padding: 5px 0;
+        display: block;
+
+        &.no-upload {
+            padding: 5px 0 5px @input-horizontal-margin;
+        }
+
+        .message-input {
+            width: 100%;
+            -webkit-appearance: none;
+
+            &::-ms-clear {
+                display: none;
+            }
+
+            &:-ms-input-placeholder {
+                color: @medium-grey;
+            }
+        }
+    }
+
+    .send {
+        margin-top: 1px;
+        color: @medium-grey;
+        font-weight: 600;
+        position: relative;
+        height: @footer-height;
+        line-height: 42px;
+        text-decoration: none;
+        padding: 0 10px;
+        cursor: pointer;
+        display: inline-block;
+
+        &.active {
+            color: @blue;
+
+            &:hover {
+                .opacity(0.8);
+            }
+        }
+    }
+}
