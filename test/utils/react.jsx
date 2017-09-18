@@ -1,5 +1,5 @@
 import React from 'react';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 
 export function scryRenderedDOMComponentsWithId(tree, id) {
@@ -23,7 +23,7 @@ export function mockComponent(sinon, module, mockTagName = 'div', props = null) 
     module.prototype.componentDidMount && sinon.stub(module.prototype, 'componentDidMount');
     module.prototype.componentDidUpdate && sinon.stub(module.prototype, 'componentDidUpdate');
 
-    return sinon.stub(module.prototype, 'render', function() {
+    return sinon.stub(module.prototype, 'render').callsFake(function() {
         return React.createElement(
             mockTagName,
             props,

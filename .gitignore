@@ -1,5 +1,4 @@
 node_modules
-bower_components
 *.log
 tmp
 /dist/
@@ -16,3 +15,5 @@ example/*
 !example/template
 !example/template/*.html
 npm-debug*
+package-lock.json
+.env

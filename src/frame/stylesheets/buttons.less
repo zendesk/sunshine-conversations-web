@@ -1,0 +1,117 @@
+// .btn directly from bootstrap 3.3.5
+.btn {
+    display: inline-block;
+    margin-bottom: 0; // For input.btn
+    font-weight: @btn-font-weight;
+    text-align: center;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+    border: 1px solid transparent;
+    white-space: nowrap;
+    .button-size(@padding-base-vertical; @padding-base-horizontal; @font-size-base; @line-height-base; @btn-border-radius-base);
+    .user-select(none);
+    &,
+    &:active,
+    &.active {
+        &:focus,
+        &.focus {
+            .tab-focus();
+        }
+    }
+    &:hover,
+    &:focus,
+    &.focus {
+        color: @btn-default-color;
+        outline: 0;
+        text-decoration: none;
+        .opacity(.8);
+    }
+    &:active,
+    &.active {
+        outline: 0;
+        background-image: none;
+        .box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
+    }
+    &.disabled,
+    &[disabled],
+    fieldset[disabled] & {
+        cursor: @cursor-disabled;
+        .opacity(.65);
+        .box-shadow(none);
+    }
+    a& {
+        &.disabled,
+        fieldset[disabled] & {
+            pointer-events: none; // Future-proof disabling of clicks on `<a>` elements
+        }
+    }
+}
+.btn-primary {
+    .button-variant(white; @blue; @blue);
+}
+.btn-action-paid {
+    cursor: default;
+    .button-variant(@base-text-color; transparent; @base-text-color);
+    &:active,
+    &:hover {
+        .box-shadow(none);
+        border-color: @base-text-color;
+    }
+}
+.btn-action-processing {
+    margin: 7px;
+    padding: 7px;
+    display: block;
+    cursor: default;
+    border-radius: 7px;
+    .button-variant(white; @blue; @blue);
+    &:active,
+    &:hover,
+    &:active:hover {
+        .box-shadow(none);
+        background-color: @blue;
+        border-color: @blue;
+    }
+}
+a.btn {
+    text-decoration: none;
+}
+.btn-link {
+    color: @link-color;
+    font-weight: normal;
+    border-radius: 0;
+    &,
+    &:active,
+    &.active,
+    &[disabled],
+    fieldset[disabled] & {
+        background-color: transparent;
+        .box-shadow(none);
+    }
+    &,
+    &:hover,
+    &:focus,
+    &:active {
+        border-color: transparent;
+    }
+    &:hover,
+    &:focus {
+        color: @link-hover-color;
+        text-decoration: @link-hover-decoration;
+        background-color: transparent;
+    }
+    &[disabled],
+    fieldset[disabled] & {
+        &:hover,
+        &:focus {
+            color: @btn-link-disabled-color;
+            text-decoration: none;
+        }
+    }
+}
+
+.btn-reply-action {
+    .btn-primary();
+}

@@ -1,0 +1,117 @@
+.settings {
+    box-sizing: border-box;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: @header-height;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    background-color: white;
+    overflow: hidden;
+    opacity: 1;
+    font-size: 12px;
+    color: @base-text-color;
+
+
+    .settings-wrapper {
+        padding: 30px 40px;
+
+        box-sizing: border-box;
+
+        .settings-header {
+            font-weight: 700;
+            font-size: 15px;
+            color: @settings-header-color;
+            margin-bottom: 15px;
+        }
+
+        .settings-description {
+            font-size: 13px;
+        }
+    }
+
+    &.settings-enter {
+        width: 0;
+    }
+
+    &.settings-enter-active {
+        .transition(width 250ms);
+        width: 100%;
+    }
+
+    &.settings-leave {
+        width: 100%;
+    }
+
+    &.settings-leave-active {
+        .transition(width 250ms);
+        width: 0;
+    }
+
+    .channels {
+        margin-top: 30px;
+
+        .channel-item {
+            cursor: pointer;
+
+            &.channel-item-linked {
+                .channel-item-right {
+                    color: @blue;
+                    text-decoration: underline;
+                }
+            }
+
+
+            &:first-child {
+                .channel-item-name {
+                    border-top: 1px solid @settings-channel-item-border-color;
+                }
+            }
+
+            .channel-item-header {
+                position: relative;
+                .channel-item-icon {
+                    width: 26px;
+                    position: absolute;
+                    display: inline-block;
+                    vertical-align: middle;
+                    top: 9px;
+                }
+
+                .channel-item-content {
+                    display: inline-block;
+                    margin-left: 38px;
+                    border-bottom: 1px solid @settings-channel-item-border-color;
+                    width: calc(~"100% - 26px - 12px");
+
+                    .channel-item-name {
+                        font-size: 13px;
+                        color: @settings-header-color;
+                        line-height: 43px;
+                    }
+
+                    .channel-item-connected-as {
+                        margin-bottom: 10px;
+                        margin-top: -10px;
+                        font-size: 10px;
+                    }
+                }
+
+                .channel-item-right {
+                    position: absolute;
+                    right: 0;
+                    height: 45px;
+                    line-height: 45px;
+                    display: inline-block;
+
+                    i.fa {
+                        font: normal normal normal 12px/45px FontAwesome-WebMessenger;
+                        color: @base-text-color;
+                        font-size: 13px;
+                    }
+                }
+            }
+        }
+    }
+}

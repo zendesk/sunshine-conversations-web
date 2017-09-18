@@ -1,0 +1,123 @@
+@import "../../shared/stylesheets/bootstrap/mixins.less";
+@import "../../shared/stylesheets/bootstrap/variables.less";
+@import "../../shared/stylesheets/variables.less";
+@import "animations.less";
+
+.button-size() {
+    width: @messenger-button-size + @messenger-button-shadow-width * 2;
+    height: @messenger-button-size + @widget-messenger-button-vertical-spacing + @messenger-button-shadow-width * 2;
+}
+
+:local {
+    .iframe {
+        z-index: 9998; // 1 less than Stripe Checkout
+        border: none;
+        position: fixed;
+    }
+
+    .displayButton .iframe, .widgetClosed.displayButton .iframe {
+        right: @widget-horizontal-spacing - @messenger-button-shadow-width;
+        bottom: @widget-vertical-spacing;
+        margin-bottom: -1px;
+        .button-size();
+    }
+
+    .widgetClosed.displayButton .iframe {
+        @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-min) {
+            -webkit-animation: iframe-button-close-lg .4s cubic-bezier(.62, .28, .23, .99);
+                    animation: iframe-button-close-lg .4s cubic-bezier(.62, .28, .23, .99);
+            -webkit-animation-delay: .2s;
+                    animation-delay: .2s;
+            -webkit-animation-fill-mode: both;
+                    animation-fill-mode: both;
+        }
+        @media (min-width: @screen-sm-min) and (min-height: @screen-sm-ht-min) {
+            -webkit-animation: iframe-button-close-md .4s cubic-bezier(.62, .28, .23, .99);
+                    animation: iframe-button-close-md .4s cubic-bezier(.62, .28, .23, .99);
+            -webkit-animation-delay: .2s;
+                    animation-delay: .2s;
+            -webkit-animation-fill-mode: both;
+                    animation-fill-mode: both;
+        }
+        @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
+            -webkit-animation: iframe-button-close-sm .4s cubic-bezier(.62, .28, .23, .99);
+                    animation: iframe-button-close-sm .4s cubic-bezier(.62, .28, .23, .99);
+            -webkit-animation-delay: .2s;
+                    animation-delay: .2s;
+            -webkit-animation-fill-mode: both;
+                    animation-fill-mode: both;
+        }
+        @media (max-width: @screen-xs-max) {
+            -webkit-animation: iframe-button-close-xs .4s cubic-bezier(.62, .28, .23, .99);
+                    animation: iframe-button-close-xs .4s cubic-bezier(.62, .28, .23, .99);
+            -webkit-animation-delay: 0;
+                    animation-delay: 0;
+            -webkit-animation-fill-mode: both;
+                    animation-fill-mode: both;
+        }
+    }
+
+    .displayTab .iframe, .widgetClosed.displayTab .iframe {
+        right: @widget-horizontal-spacing - @widget-box-shadow-width;
+        height: @header-height + @widget-box-shadow-width;
+        bottom: 0;
+        transition: height .4s cubic-bezier(.62, .28, .23, .99);
+
+        @media (max-width: @screen-xs-max) {
+            width: @frame-width-xs;
+        }
+        @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
+            width: @frame-width-sm;
+        }
+        @media (min-width: @screen-sm-min) and (min-height: @screen-sm-ht-min) {
+            width: @frame-width-md;
+        }
+        @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-min) {
+            width: @frame-width-lg;
+        }
+    }
+
+    html.widgetOpened {
+        &, body {
+            @media (max-width: @screen-xs-max) {
+                overflow: hidden;
+                position: relative;
+                -webkit-overflow-scrolling: touch;
+                max-height: 100%;
+                height: 100%;
+                width: 100%;
+            }
+        }
+    }
+
+    .widgetOpened .iframe {
+        @media (max-width: @screen-xs-max) {
+            width: @frame-width-xs;
+            height: @frame-height-xs;
+            right: 0;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            max-height: 100%;
+        }
+        @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
+            width: @frame-width-sm;
+            height: @frame-height-sm;
+        }
+        @media (min-width: @screen-sm-min) and (min-height: @screen-sm-ht-min) {
+            width: @frame-width-md;
+            height: @frame-height-md;
+        }
+        @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-min) {
+            width: @frame-width-lg;
+            height: @frame-height-lg;
+        }
+    }
+
+    .widgetEmbedded .iframe {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        max-height: 100%;
+    }
+}
