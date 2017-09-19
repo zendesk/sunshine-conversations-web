@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import bindAll from 'lodash.bindall';
 
-import { openWidget } from '../services/app';
+import { toggleWidget } from '../services/app';
 import { DefaultButtonIcon } from './default-button-icon';
 
 export class MessengerButtonComponent extends Component {
@@ -26,7 +26,7 @@ export class MessengerButtonComponent extends Component {
     onClick(e) {
         const {dispatch} = this.props;
         e.preventDefault();
-        dispatch(openWidget());
+        dispatch(toggleWidget());
     }
 
     render() {
@@ -45,7 +45,9 @@ export class MessengerButtonComponent extends Component {
                                src={ buttonIconUrl } />
                       </div>;
         } else {
-            content = <DefaultButtonIcon isBrandColorDark={ isBrandColorDark } />;
+            content = shown
+                ? <DefaultButtonIcon isBrandColorDark={ isBrandColorDark } />
+                : <i className='fa fa-times'/>;
         }
 
         let unreadBadge;
@@ -56,7 +58,7 @@ export class MessengerButtonComponent extends Component {
         }
 
         return <div id='sk-messenger-button'
-                    className={ `messenger-button-${shown ? 'shown' : 'hidden'}` }
+                    className={`messenger-button-${shown ? 'open' : 'close'}`}
                     style={ style }
                     onClick={ this.onClick }>
                    { content }

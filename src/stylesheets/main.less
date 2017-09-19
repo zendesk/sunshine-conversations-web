@@ -25,7 +25,6 @@
     label {
         box-sizing: border-box;
     }
-    @import "font-awesome.less";
     @import "forms.less";
     @import "buttons.less";
     @import "header.less";
@@ -69,7 +68,7 @@
     #sk-container {
         position: fixed;
         right: @widget-horizontal-spacing;
-        margin-bottom: -1px;
+        margin-bottom: 100px;
         box-shadow: 0 0 24px rgba(0,0,0,0.15);
         border: 1px solid rgba(0,0,0,0.15);
         z-index: 9998; // 1 less than Stripe Checkout
@@ -114,6 +113,7 @@
             overflow-y: auto;
         }
     }
+    @import "font-awesome.less";
 }
 #sk-container.sk-embedded {
     @import "animations.less";

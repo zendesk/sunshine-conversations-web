@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import bindAll from 'lodash.bindall';
 
 import { toggleWidget } from '../services/app';
-import { WIDGET_STATE } from '../constants/app';
 import { Introduction } from './introduction';
 
 export class HeaderComponent extends Component {
@@ -31,26 +30,9 @@ export class HeaderComponent extends Component {
     }
 
     render() {
-        const {appState: {widgetState, embedded}} = this.props;
-
-        const widgetOpened = widgetState === WIDGET_STATE.OPENED;
-
-        let closeHandle = null;
-        if (!embedded) {
-            closeHandle = widgetOpened ? (
-                <div
-                    className='sk-close-handle sk-close-hidden'
-                    onClick={this.onClick}
-                >
-                     <i className='fa fa-times'/>
-                 </div>
-            ) : null;
-        }
-
         return (
             <div id='sk-header'>
                 <Introduction/>
-                { closeHandle }
             </div>
         );
     }
