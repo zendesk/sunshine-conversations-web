@@ -57,6 +57,12 @@ export class ChatInputComponent extends Component {
         this.checkAndResetUnreadCount(this.props.unreadCount);
     }
 
+    onKeyPress = (e) => {
+        if (e.nativeEvent.keyCode === 13 && !e.nativeEvent.shiftKey) {
+            this.onSendMessage(e);
+        }
+    }
+
     onSendMessage(e) {
         e.preventDefault();
         const {text} = this.state;
@@ -122,13 +128,20 @@ export class ChatInputComponent extends Component {
                     <form onSubmit={this.onSendMessage}
                           action='#'>
                         <div className={inputContainerClasses.join(' ')}>
-                            <input ref='input'
-                                   placeholder={inputPlaceholderText}
-                                   className='input message-input'
-                                   onChange={this.onChange}
-                                   onFocus={this.onFocus}
-                                   value={this.state.text}
-                                   title={sendButtonText}/>
+                            <pre className='bg-input'>
+                                {this.state.text + '\n'}
+                            </pre>
+                            <textarea
+                                ref='input'
+                                placeholder={inputPlaceholderText}
+                                className='input message-input'
+                                onChange={this.onChange}
+                                onFocus={this.onFocus}
+                                onKeyPress={this.onKeyPress}
+                                value={this.state.text}
+                                title={sendButtonText}
+                                rows='1'
+                            />
                         </div>
                     </form>
                     {imageUploadButton}
