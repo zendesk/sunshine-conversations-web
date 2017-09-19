@@ -35,78 +35,78 @@
         padding-bottom: 0px;
         padding-top: 2px;
 
-        //&.sk-row-appmaker-first.sk-row-appmaker-last {
-        //    .sk-msg-wrapper {
-        //        .sk-msg, .sk-msg-image {
-        //            border-top-left-radius: 2px;
-        //        }
-        //    }
-        //}
-
-        &.sk-row-appmaker-first:not(.sk-row-appmaker-last) {
+        &.sk-row-appmaker-first {
             .sk-msg-wrapper {
                 .sk-msg, .sk-msg-image {
-                    border-bottom-left-radius: 2px;
-                }
-            }
-        }
-
-        &.sk-row-appmaker-middle {
-            .sk-msg-wrapper {
-                .sk-msg, .sk-msg-image {
-                    border-bottom-left-radius: 2px;
                     border-top-left-radius: 2px;
                 }
             }
         }
 
-        &.sk-row-appmaker-last {
-            margin-bottom: 10px;
-
-            &:not(.sk-row-appmaker-first) {
-              .sk-msg-wrapper {
-                  .sk-msg, .sk-msg-image {
-                      border-top-left-radius: 2px;
-                  }
-              }
-            }
-        }
-
-        //&.sk-row-appuser-first.sk-row-appuser-last {
+        //&.sk-row-appmaker-first:not(.sk-row-appmaker-last) {
         //    .sk-msg-wrapper {
         //        .sk-msg, .sk-msg-image {
-        //            border-top-right-radius: 2px;
+        //            border-bottom-left-radius: 2px;
+        //        }
+        //    }
+        //}
+        //
+        //&.sk-row-appmaker-middle {
+        //    .sk-msg-wrapper {
+        //        .sk-msg, .sk-msg-image {
+        //            border-bottom-left-radius: 2px;
+        //            border-top-left-radius: 2px;
         //        }
         //    }
         //}
 
-        &.sk-row-appuser-first:not(.sk-row-appuser-last) {
-            .sk-msg-wrapper {
-                .sk-msg, .sk-msg-image {
-                    border-bottom-right-radius: 2px;
-                }
-            }
+        &.sk-row-appmaker-last {
+            margin-bottom: 10px;
+
+            //&:not(.sk-row-appmaker-first) {
+            //  .sk-msg-wrapper {
+            //      .sk-msg, .sk-msg-image {
+            //          border-top-left-radius: 2px;
+            //      }
+            //  }
+            //}
         }
 
-        &.sk-row-appuser-middle {
+        &.sk-row-appuser-first {
             .sk-msg-wrapper {
                 .sk-msg, .sk-msg-image {
-                    border-bottom-right-radius: 2px;
                     border-top-right-radius: 2px;
                 }
             }
         }
 
+        //&.sk-row-appuser-first:not(.sk-row-appuser-last) {
+        //    .sk-msg-wrapper {
+        //        .sk-msg, .sk-msg-image {
+        //            border-bottom-right-radius: 2px;
+        //        }
+        //    }
+        //}
+        //
+        //&.sk-row-appuser-middle {
+        //    .sk-msg-wrapper {
+        //        .sk-msg, .sk-msg-image {
+        //            border-bottom-right-radius: 2px;
+        //            border-top-right-radius: 2px;
+        //        }
+        //    }
+        //}
+
         &.sk-row-appuser-last {
             margin-bottom: 10px;
 
-            &:not(.sk-row-appuser-first) {
-                .sk-msg-wrapper {
-                    .sk-msg, .sk-msg-image {
-                        border-top-right-radius: 2px;
-                    }
-                }
-            }
+            //&:not(.sk-row-appuser-first) {
+            //    .sk-msg-wrapper {
+            //        .sk-msg, .sk-msg-image {
+            //            border-top-right-radius: 2px;
+            //        }
+            //    }
+            //}
         }
 
         .sk-msg-wrapper {
@@ -191,7 +191,11 @@
             }
             .sk-message-text {
                 display: inline-block;
-                max-width: 310px;
+                max-width: 298px;
+
+                span {
+                    line-height: 1.5;
+                }
             }
             .sk-message-item {
                 padding: 8px 13px 0;
@@ -227,7 +231,8 @@
                 .sk-msg, .sk-msg-image {
                     background-color: @sk-light-grey;
                     color: @sk-darker-grey;
-                    max-width: 310px;
+                    max-width: 290px;
+                    margin-left: 8px;
 
                     &:after {
                         right: 100%;
@@ -245,7 +250,7 @@
                 background-color: @sk-blue;
                 float: right;
                 color: white;
-                max-width: 204px;
+                max-width: 290px;
 
                 &:after {
                     left: 100%;
@@ -301,10 +306,10 @@
     .sk-from {
         white-space: nowrap;
         top: -20px;
-        font-size: 12px;
+        font-size: 13px;
         color: @sk-base-text-color;
         padding-left: 12px;
-        margin-bottom: 2px;
+        margin-bottom: 5px;
     }
 
     .connect-notification {
@@ -359,7 +364,7 @@
 }
 
 .sk-msg-avatar {
-    width: 31px;
+    width: 45px;
     height: auto;
     border-radius: 50%;
     margin-right: 5px;
@@ -372,7 +377,7 @@
     }
 }
 .sk-msg-avatar-placeholder {
-    width: 35px;
+    width: 45px;
     display: inline-block;
-    margin-right: 10px;
+    margin-right: 14px;
 }
