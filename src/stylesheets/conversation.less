@@ -35,27 +35,13 @@
         padding-bottom: 0px;
         padding-top: 2px;
 
-
-        &.sk-row-appmaker-first,
-        &.sk-row-appmaker-middle,
-        &.sk-row-appmaker-last {
-            .sk-msg-wrapper {
-                .sk-msg, .sk-msg-image {
-                    border-top-left-radius: 2px;
-                }
-            }
-        }
-
-        &.sk-row-appuser-first,
-        &.sk-row-appuser-middle,
-        &.sk-row-appuser-last {
-            .sk-msg-wrapper {
-                .sk-msg, .sk-msg-image {
-                    border-top-right-radius: 2px;
-                }
-            }
-        }
-
+        //&.sk-row-appmaker-first.sk-row-appmaker-last {
+        //    .sk-msg-wrapper {
+        //        .sk-msg, .sk-msg-image {
+        //            border-top-left-radius: 2px;
+        //        }
+        //    }
+        //}
 
         &.sk-row-appmaker-first:not(.sk-row-appmaker-last) {
             .sk-msg-wrapper {
@@ -64,6 +50,7 @@
                 }
             }
         }
+
         &.sk-row-appmaker-middle {
             .sk-msg-wrapper {
                 .sk-msg, .sk-msg-image {
@@ -72,6 +59,7 @@
                 }
             }
         }
+
         &.sk-row-appmaker-last {
             margin-bottom: 10px;
 
@@ -84,6 +72,14 @@
             }
         }
 
+        //&.sk-row-appuser-first.sk-row-appuser-last {
+        //    .sk-msg-wrapper {
+        //        .sk-msg, .sk-msg-image {
+        //            border-top-right-radius: 2px;
+        //        }
+        //    }
+        //}
+
         &.sk-row-appuser-first:not(.sk-row-appuser-last) {
             .sk-msg-wrapper {
                 .sk-msg, .sk-msg-image {
@@ -91,6 +87,7 @@
                 }
             }
         }
+
         &.sk-row-appuser-middle {
             .sk-msg-wrapper {
                 .sk-msg, .sk-msg-image {
@@ -99,6 +96,7 @@
                 }
             }
         }
+
         &.sk-row-appuser-last {
             margin-bottom: 10px;
 
@@ -116,12 +114,12 @@
             position: relative;
 
             .sk-msg, .sk-msg-image {
+                padding: 3px;
                 font-size: @font-size-base;
                 overflow: hidden;
                 line-height: 1.25;
                 position: relative;
                 border-radius: 14px;
-                //border-radius: 0 14px 14px 14px;
                 border-left-color: @sk-blue;
 
                 .transition(opacity 150ms);
@@ -193,7 +191,7 @@
             }
             .sk-message-text {
                 display: inline-block;
-                max-width: 204px;
+                max-width: 310px;
             }
             .sk-message-item {
                 padding: 8px 13px 0;
@@ -229,7 +227,7 @@
                 .sk-msg, .sk-msg-image {
                     background-color: @sk-light-grey;
                     color: @sk-darker-grey;
-                    max-width: 200px;
+                    max-width: 310px;
 
                     &:after {
                         right: 100%;

@@ -22,10 +22,11 @@
 
 @header-height: 100px;
 @header-vertical-padding: 2px;
+@header-vertical-border: 1px;
 @header-horizontal-padding: 18px;
 @footer-height: 46px;
 
-@header-extra-height: (@header-height + 2 * @header-vertical-padding);
+@header-extra-height: (@header-height + @header-vertical-border);
 @widget-close-bottom-md: -@widget-height-md + @header-extra-height;
 @widget-close-bottom-lg: -@widget-height-lg + @header-extra-height;
 @widget-close-bottom-sm: -@widget-height-sm + @header-extra-height;
@@ -55,7 +56,7 @@
 @settings-header-color: #464646;
 @settings-channel-item-border-color: #EFEFEF;
 
-@font-size-base: 14px;
+@font-size-base: 15px;
 
 @messenger-button-size: 58px;
 

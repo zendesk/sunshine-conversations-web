@@ -195,7 +195,7 @@ class Message extends Component {
 
         return (
             <div className={rowClass.join(' ')}>
-                {lastInGroup ? avatar : avatarPlaceHolder}
+                {firstInGroup ? avatar : avatarPlaceHolder}
                 <div className='sk-msg-wrapper'>
                     {!isAppUser && firstInGroup ? fromName : null}
                     <div className={containerClasses.join(' ')}
