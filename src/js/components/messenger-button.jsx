@@ -4,6 +4,7 @@ import bindAll from 'lodash.bindall';
 
 import { toggleWidget } from '../services/app';
 import { DefaultButtonIcon } from './default-button-icon';
+import classnames from 'classnames';
 
 export class MessengerButtonComponent extends Component {
 
@@ -38,17 +39,15 @@ export class MessengerButtonComponent extends Component {
             backgroundColor: `#${brandColor}`
         };
 
-        let content;
+        let icon;
 
         if (buttonIconUrl) {
-            content = <div className='messenger-button-icon'>
+            icon = <div className='messenger-button-icon' style={{position: 'absolute'}}>
                           <img alt='Smooch Messenger Button'
                                src={ buttonIconUrl } />
                       </div>;
         } else {
-            content = isWidgetOpen
-                ? <i className='fa fa-times'/>
-                : <DefaultButtonIcon isBrandColorDark={ isBrandColorDark } />;
+            icon = <DefaultButtonIcon key='2' isBrandColorDark={ isBrandColorDark } style={{position: 'absolute'}}/>;
         }
 
         let unreadBadge;
@@ -60,11 +59,16 @@ export class MessengerButtonComponent extends Component {
 
         return <div id='sk-messenger-button'
                     className={`messenger-button-${shown ? 'shown' : 'hidden'}`}
-                    style={ style }
-                    onClick={ this.onClick }>
-                   { content }
-                   { unreadBadge }
-               </div>;
+                    style={style}
+                    onClick={this.onClick}>
+
+            <i key='1' className={classnames('fa fa-times sk-messenger-icon', {'sk-messenger-icon-hidden-up': !isWidgetOpen})} style={{position: 'absolute'}}/>
+
+            <div className={classnames('sk-messenger-icon', {'sk-messenger-icon-hidden-down': isWidgetOpen})}>
+                {icon}
+            </div>
+            {unreadBadge}
+        </div>;
     }
 }
 

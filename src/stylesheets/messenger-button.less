@@ -63,6 +63,50 @@
             height: auto;
         }
     }
+
+    .sk-widget-icon-enter {
+        transition: opacity 0.4s 0.5s, top 0.4s 0.5s;
+        top: 3px;
+        opacity: 0;
+    }
+
+    .sk-widget-icon-enter.sk-widget-icon-enter-active {
+        transition: opacity 0.4s 0.5s, top 0.4s 0.5s;
+        opacity: 1;
+        top: 0;
+    }
+
+    .sk-widget-icon-leave {
+        transition: opacity 0.4s 0.5s, top 0.4s 0.5s;
+        top: 0;
+        opacity: 1;
+    }
+
+    .sk-widget-icon-leave.sk-widget-icon-leave-active {
+        top: -3px;
+        opacity: 0;
+    }
+
+    .sk-messenger-icon {
+        transition: opacity 0.2s 0.2s, top 0.2s 0.2s;
+        opacity: 1;
+        position: absolute;
+        top: 0;
+    }
+
+    .sk-messenger-icon.sk-messenger-icon-hidden-down {
+        transition: opacity 0.2s, top 0.2s;
+        opacity: 0;
+        position: relative;
+        top: -15px;
+    }
+
+    .sk-messenger-icon.sk-messenger-icon-hidden-up {
+        transition: opacity 0.2s, top 0.2s;
+        opacity: 0;
+        position: relative;
+        top: 15px;
+    }
 }
 
 @keyframes sk-messenger-button-shown-frames {

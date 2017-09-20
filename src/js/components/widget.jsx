@@ -3,7 +3,6 @@ import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import isMobile from 'ismobilejs';
-import debounce from 'lodash.debounce';
 
 import { MessengerButton } from './messenger-button';
 import { Header } from './header';
