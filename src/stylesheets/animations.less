@@ -51,10 +51,23 @@
         0% {
             opacity: 0;
             bottom: calc(@widget-vertical-spacing - 10px);
+            transform: scale(0, 0);
+
+            @media (max-width: @screen-sm-min) {
+                bottom: 0;
+            }
+        }
+        1% {
+            opacity: 0;
+            transform: scale(1, 1);
         }
         100% {
             opacity: 1;
             bottom: @widget-vertical-spacing;
+
+            @media (max-width: @screen-sm-min) {
+                bottom: 0;
+            }
         }
     }
 
@@ -62,45 +75,71 @@
         0% {
             opacity: 1;
             bottom: @widget-vertical-spacing;
+
+            @media (max-width: @screen-sm-min) {
+                bottom: 0;
+            }
         }
-        80% {
+        99% {
             opacity: 0;
-            bottom: calc(@widget-vertical-spacing - 8px);
+            transform: scale(1, 1);
         }
         100% {
+            transform: scale(0, 0);
             opacity: 0;
             bottom: calc(@widget-vertical-spacing - 10px);
+
+            @media (max-width: @screen-sm-min) {
+                bottom: 0;
+            }
         }
     }
 
     @-webkit-keyframes sk-appear-button-frames {
         0% {
             opacity: 0;
+            bottom: calc(@widget-vertical-spacing - 10px);
             transform: scale(0, 0);
+
+            @media (max-width: @screen-sm-min) {
+                bottom: 0;
+            }
         }
         1% {
             opacity: 0;
-            transform: scale(0.1, 0.1);
+            transform: scale(1, 1);
         }
         100% {
-            display: block;
             opacity: 1;
-            transform: scale(1, 1);
+            bottom: @widget-vertical-spacing;
+
+            @media (max-width: @screen-sm-min) {
+                bottom: 0;
+            }
         }
     }
 
     @-webkit-keyframes sk-close-button-frames {
         0% {
             opacity: 1;
-            transform: scale(1, 1);
+            bottom: @widget-vertical-spacing;
+
+            @media (max-width: @screen-sm-min) {
+                bottom: 0;
+            }
         }
         99% {
             opacity: 0;
-            transform: scale(0.1, 0.1);
+            transform: scale(1, 1);
         }
         100% {
-            opacity: 0;
             transform: scale(0, 0);
+            opacity: 0;
+            bottom: calc(@widget-vertical-spacing - 10px);
+
+            @media (max-width: @screen-sm-min) {
+                bottom: 0;
+            }
         }
     }
 }
