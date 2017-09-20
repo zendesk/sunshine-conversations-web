@@ -88,7 +88,7 @@ export class ChatInputComponent extends Component {
             buttonClassNames.push('active');
 
             if (accentColor) {
-                buttonStyle.color = `#${accentColor}`;
+                buttonStyle.color = '#$06D79C';
             }
         }
 

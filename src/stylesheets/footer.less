@@ -3,6 +3,21 @@
     bottom: 0;
     width: 100%;
     min-height: @footer-height;
+    overflow-y: auto;
+    border-top: 1px solid #e8e8e8;
+
+    @media (min-width: @screen-lg-min) and (min-height: @screen-md-ht-min) {
+        max-height: calc(@widget-height-lg / 2);
+    }
+    @media (min-width: @screen-sm-min) and (min-height: @screen-sm-ht-min) and (max-height: @screen-sm-ht-max) {
+        max-height: calc(@widget-height-md / 2);
+    }
+    @media (min-width: @screen-sm-min) and (max-height: @screen-xs-ht-max) {
+        max-height: calc(@widget-height-sm / 2);
+    }
+    @media (max-width: @screen-sm-min) {
+        max-height: calc(@widget-height-xs / 2);
+    }
 
     .input-wrapper {
         min-height: @footer-height;
@@ -107,7 +122,7 @@
             font-size: @font-size-base;
 
             &.active {
-                color: @sk-blue;
+                color: #06D79C;
 
                 &:hover {
                     .opacity(0.8);
