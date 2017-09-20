@@ -144,8 +144,8 @@ export class ChatInputComponent extends Component {
                             />
                         </div>
                     </form>
-                    {imageUploadButton}
-                    {sendButton}
+                    {!this.state.text && imageUploadButton}
+                    {this.state.text && sendButton}
                 </div>
             </div>
         );
