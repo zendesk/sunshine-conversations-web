@@ -4,6 +4,7 @@ import bindAll from 'lodash.bindall';
 
 import { toggleWidget } from '../services/app';
 import { Introduction } from './introduction';
+import {DefaultCloseIcon} from "./default-close-icon";
 
 export class HeaderComponent extends Component {
 
@@ -36,7 +37,7 @@ export class HeaderComponent extends Component {
                     className='sk-close-handle'
                     onClick={this.onClick}
                 >
-                     <i className='fa fa-times'/>
+                    <DefaultCloseIcon/>
                  </div>
                 <Introduction/>
             </div>
