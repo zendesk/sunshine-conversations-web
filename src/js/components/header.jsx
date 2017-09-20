@@ -32,6 +32,12 @@ export class HeaderComponent extends Component {
     render() {
         return (
             <div id='sk-header'>
+                <div
+                    className='sk-close-handle'
+                    onClick={this.onClick}
+                >
+                     <i className='fa fa-times'/>
+                 </div>
                 <Introduction/>
             </div>
         );
