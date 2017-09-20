@@ -4,6 +4,7 @@ import bindAll from 'lodash.bindall';
 
 import { toggleWidget } from '../services/app';
 import { DefaultButtonIcon } from './default-button-icon';
+import { DefaultCloseIcon } from './default-close-icon';
 import classnames from 'classnames';
 
 export class MessengerButtonComponent extends Component {
@@ -62,7 +63,15 @@ export class MessengerButtonComponent extends Component {
                     style={style}
                     onClick={this.onClick}>
 
-            <i key='1' className={classnames('fa fa-times sk-messenger-icon', {'sk-messenger-icon-hidden-up': !isWidgetOpen})} style={{position: 'absolute'}}/>
+            <div
+                key='1'
+                className={classnames('sk-messenger-icon sk-messenger-close-icon', {
+                    'sk-messenger-icon-hidden-up': !isWidgetOpen
+                })}
+                style={{position: 'absolute'}}
+            >
+                <DefaultCloseIcon key='2' isBrandColorDark={ isBrandColorDark } style={{position: 'absolute'}}/>
+            </div>
 
             <div className={classnames('sk-messenger-icon', {'sk-messenger-icon-hidden-down': isWidgetOpen})}>
                 {icon}
