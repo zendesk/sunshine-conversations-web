@@ -321,7 +321,7 @@ export class ConversationComponent extends Component {
                             href='https://gorgias.io/?utm_source=widget'
                             target='_blank'
                         >
-                            <span>Powered by <b>Gorgias</b></span>
+                            <span>Powered by Gorgias</span>
                         </a>
                     </div>
                 </div>

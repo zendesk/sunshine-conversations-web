@@ -33,9 +33,13 @@
         display: -ms-flexbox;; // for IE10
         display: flex;
 
+        & > form {
+            max-width: 86%;
+        }
+
         .image-upload {
             color: @sk-medium-grey;
-            font-size: @font-size-base;
+            font-size: 17px;
             line-height: @font-size-base;
             font-weight: 600;
             position: relative;
@@ -78,7 +82,7 @@
                 padding-top: 15px;
                 padding-bottom: 15px;
                 resize: none;
-                width: 84%;
+                width: 79%;
                 height: 95%;
                 font-size: @font-size-base;
                 -webkit-appearance: none;
@@ -119,7 +123,7 @@
             display: inline-flex;
             flex-direction: column;
             justify-content: center;
-            font-size: @font-size-base;
+            font-size: 17px;
 
             &.active {
                 color: #06D79C;
