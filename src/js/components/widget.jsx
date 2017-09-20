@@ -108,7 +108,12 @@ export class WidgetComponent extends Component {
         let messengerButton;
 
         if (displayStyle === DISPLAY_STYLE.BUTTON && !appState.embedded) {
-            messengerButton = <MessengerButton shown={ appState.widgetState !== WIDGET_STATE.OPENED } />;
+            messengerButton = (
+                <MessengerButton
+                    shown={true}
+                    isWidgetOpen={appState.widgetState === WIDGET_STATE.OPENED}
+                />
+            );
         }
 
         return <div>

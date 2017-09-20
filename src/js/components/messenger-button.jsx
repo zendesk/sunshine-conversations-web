@@ -9,6 +9,7 @@ export class MessengerButtonComponent extends Component {
 
     static propTypes = {
         shown: PropTypes.bool.isRequired,
+        isWidgetOpen: PropTypes.bool.isRequired,
         unreadCount: PropTypes.number.isRequired,
         settings: PropTypes.object.isRequired
     };
@@ -30,7 +31,7 @@ export class MessengerButtonComponent extends Component {
     }
 
     render() {
-        const {unreadCount, shown, settings} = this.props;
+        const {unreadCount, shown, isWidgetOpen, settings} = this.props;
         const {brandColor, isBrandColorDark, buttonIconUrl} = settings;
 
         const style = {
@@ -45,9 +46,9 @@ export class MessengerButtonComponent extends Component {
                                src={ buttonIconUrl } />
                       </div>;
         } else {
-            content = shown
-                ? <DefaultButtonIcon isBrandColorDark={ isBrandColorDark } />
-                : <i className='fa fa-times'/>;
+            content = isWidgetOpen
+                ? <i className='fa fa-times'/>
+                : <DefaultButtonIcon isBrandColorDark={ isBrandColorDark } />;
         }
 
         let unreadBadge;
@@ -58,7 +59,7 @@ export class MessengerButtonComponent extends Component {
         }
 
         return <div id='sk-messenger-button'
-                    className={`messenger-button-${shown ? 'open' : 'close'}`}
+                    className={`messenger-button-${shown ? 'shown' : 'hidden'}`}
                     style={ style }
                     onClick={ this.onClick }>
                    { content }
