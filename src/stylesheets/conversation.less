@@ -14,7 +14,8 @@
     .sk-messages-container {
         padding-top: 15px;
         width: 100%;
-        min-height: ~"calc(100% - 36px)";
+        min-height: ~"calc(100% - 27px)";
+        border-bottom: 1px solid transparent;
     }
 
     .sk-fetch-history {
@@ -34,7 +35,7 @@
         clear: both;
         padding-bottom: 0px;
         padding-top: 2px;
-        margin-bottom: 5px;
+        margin-bottom: 4px;
 
         &.sk-row-appmaker-first {
             .sk-msg-wrapper {
@@ -259,7 +260,10 @@
         }
         &.sk-right-row {
             .sk-msg, .sk-msg-image {
-                background-color: @sk-blue;
+                &:not(.sk-msg-image) {
+                    background-color: @sk-blue;
+                }
+
                 float: right;
                 color: white;
 
@@ -375,11 +379,11 @@
 }
 
 .sk-msg-avatar {
-    width: 40px;
+    width: 35px;
     height: auto;
     border-radius: 50%;
-    margin-right: 7px;
-    margin-left: 3px;
+    margin-right: 9px;
+    margin-left: 6px;
     display: inline-block;
     margin-top: 3px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);

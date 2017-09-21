@@ -1,4 +1,8 @@
 .header() {
+    box-shadow: 0 4px 23px 0px rgba(57, 57, 57, 0.26);
+    position: relative; // necessary for correct display of the box-shadow
+    z-index: 2;
+
     @media (max-width: @screen-sm-min) {
         border-radius: 0;
     }
@@ -83,7 +87,6 @@
 .sk-intro-section {
     background-color: #F8F9FA;
     padding: @intro-padding-bottom @intro-padding;
-    border-bottom: solid 1px #E6E6E6;
     min-height: @intro-icon-size + @intro-padding + @intro-padding-bottom;
 
     height: @header-height;

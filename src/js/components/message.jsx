@@ -47,9 +47,9 @@ class Message extends Component {
             const messageProperties = getElementProperties(messageElement);
             const bubbleProperties = getElementProperties(bubble);
             const multiLineCheck = parseInt(bubbleProperties.fontSize) * 2;
-            if (messageProperties.height > multiLineCheck && messageProperties.width < bubbleProperties.width) {
-                bubble.style.width = (messageProperties.width + parseInt(bubbleProperties.paddingLeft) + parseInt(bubbleProperties.paddingRight)) + 'px';
-            }
+            // if (messageProperties.height > multiLineCheck && messageProperties.width < bubbleProperties.width) {
+            //     bubble.style.width = (messageProperties.width + parseInt(bubbleProperties.paddingLeft) + parseInt(bubbleProperties.paddingRight)) + 'px';
+            // }
         }
     }
 

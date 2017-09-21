@@ -4,7 +4,7 @@ import {SK_DARK_CONTRAST} from '../constants/styles';
 
 export class DefaultCloseIcon extends Component {
     static propTypes = {
-        isBrandColorDark: PropTypes.bool.isRequired,
+        isBrandColorDark: PropTypes.bool
     };
 
     render() {
