@@ -1,3 +1,4 @@
+require('babel-polyfill');
 export function setUp() {
     const promise = global.fetch ?
         Promise.resolve() :

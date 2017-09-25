@@ -52,12 +52,12 @@ module.exports = function(options) {
         };
     } else if (buildType === 'frame') {
         entry = {
-            frame: ['babel-polyfill', './src/frame/js/index']
+            frame: './src/frame/js/index'
         };
     } else if (buildType === 'dev') {
         entry = {
             [vendorId]: './src/host/js/index',
-            frame: ['babel-polyfill', './src/frame/js/index']
+            frame: './src/frame/js/index'
         };
     } else {
         throw new Error('Unknown build type');

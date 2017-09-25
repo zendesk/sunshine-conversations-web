@@ -1,5 +1,4 @@
 'use strict';
-require('babel-polyfill');
 const {setUp} = require('../src/frame/js/utils/polyfills');
 setUp();
 const sinon = require('sinon');
