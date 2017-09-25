@@ -54,7 +54,7 @@ module.exports = function(options) {
         entry = {
             frame: './src/frame/js/index'
         };
-    } else if (buildType === 'dev') {
+    } else if (buildType === 'dev' || buildType === 'test') {
         entry = {
             [vendorId]: './src/host/js/index',
             frame: './src/frame/js/index'
