@@ -1,6 +1,7 @@
 'use strict';
-require('../src/frame/js/utils/polyfills');
-var sinon = require('sinon');
+const {setUp} = require('../src/frame/js/utils/polyfills');
+setUp();
+const sinon = require('sinon');
 sinon.behavior = require('sinon/lib/sinon/behavior');
 sinon.defaultConfig = {
     injectInto: null,

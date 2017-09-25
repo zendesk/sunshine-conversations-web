@@ -2,7 +2,7 @@ const memoryStorage = {};
 
 export function setItem(key, value) {
     try {
-        if (localStorage) {
+        if (global.localStorage) {
             // Safari with privacy options will have localStorage
             // but won't let us write to it.
             localStorage.setItem(key, value);
@@ -19,7 +19,7 @@ export function setItem(key, value) {
 export function getItem(key) {
     let value;
 
-    if (localStorage) {
+    if (global.localStorage) {
         value = localStorage.getItem(key) || memoryStorage[key];
     } else {
         value = memoryStorage[key];
@@ -30,6 +30,6 @@ export function getItem(key) {
 }
 
 export function removeItem(key) {
-    localStorage && localStorage.removeItem(key);
+    global.localStorage && localStorage.removeItem(key);
     delete memoryStorage[key];
 }
