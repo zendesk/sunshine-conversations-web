@@ -175,7 +175,7 @@ module.exports = function(options) {
         path: options.outputPath || path.join(__dirname, buildType === 'npm' ? 'lib' : 'dist'),
         publicPath,
         filename: baseFilename + fileExtension,
-        chunkFilename: buildType === 'dev' ? '[id].js' : '[chunkhash].js',
+        chunkFilename: '[chunkhash].js',
         libraryTarget: buildType === 'npm' ? 'commonjs2' : 'var',
         pathinfo: options.debug
     };

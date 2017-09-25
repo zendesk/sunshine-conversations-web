@@ -5,10 +5,7 @@
                 ["env",   {
                     "useBuiltIns": true
                 }],
-                "stage-2",
-                ["es2015", {
-                    "modules": false
-                }]
+                "stage-2"
             ],
             "plugins": [
                 "transform-object-assign"
@@ -20,10 +17,7 @@
                     "useBuiltIns": true
                 }],
                 "stage-2",
-                "react",
-                ["es2015", {
-                    "modules": false
-                }]
+                "react"
             ],
             "plugins": [
                 "transform-runtime",
@@ -32,12 +26,9 @@
         },
         "test": {
             "presets": [
-                ["env"],
+                "env",
                 "stage-2",
-                "react",
-                ["es2015", {
-                    "modules": false
-                }]
+                "react"
             ],
             "plugins": [
                 "transform-runtime",
