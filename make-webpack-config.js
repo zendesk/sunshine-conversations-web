@@ -54,7 +54,7 @@ module.exports = function(options) {
         entry = {
             frame: ['babel-polyfill', './src/frame/js/index']
         };
-    } else if (buildType === 'dev' || buildType === 'test') {
+    } else if (buildType === 'dev') {
         entry = {
             [vendorId]: './src/host/js/index',
             frame: ['babel-polyfill', './src/frame/js/index']
