@@ -93,7 +93,7 @@ export default function http(method, url, data, extraHeaders = {}, baseUrl) {
         }
 
         const fullUrl = urljoin(baseUrl || config.apiBaseUrl, url);
-        return fetch(fullUrl, fetchOptions)
+        return global.fetch(fullUrl, fetchOptions)
             .then(handleResponse);
     };
 }

@@ -15,17 +15,16 @@ export function upgradeLegacyClientId(appId) {
 }
 
 export function getClientId(appId) {
-    const SK_STORAGE = `${appId}.clientId`;
+    const key = `${appId}.clientId`;
 
     const legacyId = getLegacyClientId();
     if (legacyId) {
         return legacyId;
     }
 
-    const clientId = storage.getItem(SK_STORAGE) ||
-    uuid.v4().replace(/-/g, '');
+    const clientId = storage.getItem(key) || uuid.v4().replace(/-/g, '');
 
-    storage.setItem(SK_STORAGE, clientId);
+    storage.setItem(key, clientId);
 
     return clientId;
 }

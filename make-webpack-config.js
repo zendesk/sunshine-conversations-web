@@ -52,12 +52,12 @@ module.exports = function(options) {
         };
     } else if (buildType === 'frame') {
         entry = {
-            frame: './src/frame/js/index'
+            frame: ['babel-polyfill', './src/frame/js/index']
         };
     } else if (buildType === 'dev' || buildType === 'test') {
         entry = {
             [vendorId]: './src/host/js/index',
-            frame: './src/frame/js/index'
+            frame: ['babel-polyfill', './src/frame/js/index']
         };
     } else {
         throw new Error('Unknown build type');
@@ -175,7 +175,7 @@ module.exports = function(options) {
         path: options.outputPath || path.join(__dirname, buildType === 'npm' ? 'lib' : 'dist'),
         publicPath,
         filename: baseFilename + fileExtension,
-        chunkFilename: buildType === 'dev' ? '[id].js' : '[chunkhash].js',
+        chunkFilename: '[chunkhash].js',
         libraryTarget: buildType === 'npm' ? 'commonjs2' : 'var',
         pathinfo: options.debug
     };
