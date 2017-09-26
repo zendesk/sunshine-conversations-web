@@ -36,11 +36,6 @@ module.exports = function(grunt) {
                     ].join(' && ');
                 }
             },
-            setReleaseCommits: {
-                cmd: function() {
-                    return 'npm run sentry-cli -- releases set-commits ' + grunt.config.get('globalVersion') + ' --auto';
-                }
-            },
             uploadSourceMap: {
                 cmd: function() {
                     return 'npm run sentry-cli -- releases files ' + grunt.config.get('globalVersion') + ' upload-sourcemaps ./dist/';
@@ -190,7 +185,7 @@ module.exports = function(grunt) {
     grunt.registerTask('deploy', ['build', 'exec:uploadCdn', 'exec:updateLoader']);
 
     grunt.registerTask('publish:prepare', ['versionBump', 'exec:commitFiles', 'exec:createRelease', 'build', 'exec:addDist', 'exec:addLib']);
-    grunt.registerTask('publish:release', ['release', 'exec:setReleaseCommits', 'exec:uploadSourceMap', 'exec:finalizeRelease']);
+    grunt.registerTask('publish:release', ['release', 'exec:uploadSourceMap', 'exec:finalizeRelease']);
     grunt.registerTask('publish:cleanup', ['exec:cleanRelease', 'exec:push']);
 
     grunt.registerTask('branchCheck', 'Checks that you are publishing from Master branch with no working changes', ['gitinfo', 'checkBranchStatus']);
