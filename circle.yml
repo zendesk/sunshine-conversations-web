@@ -21,8 +21,8 @@ deployment:
       - echo "//registry.npmjs.org/:_authToken=$NPM_AUTH" > ~/.npmrc
       - git config --global user.email "hello@smooch.io"
       - git config --global user.name "Smooch"
-      - grunt publish > /dev/null
-      - grunt deploy > /dev/null
+      - grunt publish
+      - grunt deploy
 
 
 experimental:

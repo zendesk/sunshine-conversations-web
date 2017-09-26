@@ -25,7 +25,7 @@ const LIB_FUNCS = [
     'sendMessage',
     'updateUser',
     'getConversation',
-    'getUserId',
+    'getUser',
     'getCore',
     'open',
     'close',
