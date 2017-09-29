@@ -240,11 +240,12 @@ function sendChain(sendFn, message) {
         };
 
         return promise
-            .then(() => {
-                return dispatch(sendFn(message))
-                    .then(postSendHandler)
-                    .catch(() => dispatch(onMessageSendFailure(message)));
-            });
+            .then(() => dispatch(immediateUpdateUser()))
+            .then(() => dispatch(sendFn(message))
+                .then(postSendHandler)
+                .catch(() => dispatch(onMessageSendFailure(message))
+            )
+        );
     };
 }
 
@@ -583,8 +584,7 @@ export function startConversation() {
         }
 
         return promise
-            .then((payload) => dispatch(handleUserConversationResponse(payload)))
-            .then(() => dispatch(immediateUpdateUser()));
+            .then((payload) => dispatch(handleUserConversationResponse(payload)));
     };
 }
 

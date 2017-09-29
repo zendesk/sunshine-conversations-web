@@ -97,7 +97,7 @@ describe('Conversation Actions', () => {
         updateUserSpy = sandbox.spy(updateUser);
         ConversationActionsRewire('updateUser', updateUserSpy);
         immediateUpdateStub = sandbox.stub().returnsAsyncThunk();
-        ConversationActionsRewire('immediateUpdate', immediateUpdateStub);
+        ConversationActionsRewire('immediateUpdateUser', immediateUpdateStub);
 
         // AppState actions
         showConnectNotificationSpy = sandbox.spy(showConnectNotification);
@@ -125,6 +125,20 @@ describe('Conversation Actions', () => {
             it('should call startConversation', () => {
                 return mockedStore.dispatch(action).then(() => {
                     startConversationStub.should.have.been.calledOnce;
+                });
+            });
+        });
+    };
+
+    const updateAppUserSuite = (action, extraProps = {}) => {
+        describe('update app user', () => {
+            beforeEach(() => {
+                mockedStore = createMockedStore(sandbox, generateBaseStoreProps(extraProps));
+            });
+
+            it('should call immediateUpdate', () => {
+                return mockedStore.dispatch(action).then(() => {
+                    immediateUpdateStub.should.have.been.calledOnce;
                 });
             });
         });
@@ -226,6 +240,7 @@ describe('Conversation Actions', () => {
         });
 
         conversationStartedSuite(conversationActions.sendMessage('message'));
+        updateAppUserSuite(conversationActions.sendMessage('message'));
 
         it('should add message and send message', () => {
             mockedStore = createMockedStore(sandbox, generateBaseStoreProps());
@@ -314,6 +329,7 @@ describe('Conversation Actions', () => {
         });
 
         conversationStartedSuite(conversationActions.sendLocation(locationMessage));
+        updateAppUserSuite(conversationActions.sendLocation(locationMessage));
 
         const getCurrentLocationFailsSuite = (action) => {
             let clock;
@@ -499,6 +515,12 @@ describe('Conversation Actions', () => {
                 }
             });
 
+            updateAppUserSuite(conversationActions.resendMessage(message._clientId), {
+                conversation: {
+                    messages: [message]
+                }
+            });
+
             it('should update send status and post upload image', () => {
                 return mockedStore.dispatch(conversationActions.resendMessage(message._clientId)).then(() => {
                     postUploadImageStub.should.have.been.calledOnce;
@@ -534,6 +556,12 @@ describe('Conversation Actions', () => {
                 }
             });
 
+            updateAppUserSuite(conversationActions.resendMessage(message._clientId), {
+                conversation: {
+                    messages: [message]
+                }
+            });
+
             it('should update send status and send message', () => {
                 return mockedStore.dispatch(conversationActions.resendMessage(message._clientId)).then(() => {
                     postSendMessageStub.should.have.been.calledOnce;
@@ -559,6 +587,7 @@ describe('Conversation Actions', () => {
         });
 
         conversationStartedSuite(conversationActions.uploadImage({}));
+        updateAppUserSuite(conversationActions.uploadImage({}));
 
         describe('errors', () => {
             beforeEach(() => {
