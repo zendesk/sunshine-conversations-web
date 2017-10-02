@@ -627,6 +627,90 @@ describe('WebMessenger', () => {
         });
     });
 
+    describe('Get user', () => {
+        describe('has no user initialized and has no pending user props', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, defaultState);
+            });
+
+            it('should return undefined', () => {
+                expect(WebMessenger.getUser()).to.be.undefined;
+            });
+        });
+
+        describe('has a user initialized and has no pending user props', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, {
+                    ...defaultState,
+                    user: {
+                        givenName: 'Moe',
+                        properties: {
+                            some: 'prop'
+                        }
+                    }
+                });
+            });
+
+            it('should return the user', () => {
+                const user = WebMessenger.getUser();
+                expect(user).to.exist;
+                user.givenName.should.eq('Moe');
+                user.properties.some.should.eq('prop');
+            });
+        });
+
+        describe('has no user initialized and has pending user props', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, {
+                    ...defaultState,
+                    pendingUserProps: {
+                        givenName: 'Bart',
+                        properties: {
+                            not: 'a prop'
+                        }
+                    }
+                });
+            });
+
+            it('should return the pending props', () => {
+                const user = WebMessenger.getUser();
+                expect(user).to.exist;
+                user.givenName.should.eq('Bart');
+                user.properties.not.should.eq('a prop');
+            });
+        });
+
+        describe('has a user initialized and has pending user props', () => {
+            beforeEach(() => {
+                mockedStore = mockAppStore(sandbox, {
+                    ...defaultState,
+                    user: {
+                        givenName: 'Moe',
+                        email: 'moe@tavern.drink',
+                        properties: {
+                            some: 'prop'
+                        }
+                    },
+                    pendingUserProps: {
+                        givenName: 'Bart',
+                        properties: {
+                            not: 'a prop'
+                        }
+                    }
+                });
+            });
+
+            it('should return the merged user and pending props', () => {
+                const user = WebMessenger.getUser();
+                expect(user).to.exist;
+                user.givenName.should.eq('Bart');
+                user.email.should.eq('moe@tavern.drink');
+                user.properties.some.should.eq('prop');
+                user.properties.not.should.eq('a prop');
+            });
+        });
+    });
+
     describe('Update user', () => {
         beforeEach(() => {
             updateUserStub.returnsAsyncThunk({
