@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import hat from 'hat';
 
-import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
+import { createMockedStore, generateBaseStoreProps, findActionsByType } from '../../utils/redux';
 
 import * as userActions from '../../../src/frame/js/actions/user';
 import { __Rewire__ as UserRewire, __RewireAPI__ as UserRewireAPI } from '../../../src/frame/js/actions/user';
@@ -59,6 +59,7 @@ describe('User Actions', () => {
 
                 return mockedStore.dispatch(userActions.immediateUpdate(props)).then(() => {
                     httpStub.should.not.have.been.called;
+                    findActionsByType(mockedStore.getActions(), userActions.RESET_PENDING_USER_PROPS).should.be.empty;
                 });
             });
         });
@@ -77,6 +78,8 @@ describe('User Actions', () => {
                     httpStub.should.have.been.calledWith('PUT', `/apps/${appId}/appusers/${_id}`, {
                         email: props.email
                     });
+
+                    findActionsByType(mockedStore.getActions(), userActions.RESET_PENDING_USER_PROPS).length.should.eq(1);
 
                     setUserSpy.should.have.been.calledWithMatch({
                         _id: '1',
@@ -104,6 +107,7 @@ describe('User Actions', () => {
 
                 return mockedStore.dispatch(userActions.immediateUpdate(props)).then(() => {
                     httpStub.should.not.have.been.called;
+                    findActionsByType(mockedStore.getActions(), userActions.RESET_PENDING_USER_PROPS).should.be.empty;
                 });
             });
         });

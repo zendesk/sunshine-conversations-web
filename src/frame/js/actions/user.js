@@ -1,5 +1,6 @@
 import deepEqual from 'deep-equal';
 import pick from 'lodash.pick';
+import { batchActions } from 'redux-batched-actions';
 
 import http from './http';
 
@@ -36,7 +37,6 @@ export function immediateUpdate(props) {
         lastUpdateAttempt = Date.now();
 
         props = pick(Object.assign({}, pendingUserProps, props), EDITABLE_PROPERTIES);
-        dispatch(resetPendingUserProps());
 
         const isDirty = Object.keys(props)
             .some((key) => !deepEqual(user[key], props[key]));
@@ -44,14 +44,16 @@ export function immediateUpdate(props) {
         if (isDirty && profile.enabled) {
             return dispatch(http('PUT', `/apps/${appId}/appusers/${user._id}`, props))
                 .then(() => {
-                    dispatch(setUser({
-                        ...user,
-                        ...props,
-                        properties: {
-                            ...user.properties,
-                            ...props.properties
-                        }
-                    }));
+                    dispatch(batchActions([
+                        resetPendingUserProps(),
+                        setUser({
+                            ...user,
+                            ...props,
+                            properties: {
+                                ...user.properties,
+                                ...props.properties
+                            }
+                        })]));
 
                     if (updateToResolve) {
                         updateToResolve(getState().user);
