@@ -17,6 +17,7 @@ describe('Integrations Actions', () => {
     let mockedStore;
     let updateUserSpy;
     let handleConversationUpdatedStub;
+    let immediateUpdateStub;
     let subscribeFayeStub;
     let updateSMSAttributesSpy;
     let setTransferRequestCodeSpy;
@@ -57,6 +58,9 @@ describe('Integrations Actions', () => {
 
         subscribeFayeStub = sandbox.stub().returnsAsyncThunk();
         IntegrationsRewire('subscribeFaye', subscribeFayeStub);
+
+        immediateUpdateStub = sandbox.stub().returnsAsyncThunk();
+        IntegrationsRewire('immediateUpdateUser', immediateUpdateStub);
 
         appUserId = hat();
         mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
@@ -168,6 +172,7 @@ describe('Integrations Actions', () => {
                 }))
                     .then(() => {
                         startConversationStub.should.have.been.calledOnce;
+                        immediateUpdateStub.should.have.been.calledOnce;
 
                         httpStub.should.have.been.calledOnce;
                         httpStub.should.have.been.calledWith('POST', `/apps/${appId}/appusers/${appUserId}/clients`, {
@@ -324,6 +329,7 @@ describe('Integrations Actions', () => {
                 return mockedStore.dispatch(integrationsActions.fetchTransferRequestCode(channel))
                     .then(() => {
                         startConversationStub.should.have.been.calledOnce;
+                        immediateUpdateStub.should.have.been.calledOnce;
                         subscribeFayeStub.should.not.have.been.calledOnce;
 
                         httpStub.should.have.been.calledWith('GET', `/apps/${appId}/appusers/${appUserId}/transferrequest`, {
@@ -445,6 +451,7 @@ describe('Integrations Actions', () => {
                 return mockedStore.dispatch(integrationsActions.fetchWeChatQRCode())
                     .then(() => {
                         startConversationStub.should.have.been.calledOnce;
+                        immediateUpdateStub.should.have.been.calledOnce;
                         subscribeFayeStub.should.not.have.been.calledOnce;
 
                         httpStub.should.have.been.calledWith('GET', `/apps/${appId}/appusers/${appUserId}/integrations/${integrations[0]._id}/qrcode`);
@@ -563,6 +570,7 @@ describe('Integrations Actions', () => {
                 return mockedStore.dispatch(integrationsActions.fetchViberQRCode())
                     .then(() => {
                         startConversationStub.should.have.been.calledOnce;
+                        immediateUpdateStub.should.have.been.calledOnce;
                         subscribeFayeStub.should.not.have.been.calledOnce;
 
                         httpStub.should.have.been.calledWith('GET', `/apps/${appId}/appusers/${appUserId}/integrations/${integrations[0]._id}/qrcode`);

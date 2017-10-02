@@ -1,4 +1,4 @@
-import { updateUser } from './user';
+import { updateUser, immediateUpdate as immediateUpdateUser } from './user';
 import { startConversation } from './conversation';
 import { subscribe as subscribeFaye } from './faye';
 import http from './http';
@@ -124,7 +124,8 @@ function ensureUserAndFayeConnection(dispatch, getState) {
     if (getState().user._id) {
         return dispatch(subscribeFaye());
     } else {
-        return dispatch(startConversation());
+        return dispatch(startConversation())
+            .then(() => dispatch(immediateUpdateUser()));
     }
 }
 
