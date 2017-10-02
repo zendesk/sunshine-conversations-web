@@ -2,7 +2,7 @@ import { batchActions } from 'redux-batched-actions';
 
 import http from './http';
 import { resetConversation, handleUserConversationResponse, disconnectFaye } from './conversation';
-import { setUser, resetUser } from './user';
+import { setUser, resetUser, immediateUpdate as immediateUpdateUser } from './user';
 import { resetIntegrations } from './integrations';
 
 import { getClientId, getClientInfo } from '../utils/client';
@@ -15,26 +15,31 @@ export function login(userId, jwt) {
     return (dispatch, getState) => {
         const {config: {appId}, auth: {sessionToken}, user: {_id}} = getState();
 
-        const actions = [
-            setAuth({
-                jwt
-            }),
-            setUser({
-                userId
-            }),
-            resetConversation(),
-            resetIntegrations()
-        ];
+        // force update the current user before logging in another one
+        const promise = _id ? dispatch(immediateUpdateUser()) : Promise.resolve();
 
-        dispatch(disconnectFaye());
-        dispatch(batchActions(actions));
+        return promise.then(() => {
+            const actions = [
+                setAuth({
+                    jwt
+                }),
+                setUser({
+                    userId
+                }),
+                resetConversation(),
+                resetIntegrations()
+            ];
 
-        return dispatch(http('POST', `/apps/${appId}/login`, {
-            appUserId: _id,
-            userId,
-            sessionToken,
-            client: getClientInfo(appId)
-        })).then((response) => {
+            dispatch(disconnectFaye());
+            dispatch(batchActions(actions));
+
+            return dispatch(http('POST', `/apps/${appId}/login`, {
+                appUserId: _id,
+                userId,
+                sessionToken,
+                client: getClientInfo(appId)
+            }));
+        }).then((response) => {
             // get rid of session token
             removeItem(`${appId}.sessionToken`);
 

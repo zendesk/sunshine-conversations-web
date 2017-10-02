@@ -17,6 +17,7 @@ describe('Auth Actions', () => {
     let removeItemStub;
     let resetConversationSpy;
     let disconnectFayeStub;
+    let immediateUpdateUserStub;
     let setUserSpy;
     let resetUserSpy;
     let resetAuthSpy;
@@ -57,6 +58,9 @@ describe('Auth Actions', () => {
         disconnectFayeStub = sandbox.stub().returnsAsyncThunk();
         AuthRewire('disconnectFaye', disconnectFayeStub);
 
+        immediateUpdateUserStub = sandbox.stub().returnsAsyncThunk();
+        AuthRewire('immediateUpdateUser', immediateUpdateUserStub);
+
         resetUserSpy = sandbox.spy(resetUser);
         AuthRewire('resetUser', resetUserSpy);
 
@@ -89,73 +93,105 @@ describe('Auth Actions', () => {
             userId = hat();
         });
 
-        describe('user is known', () => {
-            it('should call login api, remove the session token, and continue the flow', () => {
-                return mockedStore.dispatch(login(userId, jwt))
-                    .then(() => {
-                        setAuthSpy.should.have.been.calledOnce;
-                        setAuthSpy.should.have.been.calledWith({
-                            jwt
-                        });
-
-                        setUserSpy.should.have.been.calledOnce;
-                        setUserSpy.should.have.been.calledWith({
-                            userId
-                        });
-
-                        resetConversationSpy.should.have.been.calledOnce;
-                        disconnectFayeStub.should.have.been.calledOnce;
-                        resetIntegrationsSpy.should.have.been.calledOnce;
-
-                        const {config: {appId}} = mockedStore.getState();
-                        httpStub.should.have.been.calledWith('POST', `/apps/${mockedStore.getState().config.appId}/login`, {
-                            userId,
-                            appUserId: 'some-appuser-id',
-                            client: {
-                                id: 'some-client-id'
-                            },
-                            sessionToken: 'some-session-token'
-                        });
-                        handleUserConversationResponseStub.should.have.been.calledOnce;
-                        removeItemStub.should.have.been.calledWith(`${appId}.sessionToken`);
-                    });
-            });
+        afterEach(() => {
+            jwt = undefined;
+            userId = undefined;
         });
 
-        describe('user is unknown', () => {
-            beforeEach(() => {
-                httpStub.returnsAsyncThunk({});
-            });
-
-            it('should call login api, remove the session token, and stop', () => {
-                return mockedStore.dispatch(login(userId, jwt))
-                    .then(() => {
-                        setAuthSpy.should.have.been.calledOnce;
-                        setAuthSpy.should.have.been.calledWith({
-                            jwt
-                        });
-
-                        setUserSpy.should.have.been.calledOnce;
-                        setUserSpy.should.have.been.calledWith({
-                            userId
-                        });
-
-                        resetConversationSpy.should.have.been.calledOnce;
-                        disconnectFayeStub.should.have.been.calledOnce;
-                        resetIntegrationsSpy.should.have.been.calledOnce;
-
-                        const {config: {appId}} = mockedStore.getState();
-                        httpStub.should.have.been.calledWith('POST', `/apps/${mockedStore.getState().config.appId}/login`, {
-                            userId,
-                            appUserId: 'some-appuser-id',
-                            client: {
-                                id: 'some-client-id'
-                            },
+        [true, false].forEach((isUserInitialized) => {
+            describe(`user is ${isUserInitialized ? '': 'not '} initialized`, () => {
+                beforeEach(() => {
+                    mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
+                        auth: isUserInitialized ? {
                             sessionToken: 'some-session-token'
-                        });
-                        handleUserConversationResponseStub.should.not.have.been.called;
-                        removeItemStub.should.have.been.calledWith(`${appId}.sessionToken`);
+                        } : {},
+                        user: isUserInitialized ? {
+                            _id: 'some-appuser-id'
+                        } : {}
+                    }));
+                });
+
+                describe('user is known', () => {
+                    it('should call login api, remove the session token, and continue the flow', () => {
+                        return mockedStore.dispatch(login(userId, jwt))
+                            .then(() => {
+                                setAuthSpy.should.have.been.calledOnce;
+                                setAuthSpy.should.have.been.calledWith({
+                                    jwt
+                                });
+
+                                setUserSpy.should.have.been.calledOnce;
+                                setUserSpy.should.have.been.calledWith({
+                                    userId
+                                });
+
+                                resetConversationSpy.should.have.been.calledOnce;
+                                disconnectFayeStub.should.have.been.calledOnce;
+                                resetIntegrationsSpy.should.have.been.calledOnce;
+
+                                if (isUserInitialized) {
+                                    immediateUpdateUserStub.should.have.been.calledOnce;
+                                } else {
+                                    immediateUpdateUserStub.should.not.have.been.called;
+                                }
+
+                                const {config: {appId}} = mockedStore.getState();
+                                httpStub.should.have.been.calledWith('POST', `/apps/${mockedStore.getState().config.appId}/login`, {
+                                    userId,
+                                    appUserId: isUserInitialized ? 'some-appuser-id' : undefined,
+                                    client: {
+                                        id: 'some-client-id'
+                                    },
+                                    sessionToken: isUserInitialized ? 'some-session-token' : undefined
+                                });
+                                handleUserConversationResponseStub.should.have.been.calledOnce;
+                                removeItemStub.should.have.been.calledWith(`${appId}.sessionToken`);
+                            });
                     });
+                });
+
+                describe('user is unknown', () => {
+                    beforeEach(() => {
+                        httpStub.returnsAsyncThunk({});
+                    });
+
+                    it('should call login api, remove the session token, and stop', () => {
+                        return mockedStore.dispatch(login(userId, jwt))
+                            .then(() => {
+                                setAuthSpy.should.have.been.calledOnce;
+                                setAuthSpy.should.have.been.calledWith({
+                                    jwt
+                                });
+
+                                setUserSpy.should.have.been.calledOnce;
+                                setUserSpy.should.have.been.calledWith({
+                                    userId
+                                });
+
+                                resetConversationSpy.should.have.been.calledOnce;
+                                disconnectFayeStub.should.have.been.calledOnce;
+                                resetIntegrationsSpy.should.have.been.calledOnce;
+
+                                if (isUserInitialized) {
+                                    immediateUpdateUserStub.should.have.been.calledOnce;
+                                } else {
+                                    immediateUpdateUserStub.should.not.have.been.called;
+                                }
+
+                                const {config: {appId}} = mockedStore.getState();
+                                httpStub.should.have.been.calledWith('POST', `/apps/${mockedStore.getState().config.appId}/login`, {
+                                    userId,
+                                    appUserId: isUserInitialized ? 'some-appuser-id' : undefined,
+                                    client: {
+                                        id: 'some-client-id'
+                                    },
+                                    sessionToken: isUserInitialized ? 'some-session-token' : undefined
+                                });
+                                handleUserConversationResponseStub.should.not.have.been.called;
+                                removeItemStub.should.have.been.calledWith(`${appId}.sessionToken`);
+                            });
+                    });
+                });
             });
         });
     });
@@ -167,7 +203,6 @@ describe('Auth Actions', () => {
         beforeEach(() => {
             userId = hat();
             appUserId = hat();
-
 
             mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 user: {
