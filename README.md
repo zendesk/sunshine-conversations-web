@@ -58,17 +58,16 @@ Web Messenger supports all popular browsers.
 
 #### Desktop versions
 
-Chrome: Latest and one major version behind
-Edge:  Latest and one major version behind
-Firefox:  Latest and one major version behind
-Internet Explorer: 11+
-Safari:  Latest and one major version behind
-Opera: Latest version
+- Chrome: Latest and one major version behind
+- Edge:  Latest and one major version behind
+- Firefox:  Latest and one major version behind
+- Internet Explorer: 11+
+- Safari:  Latest and one major version behind
 
 #### Mobile versions
 
-Stock browser on Android 4.1+
-Safari on iOS 8+
+- Stock browser on Android 4.1+
+- Safari on iOS 8+
 
 #### Other browsers
 
