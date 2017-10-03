@@ -52,6 +52,28 @@ var Smooch = require('smooch');
 Smooch.init({appId: '<app-id>'});
 ```
 
+## Browser support
+
+Web messenger supports all popular browsers. 
+
+#### Desktop versions
+
+Chrome: Latest and one behind
+Edge: Latest and one behind
+Firefox: Latest and one behind
+Internet Explorer: 10+
+Safari: Latest and one behind
+Opera: Latest
+
+#### Mobile versions
+
+Stock browser on Android 4.1+
+Safari on iOS 8+
+
+#### Other browsers
+
+Web messenger is likely compatible with other and older browsers but we only test against the versions above.
+
 ## API
 
 ### Individual functions
