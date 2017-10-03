@@ -61,7 +61,7 @@ Web messenger supports all popular browsers.
 Chrome: Latest and one behind
 Edge: Latest and one behind
 Firefox: Latest and one behind
-Internet Explorer: 10+
+Internet Explorer: 11+
 Safari: Latest and one behind
 Opera: Latest
 
