@@ -19,9 +19,10 @@ export function generateBaseStoreProps(extraProps = {}) {
             ...extraProps.integrations
         },
         user: {
-            pendingClients: [],
-            clients: [],
             ...extraProps.user
+        },
+        pendingUserProps: {
+            ...extraProps.pendingUserProps
         },
         appState: {
             isInitialized: true,

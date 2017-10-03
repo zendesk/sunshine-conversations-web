@@ -9,6 +9,7 @@ import { disconnectClient, subscribe as subscribeFaye, unsetFayeSubscription } f
 import http from './http';
 import { setAuth } from './auth';
 import { setConfig } from './config';
+import { resetPendingUserProps } from './user';
 
 import { observable } from '../utils/events';
 import { Throttle } from '../utils/throttle';
@@ -556,8 +557,8 @@ export function handleUserConversationResponse({appUser, conversation, hasPrevio
 
 export function startConversation() {
     return (dispatch, getState) => {
-        const {user, config: {appId}, conversation: {_id: conversationId}} = getState();
-        const {_id: appUserId, userId, pendingAttributes} = user;
+        const {user, config: {appId}, conversation: {_id: conversationId}, pendingUserProps} = getState();
+        const {_id: appUserId, userId} = user;
 
         if (conversationId) {
             return Promise.resolve();
@@ -577,10 +578,11 @@ export function startConversation() {
                 });
         } else {
             promise = dispatch(http('POST', `/apps/${appId}/appusers`, {
-                ...pendingAttributes,
+                ...pendingUserProps,
                 userId,
                 client: getClientInfo(appId)
             }));
+            dispatch(resetPendingUserProps());
         }
 
         return promise
