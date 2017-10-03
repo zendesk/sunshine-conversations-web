@@ -294,8 +294,15 @@ export function getConversation() {
 }
 
 export function getUser() {
-    const {user} = store.getState();
-    return Object.keys(user).length > 0 ? user : undefined;
+    const {user, pendingUserProps} = store.getState();
+
+    if (Object.keys(user).length === 0 && Object.keys(pendingUserProps).length === 0) {
+        return undefined;
+    }
+
+    return Object.assign({}, user, pendingUserProps, {
+        properties: Object.assign({}, user.properties, pendingUserProps.properties)
+    });
 }
 
 export function destroy() {

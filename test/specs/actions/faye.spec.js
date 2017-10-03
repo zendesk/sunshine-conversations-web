@@ -325,7 +325,9 @@ describe('Faye Actions', () => {
         beforeEach(() => {
             mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
                 user: {
-                    _id: 'some-user-id'
+                    _id: 'some-user-id',
+                    pendingClients: [],
+                    clients: []
                 },
                 appState: {
                     visibleChannelType: 'messenger'

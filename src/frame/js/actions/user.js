@@ -1,13 +1,15 @@
 import deepEqual from 'deep-equal';
 import pick from 'lodash.pick';
+import { batchActions } from 'redux-batched-actions';
 
 import http from './http';
 
 export const SET_USER = 'SET_USER';
 export const UPDATE_USER = 'UPDATE_USER';
 export const RESET_USER = 'RESET_USER';
+export const RESET_PENDING_USER_PROPS = 'RESET_PENDING_USER_PROPS';
+export const UPDATE_PENDING_USER_PROPS = 'UPDATE_PENDING_USER_PROPS';
 
-let pendingUserProps = {};
 let pendingUpdatePromise;
 let pendingResolve;
 let pendingTimeout;
@@ -23,7 +25,7 @@ export const EDITABLE_PROPERTIES = [
 
 export function immediateUpdate(props) {
     return (dispatch, getState) => {
-        const {config: {appId, profile}, user} = getState();
+        const {config: {appId, profile}, user, pendingUserProps} = getState();
 
         const updateToResolve = pendingResolve;
         if (pendingTimeout) {
@@ -35,7 +37,6 @@ export function immediateUpdate(props) {
         lastUpdateAttempt = Date.now();
 
         props = pick(Object.assign({}, pendingUserProps, props), EDITABLE_PROPERTIES);
-        pendingUserProps = {};
 
         const isDirty = Object.keys(props)
             .some((key) => !deepEqual(user[key], props[key]));
@@ -43,14 +44,16 @@ export function immediateUpdate(props) {
         if (isDirty && profile.enabled) {
             return dispatch(http('PUT', `/apps/${appId}/appusers/${user._id}`, props))
                 .then(() => {
-                    dispatch(setUser({
-                        ...user,
-                        ...props,
-                        properties: {
-                            ...user.properties,
-                            ...props.properties
-                        }
-                    }));
+                    dispatch(batchActions([
+                        resetPendingUserProps(),
+                        setUser({
+                            ...user,
+                            ...props,
+                            properties: {
+                                ...user.properties,
+                                ...props.properties
+                            }
+                        })]));
 
                     if (updateToResolve) {
                         updateToResolve(getState().user);
@@ -69,7 +72,7 @@ export function immediateUpdate(props) {
 
 export function update(props) {
     return (dispatch, getState) => {
-        Object.assign(pendingUserProps, props);
+        dispatch(updatePendingUserProps(props));
 
         if (!getState().user._id) {
             return Promise.resolve();
@@ -82,7 +85,7 @@ export function update(props) {
         if (pendingTimeout) {
             return pendingUpdatePromise;
         } else if ((timeNow - lastUpdateTime) > waitDelay) {
-            return dispatch(immediateUpdate(pendingUserProps));
+            return dispatch(immediateUpdate());
         } else {
             const timeToWait = waitDelay - (timeNow - lastUpdateTime);
 
@@ -90,7 +93,7 @@ export function update(props) {
                 pendingResolve = resolve;
 
                 pendingTimeout = setTimeout(() => {
-                    resolve(dispatch(immediateUpdate(pendingUserProps)));
+                    resolve(dispatch(immediateUpdate()));
                 }, timeToWait);
             });
 
@@ -116,5 +119,18 @@ export function updateUser(properties) {
 export function resetUser() {
     return {
         type: RESET_USER
+    };
+}
+
+export function resetPendingUserProps() {
+    return {
+        type: RESET_PENDING_USER_PROPS
+    };
+}
+
+export function updatePendingUserProps(props = {}) {
+    return {
+        type: UPDATE_PENDING_USER_PROPS,
+        properties: pick(props, EDITABLE_PROPERTIES)
     };
 }

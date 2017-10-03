@@ -7,6 +7,7 @@ import UIReducer from './ui';
 import AppStateReducer from './app-state';
 import AuthReducer from './auth';
 import UserReducer from './user';
+import PendingUserPropsReducer from './pending-user-props';
 import FayeReducer from './faye';
 import BrowserReducer from './browser';
 import IntegrationsReducer from './integrations';
@@ -18,6 +19,7 @@ export default enableBatching(combineReducers({
     appState: AppStateReducer,
     auth: AuthReducer,
     user: UserReducer,
+    pendingUserProps: PendingUserPropsReducer,
     faye: FayeReducer,
     browser: BrowserReducer,
     integrations: IntegrationsReducer

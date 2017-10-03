@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import hat from 'hat';
 
-import { createMockedStore, generateBaseStoreProps } from '../../utils/redux';
+import { createMockedStore, generateBaseStoreProps, findActionsByType } from '../../utils/redux';
 
 import * as userActions from '../../../src/frame/js/actions/user';
 import { __Rewire__ as UserRewire, __RewireAPI__ as UserRewireAPI } from '../../../src/frame/js/actions/user';
@@ -10,6 +10,7 @@ describe('User Actions', () => {
     let sandbox;
     let mockedStore;
     let setUserSpy;
+    let updatePendingUserPropsSpy;
     let httpStub;
     let email;
 
@@ -22,6 +23,8 @@ describe('User Actions', () => {
 
         setUserSpy = sandbox.spy(userActions.setUser);
         UserRewire('setUser', setUserSpy);
+        updatePendingUserPropsSpy = sandbox.spy(userActions.updatePendingUserProps);
+        UserRewire('updatePendingUserProps', updatePendingUserPropsSpy);
 
         mockedStore = createMockedStore(sandbox, generateBaseStoreProps({
             config: {
@@ -33,13 +36,13 @@ describe('User Actions', () => {
             user: {
                 _id: '1',
                 email
-            }
+            },
+            pendingUserProps: {}
         }));
 
         clearTimeout(UserRewireAPI.__get__('pendingTimeout'));
         UserRewireAPI.__set__('pendingTimeout', null);
         UserRewireAPI.__set__('pendingResolve', null);
-        UserRewireAPI.__set__('pendingUserProps', {});
         UserRewireAPI.__set__('lastUpdateAttempt', undefined);
     });
 
@@ -56,6 +59,7 @@ describe('User Actions', () => {
 
                 return mockedStore.dispatch(userActions.immediateUpdate(props)).then(() => {
                     httpStub.should.not.have.been.called;
+                    findActionsByType(mockedStore.getActions(), userActions.RESET_PENDING_USER_PROPS).should.be.empty;
                 });
             });
         });
@@ -74,6 +78,8 @@ describe('User Actions', () => {
                     httpStub.should.have.been.calledWith('PUT', `/apps/${appId}/appusers/${_id}`, {
                         email: props.email
                     });
+
+                    findActionsByType(mockedStore.getActions(), userActions.RESET_PENDING_USER_PROPS).length.should.eq(1);
 
                     setUserSpy.should.have.been.calledWithMatch({
                         _id: '1',
@@ -101,6 +107,7 @@ describe('User Actions', () => {
 
                 return mockedStore.dispatch(userActions.immediateUpdate(props)).then(() => {
                     httpStub.should.not.have.been.called;
+                    findActionsByType(mockedStore.getActions(), userActions.RESET_PENDING_USER_PROPS).should.be.empty;
                 });
             });
         });
@@ -142,7 +149,8 @@ describe('User Actions', () => {
 
             const promise = mockedStore.dispatch(userActions.update(props));
             return promise.then(() => {
-                immediateUpdateSpy.should.have.been.calledWith(props);
+                updatePendingUserPropsSpy.should.have.been.calledWith(props);
+                immediateUpdateSpy.should.have.been.called;
             });
         });
 
@@ -154,7 +162,9 @@ describe('User Actions', () => {
             const promise = mockedStore.dispatch(userActions.update(props));
             return promise
                 .then(() => {
-                    immediateUpdateSpy.should.have.been.calledWith(props);
+                    updatePendingUserPropsSpy.should.have.been.calledWith(props);
+                    immediateUpdateSpy.should.have.been.called;
+                    updatePendingUserPropsSpy.reset();
                     immediateUpdateSpy.reset();
 
                     setTimeoutStub.should.not.have.been.called;
@@ -178,7 +188,7 @@ describe('User Actions', () => {
                 })
                 .then(() => {
                     immediateUpdateSpy.should.have.been.calledOnce;
-                    immediateUpdateSpy.should.have.been.calledWith(props);
+                    updatePendingUserPropsSpy.should.have.been.calledWith(props);
                 });
         });
 
@@ -189,9 +199,10 @@ describe('User Actions', () => {
 
             return promise
                 .then(() => {
-                    immediateUpdateSpy.should.have.been.calledWith({
+                    updatePendingUserPropsSpy.should.have.been.calledWith({
                         email: 'this@email.com'
                     });
+                    immediateUpdateSpy.should.have.been.called;
                     immediateUpdateSpy.reset();
                     setTimeoutStub.should.not.have.been.called;
 
@@ -218,11 +229,15 @@ describe('User Actions', () => {
                 })
                 .then(() => {
                     immediateUpdateSpy.should.have.been.calledOnce;
-                    immediateUpdateSpy.should.have.been.calledWith({
-                        givenName: 'Example',
-                        email: 'another@email.com'
-                    });
                 });
+        });
+    });
+
+    describe('updatePendingUserProps', () => {
+        it('should only pick EDITABLE_PROPERTIES', () => {
+            const action = userActions.updatePendingUserProps({givenName: 'name', invalidProp: 'invalid'});
+            Object.keys(action.properties).should.contain('givenName');
+            Object.keys(action.properties).should.not.contain('invalidProp');
         });
     });
 });
