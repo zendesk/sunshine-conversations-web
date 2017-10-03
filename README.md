@@ -54,7 +54,7 @@ Smooch.init({appId: '<app-id>'});
 
 ## Browser support
 
-Web messenger supports all popular browsers. 
+Web Messenger supports all popular browsers. 
 
 #### Desktop versions
 
@@ -72,7 +72,7 @@ Safari on iOS 8+
 
 #### Other browsers
 
-Web messenger is likely compatible with other and older browsers but we only test against the versions above.
+Web Messenger is likely compatible with other and older browsers but we only test against the versions above.
 
 ## API
 
