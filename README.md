@@ -53,7 +53,7 @@ Smooch.init({appId: '<app-id>'});
 
 ## Browser support
 
-Web Messenger supports all popular browsers. 
+Web Messenger supports all popular browsers.
 
 #### Desktop versions
 
@@ -86,6 +86,7 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | appId | No | - | Your app id |
 | jwt | Yes | - | Token to authenticate your communication with the server (see http://docs.smooch.io/javascript/#authenticating-users-optional)
 | userId | Yes | - | User's id |
+| locale | Yes | `en-US` | Locale used for date formatting using the `<language>-<COUNTRY>` format. Language codes can be found [here](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) and country codes [here](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). <br /> **Note 1 : ** The country part is optional, and if a country is either not recognized or supported, it will fallback to using the generic language. If the language isn't supported, it will fallback to `en-US`. <br /> **Note 2:** this is *only* used for date formatting and doesn't provide built-in translations for Web Messenger. Refer to the [documentation](https://docs.smooch.io/guide/web-messenger/#strings-customization) for how to handle translations. |
 | soundNotificationEnabled | Yes | `true` | Enables the sound notification for new messages |
 | imageUploadEnabled | Yes | `true` | Enables the image upload feature. |
 | embedded | Yes | False | Tells the widget it will be embedded. (see Embedded section below) |
@@ -97,56 +98,66 @@ var skPromise = Smooch.init({
     // For authenticated mode
     jwt: 'your_jwt',
     userId: 'user_id',
+    locale: 'en-US',
     customText: {
+        actionPaymentCompleted: 'Payment Completed',
+        actionPaymentError: 'An error occurred while processing the card. <br> Please try again or use a different card.',
+        actionPostbackError: 'An error occurred while processing your action. Please try again.',
+        clickToRetry: 'Message not delivered. Click to retry.',
+        connectNotificationText: 'Be notified inside your other apps when you get a reply.',
+        conversationTimestampHeaderFormat: 'MMMM D YYYY, h:mm A',
+        fetchHistory: 'Load more',
+        fetchingHistory: 'Retrieving history...',
+        frontendEmailChannelDescription: 'To talk to us using email just send a message to our email address and we\'ll reply shortly:',
         headerText: 'How can we help?',
         inputPlaceholder: 'Type a message...',
-        sendButtonText: 'Send',
-        introductionText: 'We\'re here to talk, so ask us anything!',
         introAppText: 'Message us below or from your favorite app.',
-        settingsHeaderText: 'Settings',
-        actionPaymentError: 'An error occurred while processing the card. <br> Please try again or use a different card.',
-        actionPaymentCompleted: 'Payment Completed',
-        actionPostbackError: 'An error occurred while processing your action. Please try again.',
-        messageError: 'An error occured while sending your message. Please try again.',
+        introductionText: 'We\'re here to talk, so ask us anything!',
         invalidFileError: 'Only images are supported. Choose a file with a supported extension (jpg, jpeg, png, gif, or bmp).',
-        messageIndicatorTitleSingular: '({count}) New message',
+        lineChannelDescription: 'To talk to us using LINE, scan this QR code using the LINE app and send us a message.',
+        locationNotSupported: 'Your browser does not support location services or it’s been disabled. Please type your location instead.',
+        locationSecurityRestriction: 'This website cannot access your location. Please type your location instead.',
+        locationSendingFailed: 'Could not send location',
+        locationServicesDenied: 'This website cannot access your location. Allow access in your settings or type your location instead.',
+        messageError: 'An error occured while sending your message. Please try again.',
         messageIndicatorTitlePlural: '({count}) New messages',
-        connectNotificationText: 'Be notified inside your other apps when you get a reply.',
-        notificationSettingsChannelsTitle: 'Other Channels',
-        notificationSettingsChannelsDescription: 'You can also talk to us from your favorite app or service.',
-        notificationSettingsConnectedAs: 'Connected as {username}',
-        notificationSettingsConnected: 'Connected',
-        wechatQRCodeError: 'An error occurred while fetching your WeChat QR code. Please try again.',
+        messageIndicatorTitleSingular: '({count}) New message',
+        messageRelativeTimeDay: '{value}d ago',
+        messageRelativeTimeHour: '{value}h ago',
+        messageRelativeTimeJustNow: 'just now',
+        messageRelativeTimeMinute: '{value}m ago',
+        messageTimestampFormat: 'hh:mm A',
         messengerChannelDescription: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.',
-        frontendEmailChannelDescription: 'To talk to us using email just send a message to our email address and we\'ll reply shortly:',
+        notificationSettingsChannelsDescription: 'You can also talk to us from your favorite app or service.',
+        notificationSettingsChannelsTitle: 'Other Channels',
+        notificationSettingsConnected: 'Connected',
+        notificationSettingsConnectedAs: 'Connected as {username}',
+        sendButtonText: 'Send',
+        settingsHeaderText: 'Settings',
+        smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
+        smsCancel: 'Cancel',
+        smsChangeNumber: 'Change my number',
         smsChannelDescription: 'Connect your SMS number to be notified when you get a reply and carry the conversation over SMS.',
         smsChannelPendingDescription: 'Check your messages at {number} to confirm your phone number.',
-        telegramChannelDescription: 'Connect your Telegram account to be notified when you get a reply and carry the conversation on Telegram',
-        wechatChannelDescriptionMobile: 'Connect your WeChat account to be notified when you get a reply and carry the conversation on WeChat. To get started, save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.',
-        wechatChannelDescription: 'Connect your WeChat account to be notified when you get a reply and carry the conversation on WeChat. To get started, scan this QR code using the WeChat app.',
-        lineChannelDescription: 'To talk to us using LINE, scan this QR code using the LINE app and send us a message.',
-        viberChannelDescriptionMobile: 'Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, install the Viber app and tap Connect.',
-        viberChannelDescription: 'Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, scan the QR code using the Viber app.',
-        smsTooManyRequestsError: 'A connection for that number was requested recently. Please try again in {seconds} seconds.',
-        smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
-        smsUnhandledError: 'Something went wrong. Please try again.',
-        smsPingChannelError: 'There was an error sending a message to your number.',
+        smsContinue: 'Continue',
+        smsInvalidNumberError: 'Your phone number isn\'t valid. Please try again.',
         smsLinkCancelled: 'Link to {appUserNumber} was cancelled.',
         smsLinkPending: 'Pending',
-        smsStartTexting: 'Start Texting',
-        smsChangeNumber: 'Change my number',
+        smsPingChannelError: 'There was an error sending a message to your number.',
         smsSendText: 'Send me a text',
-        smsContinue: 'Continue',
-        smsCancel: 'Cancel',
-        transferError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
-        fetchingHistory: 'Retrieving history...',
-        fetchHistory: 'Load more',
-        clickToRetry: 'Message not delivered. Click to retry.',
+        smsStartTexting: 'Start Texting',
+        smsTooManyRequestsError: 'A connection for that number was requested recently. Please try again in {minutes} minutes.',
+        smsTooManyRequestsOneMinuteError: 'A connection for that number was requested recently. Please try again in 1 minute.',
+        smsUnhandledError: 'Something went wrong. Please try again.',
         tapToRetry: 'Message not delivered. Tap to retry.',
-        locationSendingFailed: 'Could not send location',
-        locationServicesDenied: 'This website cannot access your location. Please type your location instead.',
-        locationNotSupported: 'This website cannot access your location. Allow access in your settings or type your location instead.',
-        locationSecurityRestriction: 'Your browser does not support location services or it’s been disabled. Please type your location instead.'
+        telegramChannelDescription: 'Connect your Telegram account to be notified when you get a reply and carry the conversation on Telegram',
+        transferError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
+        viberChannelDescription: 'Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, scan the QR code using the Viber app.',
+        viberChannelDescriptionMobile: 'Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, install the Viber app and tap Connect.',
+        viberQRCodeError: 'An error occurred while fetching your Viber QR code. Please try again.',
+        wechatChannelDescription: 'Connect your WeChat account to be notified when you get a reply and carry the conversation on WeChat. To get started, scan this QR code using the WeChat app.',
+        wechatChannelDescriptionMobile: 'Connect your WeChat account to be notified when you get a reply and carry the conversation on WeChat. To get started, save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.',
+        wechatQRCodeError: 'An error occurred while fetching your WeChat QR code. Please try again.'
     }
 });
 
