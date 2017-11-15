@@ -151,7 +151,7 @@ var skPromise = Smooch.init({
         smsUnhandledError: 'Something went wrong. Please try again.',
         tapToRetry: 'Message not delivered. Tap to retry.',
         telegramChannelDescription: 'Connect your Telegram account to be notified when you get a reply and carry the conversation on Telegram',
-        transferError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
+        linkError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
         viberChannelDescription: 'Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, scan the QR code using the Viber app.',
         viberChannelDescriptionMobile: 'Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, install the Viber app and tap Connect.',
         viberQRCodeError: 'An error occurred while fetching your Viber QR code. Please try again.',
