@@ -105,7 +105,15 @@ var skPromise = Smooch.init({
         actionPostbackError: 'An error occurred while processing your action. Please try again.',
         clickToRetry: 'Message not delivered. Click to retry.',
         connectNotificationText: 'Be notified inside your other apps when you get a reply.',
+        connectNotificationSingleText: 'Be notified when you get a reply.',
+        connectNotificationSingleButtonText: 'Turn on <name> notifications',
+        connectNotificationOthersText: 'others',
         conversationTimestampHeaderFormat: 'MMMM D YYYY, h:mm A',
+        emailChangeAddress: 'Change my email',
+        emailDescription: 'To be notified by email when you get a reply, enter your email address.',
+        emailFieldLabel: 'Your email',
+        emailFieldPlaceholder: 'Your email address',
+        emailFormButton: 'Continue',
         fetchHistory: 'Load more',
         fetchingHistory: 'Retrieving history...',
         frontendEmailChannelDescription: 'To talk to us using email just send a message to our email address and we\'ll reply shortly:',
@@ -124,9 +132,9 @@ var skPromise = Smooch.init({
         messageIndicatorTitleSingular: '({count}) New message',
         messageRelativeTimeDay: '{value}d ago',
         messageRelativeTimeHour: '{value}h ago',
-        messageRelativeTimeJustNow: 'just now',
+        messageRelativeTimeJustNow: 'Just now',
         messageRelativeTimeMinute: '{value}m ago',
-        messageTimestampFormat: 'hh:mm A',
+        messageTimestampFormat: 'h:mm A',
         messengerChannelDescription: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.',
         notificationSettingsChannelsDescription: 'You can also talk to us from your favorite app or service.',
         notificationSettingsChannelsTitle: 'Other Channels',
@@ -151,6 +159,8 @@ var skPromise = Smooch.init({
         smsUnhandledError: 'Something went wrong. Please try again.',
         tapToRetry: 'Message not delivered. Tap to retry.',
         telegramChannelDescription: 'Connect your Telegram account to be notified when you get a reply and carry the conversation on Telegram',
+        unsupportedMessageType: 'Unsupported message type.',
+        unsupportedActionType: 'Unsupported action type.',
         linkError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
         viberChannelDescription: 'Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, scan the QR code using the Viber app.',
         viberChannelDescriptionMobile: 'Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, install the Viber app and tap Connect.',
@@ -256,6 +266,19 @@ Returns the conversation if it exists
 
 ```javascript
 var conversation = Smooch.getConversation();
+```
+
+#### startConversation()
+Creates a user and conversation on the server, allowing the business to reach out proactively to the user via the public API.
+
+Creating a conversation via this method will count as an active user conversation (AUC) whether messages are exchanged or not, which may incur cost based on your plan. It is strongly recommended to only call this method in the case where a message is likely to be sent.
+
+This method is called automatically when starting a conversation via the `sendMessage` method, or when a user sends a message via the conversation view.
+
+If a conversation already exists for the current user, this call is a no-op.
+
+```javascript
+Smooch.startConversation();
 ```
 
 ### Events
