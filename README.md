@@ -86,6 +86,7 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | appId | No | - | Your app id |
 | jwt | Yes | - | Token to authenticate your communication with the server (see http://docs.smooch.io/javascript/#authenticating-users-optional)
 | userId | Yes | - | User's id |
+| authCode | Yes | - | An auth code for linking to an existing conversation (see more details [here](https://docs.smooch.io/rest/#get-auth-code))|
 | locale | Yes | `en-US` | Locale used for date formatting using the `<language>-<COUNTRY>` format. Language codes can be found [here](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) and country codes [here](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). <br /> **Note 1 : ** The country part is optional, and if a country is either not recognized or supported, it will fallback to using the generic language. If the language isn't supported, it will fallback to `en-US`. <br /> **Note 2:** this is *only* used for date formatting and doesn't provide built-in translations for Web Messenger. Refer to the [documentation](https://docs.smooch.io/guide/web-messenger/#strings-customization) for how to handle translations. |
 | soundNotificationEnabled | Yes | `true` | Enables the sound notification for new messages |
 | imageUploadEnabled | Yes | `true` | Enables the image upload feature. |
@@ -135,6 +136,8 @@ var skPromise = Smooch.init({
         messageRelativeTimeJustNow: 'Just now',
         messageRelativeTimeMinute: '{value}m ago',
         messageTimestampFormat: 'h:mm A',
+        messageSending: 'Sending...',
+        messageDelivered: 'Delivered',
         messengerChannelDescription: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.',
         notificationSettingsChannelsDescription: 'You can also talk to us from your favorite app or service.',
         notificationSettingsChannelsTitle: 'Other Channels',
