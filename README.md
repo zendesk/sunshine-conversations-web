@@ -31,7 +31,9 @@ then initialize the Web Messenger by placing this snippet towards the end of the
 
 ```html
 <script>
-    Smooch.init({appId: '<app-id>'});
+    Smooch.init({appId: '<app-id>'}).then(function() {
+        // Your code after init is complete
+    });
 </script>
 ```
 
@@ -48,7 +50,9 @@ Require and init
 ```javascript
 var Smooch = require('smooch');
 
-Smooch.init({appId: '<app-id>'});
+Smooch.init({appId: '<app-id>'}).then(function() {
+    // Your code after init is complete
+});
 ```
 
 ## Browser support
@@ -172,6 +176,8 @@ var skPromise = Smooch.init({
         wechatChannelDescriptionMobile: 'Connect your WeChat account to be notified when you get a reply and carry the conversation on WeChat. To get started, save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.',
         wechatQRCodeError: 'An error occurred while fetching your WeChat QR code. Please try again.'
     }
+}).then(function() {
+    // Your code after init is complete
 });
 
 
@@ -296,7 +302,9 @@ Smooch.on('ready', function(){
     console.log('the init has completed!');
 });
 
-Smooch.init(...);
+Smooch.init(...).then(function() {
+    // init also returns a promise, so you can alternatively specify a .then() callback
+});
 ```
 
 #### destroy
