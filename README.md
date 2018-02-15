@@ -95,7 +95,26 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | soundNotificationEnabled | Yes | `true` | Enables the sound notification for new messages |
 | imageUploadEnabled | Yes | `true` | Enables the image upload feature. |
 | embedded | Yes | False | Tells the widget it will be embedded. (see Embedded section below) |
-| customText | Yes | See the example below | Strings used in the widget UI. You can use these to either customize the text or translate it. If something is between `{}`, it's a variable and needs to stay in your customized text if you want to use it. |
+| displayStyle | Yes | `button` | Choose how the messenger will appear on your website. Must be either `button` or `tab`.
+| buttonIconUrl | Yes | - | When the `displayStyle` is `button`, you have the option of selecting your own button icon. The image must be at least 200 x 200 pixels and must be in either JPG, PNG, or GIF format.
+| businessName | Yes | - | A custom business name.
+| businessIconUrl | Yes | - | A custom business icon url. The image must be at least 200 x 200 pixels and must be in either JPG, PNG, or GIF format.
+| integrationOrder | Yes | - | Array of integration IDs. When set, only integrations from this list will be displayed. If an empty array is used, no integrations will be displayed. *Note*: Listing an integration in the array doesn't guarantee that it will be displayed in the Web Messenger.
+| customColors | Yes | See below. | Colors used in the Web Messenger UI. |
+| customText | Yes | See the example below | Strings used in the Web Messenger UI. You can use these to either customize the text or translate it. *Note*: Some strings include variables (surrounded by `{}`) which must remain in your customized text. |
+
+##### `customColors`
+
+
+| Option            | Optional? | Default value | Description                                                                                                                           |
+| ----------------- | --------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| brandColor        | Yes       | `65758e`      | This color will be used in the messenger header and the button or tab in idle state. Must be a 3 or 6-character hexadecimal color.    |
+| conversationColor | Yes       | `0099ff`      | This color will be used for customer messages, quick replies and actions in the footer. Must be a 3 or 6-character hexadecimal color. |
+| actionColor       | Yes       | `0099ff`      | This color will be used for call-to-actions inside your messages. Must be a 3 or 6-character hexadecimal color.                       |
+
+See below for an example.
+
+##### Example
 
 ```javascript
 var skPromise = Smooch.init({
@@ -104,6 +123,13 @@ var skPromise = Smooch.init({
     jwt: 'your_jwt',
     userId: 'user_id',
     locale: 'en-US',
+
+    customColors: {
+        brandColor: '65758e',
+        conversationColor: '65758e',
+        actionColor: '65758e',
+    },
+
     customText: {
         actionPaymentCompleted: 'Payment Completed',
         actionPaymentError: 'An error occurred while processing the card. <br> Please try again or use a different card.',
@@ -217,21 +243,21 @@ Smooch.isOpened();
 #### login(userId , jwt)
 Logs a user in the Web Messenger, retrieving the conversation the user already had on other browsers and/or devices. Note that you don't need to call this after `init` if you passed the user id and jwt already, it's done internally. This returns a promise that resolves when the Web Messenger is ready again.
 
-```
+```javascript
 Smooch.login('some-id', 'some-jwt');
 ```
 
 #### logout()
 Logs out the current user and reinitialize the widget with an anonymous user. This returns a promise that resolves when the Web Messenger is ready again.
 
-```
+```javascript
 Smooch.logout();
 ```
 
 #### destroy()
 Destroys the Web Messenger and makes it disappear. The Web Messenger has to be reinitialized with `init` to be working again because it also clears up the app id from the Web Messenger. It will also unbind all listeners you might have with `Smooch.on`.
 
-```
+```javascript
 Smooch.destroy();
 ```
 
@@ -247,6 +273,45 @@ Smooch.sendMessage({
 // OR
 
 Smooch.sendMessage('hello');
+```
+
+#### triggerPostback(actionId)
+Trigger a [postback](https://docs.smooch.io/rest/#postback) action on the user's behalf.
+The `actionId` is the `_id` property of the targeted action.
+
+If you have the `_id` of the targetted `postback` action, you can pass it directly to `triggerPostback`.
+
+```javascript
+const actionId = '5a747faa065bbe4e7804f2a4';
+Smooch.triggerPostback(actionId);
+```
+
+Otherwise, you can get the `_id` of an action by using `Smooch.getConversation()`, e.g.
+
+```javascript
+const conversation = Smooch.getConversation();
+
+console.log(conversation.messages);
+// [
+//     {
+//         "text": "Do you want to continue?",
+//         "actions": [
+//             {
+//                 "payload": "text:continue",
+//                 "text": "Continue conversation",
+//                 "_id": "5a7c65211aaa9b61f69c95e3",
+//                 "type": "postback"
+//             }
+//         ],
+//         "type": "text",
+//         "role": "appMaker",
+//         "_id": "5a7c65211aaa9b61f69c95e2",
+//         // ...
+//     }
+// ]
+
+// Indicate to Smooch that the user has clicked on the "Continue conversation" postback action.
+Smooch.triggerPostback(conversation.messages[0].actions[0]._id);
 ```
 
 #### updateUser(user)
@@ -296,7 +361,7 @@ If you want to make sure your events are triggered, try to bind them before call
 To bind an event, use `Smooch.on(<event name>, <handler>);`. To unbind events, you can either call `Smooch.off(<event name>, handler)` to remove one specific handler, call `Smooch.off(<event name>)` to remove all handlers for an event, or call `Smooch.off()` to unbind all handlers.
 
 #### ready
-```
+```javascript
 // This event triggers when init completes successfully... Be sure to bind before calling init!
 Smooch.on('ready', function(){
     console.log('the init has completed!');
@@ -308,7 +373,7 @@ Smooch.init(...).then(function() {
 ```
 
 #### destroy
-```
+```javascript
 // This event triggers when the widget is destroyed.
 Smooch.on('destroy', function(){
     console.log('the widget is destroyed!');
@@ -318,7 +383,7 @@ Smooch.destroy();
 ```
 
 #### message:received
-```
+```javascript
 // This event triggers when the user receives a message
 Smooch.on('message:received', function(message) {
     console.log('the user received a message', message);
@@ -326,7 +391,7 @@ Smooch.on('message:received', function(message) {
 ```
 
 #### message:sent
-```
+```javascript
 // This event triggers when the user sends a message
 Smooch.on('message:sent', function(message) {
     console.log('the user sent a message', message);
@@ -334,7 +399,7 @@ Smooch.on('message:sent', function(message) {
 ```
 
 #### message
-```
+```javascript
 // This event triggers when a message was added to the conversation
 Smooch.on('message', function(message) {
     console.log('a message was added to the conversation', message);
@@ -342,7 +407,7 @@ Smooch.on('message', function(message) {
 ```
 
 #### unreadCount
-```
+```javascript
 // This event triggers when the number of unread messages changes
 Smooch.on('unreadCount', function(unreadCount) {
     console.log('the number of unread messages was updated', unreadCount);
@@ -350,7 +415,7 @@ Smooch.on('unreadCount', function(unreadCount) {
 ```
 
 #### widget:opened
-```
+```javascript
 // This event triggers when the widget is opened
 Smooch.on('widget:opened', function() {
     console.log('Widget is opened!');
@@ -358,7 +423,7 @@ Smooch.on('widget:opened', function() {
 ```
 
 #### widget:closed
-```
+```javascript
 // This event triggers when the widget is closed
 Smooch.on('widget:closed', function() {
     console.log('Widget is closed!');
