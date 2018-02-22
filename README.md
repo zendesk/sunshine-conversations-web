@@ -97,6 +97,8 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | embedded | Yes | False | Tells the widget it will be embedded. (see Embedded section below) |
 | displayStyle | Yes | `button` | Choose how the messenger will appear on your website. Must be either `button` or `tab`.
 | buttonIconUrl | Yes | - | When the `displayStyle` is `button`, you have the option of selecting your own button icon. The image must be at least 200 x 200 pixels and must be in either JPG, PNG, or GIF format.
+| buttonWidth | Yes | `58px` | When the `displayStyle` is `button`, you have the option of specifying the button width.
+| buttonHeight | Yes | `58px` | When the `displayStyle` is `button`, you have the option of specifying the button height.
 | businessName | Yes | - | A custom business name.
 | businessIconUrl | Yes | - | A custom business icon url. The image must be at least 200 x 200 pixels and must be in either JPG, PNG, or GIF format.
 | backgroundImageUrl | Yes | - | A background image url for the conversation. Image will be tiled to fit the window.
