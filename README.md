@@ -99,6 +99,7 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | buttonIconUrl | Yes | - | When the `displayStyle` is `button`, you have the option of selecting your own button icon. The image must be at least 200 x 200 pixels and must be in either JPG, PNG, or GIF format.
 | businessName | Yes | - | A custom business name.
 | businessIconUrl | Yes | - | A custom business icon url. The image must be at least 200 x 200 pixels and must be in either JPG, PNG, or GIF format.
+| backgroundImageUrl | Yes | - | A background image url for the conversation. Image will be tiled to fit the window.
 | integrationOrder | Yes | - | Array of integration IDs. When set, only integrations from this list will be displayed. If an empty array is used, no integrations will be displayed. *Note*: Listing an integration in the array doesn't guarantee that it will be displayed in the Web Messenger.
 | customColors | Yes | See below. | Colors used in the Web Messenger UI. |
 | customText | Yes | See the example below | Strings used in the Web Messenger UI. You can use these to either customize the text or translate it. *Note*: Some strings include variables (surrounded by `{}`) which must remain in your customized text. |
