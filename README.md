@@ -115,6 +115,82 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | conversationColor | Yes       | `0099ff`      | This color will be used for customer messages, quick replies and actions in the footer. Must be a 3 or 6-character hexadecimal color. |
 | actionColor       | Yes       | `0099ff`      | This color will be used for call-to-actions inside your messages. Must be a 3 or 6-character hexadecimal color.                       |
 
+##### `customText`
+The list of localizable strings. These strings can be modified. _If an option is not given a custom string, the default value will be used._
+
+| Option | Default value |
+| ------ | ------------- |
+| actionPaymentCompleted | Payment Completed |
+| actionPaymentError | An error occurred while processing the card. `<br>` Please try again or use a different card. |
+| actionPostbackError | An error occurred while processing your action. Please try again. |
+| clickToRetry | Message not delivered. Click to retry. |
+| connectNotificationText | Be notified inside your other apps when you get a reply. | 
+| connectNotificationSingleText | Be notified when you get a reply. | 
+| connectNotificationSingleButtonText | Turn on `<name>` notifications | 
+| connectNotificationOthersText | others | 
+| conversationTimestampHeaderFormat | MMMM D YYYY, h:mm A | 
+| emailChangeAddress | Change my email | 
+| emailDescription | To be notified by email when you get a reply, enter your email address. | 
+| emailFieldLabel | Your email | 
+| emailFieldPlaceholder | Your email address | 
+| emailFormButton | Continue | 
+| fetchHistory | Load more | 
+| fetchingHistory | Retrieving history... | 
+| frontendEmailChannelDescription | To talk to us using email just send a message to our email address and we\'ll reply shortly: | 
+| headerText | How can we help? | 
+| inputPlaceholder | Type a message... | 
+| introAppText | Message us below or from your favorite app. | 
+| introductionText | We\'re here to talk, so ask us anything! | 
+| invalidFileError | Only images are supported. Choose a file with a supported extension (jpg, jpeg, png, gif, or bmp). | 
+| lineChannelDescription | To talk to us using LINE, scan this QR code using the LINE app and send us a message. | 
+| locationNotSupported | Your browser does not support location services or it’s been disabled. Please type your location instead. | 
+| locationSecurityRestriction | This website cannot access your location. Please type your location instead. | 
+| locationSendingFailed | Could not send location | 
+| locationServicesDenied | This website cannot access your location. Allow access in your settings or type your location instead. | 
+| messageError | An error occured while sending your message. Please try again. | 
+| messageIndicatorTitlePlural | (`{count}`) New messages | 
+| messageIndicatorTitleSingular | (`{count}`) New message | 
+| messageRelativeTimeDay | `{value}`d ago | 
+| messageRelativeTimeHour | `{value}`h ago | 
+| messageRelativeTimeJustNow | Just now | 
+| messageRelativeTimeMinute | `{value}`m ago | 
+| messageTimestampFormat | h:mm A | 
+| messageSending | Sending... | 
+| messageDelivered | Delivered | 
+| messengerChannelDescription | Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger. | 
+| notificationSettingsChannelsDescription | You can also talk to us from your favorite app or service. | 
+| notificationSettingsChannelsTitle | Other Channels | 
+| notificationSettingsConnected | Connected | 
+| notificationSettingsConnectedAs | Connected as `{username}` | 
+| sendButtonText | Send | 
+| settingsHeaderText | Settings | 
+| smsBadRequestError | We were unable to communicate with this number. Try again or use a different one. | 
+| smsCancel | Cancel | 
+| smsChangeNumber | Change my number | 
+| smsChannelDescription | Connect your SMS number to be notified when you get a reply and carry the conversation over SMS. | 
+| smsChannelPendingDescription | Check your messages at `{number}` to confirm your phone number. | 
+| smsContinue | Continue | 
+| smsInvalidNumberError | Your phone number isn\'t valid. Please try again. | 
+| smsLinkCancelled | Link to `{appUserNumber}` was cancelled. | 
+| smsLinkPending | Pending | 
+| smsPingChannelError | There was an error sending a message to your number. | 
+| smsSendText | Send me a text | 
+| smsStartTexting | Start Texting | 
+| smsTooManyRequestsError | A connection for that number was requested recently. Please try again in {minutes} minutes. | 
+| smsTooManyRequestsOneMinuteError | A connection for that number was requested recently. Please try again in 1 minute. | 
+| smsUnhandledError | Something went wrong. Please try again. | 
+| tapToRetry | Message not delivered. Tap to retry. | 
+| telegramChannelDescription | Connect your Telegram account to be notified when you get a reply and carry the conversation on Telegram | 
+| unsupportedMessageType | Unsupported message type. | 
+| unsupportedActionType | Unsupported action type. | 
+| linkError | An error occurred when attempting to generate a link for this channel. Please try again. | 
+| viberChannelDescription | Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, scan the QR code using the Viber app. | 
+| viberChannelDescriptionMobile | Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, install the Viber app and tap Connect. | 
+| viberQRCodeError | An error occurred while fetching your Viber QR code. Please try again. | 
+| wechatChannelDescription | Connect your WeChat account to be notified when you get a reply and carry the conversation on WeChat. To get started, scan this QR code using the WeChat app. | 
+| wechatChannelDescriptionMobile | Connect your WeChat account to be notified when you get a reply and carry the conversation on WeChat. To get started, save this QR code image and upload it `<a href=\'weixin://dl/scan\'>`QR code scanner`</a>`. | 
+| wechatQRCodeError | An error occurred while fetching your WeChat QR code. Please try again. |
+
 See below for an example.
 
 ##### Example
@@ -437,6 +513,32 @@ Smooch.on('widget:closed', function() {
 As describe above, to activate the embedded mode, you need to pass `embedded: true` when calling `Smooch.init`. By doing so, you are disabling the auto-rendering mechanism and you will need to call `Smooch.render` manually. This method accepts a DOM element which will be used as the container where the widget will be rendered.
 
 The embedded widget will take full width and height of the container. You must give it a height, otherwise, the widget will collapse.
+
+## Content Security Policy
+If your deployment requires [CSP compatibility](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP), add the following meta tag to your configuration.
+```html
+<meta http-equiv="Content-Security-Policy" content="
+    connect-src
+        wss://*.smooch.io
+        https://*.smooch.io;
+    font-src
+        https://*.smooch.io;
+    script-src
+        https://*.smooch.io;
+    style-src
+        https://*.smooch.io;
+    img-src
+        blob:
+        https://*.smooch.io;">
+```
+Note that an equivalent configuration can be done [server side](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy).
+
+According to the channels you use, other domains may need to be added (these are used to display QR codes to link the Web Messenger conversation):
+- LINE: https://qr-official.line.me
+- WeChat: https://mp.weixin.qq.com
+
+Note that your CSP configuration should also include any domains used to host images or files sent in messages.
+If you require `blob:` to be excluded for `img-src`, you must disable the image upload feature via the [init settings](#initoptions).
 
 ## Acknowledgements
 
