@@ -93,7 +93,7 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | authCode | Yes | - | An auth code for linking to an existing conversation (see more details [here](https://docs.smooch.io/rest/#get-auth-code))|
 | locale | Yes | `en-US` | Locale used for date formatting using the `<language>-<COUNTRY>` format. Language codes can be found [here](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) and country codes [here](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). <br /> **Note 1 : ** The country part is optional, and if a country is either not recognized or supported, it will fallback to using the generic language. If the language isn't supported, it will fallback to `en-US`. <br /> **Note 2:** this is *only* used for date formatting and doesn't provide built-in translations for Web Messenger. Refer to the [documentation](https://docs.smooch.io/guide/web-messenger/#strings-customization) for how to handle translations. |
 | soundNotificationEnabled | Yes | `true` | Enables the sound notification for new messages |
-| imageUploadEnabled | Yes | `true` | Enables the image upload feature. |
+| imageUploadEnabled | Yes | `true` | Enables the image upload feature. (deprecated: use menuItems.imageUpload; if this option is `false`, it will disable `menuItems.imageUpload` and `menuItems.fileUpload`) |
 | embedded | Yes | False | Tells the widget it will be embedded. (see Embedded section below) |
 | displayStyle | Yes | `button` | Choose how the messenger will appear on your website. Must be either `button` or `tab`.
 | buttonIconUrl | Yes | - | When the `displayStyle` is `button`, you have the option of selecting your own button icon. The image must be at least 200 x 200 pixels and must be in either JPG, PNG, or GIF format.
@@ -105,6 +105,7 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | integrationOrder | Yes | - | Array of integration IDs. When set, only integrations from this list will be displayed. If an empty array is used, no integrations will be displayed. *Note*: Listing an integration in the array doesn't guarantee that it will be displayed in the Web Messenger.
 | customColors | Yes | See below. | Colors used in the Web Messenger UI. |
 | customText | Yes | See the example below | Strings used in the Web Messenger UI. You can use these to either customize the text or translate it. *Note*: Some strings include variables (surrounded by `{}`) which must remain in your customized text. |
+| menuItems | Yes | See below. | Choose menu items. |
 
 ##### `customColors`
 
@@ -193,6 +194,17 @@ The list of localizable strings. These strings can be modified. _If an option is
 
 See below for an example.
 
+##### `menuItems`
+
+
+| Option        | Optional? | Default value | Description                            |
+| ------------- | --------- | ------------- | -------------------------------------- |
+| imageUpload   | Yes       | `true`        | Enables the image upload menu item.    |
+| fileUpload    | Yes       | `true`        | Enables the file upload menu item.     |
+| shareLocation | Yes       | `true`        | Enables the share location menu item.  |
+
+See below for an example.
+
 ##### Example
 
 ```javascript
@@ -207,6 +219,12 @@ var skPromise = Smooch.init({
         brandColor: '65758e',
         conversationColor: '65758e',
         actionColor: '65758e',
+    },
+
+    menuItems: {
+        imageUpload: true,
+        fileUpload: true,
+        shareLocation: true
     },
 
     customText: {
