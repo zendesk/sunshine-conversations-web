@@ -452,6 +452,13 @@ If a conversation already exists for the current user, this call is a no-op.
 Smooch.startConversation();
 ```
 
+#### markAllAsRead()
+Marks all unread messages as read.
+
+```javascript
+Smooch.markAllAsRead();
+```
+
 ### Events
 If you want to make sure your events are triggered, try to bind them before calling `Smooch.init`.
 
