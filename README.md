@@ -159,7 +159,7 @@ The list of localizable strings. These strings can be modified. _If an option is
 | messageTimestampFormat | h:mm A |
 | messageSending | Sending... |
 | messageDelivered | Delivered |
-| messengerChannelDescription | Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger. |
+| messengerChannelDescription | Connect your Facebook Messenger account to be notified when you get a reply and continue the conversation on Facebook Messenger. |
 | notificationSettingsChannelsDescription | You can also talk to us from your favorite app or service. |
 | notificationSettingsChannelsTitle | Other Channels |
 | notificationSettingsConnected | Connected |
@@ -169,7 +169,7 @@ The list of localizable strings. These strings can be modified. _If an option is
 | smsBadRequestError | We were unable to communicate with this number. Try again or use a different one. |
 | smsCancel | Cancel |
 | smsChangeNumber | Change my number |
-| smsChannelDescription | Connect your SMS number to be notified when you get a reply and carry the conversation over SMS. |
+| smsChannelDescription | Connect your SMS number to be notified when you get a reply and continue the conversation over SMS. |
 | smsChannelPendingDescription | Check your messages at `{number}` to confirm your phone number. |
 | smsContinue | Continue |
 | smsInvalidNumberError | Your phone number isn\'t valid. Please try again. |
@@ -182,15 +182,15 @@ The list of localizable strings. These strings can be modified. _If an option is
 | smsTooManyRequestsOneMinuteError | A connection for that number was requested recently. Please try again in 1 minute. |
 | smsUnhandledError | Something went wrong. Please try again. |
 | tapToRetry | Message not delivered. Tap to retry. |
-| telegramChannelDescription | Connect your Telegram account to be notified when you get a reply and carry the conversation on Telegram |
+| telegramChannelDescription | Connect your Telegram account to be notified when you get a reply and continue the conversation on Telegram |
 | unsupportedMessageType | Unsupported message type. |
 | unsupportedActionType | Unsupported action type. |
 | linkError | An error occurred when attempting to generate a link for this channel. Please try again. |
-| viberChannelDescription | Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, scan the QR code using the Viber app. |
-| viberChannelDescriptionMobile | Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, install the Viber app and tap Connect. |
+| viberChannelDescription | Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, scan the QR code using the Viber app. |
+| viberChannelDescriptionMobile | Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, install the Viber app and tap Connect. |
 | viberQRCodeError | An error occurred while fetching your Viber QR code. Please try again. |
-| wechatChannelDescription | Connect your WeChat account to be notified when you get a reply and carry the conversation on WeChat. To get started, scan this QR code using the WeChat app. |
-| wechatChannelDescriptionMobile | Connect your WeChat account to be notified when you get a reply and carry the conversation on WeChat. To get started, save this QR code image and upload it `<a href=\'weixin://dl/scan\'>`QR code scanner`</a>`. |
+| wechatChannelDescription | Connect your WeChat account to be notified when you get a reply and continue the conversation on WeChat. To get started, scan this QR code using the WeChat app. |
+| wechatChannelDescriptionMobile | Connect your WeChat account to be notified when you get a reply and continue the conversation on WeChat. To get started, save this QR code image and upload it `<a href=\'weixin://dl/scan\'>`QR code scanner`</a>`. |
 | wechatQRCodeError | An error occurred while fetching your WeChat QR code. Please try again. |
 
 See below for an example.
@@ -268,7 +268,7 @@ var skPromise = Smooch.init({
         messageTimestampFormat: 'h:mm A',
         messageSending: 'Sending...',
         messageDelivered: 'Delivered',
-        messengerChannelDescription: 'Connect your Facebook Messenger account to be notified when you get a reply and carry the conversation on Facebook Messenger.',
+        messengerChannelDescription: 'Connect your Facebook Messenger account to be notified when you get a reply and continue the conversation on Facebook Messenger.',
         notificationSettingsChannelsDescription: 'You can also talk to us from your favorite app or service.',
         notificationSettingsChannelsTitle: 'Other Channels',
         notificationSettingsConnected: 'Connected',
@@ -278,7 +278,7 @@ var skPromise = Smooch.init({
         smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
         smsCancel: 'Cancel',
         smsChangeNumber: 'Change my number',
-        smsChannelDescription: 'Connect your SMS number to be notified when you get a reply and carry the conversation over SMS.',
+        smsChannelDescription: 'Connect your SMS number to be notified when you get a reply and continue the conversation over SMS.',
         smsChannelPendingDescription: 'Check your messages at {number} to confirm your phone number.',
         smsContinue: 'Continue',
         smsInvalidNumberError: 'Your phone number isn\'t valid. Please try again.',
@@ -291,15 +291,15 @@ var skPromise = Smooch.init({
         smsTooManyRequestsOneMinuteError: 'A connection for that number was requested recently. Please try again in 1 minute.',
         smsUnhandledError: 'Something went wrong. Please try again.',
         tapToRetry: 'Message not delivered. Tap to retry.',
-        telegramChannelDescription: 'Connect your Telegram account to be notified when you get a reply and carry the conversation on Telegram',
+        telegramChannelDescription: 'Connect your Telegram account to be notified when you get a reply and continue the conversation on Telegram',
         unsupportedMessageType: 'Unsupported message type.',
         unsupportedActionType: 'Unsupported action type.',
         linkError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
-        viberChannelDescription: 'Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, scan the QR code using the Viber app.',
-        viberChannelDescriptionMobile: 'Connect your Viber account to be notified when you get a reply and carry the conversation on Viber. To get started, install the Viber app and tap Connect.',
+        viberChannelDescription: 'Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, scan the QR code using the Viber app.',
+        viberChannelDescriptionMobile: 'Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, install the Viber app and tap Connect.',
         viberQRCodeError: 'An error occurred while fetching your Viber QR code. Please try again.',
-        wechatChannelDescription: 'Connect your WeChat account to be notified when you get a reply and carry the conversation on WeChat. To get started, scan this QR code using the WeChat app.',
-        wechatChannelDescriptionMobile: 'Connect your WeChat account to be notified when you get a reply and carry the conversation on WeChat. To get started, save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.',
+        wechatChannelDescription: 'Connect your WeChat account to be notified when you get a reply and continue the conversation on WeChat. To get started, scan this QR code using the WeChat app.',
+        wechatChannelDescriptionMobile: 'Connect your WeChat account to be notified when you get a reply and continue the conversation on WeChat. To get started, save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.',
         wechatQRCodeError: 'An error occurred while fetching your WeChat QR code. Please try again.'
     }
 }).then(function() {
