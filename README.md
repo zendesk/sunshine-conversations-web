@@ -138,6 +138,8 @@ The list of localizable strings. These strings can be modified. _If an option is
 | emailFormButton | Continue |
 | fetchHistory | Load more |
 | fetchingHistory | Retrieving history... |
+| fileTooLargeError | Max file size limit exceeded ({size}) |
+| fileTypeError | Unsupported file type. |
 | frontendEmailChannelDescription | To talk to us using email just send a message to our email address and we\'ll reply shortly: |
 | headerText | How can we help? |
 | inputPlaceholder | Type a message... |
@@ -145,6 +147,7 @@ The list of localizable strings. These strings can be modified. _If an option is
 | introductionText | We\'re here to talk, so ask us anything! |
 | invalidFileError | Only images are supported. Choose a file with a supported extension (jpg, jpeg, png, gif, or bmp). |
 | lineChannelDescription | To talk to us using LINE, scan this QR code using the LINE app and send us a message. |
+| linkError | An error occurred when attempting to generate a link for this channel. Please try again. |
 | locationNotSupported | Your browser does not support location services or it’s been disabled. Please type your location instead. |
 | locationSecurityRestriction | This website cannot access your location. Please type your location instead. |
 | locationSendingFailed | Could not send location |
@@ -166,6 +169,7 @@ The list of localizable strings. These strings can be modified. _If an option is
 | notificationSettingsConnectedAs | Connected as `{username}` |
 | sendButtonText | Send |
 | settingsHeaderText | Settings |
+| shareLocation | Share location |
 | smsBadRequestError | We were unable to communicate with this number. Try again or use a different one. |
 | smsCancel | Cancel |
 | smsChangeNumber | Change my number |
@@ -183,9 +187,12 @@ The list of localizable strings. These strings can be modified. _If an option is
 | smsUnhandledError | Something went wrong. Please try again. |
 | tapToRetry | Message not delivered. Tap to retry. |
 | telegramChannelDescription | Connect your Telegram account to be notified when you get a reply and continue the conversation on Telegram |
+| uploadDocument | Upload document |
+| uploadInvalidError | Invalid file |
+| uploadPhoto | Upload photo |
+| uploadVirusError | A virus was detected in your file and it has been rejected |
 | unsupportedMessageType | Unsupported message type. |
 | unsupportedActionType | Unsupported action type. |
-| linkError | An error occurred when attempting to generate a link for this channel. Please try again. |
 | viberChannelDescription | Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, scan the QR code using the Viber app. |
 | viberChannelDescriptionMobile | Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, install the Viber app and tap Connect. |
 | viberQRCodeError | An error occurred while fetching your Viber QR code. Please try again. |
@@ -247,6 +254,8 @@ var skPromise = Smooch.init({
         emailFormButton: 'Continue',
         fetchHistory: 'Load more',
         fetchingHistory: 'Retrieving history...',
+        fileTooLargeError: 'Max file size limit exceeded ({size})',
+        fileTypeError: 'Unsupported file type.',
         frontendEmailChannelDescription: 'To talk to us using email just send a message to our email address and we\'ll reply shortly:',
         headerText: 'How can we help?',
         inputPlaceholder: 'Type a message...',
@@ -254,6 +263,7 @@ var skPromise = Smooch.init({
         introductionText: 'We\'re here to talk, so ask us anything!',
         invalidFileError: 'Only images are supported. Choose a file with a supported extension (jpg, jpeg, png, gif, or bmp).',
         lineChannelDescription: 'To talk to us using LINE, scan this QR code using the LINE app and send us a message.',
+        linkError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
         locationNotSupported: 'Your browser does not support location services or it’s been disabled. Please type your location instead.',
         locationSecurityRestriction: 'This website cannot access your location. Please type your location instead.',
         locationSendingFailed: 'Could not send location',
@@ -275,6 +285,7 @@ var skPromise = Smooch.init({
         notificationSettingsConnectedAs: 'Connected as {username}',
         sendButtonText: 'Send',
         settingsHeaderText: 'Settings',
+        shareLocation: 'Share location',
         smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
         smsCancel: 'Cancel',
         smsChangeNumber: 'Change my number',
@@ -292,9 +303,12 @@ var skPromise = Smooch.init({
         smsUnhandledError: 'Something went wrong. Please try again.',
         tapToRetry: 'Message not delivered. Tap to retry.',
         telegramChannelDescription: 'Connect your Telegram account to be notified when you get a reply and continue the conversation on Telegram',
+        uploadDocument: 'Upload document',
+        uploadInvalidError: 'Invalid file',
+        uploadPhoto: 'Upload photo',
+        uploadVirusError: 'A virus was detected in your file and it has been rejected',
         unsupportedMessageType: 'Unsupported message type.',
         unsupportedActionType: 'Unsupported action type.',
-        linkError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
         viberChannelDescription: 'Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, scan the QR code using the Viber app.',
         viberChannelDescriptionMobile: 'Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, install the Viber app and tap Connect.',
         viberQRCodeError: 'An error occurred while fetching your Viber QR code. Please try again.',
