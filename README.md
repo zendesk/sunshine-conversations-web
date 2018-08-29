@@ -107,6 +107,7 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | customColors | Yes | See below. | Colors used in the Web Messenger UI. |
 | customText | Yes | See the example below | Strings used in the Web Messenger UI. You can use these to either customize the text or translate it. *Note*: Some strings include variables (surrounded by `{}`) which must remain in your customized text. |
 | menuItems | Yes | See below. | Choose menu items. |
+| notificationChannelPromptEnabled | Yes | `true` | Enables displaying a prompt to new users after their first message to suggest linking their chat instance with their other 3rd-party apps. |
 
 ##### `customColors`
 
@@ -466,6 +467,20 @@ Marks all unread messages as read.
 
 ```javascript
 Smooch.markAllAsRead();
+```
+
+#### showNotificationChannelPrompt()
+Displays a prompt to the user suggesting the linking of the current chat instance with other 3rd-party apps.
+
+```javascript
+Smooch.showNotificationChannelPrompt();
+```
+
+#### setPredefinedMessage(message)
+Prefills the user's chat input with a predefined message.
+
+```javascript
+Smooch.setPredefinedMessage(message);
 ```
 
 ### Events
