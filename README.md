@@ -81,7 +81,7 @@ Web Messenger is likely compatible with other and older browsers but we only tes
 ### Individual functions
 
 #### init(options)
-Initializes the Smooch widget in the web page using the specified options. It returns a promise that will resolve when the Web Messenger is ready. Note that except`on` and `off`, all methods needs to be called after a successful `init`.
+Initializes the Smooch widget in the web page using the specified options. It returns a promise that will resolve when the Web Messenger is ready. Note that except `on` and `off`, all methods needs to be called after a successful `init`.
 
 ##### Options
 
