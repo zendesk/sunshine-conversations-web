@@ -483,6 +483,35 @@ Prefills the user's chat input with a predefined message.
 Smooch.setPredefinedMessage(message);
 ```
 
+#### setDelegate(delegate)
+Sets a delegate on the conversation. See the [delegate](#delegate) section for more details.
+
+```javascript
+Smooch.setDelegate(delegate);
+```
+
+### Delegate
+Smooch allows you to set a delegate to receive callbacks when important changes happen in the conversation.
+To set a delegate, use the [setDelegate](#setdelegatedelegate) method.
+
+#### beforeSend
+The `beforeSend` delegate method allows you to modify properties of a message before sending it to Smooch.
+The modified message must be returned for it to take effect.
+
+A common usage of this method is to [add message metadata](https://docs.smooch.io/guide/using-metadata/#sdks-and-metadata).
+
+```javascript
+Smooch.setDelegate({
+    beforeSend: (message) => {
+        message.metadata = {
+            any: 'info'
+        };
+
+        return message;
+    }
+});
+```
+
 ### Events
 If you want to make sure your events are triggered, try to bind them before calling `Smooch.init`.
 
