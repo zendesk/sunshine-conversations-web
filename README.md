@@ -494,6 +494,25 @@ Smooch.setDelegate(delegate);
 Smooch allows you to set a delegate to receive callbacks when important changes happen in the conversation.
 To set a delegate, use the [setDelegate](#setdelegatedelegate) method.
 
+#### beforeDisplay
+The `beforeDisplay` delegate allows a message to be hidden or modified before it is displayed in the conversation. This delegate should return a falsy value such as `null` to hide the message. It can also return a modified message object in order to change what the user will see rendered in their conversation history. Note that this change affects the client side rendering only; the server side copy of this message can not be modified by this delegate.
+
+Learn more about filtering and transforming messages in [our guide](https://docs.smooch.io/guide/web-messenger#filtering-and-transforming-messages).
+
+```javascript
+Smooch.init({ appId: '<app-id>' }).then(() => {
+    Smooch.setDelegate({
+        beforeDisplay(message) {
+            if (message.metadata && message.metadata.isHidden) {
+                return null;
+            }
+
+            return message;
+        }
+    });
+});
+```
+
 #### beforeSend
 The `beforeSend` delegate method allows you to modify properties of a message before sending it to Smooch.
 The modified message must be returned for it to take effect.
@@ -501,14 +520,16 @@ The modified message must be returned for it to take effect.
 A common usage of this method is to [add message metadata](https://docs.smooch.io/guide/using-metadata/#sdks-and-metadata).
 
 ```javascript
-Smooch.setDelegate({
-    beforeSend: (message) => {
-        message.metadata = {
-            any: 'info'
-        };
+Smooch.init({ appId: '<app-id>' }).then(() => {
+    Smooch.setDelegate({
+        beforeSend(message) {
+            message.metadata = {
+                any: 'info'
+            };
 
-        return message;
-    }
+            return message;
+        }
+    });
 });
 ```
 
