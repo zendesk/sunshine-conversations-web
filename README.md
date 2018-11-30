@@ -533,6 +533,26 @@ Smooch.init({ appId: '<app-id>' }).then(() => {
 });
 ```
 
+#### beforePostbackSend
+The `beforePostbackSend` delegate method allows you to modify properties of a postback before sending it to Smooch.
+The modified postback must be returned for it to take effect.
+
+A common usage of this method is to [add postback metadata](https://docs.smooch.io/guide/web-messenger#transforming-postback).
+
+```javascript
+Smooch.init({ appId: '<app-id>' }).then(() => {
+    Smooch.setDelegate({
+        beforePostbackSend(postback) {
+            postback.metadata = {
+                any: 'info'
+            };
+
+            return postback;
+        }
+    });
+});
+```
+
 ### Events
 If you want to make sure your events are triggered, try to bind them before calling `Smooch.init`.
 
