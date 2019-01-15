@@ -631,6 +631,15 @@ Smooch.on('widget:closed', function() {
 ### Embedded mode
 As describe above, to activate the embedded mode, you need to pass `embedded: true` when calling `Smooch.init`. By doing so, you are disabling the auto-rendering mechanism and you will need to call `Smooch.render` manually. This method accepts a DOM element which will be used as the container where the widget will be rendered.
 
+```javascript
+Smooch.init({
+    appId: '<app-id>',
+    embedded: true
+});
+
+Smooch.render(document.getElementById('chat-container'));
+```
+
 The embedded widget will take full width and height of the container. You must give it a height, otherwise, the widget will collapse.
 
 ## Content Security Policy
