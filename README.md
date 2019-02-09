@@ -519,6 +519,8 @@ The modified message must be returned for it to take effect.
 
 A common usage of this method is to [add message metadata](https://docs.smooch.io/guide/using-metadata/#sdks-and-metadata).
 
+Note that when a file or an image is uploaded, only the message `metadata` may be updated. Other message properties such as `type` or `text` won't be considered.
+
 ```javascript
 Smooch.init({ appId: '<app-id>' }).then(() => {
     Smooch.setDelegate({
@@ -625,6 +627,16 @@ Smooch.on('widget:opened', function() {
 // This event triggers when the widget is closed
 Smooch.on('widget:closed', function() {
     console.log('Widget is closed!');
+});
+```
+
+#### log:debug
+```javascript
+// This event triggers when the codes emits debug information
+Smooch.on('log:debug', function(e) {
+    console.log('Timestamp': e.timestamp); // (Float) Date.now() when it was emitted
+    console.log('Message': e.message); // (String) Message being logged
+    console.log('Data': e.data); // (Object) Extra details to be logged
 });
 ```
 
