@@ -132,6 +132,10 @@ The list of localizable strings. These strings can be modified. _If an option is
 | connectNotificationSingleButtonText | Turn on `<name>` notifications |
 | connectNotificationOthersText | others |
 | conversationTimestampHeaderFormat | MMMM D YYYY, h:mm A |
+| couldNotConnect | Couldn't connect. You can {retry}. |
+| couldNotConnectInner | retry connecting now |
+| couldNotConnectWithRetry | Couldn't connect. We'll keep retrying, or you can {retry}. |
+| couldNotConnectWithRetryInner | try now |
 | emailChangeAddress | Change my email |
 | emailDescription | To be notified by email when you get a reply, enter your email address. |
 | emailFieldLabel | Your email |
@@ -244,6 +248,10 @@ var skPromise = Smooch.init({
         connectNotificationSingleButtonText: 'Turn on <name> notifications',
         connectNotificationOthersText: 'others',
         conversationTimestampHeaderFormat: 'MMMM D YYYY, h:mm A',
+        couldNotConnect: 'Couldn\'t connect. You can {retry}. '
+        couldNotConnectInner: 'retry connecting now'
+        couldNotConnectWithRetry: 'Couldn\'t connect. We\'ll keep retrying, or you can {retry}.',
+        couldNotConnectWithRetryInner: 'try now',
         emailChangeAddress: 'Change my email',
         emailDescription: 'To be notified by email when you get a reply, enter your email address.',
         emailFieldLabel: 'Your email',
@@ -637,6 +645,24 @@ Smooch.on('log:debug', function(e) {
     console.log('Timestamp': e.timestamp); // (Float) Date.now() when it was emitted
     console.log('Message': e.message); // (String) Message being logged
     console.log('Data': e.data); // (Object) Extra details to be logged
+});
+```
+
+#### connected
+```javascript
+// This event triggers when an active connection has been established for the first time,
+// or when the connection has been re-established after a `disconnect` event.
+Smooch.on('connected', function(e) {
+    console.log('Connected');
+});
+```
+
+#### disconnected
+```javascript
+// This event triggers when an active connection is lost
+// While disconnected, the client will not be able to recieve messages
+Smooch.on('disconnected', function(e) {
+    console.log('Disonnected');
 });
 ```
 
