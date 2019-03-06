@@ -88,8 +88,8 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | Option | Optional? | Default value | Description |
 | --- | --- | --- | --- |
 | appId | No | - | Your app id |
-| jwt | Yes | - | Token to authenticate your communication with the server (see http://docs.smooch.io/javascript/#authenticating-users-optional)
-| userId | Yes | - | User's id |
+| userId | Yes | - | Optional. User's id, which can be passed in `init()` as an alternative to `login()` (see [below](#authenticating-the-user-init-vs-login)) |
+| jwt | Yes | - | Optional. User's authentication token, which can be passed in `init()` as an alternative to `login()` (see [below](#authenticating-the-user-init-vs-login))  |
 | authCode | Yes | - | An auth code for linking to an existing conversation (see more details [here](https://docs.smooch.io/rest/#get-auth-code))|
 | locale | Yes | `en-US` | Locale used for date formatting using the `<language>-<COUNTRY>` format. Language codes can be found [here](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) and country codes [here](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). <br /> **Note 1 : ** The country part is optional, and if a country is either not recognized or supported, it will fallback to using the generic language. If the language isn't supported, it will fallback to `en-US`. <br /> **Note 2:** this is *only* used for date formatting and doesn't provide built-in translations for Web Messenger. Refer to the [documentation](https://docs.smooch.io/guide/web-messenger/#strings-customization) for how to handle translations. |
 | soundNotificationEnabled | Yes | `true` | Enables the sound notification for new messages |
@@ -144,6 +144,8 @@ The list of localizable strings. These strings can be modified. _If an option is
 | emailFormButton | Continue |
 | fetchHistory | Load more |
 | fetchingHistory | Retrieving history... |
+| fileTooLargeError | Max file size limit exceeded ({size}) |
+| fileTypeError | Unsupported file type. |
 | frontendEmailChannelDescription | To talk to us using email just send a message to our email address and we\'ll reply shortly: |
 | headerText | How can we help? |
 | imageClickToReload | Click to reload image. |
@@ -154,6 +156,7 @@ The list of localizable strings. These strings can be modified. _If an option is
 | introductionText | We\'re here to talk, so ask us anything! |
 | invalidFileError | Only images are supported. Choose a file with a supported extension (jpg, jpeg, png, gif, or bmp). |
 | lineChannelDescription | To talk to us using LINE, scan this QR code using the LINE app and send us a message. |
+| linkError | An error occurred when attempting to generate a link for this channel. Please try again. |
 | locationNotSupported | Your browser does not support location services or it’s been disabled. Please type your location instead. |
 | locationSecurityRestriction | This website cannot access your location. Please type your location instead. |
 | locationSendingFailed | Could not send location |
@@ -175,6 +178,7 @@ The list of localizable strings. These strings can be modified. _If an option is
 | notificationSettingsConnectedAs | Connected as `{username}` |
 | sendButtonText | Send |
 | settingsHeaderText | Settings |
+| shareLocation | Share location |
 | smsBadRequestError | We were unable to communicate with this number. Try again or use a different one. |
 | smsCancel | Cancel |
 | smsChangeNumber | Change my number |
@@ -194,7 +198,10 @@ The list of localizable strings. These strings can be modified. _If an option is
 | telegramChannelDescription | Connect your Telegram account to be notified when you get a reply and continue the conversation on Telegram |
 | unsupportedMessageType | Unsupported message type. |
 | unsupportedActionType | Unsupported action type. |
-| linkError | An error occurred when attempting to generate a link for this channel. Please try again. |
+| uploadDocument | Upload document. |
+| uploadInvalidError | Invalid file. |
+| uploadPhoto | Upload photo. |
+| uploadVirusError | A virus was detected in your file and it has been rejected |
 | viberChannelDescription | Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, scan the QR code using the Viber app. |
 | viberChannelDescriptionMobile | Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, install the Viber app and tap Connect. |
 | viberQRCodeError | An error occurred while fetching your Viber QR code. Please try again. |
@@ -249,8 +256,8 @@ var skPromise = Smooch.init({
         connectNotificationSingleButtonText: 'Turn on <name> notifications',
         connectNotificationOthersText: 'others',
         conversationTimestampHeaderFormat: 'MMMM D YYYY, h:mm A',
-        couldNotConnect: 'Couldn\'t connect. You can {retry}. '
-        couldNotConnectInner: 'retry connecting now'
+        couldNotConnect: 'Couldn\'t connect. You can {retry}. ',
+        couldNotConnectInner: 'retry connecting now',
         couldNotConnectWithRetry: 'Couldn\'t connect. We\'ll keep retrying, or you can {retry}.',
         couldNotConnectWithRetryInner: 'try now',
         emailChangeAddress: 'Change my email',
@@ -260,6 +267,8 @@ var skPromise = Smooch.init({
         emailFormButton: 'Continue',
         fetchHistory: 'Load more',
         fetchingHistory: 'Retrieving history...',
+        fileTooLargeError: 'Max file size limit exceeded ({size})',
+        fileTypeError: 'Unsupported file type.',
         frontendEmailChannelDescription: 'To talk to us using email just send a message to our email address and we\'ll reply shortly:',
         headerText: 'How can we help?',
         imageClickToReload: 'Click to reload image.',
@@ -270,6 +279,7 @@ var skPromise = Smooch.init({
         introductionText: 'We\'re here to talk, so ask us anything!',
         invalidFileError: 'Only images are supported. Choose a file with a supported extension (jpg, jpeg, png, gif, or bmp).',
         lineChannelDescription: 'To talk to us using LINE, scan this QR code using the LINE app and send us a message.',
+        linkError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
         locationNotSupported: 'Your browser does not support location services or it’s been disabled. Please type your location instead.',
         locationSecurityRestriction: 'This website cannot access your location. Please type your location instead.',
         locationSendingFailed: 'Could not send location',
@@ -291,6 +301,7 @@ var skPromise = Smooch.init({
         notificationSettingsConnectedAs: 'Connected as {username}',
         sendButtonText: 'Send',
         settingsHeaderText: 'Settings',
+        shareLocation: 'Share location',
         smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
         smsCancel: 'Cancel',
         smsChangeNumber: 'Change my number',
@@ -310,7 +321,10 @@ var skPromise = Smooch.init({
         telegramChannelDescription: 'Connect your Telegram account to be notified when you get a reply and continue the conversation on Telegram',
         unsupportedMessageType: 'Unsupported message type.',
         unsupportedActionType: 'Unsupported action type.',
-        linkError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
+        uploadDocument: 'Upload document',
+        uploadInvalidError: 'Invalid file',
+        uploadPhoto: 'Upload photo',
+        uploadVirusError: 'A virus was detected in your file and it has been rejected',
         viberChannelDescription: 'Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, scan the QR code using the Viber app.',
         viberChannelDescriptionMobile: 'Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, install the Viber app and tap Connect.',
         viberQRCodeError: 'An error occurred while fetching your Viber QR code. Please try again.',
@@ -680,6 +694,14 @@ Smooch.render(document.getElementById('chat-container'));
 ```
 
 The embedded widget will take full width and height of the container. You must give it a height, otherwise, the widget will collapse.
+
+### Authenticating the user: init() vs login()
+
+For [authenticated user scenarios](https://docs.smooch.io/guide/authenticating-users/), a user's credentials can be passed in to either `init()` or `login()`. The question remains: when should you use which?
+
+When `init()` is called without a `userId` and `jwt`, the UI will be initialized in an anonymous user context, and the user will be able to send messages as an anonymous user. After `init()` has completed, `login()` may be called to authenticate the user and resume any existing conversation. This is useful if you want your users to be able to send messages before they've logged in to your website. Once a user does login and the browser is issued a valid `jwt`, `login()` may be called so that the user may continue the conversation in an authenticated session.
+
+If however your use case requires that all users be logged in before they may send messages, then you should consider passing `userId` and `jwt` directly to the `init()` call upfront.
 
 ## Content Security Policy
 If your deployment requires [CSP compatibility](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP), add the following meta tag to your configuration.
