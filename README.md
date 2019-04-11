@@ -109,6 +109,7 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | menuItems | Yes | See below. | Choose menu items. |
 | notificationChannelPromptEnabled | Yes | `true` | Enables displaying a prompt to new users after their first message to suggest linking their chat instance with their other 3rd-party apps. |
 | browserStorage | Yes | `localStorage` | Choose the storage type to use for storing user identity in the browser. Must be either `localStorage` or `sessionStorage`. [Learn more](https://docs.smooch.io/guide/web-messenger/#browser-storage) |
+| delegate | Yes | `undefined` |  Sets a delegate on the conversation. See the [delegate](#delegate) section for more details. |
 
 ##### `customColors`
 
@@ -507,7 +508,7 @@ Smooch.setPredefinedMessage(message);
 ```
 
 #### setDelegate(delegate)
-Sets a delegate on the conversation. See the [delegate](#delegate) section for more details.
+Sets a delegate on the conversation. Smooch must be initialized before calling this method. See the [delegate](#delegate) section for more details.
 
 ```javascript
 Smooch.setDelegate(delegate);
@@ -515,7 +516,34 @@ Smooch.setDelegate(delegate);
 
 ### Delegate
 Smooch allows you to set a delegate to receive callbacks when important changes happen in the conversation.
-To set a delegate, use the [setDelegate](#setdelegatedelegate) method.
+To set a delegate, pass the `delegate` parameter in to [init options](#options), or use the [setDelegate](#setdelegatedelegate) method. The `delegate` object may optionally contain `beforeDisplay`, `beforeSend` and `beforePostbackSend` delegate functions.
+
+Passing `delegate` as part of `init` options is the preferred method. The `setDelegate` method can be used to change or remove delegate behaviors after a conversation has been initialized.
+
+```javascript
+const delegate = {
+    beforeDisplay(message) {
+        return message;
+    },
+    beforeSend(message) {
+        return message;
+    },
+    beforePostbackSend(postback) {
+        return postback;
+    }
+}
+
+// Passing delegate as an init parameter
+Smooch.init({
+    appId: '<app-id>',
+    delegate
+});
+
+// Using setDelegate
+Smooch.init({ appId: '<app-id>' }).then(() => {
+    Smooch.setDelegate(delegate);
+});
+```
 
 #### beforeDisplay
 The `beforeDisplay` delegate allows a message to be hidden or modified before it is displayed in the conversation. This delegate should return a falsy value such as `null` to hide the message. It can also return a modified message object in order to change what the user will see rendered in their conversation history. Note that this change affects the client side rendering only; the server side copy of this message can not be modified by this delegate.
@@ -523,8 +551,9 @@ The `beforeDisplay` delegate allows a message to be hidden or modified before it
 Learn more about filtering and transforming messages in [our guide](https://docs.smooch.io/guide/web-messenger#filtering-and-transforming-messages).
 
 ```javascript
-Smooch.init({ appId: '<app-id>' }).then(() => {
-    Smooch.setDelegate({
+Smooch.init({
+    appId: '<app-id>',
+    delegate: {
         beforeDisplay(message) {
             if (message.metadata && message.metadata.isHidden) {
                 return null;
@@ -532,7 +561,7 @@ Smooch.init({ appId: '<app-id>' }).then(() => {
 
             return message;
         }
-    });
+    }
 });
 ```
 
@@ -545,8 +574,9 @@ A common usage of this method is to [add message metadata](https://docs.smooch.i
 Note that when a file or an image is uploaded, only the message `metadata` may be updated. Other message properties such as `type` or `text` won't be considered.
 
 ```javascript
-Smooch.init({ appId: '<app-id>' }).then(() => {
-    Smooch.setDelegate({
+Smooch.init({
+    appId: '<app-id>'
+    delegate: {
         beforeSend(message) {
             message.metadata = {
                 any: 'info'
@@ -554,7 +584,7 @@ Smooch.init({ appId: '<app-id>' }).then(() => {
 
             return message;
         }
-    });
+    }
 });
 ```
 
@@ -565,8 +595,9 @@ The modified postback must be returned for it to take effect.
 A common usage of this method is to [add postback metadata](https://docs.smooch.io/guide/web-messenger#transforming-postback).
 
 ```javascript
-Smooch.init({ appId: '<app-id>' }).then(() => {
-    Smooch.setDelegate({
+Smooch.init({
+    appId: '<app-id>',
+    delegate: {
         beforePostbackSend(postback) {
             postback.metadata = {
                 any: 'info'
@@ -574,7 +605,7 @@ Smooch.init({ appId: '<app-id>' }).then(() => {
 
             return postback;
         }
-    });
+    }
 });
 ```
 
