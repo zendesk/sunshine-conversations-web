@@ -406,6 +406,20 @@ Smooch.sendMessage({
 Smooch.sendMessage('hello');
 ```
 
+#### startTyping()
+Sends an event indicating the appUser has started typing. When called, a `stopTyping` timer will be created and will call `stopTyping()` after 10s, unless `stopTyping()` has been called manually. Everytime `startTyping()` is called the timer is reset. If `startTyping()` is called repeatedly, an event will only be sent if the time since the last sent event is greater then 10s.
+
+```javascript
+Smooch.startTyping();
+```
+
+#### stopTyping()
+Sends an event indicating the appUser has stoped typing.
+
+```javascript
+Smooch.stopTyping();
+```
+
 #### triggerPostback(actionId)
 Trigger a [postback](https://docs.smooch.io/rest/#postback) action on the user's behalf.
 The `actionId` is the `_id` property of the targeted action.
@@ -709,6 +723,22 @@ Smooch.on('connected', function(e) {
 // While disconnected, the client will not be able to recieve messages
 Smooch.on('disconnected', function(e) {
     console.log('Disonnected');
+});
+```
+
+#### typing:start
+```javascript
+// This event triggers when appMaker starts typing
+Smooch.on('typing:start', function() {
+    console.log('appMaker starts typing!');
+});
+```
+
+#### typing:stop
+```javascript
+// This event triggers when appMaker stops typing
+Smooch.on('typing:stop', function() {
+    console.log('appMaker stops typing!');
 });
 ```
 
