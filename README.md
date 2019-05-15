@@ -89,7 +89,7 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | --- | --- | --- | --- |
 | appId | No | - | Your app id |
 | userId | Yes | - | Optional. User's id, which can be passed in `init()` as an alternative to `login()` (see [below](#authenticating-the-user-init-vs-login)) |
-| jwt | Yes | - | Optional. User's authentication token, which can be passed in `init()` as an alternative to `login()` (see [below](#authenticating-the-user-init-vs-login))  |
+| jwt | Yes | - | Optional. User's authentication token, which can be passed in `init()` as an alternative to `login()` (see [below](#authenticating-the-user-init-vs-login)) |
 | authCode | Yes | - | An auth code for linking to an existing conversation (see more details [here](https://docs.smooch.io/rest/#get-auth-code))|
 | locale | Yes | `en-US` | Locale used for date formatting using the `<language>-<COUNTRY>` format. Language codes can be found [here](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) and country codes [here](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). <br /> **Note 1 : ** The country part is optional, and if a country is either not recognized or supported, it will fallback to using the generic language. If the language isn't supported, it will fallback to `en-US`. <br /> **Note 2:** this is *only* used for date formatting and doesn't provide built-in translations for Web Messenger. Refer to the [documentation](https://docs.smooch.io/guide/web-messenger/#strings-customization) for how to handle translations. |
 | soundNotificationEnabled | Yes | `true` | Enables the sound notification for new messages |
@@ -104,12 +104,13 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | businessIconUrl | Yes | - | A custom business icon url. The image must be at least 200 x 200 pixels and must be in either JPG, PNG, or GIF format.
 | backgroundImageUrl | Yes | - | A background image url for the conversation. Image will be tiled to fit the window.
 | integrationOrder | Yes | - | Array of integration IDs. When set, only integrations from this list will be displayed. If an empty array is used, no integrations will be displayed. *Note*: Listing an integration in the array doesn't guarantee that it will be displayed in the Web Messenger.
-| customColors | Yes | See below. | Colors used in the Web Messenger UI. |
+| customColors | Yes | [See below.](#customcolors) | Colors used in the Web Messenger UI. |
 | customText | Yes | See the example below | Strings used in the Web Messenger UI. You can use these to either customize the text or translate it. *Note*: Some strings include variables (surrounded by `{}`) which must remain in your customized text. |
-| menuItems | Yes | See below. | Choose menu items. |
+| menuItems | Yes | [See below.](#menuitems) | Choose menu items. |
 | notificationChannelPromptEnabled | Yes | `true` | Enables displaying a prompt to new users after their first message to suggest linking their chat instance with their other 3rd-party apps. |
 | browserStorage | Yes | `localStorage` | Choose the storage type to use for storing user identity in the browser. Must be either `localStorage` or `sessionStorage`. [Learn more](https://docs.smooch.io/guide/web-messenger/#browser-storage) |
 | delegate | Yes | `undefined` |  Sets a delegate on the conversation. See the [delegate](#delegate) section for more details. |
+| prechatCapture | Yes | [See below.](#prechatcapture) | Enables automatically capturing a user's name and email via a form before the start of a conversation. Disables the chat input until the form has been submitted. |
 
 ##### `customColors`
 
@@ -129,6 +130,7 @@ The list of localizable strings. These strings can be modified. _If an option is
 | actionPaymentError | An error occurred while processing the card. `<br>` Please try again or use a different card. |
 | actionPostbackError | An error occurred while processing your action. Please try again. |
 | clickToRetry | Message not delivered. Click to retry. |
+| clickToRetryForm | Form not submitted. Click anywhere on the form to retry. |
 | connectNotificationText | Be notified inside your other apps when you get a reply. |
 | connectNotificationSingleText | Be notified when you get a reply. |
 | connectNotificationSingleButtonText | Turn on `<name>` notifications |
@@ -147,12 +149,14 @@ The list of localizable strings. These strings can be modified. _If an option is
 | fetchingHistory | Retrieving history... |
 | fileTooLargeError | Max file size limit exceeded ({size}) |
 | fileTypeError | Unsupported file type. |
+| formFieldSelectPlaceholderFallback | Choose one... |
 | frontendEmailChannelDescription | To talk to us using email just send a message to our email address and we\'ll reply shortly: |
 | headerText | How can we help? |
 | imageClickToReload | Click to reload image. |
 | imageClickToView | Click to view {size} image. |
 | imagePreviewNotAvailable | Preview not available. |
 | inputPlaceholder | Type a message... |
+| inputPlaceholderBlocked | Complete the form above... |
 | introAppText | Message us below or from your favorite app. |
 | introductionText | We\'re here to talk, so ask us anything! |
 | invalidFileError | Only images are supported. Choose a file with a supported extension (jpg, jpeg, png, gif, or bmp). |
@@ -196,6 +200,7 @@ The list of localizable strings. These strings can be modified. _If an option is
 | smsTooManyRequestsOneMinuteError | A connection for that number was requested recently. Please try again in 1 minute. |
 | smsUnhandledError | Something went wrong. Please try again. |
 | tapToRetry | Message not delivered. Tap to retry. |
+| tapToRetryForm | Form not submitted. Tap anywhere on the form to retry. |
 | telegramChannelDescription | Connect your Telegram account to be notified when you get a reply and continue the conversation on Telegram |
 | unsupportedMessageType | Unsupported message type. |
 | unsupportedActionType | Unsupported action type. |
@@ -210,7 +215,7 @@ The list of localizable strings. These strings can be modified. _If an option is
 | wechatChannelDescriptionMobile | Connect your WeChat account to be notified when you get a reply and continue the conversation on WeChat. To get started, save this QR code image and upload it `<a href=\'weixin://dl/scan\'>`QR code scanner`</a>`. |
 | wechatQRCodeError | An error occurred while fetching your WeChat QR code. Please try again. |
 
-See below for an example.
+[See below](#example) for an example.
 
 ##### `menuItems`
 
@@ -221,7 +226,16 @@ See below for an example.
 | fileUpload    | Yes       | `true`        | Enables the file upload menu item.     |
 | shareLocation | Yes       | `true`        | Enables the share location menu item.  |
 
-See below for an example.
+[See below](#example) for an example.
+
+##### `prechatCapture`
+
+| Option             | Optional? | Default value | Description                                                                         |
+| ------------------ | --------- | ------------- | ----------------------------------------------------------------------------------- |
+| enabled            | Yes       | `false`       | Enables the prechat capture experience.                                             |
+| enableEmailLinking | Yes       | `true`        | Automatically links the user's email to the app's Mailgun integration if it exists. |
+
+[See below](#example) for an example.
 
 ##### Example
 
@@ -247,11 +261,17 @@ var skPromise = Smooch.init({
 
     fixedIntroPane: false,
 
+    prechatCapture: {
+        enabled: true,
+        enableEmailLinking: true
+    },
+
     customText: {
         actionPaymentCompleted: 'Payment Completed',
         actionPaymentError: 'An error occurred while processing the card. <br> Please try again or use a different card.',
         actionPostbackError: 'An error occurred while processing your action. Please try again.',
         clickToRetry: 'Message not delivered. Click to retry.',
+        clickToRetryForm: 'Form not submitted. Click anywhere on the form to retry.',
         connectNotificationText: 'Be notified inside your other apps when you get a reply.',
         connectNotificationSingleText: 'Be notified when you get a reply.',
         connectNotificationSingleButtonText: 'Turn on <name> notifications',
@@ -270,12 +290,14 @@ var skPromise = Smooch.init({
         fetchingHistory: 'Retrieving history...',
         fileTooLargeError: 'Max file size limit exceeded ({size})',
         fileTypeError: 'Unsupported file type.',
+        formFieldSelectPlaceholderFallback: 'Choose one...',
         frontendEmailChannelDescription: 'To talk to us using email just send a message to our email address and we\'ll reply shortly:',
         headerText: 'How can we help?',
         imageClickToReload: 'Click to reload image.',
         imageClickToView: 'Click to view {size} image.',
         imagePreviewNotAvailable: 'Preview not available.',
         inputPlaceholder: 'Type a message...',
+        inputPlaceholderBlocked: 'Complete the form above...',
         introAppText: 'Message us below or from your favorite app.',
         introductionText: 'We\'re here to talk, so ask us anything!',
         invalidFileError: 'Only images are supported. Choose a file with a supported extension (jpg, jpeg, png, gif, or bmp).',
@@ -319,6 +341,7 @@ var skPromise = Smooch.init({
         smsTooManyRequestsOneMinuteError: 'A connection for that number was requested recently. Please try again in 1 minute.',
         smsUnhandledError: 'Something went wrong. Please try again.',
         tapToRetry: 'Message not delivered. Tap to retry.',
+        tapToRetryForm: 'Form not submitted. Tap anywhere on the form to retry.',
         telegramChannelDescription: 'Connect your Telegram account to be notified when you get a reply and continue the conversation on Telegram',
         unsupportedMessageType: 'Unsupported message type.',
         unsupportedActionType: 'Unsupported action type.',
