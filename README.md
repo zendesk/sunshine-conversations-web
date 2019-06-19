@@ -553,7 +553,7 @@ Smooch.setDelegate(delegate);
 
 ### Delegate
 Smooch allows you to set a delegate to receive callbacks when important changes happen in the conversation.
-To set a delegate, pass the `delegate` parameter in to [init options](#options), or use the [setDelegate](#setdelegatedelegate) method. The `delegate` object may optionally contain `beforeDisplay`, `beforeSend` and `beforePostbackSend` delegate functions.
+To set a delegate, pass the `delegate` parameter in to [init options](#options), or use the [setDelegate](#setdelegatedelegate) method. The `delegate` object may optionally contain `beforeDisplay`, `beforeSend`, `beforePostbackSend` and `onInvalidAuth` delegate functions.
 
 Passing `delegate` as part of `init` options is the preferred method. The `setDelegate` method can be used to change or remove delegate behaviors after a conversation has been initialized.
 
@@ -567,6 +567,11 @@ const delegate = {
     },
     beforePostbackSend(postback) {
         return postback;
+    },
+    onInvalidAuth() {
+        return new Promise((resolve) =>
+            resolve('<my-new-auth-token>')
+        )
     }
 }
 
@@ -641,6 +646,20 @@ Smooch.init({
             };
 
             return postback;
+        }
+    }
+});
+```
+
+#### onInvalidAuth
+The `onInvalidAuth` delegate notifies the delegate of a failed request due to invalid credentials and allows the implementer to set a new auth token in order to retry the request. The delegate must return a new JWT token as a `string` or `Promise<string>` that will resolve into the JWT.
+
+```javascript
+Smooch.init({
+    appId: '<app-id>',
+    delegate: {
+        onInvalidAuth() {
+            return '<my-new-auth-token>';
         }
     }
 });
