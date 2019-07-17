@@ -131,7 +131,7 @@ The list of localizable strings. These strings can be modified. _If an option is
 | actionPostbackError | An error occurred while processing your action. Please try again. |
 | clickToRetry | Message not delivered. Click to retry. |
 | clickToRetryForm | Form not submitted. Click anywhere on the form to retry. |
-| connectNotificationText | Be notified inside your other apps when you get a reply. |
+| connectNotificationText | Give us a way to reach out: |
 | connectNotificationSingleText | Be notified when you get a reply. |
 | connectNotificationSingleButtonText | Turn on `<name>` notifications |
 | connectNotificationOthersText | others |
@@ -149,6 +149,10 @@ The list of localizable strings. These strings can be modified. _If an option is
 | fetchingHistory | Retrieving history... |
 | fileTooLargeError | Max file size limit exceeded ({size}) |
 | fileTypeError | Unsupported file type. |
+| formErrorInvalidEmail | Email is invalid |
+| formErrorNoLongerThan | Must contain no more than ({characters}) characters |
+| formErrorNoShorterThan | Must contain at least ({characters}) characters |
+| formErrorUnknown | This doesn't look quite right |
 | formFieldSelectPlaceholderFallback | Choose one... |
 | frontendEmailChannelDescription | To talk to us using email just send a message to our email address and we\'ll reply shortly: |
 | headerText | How can we help? |
@@ -181,6 +185,13 @@ The list of localizable strings. These strings can be modified. _If an option is
 | notificationSettingsChannelsTitle | Other Channels |
 | notificationSettingsConnected | Connected |
 | notificationSettingsConnectedAs | Connected as `{username}` |
+| prechatCaptureGreetingText | Hi there 👋\nTo start off, we\'d like to know a little bit more about you: |
+| prechatCaptureNameLabel | Your name |
+| prechatCaptureNamePlaceholder | Type your name... |
+| prechatCaptureEmailLabel | Email |
+| prechatCaptureEmailPlaceholder | name@company.com |
+| prechatCaptureConfirmationText | Thanks for that! What can we help you with? |
+| prechatCaptureMailgunLinkingConfirmation | You\'ll be notified here and by email at {email} once we reply. |
 | sendButtonText | Send |
 | settingsHeaderText | Settings |
 | shareLocation | Share location |
@@ -237,6 +248,18 @@ The list of localizable strings. These strings can be modified. _If an option is
 
 [See below](#example) for an example.
 
+`prechatCapture` uses the following [`customText`](#customText) options:
+
+| Option                                   | Description                                                                   |
+| ---------------------------------------- | ----------------------------------------------------------------------------- |
+| prechatCaptureGreetingText               | Text for the initial greeting message.                                        |
+| prechatCaptureNameLabel                  | Label displayed for the form's first field.                                   |
+| prechatCaptureNamePlaceholder            | Placeholder for the form's first field.                                       |
+| prechatCaptureEmailLabel                 | Label displayed for the form's second field.                                  |
+| prechatCaptureEmailPlaceholder           | Placeholder for the form's second field.                                      |
+| prechatCaptureConfirmationText           | Text for the confirmation message sent when the form is completed.            |
+| prechatCaptureMailgunLinkingConfirmation | Text for the notification message when a user has linked their email address. |
+
 ##### Example
 
 ```javascript
@@ -272,7 +295,7 @@ var skPromise = Smooch.init({
         actionPostbackError: 'An error occurred while processing your action. Please try again.',
         clickToRetry: 'Message not delivered. Click to retry.',
         clickToRetryForm: 'Form not submitted. Click anywhere on the form to retry.',
-        connectNotificationText: 'Be notified inside your other apps when you get a reply.',
+        connectNotificationText: 'Give us a way to reach out:',
         connectNotificationSingleText: 'Be notified when you get a reply.',
         connectNotificationSingleButtonText: 'Turn on <name> notifications',
         connectNotificationOthersText: 'others',
@@ -290,6 +313,10 @@ var skPromise = Smooch.init({
         fetchingHistory: 'Retrieving history...',
         fileTooLargeError: 'Max file size limit exceeded ({size})',
         fileTypeError: 'Unsupported file type.',
+        formErrorInvalidEmail: 'Email is invalid',
+        formErrorNoLongerThan: 'Must contain no more than ({characters}) characters',
+        formErrorNoShorterThan: 'Must contain at least ({characters}) characters',
+        formErrorUnknown: 'This doesn\'t look quite right',
         formFieldSelectPlaceholderFallback: 'Choose one...',
         frontendEmailChannelDescription: 'To talk to us using email just send a message to our email address and we\'ll reply shortly:',
         headerText: 'How can we help?',
@@ -322,6 +349,13 @@ var skPromise = Smooch.init({
         notificationSettingsChannelsTitle: 'Other Channels',
         notificationSettingsConnected: 'Connected',
         notificationSettingsConnectedAs: 'Connected as {username}',
+        prechatCaptureGreetingText: 'Hi there 👋\nTo start off, we\'d like to know a little bit more about you:',
+        prechatCaptureNameLabel: 'Your name',
+        prechatCaptureNamePlaceholder: 'Type your name...',
+        prechatCaptureEmailLabel: 'Email',
+        prechatCaptureEmailPlaceholder: 'name@company.com',
+        prechatCaptureConfirmationText: 'Thanks for that! What can we help you with?',
+        prechatCaptureMailgunLinkingConfirmation: 'You\'ll be notified here and by email at {email} once we reply.',
         sendButtonText: 'Send',
         settingsHeaderText: 'Settings',
         shareLocation: 'Share location',
