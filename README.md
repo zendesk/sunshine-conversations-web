@@ -241,10 +241,11 @@ The list of localizable strings. These strings can be modified. _If an option is
 
 ##### `prechatCapture`
 
-| Option             | Optional? | Default value | Description                                                                         |
-| ------------------ | --------- | ------------- | ----------------------------------------------------------------------------------- |
-| enabled            | Yes       | `false`       | Enables the prechat capture experience.                                             |
-| enableEmailLinking | Yes       | `true`        | Automatically links the user's email to the app's Mailgun integration if it exists. |
+| Option             | Optional? | Default value | Description                                                                                                                                                                       |
+| ------------------ | --------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| enabled            | Yes       | `false`       | Enables the prechat capture experience.                                                                                                                                           |
+| enableEmailLinking | Yes       | `true`        | Automatically links the user's email to the app's Mailgun integration if it exists. If the property `fields` is defined, the first field of type `email` will be used.            |
+| fields             | Yes       | -             | Overrides the default Prechat Capture [fields](https://docs.smooch.io/rest/#field) to define a [custom form](https://docs.smooch.io/guide/web-messenger/#custom-prechat-capture). |
 
 [See below](#example) for an example.
 
@@ -253,10 +254,10 @@ The list of localizable strings. These strings can be modified. _If an option is
 | Option                                   | Description                                                                   |
 | ---------------------------------------- | ----------------------------------------------------------------------------- |
 | prechatCaptureGreetingText               | Text for the initial greeting message.                                        |
-| prechatCaptureNameLabel                  | Label displayed for the form's first field.                                   |
-| prechatCaptureNamePlaceholder            | Placeholder for the form's first field.                                       |
-| prechatCaptureEmailLabel                 | Label displayed for the form's second field.                                  |
-| prechatCaptureEmailPlaceholder           | Placeholder for the form's second field.                                      |
+| prechatCaptureNameLabel                  | Label displayed for the default form's first field.                           |
+| prechatCaptureNamePlaceholder            | Placeholder for the default form's first field.                               |
+| prechatCaptureEmailLabel                 | Label displayed for the default form's second field.                          |
+| prechatCaptureEmailPlaceholder           | Placeholder for the default form's second field.                              |
 | prechatCaptureConfirmationText           | Text for the confirmation message sent when the form is completed.            |
 | prechatCaptureMailgunLinkingConfirmation | Text for the notification message when a user has linked their email address. |
 
@@ -286,7 +287,41 @@ var skPromise = Smooch.init({
 
     prechatCapture: {
         enabled: true,
-        enableEmailLinking: true
+        enableEmailLinking: true,
+        fields: [
+            {
+                type: 'email',
+                name: 'email',
+                label: 'Email',
+                placeholder: 'your@email.com'
+            },
+            {
+                type: 'text',
+                name: 'company-website',
+                label: 'Company website',
+                placeholder: 'mycompany.com'
+            },
+            {
+                type: 'select',
+                name: 'company-size',
+                label: 'Company size',
+                placeholder: 'Choose a number...',
+                options: [
+                    {
+                        name: '1-10',
+                        label: '1-10 employees'
+                    },
+                    {
+                        name: '11-50',
+                        label: '11-50 employees'
+                    },
+                    {
+                        name: '51+',
+                        label: '51+ employees'
+                    }
+                ]
+            }
+        ]
     },
 
     customText: {
