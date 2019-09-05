@@ -579,6 +579,13 @@ Returns the conversation if it exists
 var conversation = Smooch.getConversation();
 ```
 
+#### loadConversation(conversationId)
+Loads a conversation into the current session
+
+```javascript
+Smooch.loadConversation('<conversation-id>');
+```
+
 #### startConversation()
 Creates a user and conversation on the server, allowing the business to reach out proactively to the user via the public API.
 
