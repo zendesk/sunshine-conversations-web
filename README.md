@@ -225,6 +225,9 @@ The list of localizable strings. These strings can be modified. _If an option is
 | wechatChannelDescription | Connect your WeChat account to be notified when you get a reply and continue the conversation on WeChat. To get started, scan this QR code using the WeChat app. |
 | wechatChannelDescriptionMobile | Connect your WeChat account to be notified when you get a reply and continue the conversation on WeChat. To get started, save this QR code image and upload it `<a href=\'weixin://dl/scan\'>`QR code scanner`</a>`. |
 | wechatQRCodeError | An error occurred while fetching your WeChat QR code. Please try again. |
+| whatsappChannelDescriptionDesktop | Sync your account to WhatsApp by scanning the QR code or clicking the link below.\nThen, send the pre-populated message to validate the sync request. (Your code: {{code}}). |
+| whatsappChannelDescriptionMobile | Sync your account to WhatsApp by clicking the link below.\nThen, send the pre-populated message to validate the sync request. (Your code: {{code}}). |
+| whatsappLinkingError | An error occurred while fetching your WhatsApp linking information. Please try again. |
 
 [See below](#example) for an example.
 
@@ -423,7 +426,10 @@ var skPromise = Smooch.init({
         viberQRCodeError: 'An error occurred while fetching your Viber QR code. Please try again.',
         wechatChannelDescription: 'Connect your WeChat account to be notified when you get a reply and continue the conversation on WeChat. To get started, scan this QR code using the WeChat app.',
         wechatChannelDescriptionMobile: 'Connect your WeChat account to be notified when you get a reply and continue the conversation on WeChat. To get started, save this QR code image and upload it in the <a href=\'weixin://dl/scan\'>QR code scanner</a>.',
-        wechatQRCodeError: 'An error occurred while fetching your WeChat QR code. Please try again.'
+        wechatQRCodeError: 'An error occurred while fetching your WeChat QR code. Please try again.',
+        whatsappChannelDescriptionDesktop: 'Sync your account to WhatsApp by scanning the QR code or clicking the link below.\nThen, send the pre-populated message to validate the sync request. (Your code: {{code}}).',
+        whatsappChannelDescriptionMobile: 'Sync your account to WhatsApp by clicking the link below.\nThen, send the pre-populated message to validate the sync request. (Your code: {{code}}).',
+        whatsappLinkingError: 'An error occurred while fetching your WhatsApp linking information. Please try again.'
     }
 }).then(function() {
     // Your code after init is complete
