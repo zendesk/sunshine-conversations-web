@@ -32,6 +32,9 @@ then initialize the Web Messenger by placing this snippet towards the end of the
     Smooch.init({appId: '<app-id>'}).then(function() {
         // Your code after init is complete
     });
+    
+    // For okkami.js
+    Okkami.init('<app-id>');
 </script>
 ```
 
