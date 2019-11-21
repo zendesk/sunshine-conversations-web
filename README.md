@@ -777,8 +777,8 @@ Smooch.destroy();
 #### message:received
 ```javascript
 // This event triggers when the user receives a message
-Smooch.on('message:received', function(message) {
-    console.log('the user received a message', message);
+Smooch.on('message:received', function(message, data) {
+    console.log(`The user received a message in conversation ${data.conversation._id}: `, message);
 });
 ```
 
