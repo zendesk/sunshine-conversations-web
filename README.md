@@ -35,6 +35,46 @@ then initialize the Web Messenger by placing this snippet towards the end of the
     
     // For okkami.js
     Okkami.init('<app-id>');
+
+    // PrechatCapture and Form
+    // https://docs.smooch.io/guide/web-messenger/#custom-prechat-capture
+      var prechatCapture = {
+        enabled: true,
+        fields: [
+          {
+            type: 'text',
+            name: 'user_name', // Core use it for detect user name.
+            label: 'Your Name'
+          },
+          {
+            type: 'email',
+            name: 'email',
+            label: 'Your email'
+          },
+          {
+            type: 'select',
+            name: 'property',
+            label: 'Select Destination',
+            options: [
+              {
+                name: '[property.id]',
+                label: '[property.name]'
+              },
+              {
+                name: '[property.id]',
+                label: '[property.name]'
+              }
+            ]
+          }
+        ]
+      };
+
+      // https://github.com/smooch/smooch-web#customtext
+      var customText = {
+        prechatCaptureGreetingText: 'Please fill in your name.'
+      };
+
+      Okkami.init('<app-id>', prechatCapture, customText);
 </script>
 ```
 
