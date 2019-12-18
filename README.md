@@ -73,8 +73,10 @@ then initialize the Web Messenger by placing this snippet towards the end of the
       var customText = {
         prechatCaptureGreetingText: 'Please fill in your name.'
       };
+      
+      var notificationChannelPromptEnabled = true;
 
-      Okkami.init('<app-id>', prechatCapture, customText);
+      Okkami.init('<app-id>', prechatCapture, customText, notificationChannelPromptEnabled);
 </script>
 ```
 
