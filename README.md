@@ -163,7 +163,6 @@ The list of localizable strings. These strings can be modified. _If an option is
 | inputPlaceholderBlocked | Complete the form above... |
 | introAppText | Message us below or from your favorite app. |
 | introductionText | We\'re here to talk, so ask us anything! |
-| invalidFileError | Only images are supported. Choose a file with a supported extension (jpg, jpeg, png, gif, or bmp). |
 | lineChannelDescription | To talk to us using LINE, scan this QR code using the LINE app and send us a message. |
 | linkError | An error occurred when attempting to generate a link for this channel. Please try again. |
 | locationNotSupported | Your browser does not support location services or it’s been disabled. Please type your location instead. |
@@ -365,7 +364,6 @@ var skPromise = Smooch.init({
         inputPlaceholderBlocked: 'Complete the form above...',
         introAppText: 'Message us below or from your favorite app.',
         introductionText: 'We\'re here to talk, so ask us anything!',
-        invalidFileError: 'Only images are supported. Choose a file with a supported extension (jpg, jpeg, png, gif, or bmp).',
         lineChannelDescription: 'To talk to us using LINE, scan this QR code using the LINE app and send us a message.',
         linkError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
         locationNotSupported: 'Your browser does not support location services or it’s been disabled. Please type your location instead.',
