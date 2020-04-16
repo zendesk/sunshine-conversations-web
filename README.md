@@ -252,6 +252,8 @@ The list of localizable strings. These strings can be modified. _If an option is
 | enableEmailLinking | Yes       | `true`        | Automatically links the user's email to the app's Mailgun integration if it exists. If the property `fields` is defined, the first field of type `email` will be used.            |
 | fields             | Yes       | -             | Overrides the default Prechat Capture [fields](https://docs.smooch.io/rest/#field) to define a [custom form](https://docs.smooch.io/guide/web-messenger/#custom-prechat-capture). |
 
+[beforeSend delegate](#beforesend) will apply to the user's submitted message.
+
 [See below](#example) for an example.
 
 `prechatCapture` uses the following [`customText`](#customText) options:
@@ -767,6 +769,8 @@ To set a delegate, pass the `delegate` parameter in to [init options](#options),
 Passing `delegate` as part of `init` options is the preferred method. The `setDelegate` method can be used to change or remove delegate behaviors after a conversation has been initialized.
 
 A `data` object is passed down with all the delegate events except `onInvalidAuth`. This is a read-only object containing a truncated version of the conversation associated with the event.
+
+`beforeSend` delegate will apply to the `formResponse` message sent when a [Prechat Capture](https://docs.smooch.io/guide/web-messenger/#prechat-capture) form is completed.
 
 ```javascript
 const delegate = {
