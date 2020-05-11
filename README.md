@@ -248,6 +248,7 @@ The list of localizable strings. These strings can be modified. _If an option is
 
 | Option             | Optional? | Default value | Description                                                                                                                                                                       |
 | ------------------ | --------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| avatarUrl          | Yes       | `undefined`   | Sets the URL of the avatar to use for the automatic reply to the prechat capture messages.                                                                                        |
 | enabled            | Yes       | `false`       | Enables the prechat capture experience.                                                                                                                                           |
 | enableEmailLinking | Yes       | `true`        | Automatically links the user's email to the app's Mailgun integration if it exists. If the property `fields` is defined, the first field of type `email` will be used.            |
 | fields             | Yes       | -             | Overrides the default Prechat Capture [fields](https://docs.smooch.io/rest/#field) to define a [custom form](https://docs.smooch.io/guide/web-messenger/#custom-prechat-capture). |
@@ -293,6 +294,7 @@ var skPromise = Smooch.init({
     fixedIntroPane: false,
 
     prechatCapture: {
+        avatarUrl: 'http://domain.com/images/avatar.png',
         enabled: true,
         enableEmailLinking: true,
         fields: [
