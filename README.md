@@ -173,7 +173,6 @@ The list of localizable strings. These strings can be modified. _If an option is
 | locationSecurityRestriction              | This website cannot access your location. Please type your location instead.                                                                                                                                         |
 | locationSendingFailed                    | Could not send location                                                                                                                                                                                              |
 | locationServicesDenied                   | This website cannot access your location. Allow access in your settings or type your location instead.                                                                                                               |
-| messageError                             | An error occured while sending your message. Please try again.                                                                                                                                                       |
 | messageIndicatorTitlePlural              | (`{count}`) New messages                                                                                                                                                                                             |
 | messageIndicatorTitleSingular            | (`{count}`) New message                                                                                                                                                                                              |
 | messageRelativeTimeDay                   | `{value}`d ago                                                                                                                                                                                                       |
@@ -381,7 +380,6 @@ var skPromise = Smooch.init({
         locationSendingFailed: 'Could not send location',
         locationServicesDenied:
             'This website cannot access your location. Allow access in your settings or type your location instead.',
-        messageError: 'An error occured while sending your message. Please try again.',
         messageIndicatorTitlePlural: '({count}) New messages',
         messageIndicatorTitleSingular: '({count}) New message',
         messageRelativeTimeDay: '{value}d ago',
