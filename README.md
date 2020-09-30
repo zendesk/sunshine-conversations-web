@@ -14,18 +14,18 @@ The Smooch Web Messenger will add [live web messaging](https://smooch.io/live-we
 -   Bring every conversation into your existing business systems. No new tool to learn. [See all integrations](https://smooch.io/integrations/).
 -   Allow [multiple users to participate in a conversation](https://docs.smooch.io/guide/multi-party-conversations/) with each other along with the business actor.
 
+## **Note:** this document is for version `5.0.0`. If you are upgrading please see the release notes [here](https://github.com/zendesk/sunshine-conversations-web/releases/tag/5.0.0).
+
 ## Usage
 
 ### Script Tag
 
-Add the following code towards the end of the `head` section on your page and replace `<integration-id>` with your integration id at the end of the script.
+Add the following code towards the end of the `<head>` section on your page and replace `<integration-id>` with your integration id at the end of the script. You may replace `"5"` with any version from `4.0.0` onwards, or with a major version (i.e.: `"4"` or `"5"`) to load that specific version of the Web SDK. If a version is included without specifying the patch, the latest version of the specified major release will be loaded. If an invalid version is passed an error will be thrown and the Web SDK will fail to load.
 
 <!-- prettier-ignore -->
 ```html
 <script>
-    !function(e,n,t,r){
-        function o(){try{var e;if((e="string"==typeof this.response?JSON.parse(this.response):this.response).url){var t=n.getElementsByTagName("script")[0],r=n.createElement("script");r.async=!0,r.src=e.url,t.parentNode.insertBefore(r,t)}}catch(e){}}var s,p,a,i=[],c=[];e[t]={init:function(){s=arguments;var e={then:function(n){return c.push({type:"t",next:n}),e},catch:function(n){return c.push({type:"c",next:n}),e}};return e},on:function(){i.push(arguments)},render:function(){p=arguments},destroy:function(){a=arguments}},e.__onWebMessengerHostReady__=function(n){if(delete e.__onWebMessengerHostReady__,e[t]=n,s)for(var r=n.init.apply(n,s),o=0;o<c.length;o++){var u=c[o];r="t"===u.type?r.then(u.next):r.catch(u.next)}p&&n.render.apply(n,p),a&&n.destroy.apply(n,a);for(o=0;o<i.length;o++)n.on.apply(n,i[o])};var u=new XMLHttpRequest;u.addEventListener("load",o),u.open("GET","https://"+r+".webloader.smooch.io/",!0),u.responseType="json",u.send()
-    }(window,document,"Smooch","<integration-id>");
+    !function(o,p,s,e,c){var i,a,h,u=[],d=[];function t(){var t="You must provide a supported major version.";try{if(!c)throw new Error(t);var e,n="https://cdn.smooch.io/",r="smooch";if((e="string"==typeof this.response?JSON.parse(this.response):this.response).url){var o=p.getElementsByTagName("script")[0],s=p.createElement("script");s.async=!0;var i=c.match(/([0-9]+)\.?([0-9]+)?\.?([0-9]+)?/),a=i&&i[1];if(i&&i[3])s.src=n+r+"."+c+".min.js";else{if(!(4<=a&&e["v"+a]))throw new Error(t);s.src=e["v"+a]}o.parentNode.insertBefore(s,o)}}catch(e){e.message===t&&console.error(e)}}o[s]={init:function(){i=arguments;var t={then:function(e){return d.push({type:"t",next:e}),t},catch:function(e){return d.push({type:"c",next:e}),t}};return t},on:function(){u.push(arguments)},render:function(){a=arguments},destroy:function(){h=arguments}},o.__onWebMessengerHostReady__=function(e){if(delete o.__onWebMessengerHostReady__,o[s]=e,i)for(var t=e.init.apply(e,i),n=0;n<d.length;n++){var r=d[n];t="t"===r.type?t.then(r.next):t.catch(r.next)}a&&e.render.apply(e,a),h&&e.destroy.apply(e,h);for(n=0;n<u.length;n++)e.on.apply(e,u[n])};var n=new XMLHttpRequest;n.addEventListener("load",t),n.open("GET","https://"+e+".webloader.smooch.io/",!0),n.responseType="json",n.send()}(window,document,"Smooch","<integration-id>","5");
 </script>
 ```
 
@@ -90,15 +90,14 @@ Initializes the Smooch widget in the web page using the specified options. It re
 
 | Option                           | Optional? | Default value                 | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | -------------------------------- | --------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| appId                            | Yes       | -                             | Your app id (deprecated in favour of `integrationId`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | integrationId                    | No        | -                             | Your integration id                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| userId                           | Yes       | -                             | Optional. User's id, which can be passed in `init()` as an alternative to `login()` (see [below](#authenticating-the-user-init-vs-login))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| externalId                       | Yes       | -                             | Optional. User's external id, which can be passed in `init()` as an alternative to `login()` (see [below](#authenticating-the-user-init-vs-login))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | jwt                              | Yes       | -                             | Optional. User's authentication token, which can be passed in `init()` as an alternative to `login()` (see [below](#authenticating-the-user-init-vs-login))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | authCode                         | Yes       | -                             | An auth code for linking to an existing conversation (see more details [here](https://docs.smooch.io/rest/#get-auth-code))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | locale                           | Yes       | `en-US`                       | Locale used for date formatting using the `<language>-<COUNTRY>` format. Language codes can be found [here](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) and country codes [here](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). <br /> **Note 1 : ** The country part is optional, and if a country is either not recognized or supported, it will fallback to using the generic language. If the language isn't supported, it will fallback to `en-US`. <br /> **Note 2:** this is _only_ used for date formatting and doesn't provide built-in translations for Web Messenger. Refer to the [documentation](https://docs.smooch.io/guide/web-messenger/#strings-customization) for how to handle translations. |
 | soundNotificationEnabled         | Yes       | `true`                        | Enables the sound notification for new messages                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | imageUploadEnabled               | Yes       | `true`                        | Enables the image upload feature. (deprecated: use menuItems.imageUpload; if this option is `false`, it will disable `menuItems.imageUpload` and `menuItems.fileUpload`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| fixedIntroPane                   | Yes       | `false`                       | When enabled, the introduction pane will be pinned at the top of the conversation instead of scrolling with it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| fixedHeader                      | Yes       | `false`                       | When enabled, the introduction pane will be pinned at the top of the conversation instead of scrolling with it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | embedded                         | Yes       | False                         | Tells the widget it will be embedded. (see Embedded section below)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | displayStyle                     | Yes       | `button`                      | Choose how the messenger will appear on your website. Must be either `button` or `tab`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | buttonIconUrl                    | Yes       | -                             | When the `displayStyle` is `button`, you have the option of selecting your own button icon. The image must be at least 200 x 200 pixels and must be in either JPG, PNG, or GIF format.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -115,6 +114,7 @@ Initializes the Smooch widget in the web page using the specified options. It re
 | browserStorage                   | Yes       | `localStorage`                | Choose the storage type to use for storing user identity in the browser. Must be either `localStorage` or `sessionStorage`. [Learn more](https://docs.smooch.io/guide/web-messenger/#browser-storage)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | delegate                         | Yes       | `undefined`                   | Sets a delegate on the conversation. See the [delegate](#delegate) section for more details.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | prechatCapture                   | Yes       | [See below.](#prechatcapture) | Enables automatically capturing a user's name and email via a form before the start of a conversation. Disables the chat input until the form has been submitted.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| canUserSeeConversationList       | Yes       | `true`                        | Allows users to view their list of conversations.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ##### `customColors`
 
@@ -128,108 +128,126 @@ Initializes the Smooch widget in the web page using the specified options. It re
 
 The list of localizable strings. These strings can be modified. _If an option is not given a custom string, the default value will be used._
 
-| Option                                   | Default value                                                                                                                                                                                                        |
-| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| actionPaymentCompleted                   | Payment Completed                                                                                                                                                                                                    |
-| actionPaymentError                       | An error occurred while processing the card. `<br>` Please try again or use a different card.                                                                                                                        |
-| actionPostbackError                      | An error occurred while processing your action. Please try again.                                                                                                                                                    |
-| clickToRetry                             | Message not delivered. Click to retry.                                                                                                                                                                               |
-| clickToRetryForm                         | Form not submitted. Click anywhere on the form to retry.                                                                                                                                                             |
-| connectNotificationText                  | Give us a way to reach out:                                                                                                                                                                                          |
-| connectNotificationSingleText            | Be notified when you get a reply.                                                                                                                                                                                    |
-| connectNotificationSingleButtonText      | Turn on `<name>` notifications                                                                                                                                                                                       |
-| connectNotificationOthersText            | others                                                                                                                                                                                                               |
-| conversationTimestampHeaderFormat        | MMMM D YYYY, h:mm A                                                                                                                                                                                                  |
-| couldNotConnect                          | Couldn't connect. You can {retry}.                                                                                                                                                                                   |
-| couldNotConnectInner                     | retry connecting now                                                                                                                                                                                                 |
-| couldNotConnectWithRetry                 | Couldn't connect. We'll keep retrying, or you can {retry}.                                                                                                                                                           |
-| couldNotConnectWithRetryInner            | try now                                                                                                                                                                                                              |
-| emailChangeAddress                       | Change my email                                                                                                                                                                                                      |
-| emailDescription                         | To be notified by email when you get a reply, enter your email address.                                                                                                                                              |
-| emailFieldLabel                          | Your email                                                                                                                                                                                                           |
-| emailFieldPlaceholder                    | Your email address                                                                                                                                                                                                   |
-| emailFormButton                          | Continue                                                                                                                                                                                                             |
-| fetchHistory                             | Load more                                                                                                                                                                                                            |
-| fetchingHistory                          | Retrieving history...                                                                                                                                                                                                |
-| fileTooLargeError                        | Max file size limit exceeded ({size})                                                                                                                                                                                |
-| fileTypeError                            | Unsupported file type.                                                                                                                                                                                               |
-| formErrorInvalidEmail                    | Email is invalid                                                                                                                                                                                                     |
-| formErrorNoLongerThan                    | Must contain no more than ({characters}) characters                                                                                                                                                                  |
-| formErrorNoShorterThan                   | Must contain at least ({characters}) characters                                                                                                                                                                      |
-| formErrorUnknown                         | This doesn't look quite right                                                                                                                                                                                        |
-| formFieldSelectPlaceholderFallback       | Choose one...                                                                                                                                                                                                        |
-| frontendEmailChannelDescription          | To talk to us using email just send a message to our email address and we\'ll reply shortly:                                                                                                                         |
-| headerText                               | How can we help?                                                                                                                                                                                                     |
-| imageClickToReload                       | Click to reload image.                                                                                                                                                                                               |
-| imageClickToView                         | Click to view {size} image.                                                                                                                                                                                          |
-| imagePreviewNotAvailable                 | Preview not available.                                                                                                                                                                                               |
-| inputPlaceholder                         | Type a message...                                                                                                                                                                                                    |
-| inputPlaceholderBlocked                  | Complete the form above...                                                                                                                                                                                           |
-| introAppText                             | Message us below or from your favorite app.                                                                                                                                                                          |
-| introductionText                         | We\'re here to talk, so ask us anything!                                                                                                                                                                             |
-| lineChannelDescription                   | To talk to us using LINE, scan this QR code using the LINE app and send us a message.                                                                                                                                |
-| linkError                                | An error occurred when attempting to generate a link for this channel. Please try again.                                                                                                                             |
-| locationNotSupported                     | Your browser does not support location services or it’s been disabled. Please type your location instead.                                                                                                            |
-| locationSecurityRestriction              | This website cannot access your location. Please type your location instead.                                                                                                                                         |
-| locationSendingFailed                    | Could not send location                                                                                                                                                                                              |
-| locationServicesDenied                   | This website cannot access your location. Allow access in your settings or type your location instead.                                                                                                               |
-| messageIndicatorTitlePlural              | (`{count}`) New messages                                                                                                                                                                                             |
-| messageIndicatorTitleSingular            | (`{count}`) New message                                                                                                                                                                                              |
-| messageRelativeTimeDay                   | `{value}`d ago                                                                                                                                                                                                       |
-| messageRelativeTimeHour                  | `{value}`h ago                                                                                                                                                                                                       |
-| messageRelativeTimeJustNow               | Just now                                                                                                                                                                                                             |
-| messageRelativeTimeMinute                | `{value}`m ago                                                                                                                                                                                                       |
-| messageTimestampFormat                   | h:mm A                                                                                                                                                                                                               |
-| messageSending                           | Sending...                                                                                                                                                                                                           |
-| messageDelivered                         | Delivered                                                                                                                                                                                                            |
-| messengerChannelDescription              | Connect your Facebook Messenger account to be notified when you get a reply and continue the conversation on Facebook Messenger.                                                                                     |
-| notificationSettingsChannelsDescription  | You can also talk to us from your favorite app or service.                                                                                                                                                           |
-| notificationSettingsChannelsTitle        | Other Channels                                                                                                                                                                                                       |
-| notificationSettingsConnected            | Connected                                                                                                                                                                                                            |
-| notificationSettingsConnectedAs          | Connected as `{username}`                                                                                                                                                                                            |
-| prechatCaptureGreetingText               | Hi there 👋\nTo start off, we\'d like to know a little bit more about you:                                                                                                                                           |
-| prechatCaptureNameLabel                  | Your name                                                                                                                                                                                                            |
-| prechatCaptureNamePlaceholder            | Type your name...                                                                                                                                                                                                    |
-| prechatCaptureEmailLabel                 | Email                                                                                                                                                                                                                |
-| prechatCaptureEmailPlaceholder           | name@company.com                                                                                                                                                                                                     |
-| prechatCaptureConfirmationText           | Thanks for that! What can we help you with?                                                                                                                                                                          |
-| prechatCaptureMailgunLinkingConfirmation | You\'ll be notified here and by email at {email} once we reply.                                                                                                                                                      |
-| sendButtonText                           | Send                                                                                                                                                                                                                 |
-| settingsHeaderText                       | Settings                                                                                                                                                                                                             |
-| shareLocation                            | Share location                                                                                                                                                                                                       |
-| smsBadRequestError                       | We were unable to communicate with this number. Try again or use a different one.                                                                                                                                    |
-| smsCancel                                | Cancel                                                                                                                                                                                                               |
-| smsChangeNumber                          | Change my number                                                                                                                                                                                                     |
-| smsChannelDescription                    | Connect your SMS number to be notified when you get a reply and continue the conversation over SMS.                                                                                                                  |
-| smsChannelPendingDescription             | Check your messages at `{number}` to confirm your phone number.                                                                                                                                                      |
-| smsContinue                              | Continue                                                                                                                                                                                                             |
-| smsInvalidNumberError                    | Your phone number isn\'t valid. Please try again.                                                                                                                                                                    |
-| smsLinkCancelled                         | Link to `{appUserNumber}` was cancelled.                                                                                                                                                                             |
-| smsLinkPending                           | Pending                                                                                                                                                                                                              |
-| smsPingChannelError                      | There was an error sending a message to your number.                                                                                                                                                                 |
-| smsSendText                              | Send me a text                                                                                                                                                                                                       |
-| smsStartTexting                          | Start Texting                                                                                                                                                                                                        |
-| smsTooManyRequestsError                  | A connection for that number was requested recently. Please try again in {minutes} minutes.                                                                                                                          |
-| smsTooManyRequestsOneMinuteError         | A connection for that number was requested recently. Please try again in 1 minute.                                                                                                                                   |
-| smsUnhandledError                        | Something went wrong. Please try again.                                                                                                                                                                              |
-| tapToRetry                               | Message not delivered. Tap to retry.                                                                                                                                                                                 |
-| tapToRetryForm                           | Form not submitted. Tap anywhere on the form to retry.                                                                                                                                                               |
-| telegramChannelDescription               | Connect your Telegram account to be notified when you get a reply and continue the conversation on Telegram                                                                                                          |
-| unsupportedMessageType                   | Unsupported message type.                                                                                                                                                                                            |
-| unsupportedActionType                    | Unsupported action type.                                                                                                                                                                                             |
-| uploadDocument                           | Upload document.                                                                                                                                                                                                     |
-| uploadInvalidError                       | Invalid file.                                                                                                                                                                                                        |
-| uploadPhoto                              | Upload photo.                                                                                                                                                                                                        |
-| uploadVirusError                         | A virus was detected in your file and it has been rejected                                                                                                                                                           |
-| viberChannelDescription                  | Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, scan the QR code using the Viber app.                                                         |
-| viberChannelDescriptionMobile            | Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, install the Viber app and tap Connect.                                                        |
-| viberQRCodeError                         | An error occurred while fetching your Viber QR code. Please try again.                                                                                                                                               |
-| wechatChannelDescription                 | Connect your WeChat account to be notified when you get a reply and continue the conversation on WeChat. To get started, scan this QR code using the WeChat app.                                                     |
-| wechatChannelDescriptionMobile           | Connect your WeChat account to be notified when you get a reply and continue the conversation on WeChat. To get started, save this QR code image and upload it `<a href=\'weixin://dl/scan\'>`QR code scanner`</a>`. |
-| wechatQRCodeError                        | An error occurred while fetching your WeChat QR code. Please try again.                                                                                                                                              |
-| whatsappChannelDescriptionDesktop        | Sync your account to WhatsApp by scanning the QR code or clicking the link below.\nThen, send the pre-populated message to validate the sync request. (Your code: {{code}}).                                         |
-| whatsappChannelDescriptionMobile         | Sync your account to WhatsApp by clicking the link below.\nThen, send the pre-populated message to validate the sync request. (Your code: {{code}}).                                                                 |
-| whatsappLinkingError                     | An error occurred while fetching your WhatsApp linking information. Please try again.                                                                                                                                |
+| Option                                     | Default value                                                                                                                                                                                                        |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| actionPaymentCompleted                     | Payment Completed                                                                                                                                                                                                    |
+| actionPaymentError                         | An error occurred while processing the card. `<br>` Please try again or use a different card.                                                                                                                        |
+| actionPostbackError                        | An error occurred while processing your action. Please try again.                                                                                                                                                    |
+| clickToRetry                               | Message not delivered. Click to retry.                                                                                                                                                                               |
+| clickToRetryForm                           | Form not submitted. Click anywhere on the form to retry.                                                                                                                                                             |
+| connectNotificationText                    | Sync your conversation and continue messaging us through your favorite app.                                                                                                                                          |
+| connectNotificationSingleText              | Be notified when you get a reply.                                                                                                                                                                                    |
+| conversationListHeaderText                 | My conversations                                                                                                                                                                                                     |
+| conversationListRelativeTimeJustNow        | Just now                                                                                                                                                                                                             |
+| conversationListRelativeTimeMinute         | 1 minute ago                                                                                                                                                                                                         |
+| conversationListRelativeTimeMinutes        | {value} minutes ago                                                                                                                                                                                                  |
+| conversationListRelativeTimeHour           | 1 hour ago                                                                                                                                                                                                           |
+| conversationListRelativeTimeHours          | {value} hours ago                                                                                                                                                                                                    |
+| conversationListRelativeTimeYesterday      | Yesterday                                                                                                                                                                                                            |
+| conversationListTimestampFormat            | MM/DD/YY                                                                                                                                                                                                             |
+| conversationListPreviewAnonymousText       | Someone                                                                                                                                                                                                              |
+| conversationListPreviewCarouselText        | {user} sent a message                                                                                                                                                                                                |
+| conversationListPreviewFileText            | {user} sent a file                                                                                                                                                                                                   |
+| conversationListPreviewFormText            | {user} sent a form                                                                                                                                                                                                   |
+| conversationListPreviewFormResponseText    | {user} filled a form                                                                                                                                                                                                 |
+| conversationListPreviewImageText           | {user} sent an image                                                                                                                                                                                                 |
+| conversationListPreviewLocationRequestText | {user} sent a location request                                                                                                                                                                                       |
+| conversationListPreviewUserText            | You                                                                                                                                                                                                                  |
+| conversationTimestampHeaderFormat          | MMMM D YYYY, h:mm A                                                                                                                                                                                                  |
+| couldNotConnect                            | Offline. You will not receive messages.                                                                                                                                                                              |
+| couldNotConnectRetry                       | Reconnecting...                                                                                                                                                                                                      |
+| couldNotConnectRetrySuccess                | You're back online!                                                                                                                                                                                                  |
+| couldNotLoadConversations                  | Couldn’t load conversations.                                                                                                                                                                                         |
+| emailChangeAddress                         | Change my email                                                                                                                                                                                                      |
+| emailDescription                           | To be notified by email when you get a reply, enter your email address.                                                                                                                                              |
+| emailFieldLabel                            | Email                                                                                                                                                                                                                |
+| emailFieldPlaceholder                      | Your email address                                                                                                                                                                                                   |
+| emailFormButton                            | Submit                                                                                                                                                                                                               |
+| emailLinkingErrorMessage                   | Please submit a valid email address.                                                                                                                                                                                 |
+| fetchHistory                               | Load more                                                                                                                                                                                                            |
+| fetchingHistory                            | Retrieving history...                                                                                                                                                                                                |
+| fileTooLargeError                          | Max file size limit exceeded ({size})                                                                                                                                                                                |
+| fileTypeError                              | Unsupported file type.                                                                                                                                                                                               |
+| formErrorInvalidEmail                      | Email is invalid                                                                                                                                                                                                     |
+| formErrorNoLongerThan                      | Must contain no more than ({characters}) characters                                                                                                                                                                  |
+| formErrorNoShorterThan                     | Must contain at least ({characters}) characters                                                                                                                                                                      |
+| formErrorUnknown                           | This doesn't look quite right                                                                                                                                                                                        |
+| formFieldSelectPlaceholderFallback         | Choose one...                                                                                                                                                                                                        |
+| frontendEmailChannelDescription            | To talk to us using email just send a message to our email address and we\'ll reply shortly:                                                                                                                         |
+| headerText                                 | How can we help?                                                                                                                                                                                                     |
+| imageClickToReload                         | Click to reload image.                                                                                                                                                                                               |
+| imageClickToView                           | Click to view {size} image.                                                                                                                                                                                          |
+| imagePreviewNotAvailable                   | Preview not available.                                                                                                                                                                                               |
+| inputPlaceholder                           | Type a message...                                                                                                                                                                                                    |
+| inputPlaceholderBlocked                    | Complete the form above...                                                                                                                                                                                           |
+| introAppText                               | Message us below or from your favorite app.                                                                                                                                                                          |
+| lineChannelDescription                     | To talk to us using LINE, scan this QR code using the LINE app and send us a message.                                                                                                                                |
+| linkError                                  | An error occurred when attempting to generate a link for this channel. Please try again.                                                                                                                             |
+| linkChannelPageHeader                      | Sync your conversation                                                                                                                                                                                               |
+| locationNotSupported                       | Your browser does not support location services or it’s been disabled. Please type your location instead.                                                                                                            |
+| locationSecurityRestriction                | This website cannot access your location. Please type your location instead.                                                                                                                                         |
+| locationSendingFailed                      | Could not send location                                                                                                                                                                                              |
+| locationServicesDenied                     | This website cannot access your location. Allow access in your settings or type your location instead.                                                                                                               |
+| messageError                               | An error occured while sending your message. Please try again.                                                                                                                                                       |
+| messageIndicatorTitlePlural                | (`{count}`) New messages                                                                                                                                                                                             |
+| messageIndicatorTitleSingular              | (`{count}`) New message                                                                                                                                                                                              |
+| messageRelativeTimeDay                     | `{value}`d ago                                                                                                                                                                                                       |
+| messageRelativeTimeHour                    | `{value}`h ago                                                                                                                                                                                                       |
+| messageRelativeTimeJustNow                 | Just now                                                                                                                                                                                                             |
+| messageRelativeTimeMinute                  | `{value}`m ago                                                                                                                                                                                                       |
+| messageTimestampFormat                     | h:mm A                                                                                                                                                                                                               |
+| messageSending                             | Sending...                                                                                                                                                                                                           |
+| messageDelivered                           | Delivered                                                                                                                                                                                                            |
+| messengerChannelDescription                | Connect your Facebook Messenger account to be notified when you get a reply and continue the conversation on Facebook Messenger.                                                                                     |
+| newConversationButtonText                  | New Conversation                                                                                                                                                                                                     |
+| notificationSettingsChannelsDescription    | Sync this conversation by connecting to your favorite messaging app to continue the conversation your way.                                                                                                           |
+| notificationSettingsChannelsTitle          | Other Channels                                                                                                                                                                                                       |
+| notificationSettingsConnected              | Connected                                                                                                                                                                                                            |
+| notificationSettingsConnectedAs            | Connected as `{username}`                                                                                                                                                                                            |
+| prechatCaptureGreetingText                 | Hi there 👋\nTo start off, we\'d like to know a little bit more about you:                                                                                                                                           |
+| prechatCaptureNameLabel                    | Your name                                                                                                                                                                                                            |
+| prechatCaptureNamePlaceholder              | Type your name...                                                                                                                                                                                                    |
+| prechatCaptureEmailLabel                   | Email                                                                                                                                                                                                                |
+| prechatCaptureEmailPlaceholder             | name@company.com                                                                                                                                                                                                     |
+| prechatCaptureConfirmationText             | Thanks for that! What can we help you with?                                                                                                                                                                          |
+| prechatCaptureMailgunLinkingConfirmation   | You\'ll be notified here and by email at {email} once we reply.                                                                                                                                                      |
+| sendButtonText                             | Send                                                                                                                                                                                                                 |
+| settingsHeaderText                         | Settings                                                                                                                                                                                                             |
+| shareLocation                              | Location                                                                                                                                                                                                             |
+| smsBadRequestError                         | We were unable to communicate with this number. Try again or use a different one.                                                                                                                                    |
+| smsCancel                                  | Cancel                                                                                                                                                                                                               |
+| smsChangeNumber                            | Change my number                                                                                                                                                                                                     |
+| smsChannelDescription                      | Connect your SMS number to be notified when you get a reply and continue the conversation over SMS.                                                                                                                  |
+| smsChannelPendingDescription               | Check your messages at `{number}` to confirm your phone number.                                                                                                                                                      |
+| smsContinue                                | Send                                                                                                                                                                                                                 |
+| smsInvalidNumberError                      | Please submit a valid phone number.                                                                                                                                                                                  |
+| smsLinkCancelled                           | Link to `{appUserNumber}` was cancelled.                                                                                                                                                                             |
+| smsLinkPending                             | Pending                                                                                                                                                                                                              |
+| smsPingChannelError                        | There was an error sending a message to your number.                                                                                                                                                                 |
+| smsSendText                                | Send me a text                                                                                                                                                                                                       |
+| smsStartTexting                            | Start Texting                                                                                                                                                                                                        |
+| smsTooManyRequestsError                    | A connection for that number was requested recently. Please try again in {minutes} minutes.                                                                                                                          |
+| smsTooManyRequestsOneMinuteError           | A connection for that number was requested recently. Please try again in 1 minute.                                                                                                                                   |
+| smsUnhandledError                          | Something went wrong. Please try again.                                                                                                                                                                              |
+| syncConversation                           | Sync conversation                                                                                                                                                                                                    |
+| tapToRetry                                 | Message not delivered. Tap to retry.                                                                                                                                                                                 |
+| tapToRetryForm                             | Form not submitted. Tap anywhere on the form to retry.                                                                                                                                                               |
+| telegramChannelDescription                 | Connect your Telegram account to be notified when you get a reply and continue the conversation on Telegram                                                                                                          |
+| unsupportedMessageType                     | Unsupported message type.                                                                                                                                                                                            |
+| unsupportedActionType                      | Unsupported action type.                                                                                                                                                                                             |
+| uploadDocument                             | File                                                                                                                                                                                                                 |
+| uploadInvalidError                         | Invalid file.                                                                                                                                                                                                        |
+| uploadPhoto                                | Image                                                                                                                                                                                                                |
+| uploadVirusError                           | A virus was detected in your file and it has been rejected                                                                                                                                                           |
+| viberChannelDescription                    | Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, scan the QR code using the Viber app.                                                         |
+| viberChannelDescriptionMobile              | Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, install the Viber app and tap Connect.                                                        |
+| viberQRCodeError                           | An error occurred while fetching your Viber QR code. Please try again.                                                                                                                                               |
+| wechatChannelDescription                   | Connect your WeChat account to be notified when you get a reply and continue the conversation on WeChat. To get started, scan this QR code using the WeChat app.                                                     |
+| wechatChannelDescriptionMobile             | Connect your WeChat account to be notified when you get a reply and continue the conversation on WeChat. To get started, save this QR code image and upload it `<a href=\'weixin://dl/scan\'>`QR code scanner`</a>`. |
+| wechatQRCodeError                          | An error occurred while fetching your WeChat QR code. Please try again.                                                                                                                                              |
+| whatsappChannelDescriptionDesktop          | Sync your account to WhatsApp by scanning the QR code or clicking the link below.\nThen, send the pre-populated message to validate the sync request. (Your code: {{code}}).                                         |
+| whatsappChannelDescriptionMobile           | Sync your account to WhatsApp by clicking the link below.\nThen, send the pre-populated message to validate the sync request. (Your code: {{code}}).                                                                 |
+| whatsappLinkingError                       | An error occurred while fetching your WhatsApp linking information. Please try again.                                                                                                                                |
 
 [See below](#example) for an example.
 
@@ -275,7 +293,7 @@ var skPromise = Smooch.init({
     integrationId: '<integration-id>',
     // For authenticated mode
     jwt: 'your_jwt',
-    userId: 'user_id',
+    externalId: 'user_external_id',
     locale: 'en-US',
 
     customColors: {
@@ -290,7 +308,7 @@ var skPromise = Smooch.init({
         shareLocation: true,
     },
 
-    fixedIntroPane: false,
+    fixedHeader: false,
 
     prechatCapture: {
         avatarUrl: 'http://domain.com/images/avatar.png',
@@ -339,20 +357,35 @@ var skPromise = Smooch.init({
         actionPostbackError: 'An error occurred while processing your action. Please try again.',
         clickToRetry: 'Message not delivered. Click to retry.',
         clickToRetryForm: 'Form not submitted. Click anywhere on the form to retry.',
-        connectNotificationText: 'Give us a way to reach out:',
+        connectNotificationText: 'Sync your conversation and continue messaging us through your favorite app.',
         connectNotificationSingleText: 'Be notified when you get a reply.',
-        connectNotificationSingleButtonText: 'Turn on <name> notifications',
-        connectNotificationOthersText: 'others',
+        conversationListHeaderText: 'My conversations',
+        conversationListPreviewAnonymousText: 'Someone',
+        conversationListPreviewCarouselText: '{user} sent a message',
+        conversationListPreviewFileText: '{user} sent a file',
+        conversationListPreviewFormText: '{user} sent a form',
+        conversationListPreviewFormResponseText: '{user} filled a form',
+        conversationListPreviewImageText: '{user} sent an image',
+        conversationListPreviewLocationRequestText: '{user} sent a location request',
+        conversationListPreviewUserText: 'You',
+        conversationListRelativeTimeJustNow: 'Just now',
+        conversationListRelativeTimeMinute: '1 minute ago',
+        conversationListRelativeTimeMinutes: '{value} minutes ago',
+        conversationListRelativeTimeHour: '1 hour ago',
+        conversationListRelativeTimeHours: '{value} hours ago',
+        conversationListRelativeTimeYesterday: 'Yesterday',
+        conversationListTimestampFormat: 'MM/DD/YY',
         conversationTimestampHeaderFormat: 'MMMM D YYYY, h:mm A',
-        couldNotConnect: "Couldn't connect. You can {retry}. ",
-        couldNotConnectInner: 'retry connecting now',
-        couldNotConnectWithRetry: "Couldn't connect. We'll keep retrying, or you can {retry}.",
-        couldNotConnectWithRetryInner: 'try now',
+        couldNotConnect: 'Offline. You will not receive messages.',
+        couldNotConnectRetry: 'Reconnecting...',
+        couldNotConnectRetrySuccess: "You're back online!",
+        couldNotLoadConversations: 'Couldn’t load conversations.',
         emailChangeAddress: 'Change my email',
         emailDescription: 'To be notified by email when you get a reply, enter your email address.',
-        emailFieldLabel: 'Your email',
+        emailFieldLabel: 'Email',
         emailFieldPlaceholder: 'Your email address',
-        emailFormButton: 'Continue',
+        emailFormButton: 'Submit',
+        emailLinkingErrorMessage: 'Please submit a valid email address.',
         fetchHistory: 'Load more',
         fetchingHistory: 'Retrieving history...',
         fileTooLargeError: 'Max file size limit exceeded ({size})',
@@ -371,9 +404,9 @@ var skPromise = Smooch.init({
         inputPlaceholder: 'Type a message...',
         inputPlaceholderBlocked: 'Complete the form above...',
         introAppText: 'Message us below or from your favorite app.',
-        introductionText: "We're here to talk, so ask us anything!",
         lineChannelDescription: 'To talk to us using LINE, scan this QR code using the LINE app and send us a message.',
         linkError: 'An error occurred when attempting to generate a link for this channel. Please try again.',
+        linkChannelPageHeader: 'Sync your conversation',
         locationNotSupported:
             'Your browser does not support location services or it’s been disabled. Please type your location instead.',
         locationSecurityRestriction: 'This website cannot access your location. Please type your location instead.',
@@ -391,7 +424,9 @@ var skPromise = Smooch.init({
         messageDelivered: 'Delivered',
         messengerChannelDescription:
             'Connect your Facebook Messenger account to be notified when you get a reply and continue the conversation on Facebook Messenger.',
-        notificationSettingsChannelsDescription: 'You can also talk to us from your favorite app or service.',
+        newConversationButtonText: 'New Conversation',
+        notificationSettingsChannelsDescription:
+            'Sync this conversation by connecting to your favorite messaging app to continue the conversation your way.',
         notificationSettingsChannelsTitle: 'Other Channels',
         notificationSettingsConnected: 'Connected',
         notificationSettingsConnectedAs: 'Connected as {username}',
@@ -404,15 +439,15 @@ var skPromise = Smooch.init({
         prechatCaptureMailgunLinkingConfirmation: "You'll be notified here and by email at {email} once we reply.",
         sendButtonText: 'Send',
         settingsHeaderText: 'Settings',
-        shareLocation: 'Share location',
+        shareLocation: 'Location',
         smsBadRequestError: 'We were unable to communicate with this number. Try again or use a different one.',
         smsCancel: 'Cancel',
         smsChangeNumber: 'Change my number',
         smsChannelDescription:
             'Connect your SMS number to be notified when you get a reply and continue the conversation over SMS.',
         smsChannelPendingDescription: 'Check your messages at {number} to confirm your phone number.',
-        smsContinue: 'Continue',
-        smsInvalidNumberError: "Your phone number isn't valid. Please try again.",
+        smsContinue: 'Send',
+        smsInvalidNumberError: 'Please submit a valid phone number.',
         smsLinkCancelled: 'Link to {appUserNumber} was cancelled.',
         smsLinkPending: 'Pending',
         smsPingChannelError: 'There was an error sending a message to your number.',
@@ -423,15 +458,16 @@ var skPromise = Smooch.init({
         smsTooManyRequestsOneMinuteError:
             'A connection for that number was requested recently. Please try again in 1 minute.',
         smsUnhandledError: 'Something went wrong. Please try again.',
+        syncConversation: 'Sync conversation',
         tapToRetry: 'Message not delivered. Tap to retry.',
         tapToRetryForm: 'Form not submitted. Tap anywhere on the form to retry.',
         telegramChannelDescription:
             'Connect your Telegram account to be notified when you get a reply and continue the conversation on Telegram',
         unsupportedMessageType: 'Unsupported message type.',
         unsupportedActionType: 'Unsupported action type.',
-        uploadDocument: 'Upload document',
+        uploadDocument: 'File',
         uploadInvalidError: 'Invalid file',
-        uploadPhoto: 'Upload photo',
+        uploadPhoto: 'Image',
         uploadVirusError: 'A virus was detected in your file and it has been rejected',
         viberChannelDescription:
             'Connect your Viber account to be notified when you get a reply and continue the conversation on Viber. To get started, scan the QR code using the Viber app.',
@@ -488,12 +524,12 @@ Tells if the widget is currently opened or closed.
 Smooch.isOpened();
 ```
 
-#### login(userId , jwt)
+#### login(externalId, jwt)
 
-Logs a user in the Web Messenger, retrieving the conversation the user already had on other browsers and/or devices. Note that you don't need to call this after `init` if you passed the user id and jwt already, it's done internally. This returns a promise that resolves when the Web Messenger is ready again.
+Logs a user in the Web Messenger, retrieving the conversations the user already had on other browser sessions and/or devices. Note that you don't need to call this after `init` if you already passed the external id and jwt as arguments in the call to `init`, in which case it's done internally as part of the initialization sequence. This returns a `Promise` that resolves when the Web Messenger is ready again.
 
 ```javascript
-Smooch.login('some-id', 'some-jwt');
+Smooch.login('external-id', 'some-jwt');
 ```
 
 #### logout()
@@ -514,17 +550,16 @@ Smooch.destroy();
 
 #### sendMessage(message, conversationId)
 
-Sends a message on the user's behalf. An optional `conversationdId` argument can be provided to target a specific conversation, otherwise the currently loaded conversation will be targeted.
+Sends a message to the targeted conversation on the user's behalf.
 
 ```javascript
-Smooch.sendMessage({
-    type: 'text',
-    text: 'hello',
-});
-
-// OR
-
-Smooch.sendMessage('hello');
+Smooch.sendMessage(
+    {
+        type: 'text',
+        text: 'hello',
+    },
+    '<conversation-id>',
+);
 
 // OR
 
@@ -533,7 +568,9 @@ Smooch.sendMessage('hello', '<conversation-id>');
 
 #### startTyping(conversationId)
 
-Sends an event indicating the appUser has started typing. When called, a `stopTyping` timer will be created and will call `stopTyping()` after 10s, unless `stopTyping()` has been called manually. Everytime `startTyping()` is called the timer is reset. If `startTyping()` is called repeatedly, an event will only be sent if the time since the last sent event is greater then 10s.
+Sends an event indicating that the user has started typing.
+
+Typing updates are automatically throttled, so you may call this method as often as necessary. The typing stop event will automatically fire 10 seconds after the most recent call to this method.
 
 If **conversationId** is not provided, the currently loaded conversation will be used.
 
@@ -547,7 +584,7 @@ Smooch.startTyping('<conversation-id>');
 
 #### stopTyping(conversationId)
 
-Sends an event indicating the appUser has stoped typing.
+Sends an event indicating that the user has stopped typing.
 
 If **conversationId** is not provided, the currently loaded conversation will be used.
 
@@ -561,25 +598,18 @@ Smooch.stopTyping('<conversation-id>');
 
 #### triggerPostback(actionId, conversationId)
 
-Trigger a [postback](https://docs.smooch.io/rest/#postback) action on the user's behalf. An optional `conversationdId` argument can be provided to target a specific conversation, otherwise the currently loaded conversation will be targeted.
+Trigger a [postback](https://docs.smooch.io/rest/#postback) action to the targeted conversation on the user's behalf.
 
-The `actionId` is the `_id` property of the targeted action.
+The `actionId` is the `id` property of the targeted action.
 
-If you have the `_id` of the targetted `postback` action, you can pass it directly to `triggerPostback`.
-
-If **conversationId** is not provided, the currently loaded conversation will be used.
+If you have the `id` of the targetted `postback` action, you can pass it directly to `triggerPostback`.
 
 ```javascript
 const actionId = '5a747faa065bbe4e7804f2a4';
-Smooch.triggerPostback(actionId);
-
-// OR
-
-const actionId = '5a747faa065bbe4e7804f2a4';
-Smooch.triggerPostback(actionId, '62565b5c2b4039adff80b7fd');
+Smooch.triggerPostback(actionId, '<conversation-id>');
 ```
 
-Otherwise, you can get the `_id` of an action by using `Smooch.getConversationById()`, e.g.
+Otherwise, you can get the `id` of an action by using `Smooch.getConversationById()`, e.g.
 
 ```javascript
 Smooch.getConversationById().then((conversation) => console.log(conversation.messages));
@@ -591,31 +621,32 @@ Smooch.getConversationById().then((conversation) => console.log(conversation.mes
 //             {
 //                 "payload": "text:continue",
 //                 "text": "Continue conversation",
-//                 "_id": "5a7c65211aaa9b61f69c95e3",
+//                 id": "5a7c65211aaa9b61f69c95e3",
 //                 "type": "postback"
 //             }
 //         ],
 //         "type": "text",
-//         "role": "appMaker",
-//         "_id": "5a7c65211aaa9b61f69c95e2",
+//         "role": "business",
+//         id": "5a7c65211aaa9b61f69c95e2",
 //         // ...
 //     }
 // ]
 
 // Indicate to Smooch that the user has clicked on the "Continue conversation" postback action.
-Smooch.triggerPostback(conversation.messages[0].actions[0]._id);
+Smooch.triggerPostback(conversation.messages[0].actions[0].id);
 ```
 
 #### updateUser(user)
 
-Updates user information
+Updates the current user's information. If no user has been created yet, the Web Messenger will store the information and apply it to the user model when it is created.
 
 ```javascript
 Smooch.updateUser({
     givenName: 'Updated',
     surname: 'Name',
     email: 'updated@email.com',
-    properties: {
+    avatarUrl: 'https://pictureurl.com/avatar_icon.png',
+    metadata: {
         justGotUpdated: true,
     },
 });
@@ -627,6 +658,20 @@ Returns the current user.
 
 ```javascript
 var user = Smooch.getUser();
+
+// user object payload
+
+user = {
+    id: 'e70b153989345b0e178174b1',
+    externalId: 'username',
+    signedUpAt: '2019-09-26T14:48:58.167Z',
+    hasPaymendInfo: false,
+    metadata: {},
+    surname: 'Surname',
+    givenName: 'Given Name',
+    email: 'email@domain.com',
+    avatarUrl: 'https://pictureurl.com/avatar_icon.png',
+};
 ```
 
 #### getConversationById(conversationId)
@@ -647,14 +692,17 @@ Smooch.getConversationById().then((currentConversation) => {
 
 // Data object
 conversation = {
-    _id: '<conversation-id>',
-    unreadCount: 0,
+    id: '5aa4d7efdb32b10340db0223',
     lastUpdatedAt: 1581010017.596,
+    businessLastRead: 1581010017.596,
+    description: 'Conversation description',
+    displayName: 'Conversation name',
+    iconUrl: 'https://pictureurl.com/conversation_icon.png',
     type: 'sdkGroup',
     participants: [
         {
-            _id: '<participant-id>',
-            appUserId: '<appUser-id>',
+            id: '5f0cb8222c884d031ec05dd9',
+            userId: 'e70b153989345b0e178174b1',
             unreadCount: 0,
             lastRead: 1581010017.596,
         },
@@ -662,10 +710,10 @@ conversation = {
     metadata: {},
     messages: [
         {
-            role: 'appUser',
-            authorId: '6ac41c8b32e704f3cdb9052d',
-            name: 'Some user',
-            _id: '5e6022c9cb55158bfd53f845',
+            role: 'user',
+            userId: 'e70b153989345b0e178174b1',
+            displayName: 'Some user',
+            id: '5e6022c9cb55158bfd53f845',
             type: 'text',
             received: 1583358665.139,
             text: 'Hello',
@@ -675,30 +723,71 @@ conversation = {
                 integrationId: '5d8274d4aa780a5483f0ee56',
             },
         },
+        {
+            role: 'business',
+            displayName: 'Business display name',
+            id: '5f0cb834bc8ea9e41b2af269',
+            type: 'text',
+            received: 1594669108.896,
+            text: 'Greetings!',
+            source: {
+                type: 'slack',
+            },
+        },
     ],
 };
 ```
 
-#### getConversations(offset)
+#### getConversations()
 
-Returns a list of up to 10 conversations for the current user. An optional `offset` argument can be specified for paging purposes. This method is asynchronous. Note that the `messages` property in each conversation may only have the most recent message in the conversation.
+Returns a list of conversations for the current user that were fetched during app initialization as well as the paginated results.
+
+Note:
+
+-   The `messages` property in each conversation may only have the most recent message in the conversation. The full message list will be available either when the conversation was loaded to the view or [Smooch.getConversationById](#getconversationbyidconversationid) gets called.
+-   In the event that the client reconnects due to a network issue, the list may only contain the `10` most recent conversations for the user. All the additional conversations that were fetched as a result of pagination will be discarded.
 
 See [Smooch.getConversationById](#getconversationbyidconversationid) for the definition of a conversation
 
 ```javascript
-Smooch.getConversations(5).then((conversations) => {
-    // Your code after receiving the current user's conversations
-});
+var conversations = Smooch.getConversations();
+// Your code after receiving the current user's loaded conversations
 ```
 
-#### getConversation()
+#### getDisplayedConversation()
 
-Returns the active conversation if it exists
+Returns the conversation being viewed by the user if it exists or `null` if the current user is in the conversations list view.
 
 See [Smooch.getConversationById](#getconversationbyidconversationid) for the conversation definition
 
 ```javascript
-var conversation = Smooch.getConversation();
+var conversation = Smooch.getDisplayedConversation();
+```
+
+#### getMoreConversations()
+
+Fetches and returns the next 10 most active conversations of the current user. This call also appends the conversations to the conversation list view.
+
+See [Smooch.getConversationById](#getconversationbyidconversationid) for the conversation definition
+
+```javascript
+Smooch.getMoreConversations().then((nextConversations) => {
+    // Your code after receiving the next set of conversations for the user
+});
+```
+
+#### hasMoreConversations()
+
+Returns a `boolean` indicating whether the user has more conversations that can be fetched for the conversation list view.
+
+```javascript
+var hasMore = Smooch.hasMoreConversations();
+
+if (hasMore) {
+    console.log('More conversations available to fetch...');
+} else {
+    console.log('There are no more conversations remaining for the user');
+}
 ```
 
 #### loadConversation(conversationId)
@@ -709,19 +798,56 @@ Loads a conversation into the current session
 Smooch.loadConversation('<conversation-id>');
 ```
 
-#### startConversation()
+#### updateConversation(conversationId, options)
 
-Creates a user and conversation on the server, allowing the business to reach out proactively to the user via the public API.
-
-Creating a conversation via this method will count as an active user conversation (AUC) whether messages are exchanged or not, which may incur cost based on your plan. It is strongly recommended to only call this method in the case where a message is likely to be sent.
-
-This method is called automatically when starting a conversation via the `sendMessage` method, or when a user sends a message via the conversation view.
-
-If a conversation already exists for the current user, this call is a no-op.
+Updates the targeted conversation.
 
 ```javascript
-Smooch.startConversation();
+Smooch.updateConversation('<conversation-id>', {
+    displayName: 'display name',
+    iconUrl: 'https://www.example.png',
+    description: 'description',
+    metadata: {
+        any: 'info',
+    },
+}).then((updatedConversation) => {
+    // Your code after receiving the current user's updated conversation
+});
 ```
+
+where the fields are optional and could be set to `null` in the case integrators want to unset the value of the fields.
+
+#### createConversation(options)
+
+Creates a conversation on behalf of current user. If the user does not exist, it first creates the user and then a conversation associated with it.
+
+All the options are optional.
+
+```javascript
+Smooch.createConversation({
+    displayName: "Friday's Order",
+    iconUrl: 'https://www.zen-tacos.com/tacos.png',
+    description: 'Order #13377430',
+    metadata: {
+        isFirstTimeCustomer: true,
+    },
+    messages: [
+        {
+            text: 'Hi there! Your order is being prepared: 2 burritos, 4 tacos, 8 churros',
+            type: 'text',
+        },
+    ],
+}).then((conversation) => {
+    // Your code after receiving the current user's new conversation
+});
+```
+
+To create more than one conversation using this method, or to allow your user to create more conversations via the conversation list's `New Conversation` button, you must:
+
+-   have the [Multi-Party Conversations feature](https://docs.smooch.io/guide/multi-party-conversations/#some-assembly-required) enabled on your account
+-   [update your Web Messenger integration](https://docs.smooch.io/rest/#update-integration) and set `canUserCreateMoreConversations` to `true`
+
+Note that this API does not allow creating [`sdkGroup` conversations](https://docs.smooch.io/guide/multi-party-conversations/#new-platform-capabilities). This type of conversation must be created by using the public API.
 
 #### markAllAsRead(conversationId)
 
@@ -775,8 +901,8 @@ A `data` object is passed down with all the delegate events except `onInvalidAut
 ```javascript
 const delegate = {
     beforeDisplay(message, data) {
-        if (data.conversation._id === '<my-conversation-id>') {
-            message.name = 'Acme Blank';
+        if (data.conversation.id === '<my-conversation-id>') {
+            message.displayName = 'Acme Blank';
         }
 
         return message;
@@ -803,17 +929,36 @@ Smooch.init({ integrationId: '<integration-id>' }).then(() => {
     Smooch.setDelegate(delegate);
 });
 
+// Message object for beforeDisplay and beforeSend delegates
+
+message = {
+    id: '5f0cb8226a5b27e41834f8f8',
+    displayName: 'username',
+    role: 'user',
+    userId: 'e70b153989345b0e178174b1',
+    avatarUrl: 'https://imageurl.com/avatar.png',
+    type: 'text',
+    received: 1594669090.954,
+    source: {
+        type: 'web',
+        id: 'e91e070a9c4e4eb7b73fb0a376b340c7',
+        integrationId: '5d72af033fbb2c05c87d5d94',
+    },
+    metadata: {
+        isHidden: true,
+    },
+};
+
 // Data object
 data = {
     conversation: {
-        _id: '<conversation-id>',
-        unreadCount: 0,
+        id: '<conversation-id>',
         lastUpdatedAt: 1581010017.596,
         type: 'sdkGroup',
         participants: [
             {
-                _id: '<participant-id>',
-                appUserId: '<appUser-id>',
+                id: '<participant-id>',
+                userId: '<user-id>',
                 unreadCount: 0,
                 lastRead: 1581010017.596,
             },
@@ -834,7 +979,7 @@ Smooch.init({
     integrationId: '<integration-id>',
     delegate: {
         beforeDisplay(message, data) {
-            if (data.conversation._id === '<conversation-id>' && message.metadata && message.metadata.isHidden) {
+            if (data.conversation.id === '<conversation-id>' && message.metadata && message.metadata.isHidden) {
                 return null;
             }
 
@@ -858,7 +1003,7 @@ Smooch.init({
     integrationId: '<integration-id>'
     delegate: {
         beforeSend(message, data) {
-            if (data.conversation._id === '<conversation-id>') {
+            if (data.conversation.id === '<conversation-id>') {
                 message.metadata = {
                     any: 'info'
                 };
@@ -882,7 +1027,7 @@ Smooch.init({
     integrationId: '<integration-id>',
     delegate: {
         beforePostbackSend(postback, data) {
-            if (data.conversation._id === '<conversation-id>') {
+            if (data.conversation.id === '<conversation-id>') {
                 postback.metadata = {
                     any: 'info',
                 };
@@ -944,7 +1089,7 @@ Smooch.destroy();
 ```javascript
 // This event triggers when a participant is added to a conversation
 Smooch.on('participant:added', function (participant, data) {
-    console.log(`A participant was added to conversation ${data.conversation._id}: `, participant);
+    console.log(`A participant was added to conversation ${data.conversation.id}: `, participant);
 });
 ```
 
@@ -953,7 +1098,7 @@ Smooch.on('participant:added', function (participant, data) {
 ```javascript
 // This event triggers when a participant is removed from a conversation
 Smooch.on('participant:removed', function (participant, data) {
-    console.log(`A participant was removed from conversation ${data.conversation._id}: `, participant);
+    console.log(`A participant was removed from conversation ${data.conversation.id}: `, participant);
 });
 ```
 
@@ -962,7 +1107,7 @@ Smooch.on('participant:removed', function (participant, data) {
 ```javascript
 // This event triggers when a conversation is added
 Smooch.on('conversation:added', function (participants, data) {
-    console.log(`Conversation ${data.conversation._id} was added with following participants: `, participants);
+    console.log(`Conversation ${data.conversation.id} was added with following participants: `, participants);
 });
 ```
 
@@ -971,23 +1116,23 @@ Smooch.on('conversation:added', function (participants, data) {
 ```javascript
 // This event triggers when a participant in a sdkGroup chat reads a message
 Smooch.on('conversation:read', function (payload, data) {
-    if (data.role === 'appMaker') {
-        console.log(`Conversation ${data.conversation._id} was read by appMaker`);
-    } else if (data.role === 'appUser') {
-        console.log(`Conversation ${data.conversation._id} was read by appUserId: ${payload.appUserId}`);
+    if (data.role === 'business') {
+        console.log(`Conversation ${data.conversation.id} was read by the business`);
+    } else if (data.role === 'user') {
+        console.log(`Conversation ${data.conversation.id} was read by userId: ${payload.userId}`);
     }
 });
 
-// Data object, if the conversation was read by the appMaker, the appUser property will not exist
+// Payload and data objects. If the conversation was read by the business, the userId property will not exist
 payload = {
-    appUserId: '<appUser-id>',
+    userId: '<user-id>',
     lastRead: 1581010017.596,
-    role: 'appUser',
+    role: 'user',
 };
 
 data = {
     conversation: {
-        _id: '<conversation-id>',
+        id: '<conversation-id>',
     },
 };
 ```
@@ -997,13 +1142,13 @@ data = {
 ```javascript
 // This event triggers when a conversation is removed
 Smooch.on('conversation:removed', function (data) {
-    console.log(`Conversation ${data.conversation._id} was removed`);
+    console.log(`Conversation ${data.conversation.id} was removed`);
 });
 
 // data object
 data = {
     conversation: {
-        _id: '<conversation-id>',
+        id: '<conversation-id>',
     },
 };
 ```
@@ -1013,13 +1158,13 @@ data = {
 ```javascript
 // This event triggers when the user receives a message
 Smooch.on('message:received', function (message, data) {
-    console.log(`The user received a message in conversation ${data.conversation._id}: `, message);
+    console.log(`The user received a message in conversation ${data.conversation.id}: `, message);
 });
 
 // data object
 data = {
     conversation: {
-        _id: '<conversation-id>',
+        id: '<conversation-id>',
     },
 };
 ```
@@ -1029,13 +1174,13 @@ data = {
 ```javascript
 // This event triggers when the user sends a message
 Smooch.on('message:sent', function (message, data) {
-    console.log(`The user sent a message in conversation ${data.conversation._id}: `, message);
+    console.log(`The user sent a message in conversation ${data.conversation.id}: `, message);
 });
 
 // data object
 data = {
     conversation: {
-        _id: '<conversation-id>',
+        id: '<conversation-id>',
     },
 };
 ```
@@ -1045,13 +1190,13 @@ data = {
 ```javascript
 // This event triggers when a message was added to the conversation
 Smooch.on('message', function (message, data) {
-    console.log(`A message was added in the conversation ${data.conversation._id}: `, message);
+    console.log(`A message was added in the conversation ${data.conversation.id}: `, message);
 });
 
 // data object
 data = {
     conversation: {
-        _id: '<conversation-id>',
+        id: '<conversation-id>',
     },
 };
 ```
@@ -1061,13 +1206,13 @@ data = {
 ```javascript
 // This event triggers when the number of unread messages changes
 Smooch.on('unreadCount', function (unreadCount, data) {
-    console.log(`the number of unread messages was updated for conversation ${data.conversation._id}:`, unreadCount);
+    console.log(`the number of unread messages was updated for conversation ${data.conversation.id}:`, unreadCount);
 });
 
 // data object
 data = {
     conversation: {
-        _id: '<conversation-id>',
+        id: '<conversation-id>',
     },
 };
 ```
@@ -1105,9 +1250,9 @@ Smooch.on('log:debug', function (e) {
 
 ```javascript
 // This event triggers when an active connection has been established for the first time,
-// or when the connection has been re-established after a `disconnect` event.
+// or when the connection has been re-established after a `disconnected` or `reconnecting` event.
 Smooch.on('connected', function (data) {
-    console.log('Connected with conversation', data.conversation._id);
+    console.log('Connected with conversation', data.conversation.id);
 });
 ```
 
@@ -1115,15 +1260,32 @@ Smooch.on('connected', function (data) {
 
 ```javascript
 // This event triggers when an active connection is lost
-// While disconnected, the client will not be able to recieve messages
+// While disconnected, the client will not be able to receive messages or load a conversation
 Smooch.on('disconnected', function (data) {
-    console.log('Disconnected with conversation', data.conversation._id);
+    console.log('Disconnected with conversation', data.conversation.id);
 });
 
 // data object
 data = {
     conversation: {
-        _id: '<conversation-id>',
+        id: '<conversation-id>',
+    },
+};
+```
+
+#### reconnecting
+
+```javascript
+// This event triggers when an active connection is lost and there is an attempt to reconnect
+// While reconnecting, the client will not be able to receive messages or load a conversation
+Smooch.on('reconnecting', function (data) {
+    console.log('Reconnecting with conversation', data.conversation.id);
+});
+
+// data object
+data = {
+    conversation: {
+        id: '<conversation-id>',
     },
 };
 ```
@@ -1131,9 +1293,9 @@ data = {
 #### typing:start
 
 ```javascript
-// This event triggers when appMaker starts typing. The associated conversation is passed in the argument.
+// This event triggers when the business starts typing. The associated conversation is passed in the argument.
 Smooch.on('typing:start', function (data) {
-    console.log(`${data.name} started typing!`, data.conversation._id);
+    console.log(`${data.name} started typing!`, data.conversation.id);
 });
 
 // If the name and avatarUrl for the typing user is known it will be available as properties in the data object
@@ -1141,7 +1303,7 @@ Smooch.on('typing:start', function (data) {
 // Data object
 data = {
     conversation: {
-        _id: '<conversation-id>',
+        id: '<conversation-id>',
     },
     avatarUrl: 'http://path.com/to/avatar-url-of-user',
     name: 'Name of Typing User',
@@ -1151,15 +1313,15 @@ data = {
 #### typing:stop
 
 ```javascript
-// This event triggers when appMaker stops typing. The associated conversation is passed in the argument.
+// This event triggers when the business stops typing. The associated conversation is passed in the argument.
 Smooch.on('typing:stop', function (data) {
-    console.log(`${data.name} stopped typing!`, data.conversation._id);
+    console.log(`${data.name} stopped typing!`, data.conversation.id);
 });
 
 // data object
 data = {
     conversation: {
-        _id: '<conversation-id>',
+        id: '<conversation-id>',
     },
 };
 ```
@@ -1172,9 +1334,9 @@ As describe above, to activate the embedded mode, you need to pass `embedded: tr
 Smooch.init({
     integrationId: '<integration-id>',
     embedded: true,
+}).then(() => {
+    Smooch.render(document.getElementById('chat-container'));
 });
-
-Smooch.render(document.getElementById('chat-container'));
 ```
 
 The embedded widget will take full width and height of the container. You must give it a height, otherwise, the widget will collapse.
@@ -1183,9 +1345,9 @@ The embedded widget will take full width and height of the container. You must g
 
 For [authenticated user scenarios](https://docs.smooch.io/guide/authenticating-users/), a user's credentials can be passed in to either `init()` or `login()`. The question remains: when should you use which?
 
-When `init()` is called without a `userId` and `jwt`, the UI will be initialized in an anonymous user context, and the user will be able to send messages as an anonymous user. After `init()` has completed, `login()` may be called to authenticate the user and resume any existing conversation. This is useful if you want your users to be able to send messages before they've logged in to your website. Once a user does login and the browser is issued a valid `jwt`, `login()` may be called so that the user may continue the conversation in an authenticated session.
+When `init()` is called without an `externalId` and `jwt`, the UI will be initialized in an anonymous user context, and the user will be able to send messages as an anonymous user. After `init()` has completed, `login()` may be called to authenticate the user and resume any existing conversation. This is useful if you want your users to be able to send messages before they've logged in to your website. Once a user does login and the browser is issued a valid `jwt`, `login()` may be called so that the user may continue the conversation in an authenticated session. Note that this may trigger a [merge event](https://docs.smooch.io/guide/merging-users/#merging-because-of-a-login-event) if the anonymous user already exists in Sunshine Conversations at the time of calling `login()`.
 
-If however your use case requires that all users be logged in before they may send messages, then you should consider passing `userId` and `jwt` directly to the `init()` call upfront.
+If however your use case requires that all users be logged in before they may send messages, then you should consider passing `externalId` and `jwt` directly to the `init()` call upfront.
 
 ## Content Security Policy
 
