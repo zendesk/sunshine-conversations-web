@@ -198,6 +198,7 @@ The list of localizable strings. These strings can be modified. _If an option is
 | messageTimestampFormat                     | h:mm A                                                                                                                                                                                                               |
 | messageSending                             | Sending...                                                                                                                                                                                                           |
 | messageDelivered                           | Delivered                                                                                                                                                                                                            |
+| messageTooLongError                        | Max message size limit exceeded ({size}).                                                                                                                                                                            |
 | messengerChannelDescription                | Connect your Facebook Messenger account to be notified when you get a reply and continue the conversation on Facebook Messenger.                                                                                     |
 | newConversationButtonText                  | New Conversation                                                                                                                                                                                                     |
 | notificationSettingsChannelsDescription    | Sync this conversation by connecting to your favorite messaging app to continue the conversation your way.                                                                                                           |
@@ -1116,9 +1117,9 @@ Smooch.on('conversation:added', function (participants, data) {
 ```javascript
 // This event triggers when a participant in a sdkGroup chat reads a message
 Smooch.on('conversation:read', function (payload, data) {
-    if (data.role === 'business') {
+    if (payload.role === 'business') {
         console.log(`Conversation ${data.conversation.id} was read by the business`);
-    } else if (data.role === 'user') {
+    } else if (payload.role === 'user') {
         console.log(`Conversation ${data.conversation.id} was read by userId: ${payload.userId}`);
     }
 });
