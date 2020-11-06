@@ -613,7 +613,7 @@ Smooch.triggerPostback(actionId, '<conversation-id>');
 Otherwise, you can get the `id` of an action by using `Smooch.getConversationById()`, e.g.
 
 ```javascript
-Smooch.getConversationById().then((conversation) => console.log(conversation.messages));
+Smooch.getConversationById('62565b5c2b4039adff80b7fd').then((conversation) => console.log(conversation.messages));
 
 // [
 //     {
@@ -677,8 +677,7 @@ user = {
 
 #### getConversationById(conversationId)
 
-Returns a `Promise<object>` whose payload is a conversation if it exists.
-if **conversationId** is not given, the current loaded conversation will be returned.
+Returns a `Promise<object>` whose payload is a conversation if it exists. If **conversationId** is not given, the current loaded conversation will be returned.
 
 ```javascript
 Smooch.getConversationById('62565b5c2b4039adff80b7fd').then((conversation) => {
@@ -845,7 +844,7 @@ Smooch.createConversation({
 
 To create more than one conversation using this method, or to allow your user to create more conversations via the conversation list's `New Conversation` button, you must:
 
--   have the [Multi-Party Conversations feature](https://docs.smooch.io/guide/multi-party-conversations/#some-assembly-required) enabled on your account
+-   have the [Multi-Conversations feature](https://docs.smooch.io/rest/#operation/updateApp) enabled on your account
 -   [update your Web Messenger integration](https://docs.smooch.io/rest/#update-integration) and set `canUserCreateMoreConversations` to `true`
 
 Note that this API does not allow creating [`sdkGroup` conversations](https://docs.smooch.io/guide/multi-party-conversations/#new-platform-capabilities). This type of conversation must be created by using the public API.
@@ -1378,7 +1377,9 @@ Note that an equivalent configuration can be done [server side](https://develope
 According to the channels you use, other domains may need to be added (these are used to display QR codes to link the Web Messenger conversation):
 
 -   LINE: https://qr-official.line.me
+-   Stripe: https://*.stripe.com
 -   WeChat: https://mp.weixin.qq.com
+-   WhatsApp: https://wa.me
 
 Note that your CSP configuration should also include any domains used to host images or files sent in messages.
 If you require `blob:` to be excluded for `img-src`, you must disable the image upload feature via the [init settings](#initoptions).
