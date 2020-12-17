@@ -196,8 +196,9 @@ The list of localizable strings. These strings can be modified. _If an option is
 | messageRelativeTimeJustNow                 | Just now                                                                                                                                                                                                             |
 | messageRelativeTimeMinute                  | `{value}`m ago                                                                                                                                                                                                       |
 | messageTimestampFormat                     | h:mm A                                                                                                                                                                                                               |
-| messageSending                             | Sending...                                                                                                                                                                                                           |
 | messageDelivered                           | Delivered                                                                                                                                                                                                            |
+| messageSeen                                | Seen                                                                                                                                                                                                                 |
+| messageSending                             | Sending...                                                                                                                                                                                                           |
 | messageTooLongError                        | Max message size limit exceeded ({size}).                                                                                                                                                                            |
 | messengerChannelDescription                | Connect your Facebook Messenger account to be notified when you get a reply and continue the conversation on Facebook Messenger.                                                                                     |
 | newConversationButtonText                  | New Conversation                                                                                                                                                                                                     |
@@ -421,8 +422,9 @@ var skPromise = Smooch.init({
         messageRelativeTimeJustNow: 'Just now',
         messageRelativeTimeMinute: '{value}m ago',
         messageTimestampFormat: 'h:mm A',
-        messageSending: 'Sending...',
         messageDelivered: 'Delivered',
+        messageSeen: 'Seen',
+        messageSending: 'Sending...',
         messengerChannelDescription:
             'Connect your Facebook Messenger account to be notified when you get a reply and continue the conversation on Facebook Messenger.',
         newConversationButtonText: 'New Conversation',
