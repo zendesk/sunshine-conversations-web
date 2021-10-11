@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <title>OKKAMI - Smooch Web Chat Integration</title>
+    <script type="text/javascript" src="okkami.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      var userName = "Logged-in User"
+      var emailAddress = "logged-in-user@hotel.com"
+      var customColors = { // Define chat widget color
+        brandColor: "350827",
+        conversationColor: "350827",
+        actionColor: "350827",
+      }
+      var prechatCapture = {
+        enabled: true,
+        fields: [
+          {
+            type: "text",
+            name: "user_name",
+            label: "Enter Your Name",
+            placeholder: "Your Name",
+          },
+          {
+            type: "text",
+            name: "email",
+            label: "Enter Your Email",
+            placeholder: "Your Email",
+          },
+        ],
+      }
+
+      var customText = {
+        prechatCaptureGreetingText:
+          "This instant messaging conversation aims to assist you with your query. The content of this conversation, including the personal data that you will disclose, will be processed and recorded for this purpose only. For more details, please read our privacy notice https://www.minorhotels.com/en/privacy-policy",
+        prechatCaptureConfirmationText:
+          "Thank you for providing your details. Please wait while we connect you with our team.",
+      }
+
+      Okkami.init({
+        integrationId: "", // Web Integration ID
+        userName,
+        emailAddress,
+        prechatCapture,
+        customText,
+        customColors,
+        notificationChannelPromptEnabled: true,
+        locale: "en-US",
+      })
+    </script>
+  </body>
+</html>
