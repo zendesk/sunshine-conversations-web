@@ -527,12 +527,18 @@ window.Okkami.init = function (options) {
     prechatCapture: options.prechatCapture,
     customText: options.customText,
     notificationChannelPromptEnabled: options.notificationChannelPromptEnabled,
+    canUserSeeConversationList: false,
     locale: locale,
     ...customOptions,
   }
+  var prevLoginType = window.localStorage.getItem(`${options.integrationId}.prevLoginType`)
 
   if (options.userName && options.userName.length > 0) {
     delete initializeOptions.prechatCapture
+
+    if (prevLoginType === 'anonymous') {
+      window.Okkami.logout(options.integrationId)
+    }
   }
 
   Smooch.init(initializeOptions).then(function () {
@@ -542,8 +548,9 @@ window.Okkami.init = function (options) {
         surName: options.lastName,
         emailAddress: emailAddress,
       })
+      window.localStorage.setItem(`${options.integrationId}.prevLoginType`, 'user')
     } else {
-      window.localStorage.removeItem(`${options.integrationId}.clientId`)
+      window.localStorage.setItem(`${options.integrationId}.prevLoginType`, 'anonymous')
     }
   })
 
@@ -554,6 +561,14 @@ window.Okkami.init = function (options) {
     let logo = iframe.document.querySelector(
       "#conversation > div.messages-container > div.logo"
     )
-    logo.remove()
+
+    if (logo) {
+      logo.remove()
+    }
   })
+}
+
+window.Okkami.logout = function(integrationId){
+  window.localStorage.removeItem(`${integrationId}.appUserId`)
+  window.localStorage.removeItem(`${integrationId}.sessionToken`)
 }
