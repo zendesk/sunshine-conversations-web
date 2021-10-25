@@ -835,7 +835,7 @@ Smooch.createConversation({
     },
     messages: [
         {
-            text: 'Hi there! Your order is being prepared: 2 burritos, 4 tacos, 8 churros',
+            text: 'Hi there! I have a question about my order.',
             type: 'text',
         },
     ],
