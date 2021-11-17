@@ -25,7 +25,7 @@ Add the following code towards the end of the `<head>` section on your page and 
 <!-- prettier-ignore -->
 ```html
 <script>
-    !function(o,p,s,e,c){var i,a,h,u=[],d=[];function t(){var t="You must provide a supported major version.";try{if(!c)throw new Error(t);var e,n="https://cdn.smooch.io/",r="smooch";if((e="string"==typeof this.response?JSON.parse(this.response):this.response).url){var o=p.getElementsByTagName("script")[0],s=p.createElement("script");s.async=!0;var i=c.match(/([0-9]+)\.?([0-9]+)?\.?([0-9]+)?/),a=i&&i[1];if(i&&i[3])s.src=n+r+"."+c+".min.js";else{if(!(4<=a&&e["v"+a]))throw new Error(t);s.src=e["v"+a]}o.parentNode.insertBefore(s,o)}}catch(e){e.message===t&&console.error(e)}}o[s]={init:function(){i=arguments;var t={then:function(e){return d.push({type:"t",next:e}),t},catch:function(e){return d.push({type:"c",next:e}),t}};return t},on:function(){u.push(arguments)},render:function(){a=arguments},destroy:function(){h=arguments}},o.__onWebMessengerHostReady__=function(e){if(delete o.__onWebMessengerHostReady__,o[s]=e,i)for(var t=e.init.apply(e,i),n=0;n<d.length;n++){var r=d[n];t="t"===r.type?t.then(r.next):t.catch(r.next)}a&&e.render.apply(e,a),h&&e.destroy.apply(e,h);for(n=0;n<u.length;n++)e.on.apply(e,u[n])};var n=new XMLHttpRequest;n.addEventListener("load",t),n.open("GET","https://"+e+".webloader.smooch.io/",!0),n.responseType="json",n.send()}(window,document,"Smooch","<integration-id>","5");
+    !function(o,d,s,e,f){var i,a,p,c=[],h=[];function t(){var t="You must provide a supported major version.";try{if(!f)throw new Error(t);var e,n="https://cdn.smooch.io/",r="smooch";e="string"==typeof this.response?JSON.parse(this.response):this.response;var o=f.match(/([0-9]+)\.?([0-9]+)?\.?([0-9]+)?/),s=o&&o[1],i=o&&o[2],a=o&&o[3],p=e["v"+s],c=e["v"+s+"."+i+".patch"];if(e.url||p||c){var h=d.getElementsByTagName("script")[0],u=d.createElement("script");if(u.async=!0,a)u.src=c||n+r+"."+f+".min.js";else{if(!(5<=s&&p))throw new Error(t);u.src=p}h.parentNode.insertBefore(u,h)}}catch(e){e.message===t&&console.error(e)}}o[s]={init:function(){i=arguments;var t={then:function(e){return h.push({type:"t",next:e}),t},catch:function(e){return h.push({type:"c",next:e}),t}};return t},on:function(){c.push(arguments)},render:function(){a=arguments},destroy:function(){p=arguments}},o.__onWebMessengerHostReady__=function(e){if(delete o.__onWebMessengerHostReady__,o[s]=e,i)for(var t=e.init.apply(e,i),n=0;n<h.length;n++){var r=h[n];t="t"===r.type?t.then(r.next):t.catch(r.next)}a&&e.render.apply(e,a),p&&e.destroy.apply(e,p);for(n=0;n<c.length;n++)e.on.apply(e,c[n])};var n=new XMLHttpRequest;n.addEventListener("load",t),n.open("GET","https://"+e+".webloader.smooch.io/",!0),n.responseType="json",n.send()}(window,document,"Smooch","<integration-id>","5");
 </script>
 ```
 
@@ -624,13 +624,13 @@ Smooch.getConversationById('62565b5c2b4039adff80b7fd').then((conversation) => co
 //             {
 //                 "payload": "text:continue",
 //                 "text": "Continue conversation",
-//                 id": "5a7c65211aaa9b61f69c95e3",
+//                 "id": "5a7c65211aaa9b61f69c95e3",
 //                 "type": "postback"
 //             }
 //         ],
 //         "type": "text",
 //         "role": "business",
-//         id": "5a7c65211aaa9b61f69c95e2",
+//         "id": "5a7c65211aaa9b61f69c95e2",
 //         // ...
 //     }
 // ]
