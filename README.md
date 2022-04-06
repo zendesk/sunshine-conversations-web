@@ -265,12 +265,12 @@ The list of localizable strings. These strings can be modified. _If an option is
 
 ##### `prechatCapture`
 
-| Option             | Optional? | Default value | Description                                                                                                                                                                       |
-| ------------------ | --------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| avatarUrl          | Yes       | `undefined`   | Sets the URL of the avatar to use for the automatic reply to the prechat capture messages.                                                                                        |
-| enabled            | Yes       | `false`       | Enables the prechat capture experience.                                                                                                                                           |
-| enableEmailLinking | Yes       | `true`        | Automatically links the user's email to the app's Mailgun integration if it exists. If the property `fields` is defined, the first field of type `email` will be used.            |
-| fields             | Yes       | -             | Overrides the default Prechat Capture [fields](https://docs.smooch.io/rest/#field) to define a [custom form](https://docs.smooch.io/guide/web-messenger/#custom-prechat-capture). |
+| Option             | Optional? | Default value | Description                                                                                                                                                                                                |
+| ------------------ | --------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| avatarUrl          | Yes       | `undefined`   | Sets the URL of the avatar to use for the automatic reply to the prechat capture messages.                                                                                                                 |
+| enabled            | Yes       | `false`       | Enables the prechat capture experience.                                                                                                                                                                    |
+| enableEmailLinking | Yes       | `true`        | Automatically links the user's email to the app's Mailgun integration if it exists. If the property `fields` is defined, the first field of type `email` will be used.                                     |
+| fields             | Yes       | -             | Overrides the default Prechat Capture [fields](https://docs.smooch.io/guide/web-messenger/#prechat-capture) to define a [custom form](https://docs.smooch.io/guide/web-messenger/#custom-prechat-capture). |
 
 [beforeSend delegate](#beforesend) will apply to the user's submitted message.
 
@@ -601,7 +601,7 @@ Smooch.stopTyping('<conversation-id>');
 
 #### triggerPostback(actionId, conversationId)
 
-Trigger a [postback](https://docs.smooch.io/rest/#postback) action to the targeted conversation on the user's behalf.
+Trigger a [postback](https://docs.smooch.io/guide/structured-messages/#postback-buttons) action to the targeted conversation on the user's behalf.
 
 The `actionId` is the `id` property of the targeted action.
 
@@ -847,7 +847,7 @@ Smooch.createConversation({
 To create more than one conversation using this method, or to allow your user to create more conversations via the conversation list's `New Conversation` button, you must:
 
 -   have the [Multi-Conversations feature](https://docs.smooch.io/rest/#operation/updateApp) enabled on your account
--   [update your Web Messenger integration](https://docs.smooch.io/rest/#update-integration) and set `canUserCreateMoreConversations` to `true`
+-   [update your Web Messenger integration](https://docs.smooch.io/rest/#operation/updateIntegration) and set `canUserCreateMoreConversations` to `true`
 
 Note that this API does not allow creating [`sdkGroup` conversations](https://docs.smooch.io/guide/multi-party-conversations/#new-platform-capabilities). This type of conversation must be created by using the public API.
 
@@ -1337,9 +1337,14 @@ Smooch.init({
     integrationId: '<integration-id>',
     embedded: true,
 }).then(() => {
-    Smooch.render(document.getElementById('chat-container'));
+    var user = Smooch.getUser();
+    // your code
 });
+
+Smooch.render(document.getElementById('chat-container'));
 ```
+
+Be sure to place `.render()` outside of the `.init().then()` function. If you place it inside the function, a race condition happens and unexpected results can occur.
 
 The embedded widget will take full width and height of the container. You must give it a height, otherwise, the widget will collapse.
 
@@ -1379,7 +1384,7 @@ Note that an equivalent configuration can be done [server side](https://develope
 According to the channels you use, other domains may need to be added (these are used to display QR codes to link the Web Messenger conversation):
 
 -   LINE: https://qr-official.line.me
--   Stripe: https://*.stripe.com
+-   Stripe: https://\*.stripe.com
 -   WeChat: https://mp.weixin.qq.com
 -   WhatsApp: https://wa.me
 
