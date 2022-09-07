@@ -1366,16 +1366,21 @@ If your deployment requires [CSP compatibility](https://developer.mozilla.org/en
     content="
     connect-src
         wss://*.smooch.io
-        https://*.smooch.io;
+        https://*.smooch.io
+        https://*.zendesk.com;
     font-src
-        https://*.smooch.io;
+        https://*.smooch.io
+        https://*.zendesk.com;
     script-src
-        https://*.smooch.io;
+        https://*.smooch.io
+        https://*.zendesk.com;
     style-src
-        https://*.smooch.io;
+        https://*.smooch.io
+        https://*.zendesk.com;
     img-src
         blob:
-        https://*.smooch.io;"
+        https://*.smooch.io
+        https://*.zendesk.com;"
 />
 ```
 
