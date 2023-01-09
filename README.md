@@ -168,6 +168,7 @@ The list of localizable strings. These strings can be modified. _If an option is
 | fetchingHistory                            | Retrieving history...                                                                                                                                                                                                |
 | fileTooLargeError                          | Max file size limit exceeded ({size})                                                                                                                                                                                |
 | fileTypeError                              | Unsupported file type.                                                                                                                                                                                               |
+| formErrorEntryRequired                     | This entry is required                                                                                                                                                                                               |
 | formErrorInvalidEmail                      | Email is invalid                                                                                                                                                                                                     |
 | formErrorNoLongerThan                      | Must contain no more than ({characters}) characters                                                                                                                                                                  |
 | formErrorNoShorterThan                     | Must contain at least ({characters}) characters                                                                                                                                                                      |
@@ -392,6 +393,7 @@ var skPromise = Smooch.init({
         fetchingHistory: 'Retrieving history...',
         fileTooLargeError: 'Max file size limit exceeded ({size})',
         fileTypeError: 'Unsupported file type.',
+        formErrorEntryRequired: 'This entry is required',
         formErrorInvalidEmail: 'Email is invalid',
         formErrorNoLongerThan: 'Must contain no more than ({characters}) characters',
         formErrorNoShorterThan: 'Must contain at least ({characters}) characters',
