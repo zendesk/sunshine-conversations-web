@@ -78,6 +78,51 @@ Web Messenger supports all popular browsers.
 
 Web Messenger is likely compatible with other and older browsers but we only test against the versions above.
 
+## Region configuration
+
+Web messenger is supported in the following [regions](https://docs.smooch.io/guide/regions/):
+
+| Region         | Region identifier   |
+| -------------- | ------------------- |
+| United States  | _Leave unspecified_ |
+| European Union | `eu-1`              |
+
+To target the EU region, the region identifier is passed to `Smooch.init()`:
+
+```javascript
+<script>
+    Smooch.init({
+        integrationId: '<integration-id>',
+        region: 'eu-1'
+    }).then(
+        function() {
+            // Your code after init is complete
+        },
+        function(err) {
+            // Something went wrong during initialization
+        }
+    );
+</script>
+```
+
+If you are a licensed Zendesk customer, use `configBaseUrl` instead of `region`. `configBaseUrl` specifies the URL where the config request is sent. For example:
+
+```javascript
+<script>
+    Smooch.init({
+        integrationId: '<integration-id>',
+        configBaseUrl: 'https://<subdomain>.zendesk.com/sc/'
+    }).then(
+        function() {
+            // Your code after init is complete
+        },
+        function(err) {
+            // Something went wrong during initialization
+        }
+    );
+</script>
+```
+
 ## API
 
 ### Individual functions
