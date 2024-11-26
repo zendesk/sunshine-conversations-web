@@ -534,6 +534,7 @@ var skPromise = Smooch.init({
         whatsappChannelDescriptionMobile:
             'Sync your account to WhatsApp by clicking the link below.\nThen, send the pre-populated message to validate the sync request. (Your code: {{code}}).',
         whatsappLinkingError: 'An error occurred while fetching your WhatsApp linking information. Please try again.',
+        unableToLoadImage: 'Unable to load image',
     },
 }).then(function () {
     // Your code after init is complete
