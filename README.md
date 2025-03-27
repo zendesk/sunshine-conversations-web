@@ -50,7 +50,7 @@ npm install --save smooch
 Require and init
 
 ```javascript
-var Smooch = require('smooch');
+import Smooch from 'smooch';
 
 Smooch.init({ integrationId: '<integration-id>' }).then(function () {
     // Your code after init is complete
