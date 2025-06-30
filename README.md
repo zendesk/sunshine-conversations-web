@@ -302,6 +302,19 @@ Please note that all error messages are prefixed with `errorPrefix` (default: `E
 
 [See below](#example) for an example.
 
+##### `customScreenReaderAnnouncement`
+
+The list of localizable strings. These strings can be modified. _If an option is not given a custom string, the default value will be used._
+
+| Option        | Description                |
+| ------------- | -------------------------- |
+| supportTyping | `{author}` is typing       |
+| supportSays   | `{author}` says:           |
+| sentImage     | `{author}` sent an image   |
+| sentFile      | `{author}` sent a file     |
+| sentCarousel  | `{author}` sent a carousel |
+| sentLocation  | `{author}` sent a location |
+
 ##### `menuItems`
 
 | Option        | Optional? | Default value | Description                           |
