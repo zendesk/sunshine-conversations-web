@@ -1377,6 +1377,8 @@ data = {
 };
 ```
 
+**Note:** This event will only fire if the converstaion is displayed in the widget. It won't fire if the user is viewing the conversations list. To display a converstaion via the SDK, you can call `Smooch.loadConversation(conversationId)`.
+
 #### typing:stop
 
 ```javascript
@@ -1392,6 +1394,8 @@ data = {
     },
 };
 ```
+
+**Note:** This event will only fire if the converstaion is displayed in the widget. It won't fire if the user is viewing the conversations list. To display a converstaion via the SDK, you can call `Smooch.loadConversation(conversationId)`.
 
 ### Embedded mode
 
